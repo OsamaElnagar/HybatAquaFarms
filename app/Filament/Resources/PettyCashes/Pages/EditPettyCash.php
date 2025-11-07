@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Filament\Resources\PettyCashes\Pages;
+
+use App\Filament\Resources\PettyCashes\PettyCashResource;
+use App\Models\PettyCashTransaction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
+
+class EditPettyCash extends EditRecord
+{
+    protected static string $resource = PettyCashResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('replenish')
+                ->label('تزويد سريع')
+                ->icon('heroicon-o-plus-circle')
+                ->color('success')
+                ->form([
+                    DatePicker::make('date')
+                        ->label('التاريخ')
+                        ->required()
+                        ->default(now()),
+                    TextInput::make('amount')
+                        ->label('المبلغ')
+                        ->required()
+                        ->numeric()
+                        ->prefix('ج.م')
+                        ->minValue(0.01)
+                        ->step(0.01),
+                    Textarea::make('description')
+                        ->label('الوصف')
+                        ->required()
+                        ->default('تزويد العهدة')
+                        ->maxLength(500),
+                ])
+                ->action(function (array $data): void {
+                    PettyCashTransaction::create([
+                        'petty_cash_id' => $this->record->id,
+                        'date' => $data['date'],
+                        'direction' => 'in',
+                        'amount' => $data['amount'],
+                        'description' => $data['description'],
+                        'recorded_by' => Auth::id(),
+                    ]);
+
+                    $this->dispatch('replenishment-created');
+                })
+                ->successNotificationTitle('تم التزويد بنجاح')
+                ->modalHeading('تزويد العهدة')
+                ->modalSubmitActionLabel('تزويد'),
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\PettyCashes\Widgets\PettyCashStatsWidget::class,
+        ];
+    }
+}

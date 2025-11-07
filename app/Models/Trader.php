@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
+class Trader extends Model
+{
+    /** @use HasFactory<\Database\Factories\TraderFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'code',
+        'name',
+        'contact_person',
+        'phone',
+        'phone2',
+        'email',
+        'address',
+        'trader_type',
+        'payment_terms_days',
+        'credit_limit',
+        'is_active',
+        'notes',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'credit_limit' => 'decimal:2',
+        ];
+    }
+
+    public function salesOrders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
+
+    public function vouchers(): MorphMany
+    {
+        return $this->morphMany(Voucher::class, 'counterparty');
+    }
+
+    public function clearingEntries(): HasMany
+    {
+        return $this->hasMany(ClearingEntry::class);
+    }
+
+    /**
+     * Calculate outstanding receivable balance for this trader.
+     * Total credit sales (unpaid) minus settlements.
+     */
+    public function getOutstandingBalanceAttribute(): float
+    {
+        $totalCreditSales = $this->salesOrders()
+            ->whereIn('payment_status', ['pending', 'partial'])
+            ->sum('total_amount');
+
+        $totalSettled = $this->clearingEntries()->sum('amount');
+
+        return (float) max(0, $totalCreditSales - $totalSettled);
+    }
+}
