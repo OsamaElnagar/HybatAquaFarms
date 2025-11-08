@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Batch extends Model
 {
@@ -18,11 +19,14 @@ class Batch extends Model
         'farm_id',
         'unit_id',
         'species_id',
+        'factory_id',
         'entry_date',
         'initial_quantity',
         'current_quantity',
         'initial_weight_avg',
         'current_weight_avg',
+        'unit_cost',
+        'total_cost',
         'source',
         'status',
         'notes',
@@ -34,6 +38,8 @@ class Batch extends Model
             'entry_date' => 'date',
             'initial_weight_avg' => 'decimal:3',
             'current_weight_avg' => 'decimal:3',
+            'unit_cost' => 'decimal:2',
+            'total_cost' => 'decimal:2',
             'status' => BatchStatus::class,
         ];
     }
@@ -53,6 +59,11 @@ class Batch extends Model
         return $this->belongsTo(Species::class);
     }
 
+    public function factory(): BelongsTo
+    {
+        return $this->belongsTo(Factory::class);
+    }
+
     public function movements(): HasMany
     {
         return $this->hasMany(BatchMovement::class);
@@ -66,5 +77,10 @@ class Batch extends Model
     public function dailyFeedIssues(): HasMany
     {
         return $this->hasMany(DailyFeedIssue::class);
+    }
+
+    public function journalEntries(): MorphMany
+    {
+        return $this->morphMany(JournalEntry::class, 'source');
     }
 }

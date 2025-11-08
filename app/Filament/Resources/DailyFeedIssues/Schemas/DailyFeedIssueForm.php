@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\DailyFeedIssues\Schemas;
 
+use App\Models\FarmUnit;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class DailyFeedIssueForm
@@ -14,38 +16,78 @@ class DailyFeedIssueForm
     {
         return $schema
             ->components([
-                Select::make('farm_id')
-                    ->label('المزرعة')
-                    ->relationship('farm', 'name')
-                    ->required(),
-                Select::make('unit_id')
-                    ->label('الوحدة')
-                    ->relationship('unit', 'id')
-                    ->required(),
-                Select::make('feed_item_id')
-                    ->label('صنف العلف')
-                    ->relationship('feedItem', 'name')
-                    ->required(),
-                Select::make('feed_warehouse_id')
-                    ->label('مخزن العلف')
-                    ->relationship('warehouse', 'name')
-                    ->required(),
-                DatePicker::make('date')
-                    ->label('التاريخ')
-                    ->required(),
-                TextInput::make('quantity')
-                    ->label('الكمية')
-                    ->required()
-                    ->numeric(),
-                Select::make('batch_id')
-                    ->label('دفعة الزريعة')
-                    ->relationship('batch', 'id'),
-                TextInput::make('recorded_by')
-                    ->label('سجل بواسطة')
-                    ->numeric(),
-                Textarea::make('notes')
-                    ->label('ملاحظات')
-                    ->columnSpanFull(),
+                Section::make('معلومات الموقع وتفاصيل الصرف')
+                    ->description('يرجى اختيار المزرعة والوحدة وملء بيانات صرف العلف')
+                    ->schema([
+                        Select::make('farm_id')
+                            ->label('المزرعة')
+                            ->relationship('farm', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn (callable $set) => $set('unit_id', null))
+                            ->helperText('يرجى اختيار المزرعة ذات الصلة'),
+                        Select::make('unit_id')
+                            ->label('الوحدة')
+                            ->options(function (callable $get) {
+                                $farmId = $get('farm_id');
+                                if (! $farmId) {
+                                    return [];
+                                }
+
+                                return FarmUnit::query()
+                                    ->where('farm_id', $farmId)
+                                    ->get()
+                                    ->mapWithKeys(fn ($unit) => [$unit->id => $unit->code])
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->helperText('اختر وحدة تابعة للمزرعة المختارة (حوض/خزان)'),
+                        Select::make('feed_item_id')
+                            ->label('صنف العلف')
+                            ->relationship('feedItem', 'name')
+                            ->required()
+                            ->helperText('اختر صنف العلف المصروف'),
+                        Select::make('feed_warehouse_id')
+                            ->label('مخزن العلف')
+                            ->relationship('warehouse', 'name')
+                            ->required()
+                            ->helperText('حدد المخزن الذي تم صرف العلف منه'),
+                        DatePicker::make('date')
+                            ->label('التاريخ')
+                            ->required()
+                            ->helperText('تاريخ عملية الصرف'),
+                        TextInput::make('quantity')
+                            ->label('الكمية (كجم)')
+                            ->required()
+                            ->numeric()
+                            ->helperText('أدخل كمية العلف المصروف بالكيلو جرام'),
+                        Select::make('batch_id')
+                            ->label('دفعة الزريعة')
+                            ->relationship('batch', 'batch_code')
+                            ->helperText('حدد دفعة الزريعة إذا كانت موجودة'),
+                    ])
+                    ->columns(2),
+
+                Section::make('إضافات وملاحظات')
+                    ->description('معلومات المستخدم والملاحظات الإضافية')
+                    ->schema([
+                        Select::make('recorded_by')
+                            ->label('سجل بواسطة')
+                            ->relationship('recordedBy', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->default(fn () => auth()->id())
+                            ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
+                        Textarea::make('notes')
+                            ->label('ملاحظات')
+                            ->columnSpanFull()
+                            ->maxLength(1000)
+                            ->helperText('أضف أية ملاحظات إضافية متعلقة بالصرف'),
+                    ])
+                    ->columns(1),
             ]);
     }
 }

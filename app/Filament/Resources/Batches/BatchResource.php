@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Batches;
 use App\Filament\Resources\Batches\Pages\CreateBatch;
 use App\Filament\Resources\Batches\Pages\EditBatch;
 use App\Filament\Resources\Batches\Pages\ListBatches;
+use App\Filament\Resources\Batches\RelationManagers\MovementsRelationManager;
 use App\Filament\Resources\Batches\Schemas\BatchForm;
 use App\Filament\Resources\Batches\Tables\BatchesTable;
 use App\Models\Batch;
@@ -20,7 +21,7 @@ class BatchResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    //sort
+    // sort
     protected static ?int $navigationSort = 1;
 
     public static function getNavigationGroup(): ?string
@@ -56,7 +57,7 @@ class BatchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            MovementsRelationManager::class,
         ];
     }
 

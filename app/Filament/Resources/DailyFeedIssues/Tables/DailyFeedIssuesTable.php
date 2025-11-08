@@ -17,9 +17,11 @@ class DailyFeedIssuesTable
                 TextColumn::make('farm.name')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('unit.id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('unit.code')
+                    ->label('الوحدة')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('feedItem.name')
                     ->numeric()
                     ->sortable(),

@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             // Operations
             PettyCashSeeder::class,
             BatchSeeder::class,
+            BatchMovementSeeder::class,
             FeedStockSeeder::class,
 
             // Transactions

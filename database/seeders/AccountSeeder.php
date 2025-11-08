@@ -47,6 +47,13 @@ class AccountSeeder extends Seeder
         ]);
 
         Account::create([
+            'code' => '1200',
+            'name' => 'مخزون الزريعة',
+            'type' => AccountType::Asset,
+            'parent_id' => $assets->id,
+        ]);
+
+        Account::create([
             'code' => '1140',
             'name' => 'الذمم المدينة - التجار',
             'type' => AccountType::Asset,

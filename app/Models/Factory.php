@@ -47,15 +47,28 @@ class Factory extends Model
         return $this->hasMany(ClearingEntry::class);
     }
 
+    public function batches(): HasMany
+    {
+        return $this->hasMany(Batch::class);
+    }
+
     /**
      * Calculate outstanding payable balance for this factory.
-     * Total feed purchases minus payments and settlements.
+     * Total feed purchases + seed purchases minus payments and settlements.
      */
     public function getOutstandingBalanceAttribute(): float
     {
-        $totalPurchases = $this->feedMovements()
+        // Feed purchases
+        $totalFeedPurchases = $this->feedMovements()
             ->where('movement_type', 'in')
             ->sum('total_cost');
+
+        // Seed purchases (batches)
+        $totalSeedPurchases = $this->batches()
+            ->whereNotNull('total_cost')
+            ->sum('total_cost');
+
+        $totalPurchases = $totalFeedPurchases + $totalSeedPurchases;
 
         $totalPaid = $this->vouchers()
             ->where('voucher_type', 'payment')

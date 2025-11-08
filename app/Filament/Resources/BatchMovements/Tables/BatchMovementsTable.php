@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\BatchMovements\Tables;
 
+use App\Enums\MovementType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class BatchMovementsTable
@@ -41,12 +43,12 @@ class BatchMovementsTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('fromUnit.unit_code')
+                TextColumn::make('fromUnit.code')
                     ->label('من الوحدة')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('toUnit.unit_code')
+                TextColumn::make('toUnit.code')
                     ->label('إلى الوحدة')
                     ->searchable()
                     ->sortable()
@@ -86,8 +88,27 @@ class BatchMovementsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('movement_type')
+                    ->label('نوع الحركة')
+                    ->options(MovementType::class)
+                    ->native(false),
+                SelectFilter::make('batch_id')
+                    ->label('الدفعة')
+                    ->relationship('batch', 'batch_code')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('from_farm_id')
+                    ->label('من المزرعة')
+                    ->relationship('fromFarm', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('to_farm_id')
+                    ->label('إلى المزرعة')
+                    ->relationship('toFarm', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
+            ->defaultSort('date', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

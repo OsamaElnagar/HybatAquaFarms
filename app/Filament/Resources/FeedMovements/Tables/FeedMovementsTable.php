@@ -47,7 +47,7 @@ class FeedMovementsTable
                 TextColumn::make('quantity')
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 3)
-                    ->suffix(' '.fn ($record) => $record->feedItem?->unit_of_measure ?? '')
+                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
                     ->sortable(),
                 TextColumn::make('unit_cost')
                     ->label('تكلفة الوحدة')

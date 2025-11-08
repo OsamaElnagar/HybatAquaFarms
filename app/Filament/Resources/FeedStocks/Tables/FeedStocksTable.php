@@ -25,7 +25,7 @@ class FeedStocksTable
                 TextColumn::make('quantity_in_stock')
                     ->label('الكمية في المخزون')
                     ->numeric(decimalPlaces: 3)
-                    ->suffix(' '.fn ($record) => $record->feedItem?->unit_of_measure ?? '')
+                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
                     ->sortable(),
                 TextColumn::make('average_cost')
                     ->label('متوسط التكلفة')

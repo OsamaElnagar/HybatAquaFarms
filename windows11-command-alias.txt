@@ -2,6 +2,88 @@ function metro { dart run nylo_framework:main @args }
 function nrd { npm run dev }
 function nrb { npm run build }
 
+# 🎯 Flutter / Dart Aliases
+
+# 🔹 Flutter Run & Build
+function flr { flutter run }
+function flrd { flutter run --debug }
+function flrr { flutter run --release }
+function flrp { flutter run --profile }
+function flrdd { flutter run -d $args }  # run on specific device
+function flb { flutter build $args }
+function flba { flutter build apk }
+function flbai { flutter build apk --split-per-abi }
+function flbap { flutter build appbundle }
+function flbi { flutter build ios }
+function flbw { flutter build web }
+function flbm { flutter build macos }
+function flbl { flutter build linux }
+function flbwin { flutter build windows }
+
+# 🔹 Flutter Development
+function fld { flutter doctor }
+function fldv { flutter doctor -v }
+function flc { flutter clean }
+function flpg { flutter pub get }
+function flpu { flutter pub upgrade }
+function flpo { flutter pub outdated }
+function flpa { flutter pub add $args }
+function flpr { flutter pub remove $args }
+function flp { flutter pub $args }
+
+# 🔹 Flutter Testing
+function flt { flutter test }
+function fltw { flutter test --watch }
+function fltc { flutter test --coverage }
+function fltg { flutter test --golden }
+
+# 🔹 Flutter Create & Generate
+function flcr { flutter create $args }
+function flg { flutter generate }
+function flgc { flutter gen-l10n }
+
+# 🔹 Flutter Device Management
+function fldev { flutter devices }
+function fldevl { flutter devices -v }
+function flattach { flutter attach }
+function fldetach { flutter detach }
+
+# 🔹 Flutter Channel & Upgrade
+function flch { flutter channel }
+function flchc { flutter channel $args }  # change channel
+function flu { flutter upgrade }
+function flup { flutter upgrade --force }
+
+# 🔹 Flutter Analyze & Format
+function fla { flutter analyze }
+function flf { flutter format . }
+function flfd { flutter format --dry-run . }
+function flfs { flutter format --set-exit-if-changed . }
+
+# 🔹 Flutter Emulators
+function flemu { flutter emulators }
+function flemula { flutter emulators --launch $args }
+function flemuc { flutter emulators --create $args }
+
+# 🔹 Flutter Install & Uninstall
+function fli { flutter install $args }
+function flun { flutter uninstall $args }
+
+# 🔹 Dart Commands
+function dartr { dart run $args }
+function dartp { dart pub get }
+function dartpu { dart pub upgrade }
+function dartpo { dart pub outdated }
+function darta { dart pub add $args }
+function dartrm { dart pub remove $args }
+function dartf { dart format . }
+function dartfd { dart format --dry-run . }
+function dartan { dart analyze }
+function dartc { dart compile $args }
+function dartce { dart compile exe $args }
+function dartcj { dart compile js $args }
+function dartck { dart compile kernel $args }
+
 # ⚙️ Laravel + Livewire Artisan Aliases
 
 # 🔹 General Artisan Helper

@@ -23,6 +23,8 @@ class PostingRuleSeeder extends Seeder
             ['event_key' => 'feed.purchase', 'debit' => '1130', 'credit' => '2110', 'description' => 'شراء أعلاف من مصنع'],
             ['event_key' => 'feed.issue', 'debit' => '5100', 'credit' => '1130', 'description' => 'صرف أعلاف للأحواض'],
 
+            ['event_key' => 'seed.purchase', 'debit' => '1200', 'credit' => '2110', 'description' => 'شراء زريعة من مفرخة'],
+
             ['event_key' => 'employee.advance', 'debit' => '1150', 'credit' => '1120', 'description' => 'سُلفة موظف من العهدة'],
             ['event_key' => 'employee.advance.repayment', 'debit' => '5210', 'credit' => '1150', 'description' => 'خصم سُلفة من المرتب'],
 
