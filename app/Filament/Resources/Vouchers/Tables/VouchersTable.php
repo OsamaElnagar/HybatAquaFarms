@@ -21,7 +21,7 @@ class VouchersTable
                 TextColumn::make('voucher_type')
                     ->label('نوع السند')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\VoucherType ? $state->label() : $state)
+                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\VoucherType ? $state->getLabel() : $state)
                     ->color(fn ($state) => match ($state instanceof \App\Enums\VoucherType ? $state->value : $state) {
                         'receipt' => 'success',
                         'payment' => 'danger',

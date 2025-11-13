@@ -18,7 +18,7 @@ class FarmResource extends Resource
 {
     protected static ?string $model = Farm::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHomeModern;
 
     public static function getNavigationGroup(): ?string
     {
@@ -53,7 +53,9 @@ class FarmResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\UnitsRelationManager::class,
+            RelationManagers\BatchesRelationManager::class,
+            RelationManagers\DailyFeedIssuesRelationManager::class,
         ];
     }
 
@@ -62,6 +64,7 @@ class FarmResource extends Resource
         return [
             'index' => ListFarms::route('/'),
             'create' => CreateFarm::route('/create'),
+            'view' => Pages\ViewFarm::route('/{record}'),
             'edit' => EditFarm::route('/{record}/edit'),
         ];
     }

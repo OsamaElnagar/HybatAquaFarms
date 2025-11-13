@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\FarmUnits\Tables;
 
+use App\Enums\FarmStatus;
+use App\Enums\UnitType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class FarmUnitsTable
@@ -16,37 +20,64 @@ class FarmUnitsTable
             ->columns([
                 TextColumn::make('farm.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('اسم المزرعة'),
                 TextColumn::make('code')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('الكود'),
                 TextColumn::make('unit_type')
-                    ->searchable(),
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state instanceof UnitType ? $state->getLabel() : $state)
+                    ->color(fn ($state) => $state instanceof UnitType ? $state->getColor() : 'gray')
+                    ->searchable()
+                    ->label('نوع الوحدة'),
                 TextColumn::make('capacity')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('السعة'),
                 TextColumn::make('status')
-                    ->searchable(),
-                TextColumn::make('currentStock.id')
-                    ->numeric()
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state instanceof FarmStatus ? $state->getLabel() : $state)
+                    ->color(fn ($state) => $state instanceof FarmStatus ? $state->getColor() : 'gray')
+                    ->searchable()
+                    ->label('حالة الوحدة'),
+                TextColumn::make('batches_count')
+                    ->counts('batches')
+                    ->label('عدد دفعات الزريعة')
+                    ->badge()
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'warning')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('تاريخ الإنشاء'),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('تاريخ التحديث'),
             ])
             ->filters([
-                //
+                SelectFilter::make('farm_id')
+                    ->label('المزرعة')
+                    ->relationship('farm', 'name'),
+                SelectFilter::make('unit_type')
+                    ->label('نوع الوحدة')
+                    ->options(UnitType::class)
+                    ->native(false),
+                SelectFilter::make('status')
+                    ->label('الحالة')
+                    ->options(FarmStatus::class)
+                    ->native(false),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف المحدد'),
                 ]),
             ]);
     }

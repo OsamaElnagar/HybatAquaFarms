@@ -18,9 +18,6 @@ class Farm extends Model
         'name',
         'size',
         'location',
-        'latitude',
-        'longitude',
-        'capacity',
         'status',
         'established_date',
         'manager_id',
@@ -33,8 +30,6 @@ class Farm extends Model
             'status' => FarmStatus::class,
             'established_date' => 'date',
             'size' => 'decimal:2',
-            'latitude' => 'decimal:8',
-            'longitude' => 'decimal:8',
         ];
     }
 
@@ -76,5 +71,44 @@ class Farm extends Model
     public function feedWarehouses(): HasMany
     {
         return $this->hasMany(FeedWarehouse::class);
+    }
+
+    public function dailyFeedIssues(): HasMany
+    {
+        return $this->hasMany(DailyFeedIssue::class);
+    }
+
+    /**
+     * Get total feed consumed by this farm in a date range.
+     */
+    public function getTotalFeedConsumed(?string $startDate = null, ?string $endDate = null): float
+    {
+        $query = $this->dailyFeedIssues();
+
+        if ($startDate) {
+            $query->where('date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('date', '<=', $endDate);
+        }
+
+        return (float) $query->sum('quantity');
+    }
+
+    /**
+     * Get active batches count.
+     */
+    public function getActiveBatchesCountAttribute(): int
+    {
+        return $this->batches()->where('status', 'active')->count();
+    }
+
+    /**
+     * Get total current stock quantity.
+     */
+    public function getTotalCurrentStockAttribute(): int
+    {
+        return (int) $this->batches()->where('status', 'active')->sum('current_quantity');
     }
 }

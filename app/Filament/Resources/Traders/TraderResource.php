@@ -18,7 +18,7 @@ class TraderResource extends Resource
 {
     protected static ?string $model = Trader::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserCircle;
 
     public static function getNavigationGroup(): ?string
     {
@@ -53,7 +53,8 @@ class TraderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\SalesOrdersRelationManager::class,
+            RelationManagers\ClearingEntriesRelationManager::class,
         ];
     }
 
@@ -62,6 +63,7 @@ class TraderResource extends Resource
         return [
             'index' => ListTraders::route('/'),
             'create' => CreateTrader::route('/create'),
+            'view' => Pages\ViewTrader::route('/{record}'),
             'edit' => EditTrader::route('/{record}/edit'),
         ];
     }

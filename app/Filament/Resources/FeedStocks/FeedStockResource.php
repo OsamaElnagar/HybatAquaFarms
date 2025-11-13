@@ -18,7 +18,7 @@ class FeedStockResource extends Resource
 {
     protected static ?string $model = FeedStock::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArchiveBox;
 
     public static function getNavigationGroup(): ?string
     {
@@ -62,6 +62,7 @@ class FeedStockResource extends Resource
         return [
             'index' => ListFeedStocks::route('/'),
             'create' => CreateFeedStock::route('/create'),
+            'view' => Pages\ViewFeedStock::route('/{record}'),
             'edit' => EditFeedStock::route('/{record}/edit'),
         ];
     }

@@ -1,12 +1,9 @@
 {
     "agents": [
-        "codex",
-        "cursor",
-        "phpstorm"
+        "cursor"
     ],
     "editors": [
-        "cursor",
-        "phpstorm"
+        "cursor"
     ],
     "guidelines": []
 }

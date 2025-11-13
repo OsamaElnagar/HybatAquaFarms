@@ -6,7 +6,6 @@ use App\Enums\FeedMovementType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class FeedMovement extends Model
 {
@@ -20,11 +19,7 @@ class FeedMovement extends Model
         'to_warehouse_id',
         'date',
         'quantity',
-        'unit_cost',
-        'total_cost',
         'factory_id',
-        'source_type',
-        'source_id',
         'description',
         'recorded_by',
     ];
@@ -34,8 +29,6 @@ class FeedMovement extends Model
         return [
             'date' => 'date',
             'quantity' => 'decimal:3',
-            'unit_cost' => 'decimal:2',
-            'total_cost' => 'decimal:2',
             'movement_type' => FeedMovementType::class,
         ];
     }
@@ -58,11 +51,6 @@ class FeedMovement extends Model
     public function factory(): BelongsTo
     {
         return $this->belongsTo(Factory::class);
-    }
-
-    public function source(): MorphTo
-    {
-        return $this->morphTo();
     }
 
     public function recordedBy(): BelongsTo

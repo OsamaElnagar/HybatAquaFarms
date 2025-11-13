@@ -421,8 +421,6 @@ farms
 - name (unique)
 - size (number of units)
 - location
-- latitude/longitude
-- capacity
 - status (active/inactive/maintenance)
 - established_date
 - manager_id (FK to employees)

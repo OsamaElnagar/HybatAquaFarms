@@ -18,7 +18,7 @@ class PettyCashTransactionResource extends Resource
 {
     protected static ?string $model = PettyCashTransaction::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
     public static function getNavigationGroup(): ?string
     {

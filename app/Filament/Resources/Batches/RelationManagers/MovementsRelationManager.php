@@ -121,14 +121,15 @@ class MovementsRelationManager extends RelationManager
                 TextColumn::make('movement_type')
                     ->label('نوع الحركة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof MovementType ? $state->label() : $state)
-                    ->color(fn ($state) => match ($state instanceof MovementType ? $state->value : $state) {
-                        'entry' => 'success',
-                        'transfer' => 'info',
-                        'harvest' => 'warning',
-                        'mortality' => 'danger',
-                        default => 'gray',
-                    })
+                    ->formatStateUsing(fn ($state) => $state instanceof MovementType ? $state->getLabel() : $state)
+
+                    // ->color(fn($state) => match ($state instanceof MovementType ? $state->value : $state) {
+                    //     'entry' => 'success',
+                    //     'transfer' => 'info',
+                    //     'harvest' => 'warning',
+                    //     'mortality' => 'danger',
+                    //     default => 'gray',
+                    // })
                     ->sortable(),
                 TextColumn::make('fromFarm.name')
                     ->label('من المزرعة')

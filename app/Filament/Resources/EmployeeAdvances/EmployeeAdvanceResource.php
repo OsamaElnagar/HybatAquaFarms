@@ -18,7 +18,7 @@ class EmployeeAdvanceResource extends Resource
 {
     protected static ?string $model = EmployeeAdvance::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
     protected static ?int $navigationSort = 3;
 

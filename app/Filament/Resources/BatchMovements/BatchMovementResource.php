@@ -18,7 +18,7 @@ class BatchMovementResource extends Resource
 {
     protected static ?string $model = BatchMovement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowPath;
 
     // sort
     protected static ?int $navigationSort = 2;
@@ -65,6 +65,7 @@ class BatchMovementResource extends Resource
         return [
             'index' => ListBatchMovements::route('/'),
             'create' => CreateBatchMovement::route('/create'),
+            'view' => Pages\ViewBatchMovement::route('/{record}'),
             'edit' => EditBatchMovement::route('/{record}/edit'),
         ];
     }

@@ -29,6 +29,9 @@ class PostingRuleSeeder extends Seeder
             ['event_key' => 'employee.advance.repayment', 'debit' => '5210', 'credit' => '1150', 'description' => 'خصم سُلفة من المرتب'],
 
             ['event_key' => 'settlement.trader_to_factory', 'debit' => '2110', 'credit' => '1140', 'description' => 'تسوية تاجر↔مصنع'],
+
+            ['event_key' => 'factory.payment', 'debit' => '2110', 'credit' => '1110', 'description' => 'دفعة لمصنع أعلاف'],
+            ['event_key' => 'batch.payment', 'debit' => '2110', 'credit' => '1110', 'description' => 'دفعة لزريعة'],
         ];
 
         foreach ($rules as $rule) {

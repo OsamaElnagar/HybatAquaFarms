@@ -24,15 +24,14 @@ class FeedMovementObserver
     public function updated(FeedMovement $movement): void
     {
         // If quantity, warehouse, or movement type changed, recalculate stocks
-        if ($movement->wasChanged(['quantity', 'from_warehouse_id', 'to_warehouse_id', 'movement_type', 'unit_cost', 'total_cost'])) {
+        if ($movement->wasChanged(['quantity', 'from_warehouse_id', 'to_warehouse_id', 'movement_type'])) {
             DB::transaction(function () use ($movement) {
                 // Revert old movement (stocks only, no accounting)
                 $this->revertStockUpdateOnly($movement);
                 // Apply new movement (stocks only, no accounting)
                 $this->updateStocksOnly($movement);
-                // Re-post accounting entry if cost or type changed
-                // Note: This might create duplicate entries - consider deleting old journal entries first
-                if ($movement->wasChanged(['total_cost', 'movement_type']) && $movement->total_cost > 0) {
+                // Re-post accounting entry if movement type changed
+                if ($movement->wasChanged(['movement_type'])) {
                     $this->postAccountingEntry($movement);
                 }
             });
@@ -79,8 +78,11 @@ class FeedMovementObserver
         );
 
         $quantity = (float) $movement->quantity;
-        $unitCost = (float) ($movement->unit_cost ?? 0);
-        $totalCost = (float) ($movement->total_cost ?? ($quantity * $unitCost));
+
+        // Use standard_cost from FeedItem for incoming movements
+        $feedItem = $movement->feedItem;
+        $unitCost = (float) ($feedItem?->standard_cost ?? 0);
+        $totalCost = $quantity * $unitCost;
 
         // Calculate weighted average cost
         $currentQuantity = (float) $stock->quantity_in_stock;
@@ -95,11 +97,6 @@ class FeedMovementObserver
             'average_cost' => $averageCost,
             'total_value' => $newValue,
         ]);
-
-        // Update movement total_cost if not set
-        if (! $movement->total_cost && $unitCost > 0) {
-            $movement->update(['total_cost' => $totalCost]);
-        }
     }
 
     protected function handleOutMovement(FeedMovement $movement): void
@@ -118,8 +115,6 @@ class FeedMovementObserver
 
         $quantity = (float) $movement->quantity;
         $averageCost = (float) $stock->average_cost;
-        $unitCost = (float) ($movement->unit_cost ?? $averageCost);
-        $totalCost = (float) ($movement->total_cost ?? ($quantity * $unitCost));
 
         $currentQuantity = (float) $stock->quantity_in_stock;
         $currentValue = (float) $stock->total_value;
@@ -131,14 +126,6 @@ class FeedMovementObserver
             'total_value' => max(0, $newValue),
             // Average cost remains the same for out movements
         ]);
-
-        // Update movement costs if not set
-        if (! $movement->unit_cost) {
-            $movement->update(['unit_cost' => $averageCost]);
-        }
-        if (! $movement->total_cost) {
-            $movement->update(['total_cost' => $totalCost]);
-        }
     }
 
     protected function handleTransferMovement(FeedMovement $movement): void
@@ -193,14 +180,6 @@ class FeedMovementObserver
             'average_cost' => $newAverageCost,
             'total_value' => $newToValue,
         ]);
-
-        // Update movement costs if not set
-        if (! $movement->unit_cost) {
-            $movement->update(['unit_cost' => $averageCost]);
-        }
-        if (! $movement->total_cost) {
-            $movement->update(['total_cost' => $transferValue]);
-        }
     }
 
     protected function revertStockUpdate(FeedMovement $movement): void
@@ -237,8 +216,6 @@ class FeedMovementObserver
         $reversalMovement->from_warehouse_id = $originalToWarehouse;
         $reversalMovement->to_warehouse_id = $originalFromWarehouse;
         $reversalMovement->quantity = $originalQuantity;
-        $reversalMovement->unit_cost = $movement->getOriginal('unit_cost') ?? $movement->unit_cost;
-        $reversalMovement->total_cost = $movement->getOriginal('total_cost') ?? $movement->total_cost;
 
         // Reverse the movement (stocks only, no accounting)
         $this->updateStocksOnly($reversalMovement);
@@ -249,24 +226,44 @@ class FeedMovementObserver
         $warehouse = $movement->toWarehouse ?? $movement->fromWarehouse;
         $farmId = $warehouse instanceof FeedWarehouse ? $warehouse->farm_id : null;
 
-        if ($movement->movement_type === FeedMovementType::In && $movement->total_cost > 0) {
-            $this->posting->post('feed.purchase', [
-                'amount' => (float) $movement->total_cost,
-                'farm_id' => $farmId,
-                'date' => $movement->date?->toDateString(),
-                'source_type' => $movement->getMorphClass(),
-                'source_id' => $movement->id,
-                'description' => $movement->description,
-            ]);
-        } elseif ($movement->movement_type === FeedMovementType::Out && $movement->total_cost > 0) {
-            $this->posting->post('feed.issue', [
-                'amount' => (float) $movement->total_cost,
-                'farm_id' => $farmId,
-                'date' => $movement->date?->toDateString(),
-                'source_type' => $movement->getMorphClass(),
-                'source_id' => $movement->id,
-                'description' => $movement->description,
-            ]);
+        // Calculate cost from stock or feed item
+        $quantity = (float) $movement->quantity;
+        $totalCost = 0;
+
+        if ($movement->movement_type === FeedMovementType::In) {
+            // For incoming movements, use standard_cost from FeedItem
+            $feedItem = $movement->feedItem;
+            $unitCost = (float) ($feedItem?->standard_cost ?? 0);
+            $totalCost = $quantity * $unitCost;
+        } elseif ($movement->movement_type === FeedMovementType::Out) {
+            // For outgoing movements, use average_cost from stock
+            $stock = FeedStock::where('feed_warehouse_id', $movement->from_warehouse_id)
+                ->where('feed_item_id', $movement->feed_item_id)
+                ->first();
+            $averageCost = $stock ? (float) $stock->average_cost : 0;
+            $totalCost = $quantity * $averageCost;
+        }
+
+        if ($totalCost > 0) {
+            if ($movement->movement_type === FeedMovementType::In) {
+                $this->posting->post('feed.purchase', [
+                    'amount' => $totalCost,
+                    'farm_id' => $farmId,
+                    'date' => $movement->date?->toDateString(),
+                    'source_type' => $movement->getMorphClass(),
+                    'source_id' => $movement->id,
+                    'description' => $movement->description,
+                ]);
+            } elseif ($movement->movement_type === FeedMovementType::Out) {
+                $this->posting->post('feed.issue', [
+                    'amount' => $totalCost,
+                    'farm_id' => $farmId,
+                    'date' => $movement->date?->toDateString(),
+                    'source_type' => $movement->getMorphClass(),
+                    'source_id' => $movement->id,
+                    'description' => $movement->description,
+                ]);
+            }
         }
     }
 }

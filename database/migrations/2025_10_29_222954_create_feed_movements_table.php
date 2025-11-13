@@ -19,10 +19,7 @@ return new class extends Migration
             $table->foreignId('to_warehouse_id')->nullable()->constrained('feed_warehouses')->nullOnDelete();
             $table->date('date');
             $table->decimal('quantity', 12, 3);
-            $table->decimal('unit_cost', 10, 2)->nullable();
-            $table->decimal('total_cost', 14, 2)->nullable();
             $table->foreignId('factory_id')->nullable()->constrained()->nullOnDelete();
-            $table->morphs('source'); // voucher, sales_order, etc
             $table->text('description')->nullable();
             $table->foreignId('recorded_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

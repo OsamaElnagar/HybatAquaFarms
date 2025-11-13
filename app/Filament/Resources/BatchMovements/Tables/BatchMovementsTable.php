@@ -6,6 +6,7 @@ use App\Enums\MovementType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -23,14 +24,14 @@ class BatchMovementsTable
                 TextColumn::make('movement_type')
                     ->label('نوع الحركة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\MovementType ? $state->label() : $state)
-                    ->color(fn ($state) => match ($state instanceof \App\Enums\MovementType ? $state->value : $state) {
-                        'entry' => 'success',
-                        'transfer' => 'info',
-                        'harvest' => 'warning',
-                        'mortality' => 'danger',
-                        default => 'gray',
-                    })
+                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\MovementType ? $state->getLabel() : $state)
+                    // ->color(fn($state) => match ($state instanceof \App\Enums\MovementType ? $state->value : $state) {
+                    //     'entry' => 'success',
+                    //     'transfer' => 'info',
+                    //     'harvest' => 'warning',
+                    //     'mortality' => 'danger',
+                    //     default => 'gray',
+                    // })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('fromFarm.name')
@@ -110,7 +111,8 @@ class BatchMovementsTable
             ])
             ->defaultSort('date', 'desc')
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

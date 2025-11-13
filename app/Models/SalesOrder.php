@@ -68,4 +68,25 @@ class SalesOrder extends Model
     {
         return $this->morphMany(JournalEntry::class, 'source');
     }
+
+    public function harvests(): HasMany
+    {
+        return $this->hasMany(Harvest::class);
+    }
+
+    /**
+     * Get total items count.
+     */
+    public function getTotalItemsAttribute(): int
+    {
+        return $this->items()->count();
+    }
+
+    /**
+     * Get total quantity sold.
+     */
+    public function getTotalQuantityAttribute(): int
+    {
+        return (int) $this->items()->sum('quantity');
+    }
 }

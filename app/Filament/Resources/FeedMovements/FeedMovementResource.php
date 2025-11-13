@@ -18,7 +18,7 @@ class FeedMovementResource extends Resource
 {
     protected static ?string $model = FeedMovement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowPath;
 
     public static function getNavigationGroup(): ?string
     {
@@ -62,6 +62,7 @@ class FeedMovementResource extends Resource
         return [
             'index' => ListFeedMovements::route('/'),
             'create' => CreateFeedMovement::route('/create'),
+            'view' => Pages\ViewFeedMovement::route('/{record}'),
             'edit' => EditFeedMovement::route('/{record}/edit'),
         ];
     }

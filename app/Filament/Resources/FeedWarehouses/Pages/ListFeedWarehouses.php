@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FeedWarehouses\Pages;
 
 use App\Filament\Resources\FeedWarehouses\FeedWarehouseResource;
+use App\Filament\Resources\FeedWarehouses\Widgets\FeedWarehousesStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListFeedWarehouses extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FeedWarehousesStatsWidget::class,
         ];
     }
 }

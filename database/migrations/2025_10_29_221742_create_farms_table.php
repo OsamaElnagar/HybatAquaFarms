@@ -17,9 +17,6 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->decimal('size', 10, 2)->nullable()->comment('Size in feddans/acres');
             $table->string('location')->nullable();
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
-            $table->integer('capacity')->nullable();
             $table->string('status')->default('active'); // active, inactive, maintenance
             $table->date('established_date')->nullable();
             $table->foreignId('manager_id')->nullable()->constrained('employees')->nullOnDelete();

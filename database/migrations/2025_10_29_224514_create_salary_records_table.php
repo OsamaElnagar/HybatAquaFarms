@@ -28,6 +28,9 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
+            // Prevent duplicate records for the same employee and exact period
+            $table->unique(['employee_id', 'pay_period_start', 'pay_period_end'], 'salary_records_employee_period_unique');
+
             $table->index(['employee_id', 'pay_period_start']);
             $table->index('status');
         });

@@ -19,7 +19,7 @@ class PettyCashResource extends Resource
 {
     protected static ?string $model = PettyCash::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWallet;
 
     public static function getNavigationGroup(): ?string
     {
@@ -63,6 +63,7 @@ class PettyCashResource extends Resource
         return [
             'index' => ListPettyCashes::route('/'),
             'create' => CreatePettyCash::route('/create'),
+            'view' => Pages\ViewPettyCash::route('/{record}'),
             'edit' => EditPettyCash::route('/{record}/edit'),
         ];
     }

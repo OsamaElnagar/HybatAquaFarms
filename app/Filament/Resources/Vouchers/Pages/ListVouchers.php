@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Vouchers\Pages;
 
 use App\Filament\Resources\Vouchers\VoucherResource;
+use App\Filament\Resources\Vouchers\Widgets\VouchersStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListVouchers extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            VouchersStatsWidget::class,
         ];
     }
 }

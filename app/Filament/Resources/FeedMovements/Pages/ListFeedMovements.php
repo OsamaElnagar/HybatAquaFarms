@@ -4,6 +4,7 @@ namespace App\Filament\Resources\FeedMovements\Pages;
 
 use App\Enums\FeedMovementType;
 use App\Filament\Resources\FeedMovements\FeedMovementResource;
+use App\Filament\Resources\FeedMovements\Widgets\FeedMovementsStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -20,6 +21,13 @@ class ListFeedMovements extends ListRecords
         ];
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FeedMovementsStatsWidget::class,
+        ];
+    }
+
     // tabs
     public function getTabs(): array
     {
@@ -28,7 +36,7 @@ class ListFeedMovements extends ListRecords
         ];
 
         foreach (FeedMovementType::cases() as $movementType) {
-            $tabs[$movementType->value] = Tab::make($movementType->label())->modifyQueryUsing(function (Builder $query) use ($movementType) {
+            $tabs[$movementType->value] = Tab::make($movementType->getLabel())->modifyQueryUsing(function (Builder $query) use ($movementType) {
                 return $query->where('movement_type', $movementType->value);
             });
         }

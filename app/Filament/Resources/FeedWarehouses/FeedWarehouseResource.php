@@ -18,7 +18,7 @@ class FeedWarehouseResource extends Resource
 {
     protected static ?string $model = FeedWarehouse::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
     public static function getNavigationGroup(): ?string
     {
@@ -53,7 +53,7 @@ class FeedWarehouseResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\StocksRelationManager::class,
         ];
     }
 
@@ -62,6 +62,7 @@ class FeedWarehouseResource extends Resource
         return [
             'index' => ListFeedWarehouses::route('/'),
             'create' => CreateFeedWarehouse::route('/create'),
+            'view' => Pages\ViewFeedWarehouse::route('/{record}'),
             'edit' => EditFeedWarehouse::route('/{record}/edit'),
         ];
     }

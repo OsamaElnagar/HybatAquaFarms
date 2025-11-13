@@ -7,7 +7,9 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class SalesOrderForm
 {
@@ -15,56 +17,144 @@ class SalesOrderForm
     {
         return $schema
             ->components([
-                TextInput::make('order_number')
-                    ->label('رقم الأمر')
-                    ->required(),
-                Select::make('farm_id')
-                    ->label('المزرعة')
-                    ->relationship('farm', 'name')
-                    ->required(),
-                Select::make('trader_id')
-                    ->label('التاجر')
-                    ->relationship('trader', 'name')
-                    ->required(),
-                DatePicker::make('date')
-                    ->label('التاريخ')
-                    ->required(),
-                TextInput::make('subtotal')
-                    ->label('المجموع الفرعي')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('tax_amount')
-                    ->label('الضرائب')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-                TextInput::make('discount_amount')
-                    ->label('الخصم')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-                TextInput::make('total_amount')
-                    ->label('المجموع الكلي')
-                    ->required()
-                    ->numeric(),
-                Select::make('payment_status')
-                    ->label('حالة الدفع')
-                    ->options(PaymentStatus::class)
-                    ->default('pending')
-                    ->required(),
-                TextInput::make('delivery_status')
-                    ->label('حالة التسليم'),
-                DatePicker::make('delivery_date')
-                    ->label('تاريخ التسليم'),
-                Textarea::make('delivery_address')
-                    ->label('عنوان التسليم')
+                Section::make('معلومات العملية')
+                    ->schema([
+                        TextInput::make('order_number')
+                            ->label('رقم العملية')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255)
+                            ->helperText('رقم فريد لعملية البيع')
+                            ->columnSpan(1),
+                        DatePicker::make('date')
+                            ->label('التاريخ')
+                            ->required()
+                            ->default(now())
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
+                            ->helperText('تاريخ إصدار عملية البيع')
+                            ->columnSpan(1),
+                        Select::make('farm_id')
+                            ->label('المزرعة')
+                            ->relationship('farm', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('المزرعة المصدر للمنتجات')
+                            ->columnSpan(1),
+                        Select::make('trader_id')
+                            ->label('التاجر (العميل)')
+                            ->relationship('trader', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('التاجر المشتري')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2)
                     ->columnSpanFull(),
-                TextInput::make('created_by')
-                    ->label('أنشأ بواسطة')
-                    ->numeric(),
-                Textarea::make('notes')
-                    ->label('ملاحظات')
-                    ->columnSpanFull(),
+
+                Section::make('المبالغ')
+                    ->schema([
+                        TextInput::make('subtotal')
+                            ->label('المجموع الفرعي')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->prefix('ج.م')
+                            ->helperText('المجموع قبل الضرائب والخصم')
+                            ->columnSpan(1),
+                        TextInput::make('tax_amount')
+                            ->label('الضرائب')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->default(0)
+                            ->prefix('ج.م')
+                            ->helperText('قيمة الضرائب (إن وُجدت)')
+                            ->columnSpan(1),
+                        TextInput::make('discount_amount')
+                            ->label('الخصم')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->default(0)
+                            ->prefix('ج.م')
+                            ->helperText('قيمة الخصم (إن وُجد)')
+                            ->columnSpan(1),
+                        TextInput::make('total_amount')
+                            ->label('المجموع الإجمالي')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->prefix('ج.م')
+                            ->helperText('المبلغ النهائي بعد الضرائب والخصم')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->collapsible(),
+
+                Section::make('الحالة والتوصيل')
+                    ->schema([
+                        Select::make('payment_status')
+                            ->label('حالة الدفع')
+                            ->options(PaymentStatus::class)
+                            ->default(PaymentStatus::Pending)
+                            ->required()
+                            ->native(false)
+                            ->helperText('حالة دفع عملية البيع')
+                            ->columnSpan(1),
+                        Select::make('delivery_status')
+                            ->label('حالة التوصيل')
+                            ->options([
+                                'pending' => 'معلق',
+                                'delivered' => 'تم التوصيل',
+                                'cancelled' => 'ملغي',
+                            ])
+                            ->default('pending')
+                            ->native(false)
+                            ->helperText('حالة توصيل المنتجات')
+                            ->columnSpan(1),
+                        DatePicker::make('delivery_date')
+                            ->label('تاريخ التوصيل')
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
+                            ->helperText('تاريخ توصيل المنتجات للعميل')
+                            ->columnSpan(1),
+                        Select::make('created_by')
+                            ->label('أنشأ بواسطة')
+                            ->relationship('createdBy', 'name')
+                            ->default(fn () => Auth::id())
+                            ->searchable()
+                            ->preload()
+                            ->helperText('المستخدم الذي أنشأ العملية')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->collapsible(),
+
+                Section::make('التوصيل والملاحظات')
+                    ->schema([
+                        Textarea::make('delivery_address')
+                            ->label('عنوان التوصيل')
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->helperText('عنوان توصيل المنتجات')
+                            ->columnSpan(1),
+                        Textarea::make('notes')
+                            ->label('ملاحظات')
+                            ->rows(3)
+                            ->maxLength(1000)
+                            ->helperText('أي ملاحظات إضافية على العملية')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->collapsible(),
             ]);
     }
 }

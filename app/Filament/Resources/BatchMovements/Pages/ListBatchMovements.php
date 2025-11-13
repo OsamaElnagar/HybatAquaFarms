@@ -13,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class ListBatchMovements extends ListRecords
@@ -26,7 +27,7 @@ class ListBatchMovements extends ListRecords
                 ->label('نفوق سريع')
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
-                ->form([
+                ->schema([
                     Select::make('batch_id')
                         ->label('الدفعة')
                         ->relationship('batch', 'batch_code')
@@ -75,7 +76,7 @@ class ListBatchMovements extends ListRecords
                 ->label('حصاد سريع')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->form([
+                ->schema([
                     Select::make('batch_id')
                         ->label('الدفعة')
                         ->relationship('batch', 'batch_code')
@@ -139,7 +140,7 @@ class ListBatchMovements extends ListRecords
         ];
 
         foreach (MovementType::cases() as $movementType) {
-            $tabs[$movementType->value] = Tab::make($movementType->label())->modifyQueryUsing(function (Builder $query) use ($movementType) {
+            $tabs[$movementType->value] = Tab::make($movementType->getLabel())->modifyQueryUsing(function (Builder $query) use ($movementType) {
                 return $query->where('movement_type', $movementType->value);
             });
         }

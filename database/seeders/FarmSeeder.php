@@ -25,7 +25,6 @@ class FarmSeeder extends Seeder
             Farm::create([
                 ...$farmData,
                 'status' => FarmStatus::Active,
-                'capacity' => (int) ($farmData['size'] * 1000), // تقريبي
                 'established_date' => now()->subYears(rand(2, 8)),
             ]);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\Schemas;
 
+use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
 use App\Models\FarmUnit;
 use Filament\Forms\Components\DatePicker;
@@ -109,10 +110,11 @@ class BatchForm
                                     ->helperText('المورد الذي تم شراء الزريعة منه (اختياري - فقط إذا كانت من مفرخة)')
                                     ->columnSpan(1),
 
-                                TextInput::make('source')
+                                Select::make('source')
                                     ->label('المصدر')
-                                    ->maxLength(255)
-                                    ->helperText('مصدر الزريعة: hatchery (مفرخة), transfer (نقل), purchase (شراء)')
+                                    ->options(BatchSource::class)
+                                    ->native(false)
+                                    ->helperText('مصدر الزريعة: مفرخة، نقل، أو شراء')
                                     ->columnSpan(1),
                             ]),
 

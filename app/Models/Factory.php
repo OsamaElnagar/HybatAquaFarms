@@ -52,16 +52,32 @@ class Factory extends Model
         return $this->hasMany(Batch::class);
     }
 
+    public function factoryPayments(): HasMany
+    {
+        return $this->hasMany(FactoryPayment::class);
+    }
+
+    public function batchPayments(): HasMany
+    {
+        return $this->hasMany(BatchPayment::class);
+    }
+
     /**
      * Calculate outstanding payable balance for this factory.
      * Total feed purchases + seed purchases minus payments and settlements.
      */
     public function getOutstandingBalanceAttribute(): float
     {
-        // Feed purchases
+        // Feed purchases - calculate from feed movements using standard_cost from FeedItem
         $totalFeedPurchases = $this->feedMovements()
             ->where('movement_type', 'in')
-            ->sum('total_cost');
+            ->get()
+            ->sum(function ($movement) {
+                $feedItem = $movement->feedItem;
+                $unitCost = $feedItem?->standard_cost ?? 0;
+
+                return (float) $movement->quantity * $unitCost;
+            });
 
         // Seed purchases (batches)
         $totalSeedPurchases = $this->batches()
@@ -70,12 +86,19 @@ class Factory extends Model
 
         $totalPurchases = $totalFeedPurchases + $totalSeedPurchases;
 
-        $totalPaid = $this->vouchers()
+        // Old voucher payments (keeping for backward compatibility)
+        $totalPaidVouchers = $this->vouchers()
             ->where('voucher_type', 'payment')
             ->sum('amount');
 
+        // Factory payments (for feed purchases)
+        $totalPaidFactoryPayments = $this->factoryPayments()->sum('amount');
+
+        // Batch payments (for seed purchases)
+        $totalPaidBatchPayments = $this->batchPayments()->sum('amount');
+
         $totalSettled = $this->clearingEntries()->sum('amount');
 
-        return (float) max(0, $totalPurchases - $totalPaid - $totalSettled);
+        return (float) max(0, $totalPurchases - $totalPaidVouchers - $totalPaidFactoryPayments - $totalPaidBatchPayments - $totalSettled);
     }
 }

@@ -28,12 +28,20 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->spa()
             ->id('admin')
             ->path('admin')
             ->login()
+            ->favicon(asset('favicon.ico'))
+
+            ->brandName(config('app.name'))
+            ->brandLogoHeight('50px')
+            ->brandLogo(asset('android-chrome-512x512.png'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
+            ->sidebarCollapsibleOnDesktop()
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -63,6 +71,6 @@ class AdminPanelProvider extends PanelProvider
                 FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
             ])
             ->databaseNotifications()
-            ->databaseNotificationspolling('10s');
+            ->databaseNotificationspolling('10000s');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AdvanceRepayments\Pages;
 
 use App\Filament\Resources\AdvanceRepayments\AdvanceRepaymentResource;
+use App\Filament\Resources\AdvanceRepayments\Widgets\AdvanceRepaymentsStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListAdvanceRepayments extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            AdvanceRepaymentsStatsWidget::class,
         ];
     }
 }

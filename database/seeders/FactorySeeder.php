@@ -9,14 +9,26 @@ class FactorySeeder extends Seeder
 {
     public function run(): void
     {
-        $factories = [
+        // Feed factories
+        $feedFactories = [
             ['code' => 'FAC-HUS', 'name' => 'مصنع الحسيني للأعلاف'],
             ['code' => 'FAC-DOA', 'name' => 'مصنع الدعاء للأعلاف'],
             ['code' => 'FAC-SAL', 'name' => 'مصنع سلامة للأعلاف'],
             ['code' => 'FAC-BDR', 'name' => 'مصنع البدر للأعلاف'],
         ];
 
-        foreach ($factories as $factory) {
+        // Batch suppliers (hatcheries)
+        $hatcheries = [
+            ['code' => 'HAT-ABD', 'name' => 'مفرخة عبدالله للزريعة'],
+            ['code' => 'HAT-NAD', 'name' => 'مفرخة النادي للزريعة'],
+            ['code' => 'HAT-ALI', 'name' => 'مفرخة علي للزريعة'],
+            ['code' => 'HAT-MOH', 'name' => 'مفرخة محمد للزريعة'],
+            ['code' => 'HAT-ELK', 'name' => 'مفرخة الكرمة للزريعة'],
+        ];
+
+        $allFactories = array_merge($feedFactories, $hatcheries);
+
+        foreach ($allFactories as $factory) {
             Factory::create([
                 ...$factory,
                 'phone' => '01'.rand(0, 2).rand(10000000, 99999999),

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ExpenseCategories\Pages;
 
 use App\Filament\Resources\ExpenseCategories\ExpenseCategoryResource;
+use App\Filament\Resources\ExpenseCategories\Widgets\ExpenseCategoriesStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListExpenseCategories extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            ExpenseCategoriesStatsWidget::class,
         ];
     }
 }

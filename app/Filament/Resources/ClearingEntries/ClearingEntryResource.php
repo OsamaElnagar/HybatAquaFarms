@@ -18,7 +18,7 @@ class ClearingEntryResource extends Resource
 {
     protected static ?string $model = ClearingEntry::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCheckCircle;
 
     public static function getNavigationGroup(): ?string
     {

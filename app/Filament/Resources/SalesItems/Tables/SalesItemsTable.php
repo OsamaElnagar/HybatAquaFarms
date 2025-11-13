@@ -17,14 +17,12 @@ class SalesItemsTable
                 TextColumn::make('salesOrder.id')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('batch.id')
+                TextColumn::make('batch.batch_code')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('species.name')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('description')
-                    ->searchable(),
                 TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),

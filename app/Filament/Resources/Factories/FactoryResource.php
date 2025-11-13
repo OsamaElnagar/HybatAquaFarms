@@ -18,7 +18,7 @@ class FactoryResource extends Resource
 {
     protected static ?string $model = Factory::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
 
     public static function getNavigationGroup(): ?string
     {
@@ -27,17 +27,17 @@ class FactoryResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'المصانع';
+        return 'المصانع | المفرخات';
     }
 
     public static function getModelLabel(): string
     {
-        return 'مصنع';
+        return 'مصنع أعلاف أو مفرخ';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'المصانع';
+        return 'مصانع و مفرخات';
     }
 
     public static function form(Schema $schema): Schema
@@ -53,7 +53,8 @@ class FactoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\BatchesRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
         ];
     }
 
@@ -62,6 +63,7 @@ class FactoryResource extends Resource
         return [
             'index' => ListFactories::route('/'),
             'create' => CreateFactory::route('/create'),
+            'view' => Pages\ViewFactory::route('/{record}'),
             'edit' => EditFactory::route('/{record}/edit'),
         ];
     }

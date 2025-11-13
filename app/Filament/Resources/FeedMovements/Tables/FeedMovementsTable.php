@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\FeedMovements\Tables;
 
+use App\Enums\FeedMovementType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class FeedMovementsTable
@@ -17,7 +20,7 @@ class FeedMovementsTable
                 TextColumn::make('movement_type')
                     ->label('نوع الحركة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\FeedMovementType ? $state->label() : $state)
+                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\FeedMovementType ? $state->getLabel() : $state)
                     ->color(fn ($state) => match ($state instanceof \App\Enums\FeedMovementType ? $state->value : $state) {
                         'in' => 'success',
                         'out' => 'danger',
@@ -49,18 +52,6 @@ class FeedMovementsTable
                     ->numeric(decimalPlaces: 3)
                     ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
                     ->sortable(),
-                TextColumn::make('unit_cost')
-                    ->label('تكلفة الوحدة')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('total_cost')
-                    ->label('التكلفة الإجمالية')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
-                    ->color('success')
-                    ->sortable(),
                 TextColumn::make('factory.name')
                     ->label('المصنع')
                     ->searchable()
@@ -70,6 +61,11 @@ class FeedMovementsTable
                     ->label('سجل بواسطة')
                     ->searchable()
                     ->sortable()
+                    ->toggleable(),
+                TextColumn::make('description')
+                    ->label('الوصف')
+                    ->searchable()
+                    ->wrap()
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
@@ -83,14 +79,40 @@ class FeedMovementsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('movement_type')
+                    ->label('نوع الحركة')
+                    ->options(FeedMovementType::class)
+                    ->native(false),
+                SelectFilter::make('feed_item_id')
+                    ->label('صنف العلف')
+                    ->relationship('feedItem', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('from_warehouse_id')
+                    ->label('من المستودع')
+                    ->relationship('fromWarehouse', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('to_warehouse_id')
+                    ->label('إلى المستودع')
+                    ->relationship('toWarehouse', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
+            ->defaultSort('date', 'desc')
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()
+                    ->label('تعديل')
+                    ->visible(fn ($record) => $record->movement_type !== \App\Enums\FeedMovementType::Out)
+                    ->tooltip(fn ($record) => $record->movement_type === \App\Enums\FeedMovementType::Out
+                        ? 'لا يمكن تعديل حركات الصرف - يتم إنشاؤها تلقائياً من الصرف اليومي'
+                        : null),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ClearingEntries\Pages;
 
 use App\Filament\Resources\ClearingEntries\ClearingEntryResource;
+use App\Filament\Resources\ClearingEntries\Widgets\ClearingEntriesStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListClearingEntries extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            ClearingEntriesStatsWidget::class,
         ];
     }
 }

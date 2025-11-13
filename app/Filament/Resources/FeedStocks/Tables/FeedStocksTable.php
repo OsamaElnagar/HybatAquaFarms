@@ -5,6 +5,7 @@ namespace App\Filament\Resources\FeedStocks\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -50,10 +51,20 @@ class FeedStocksTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('feed_warehouse_id')
+                    ->label('المستودع')
+                    ->relationship('warehouse', 'name')
+                    ->searchable()
+                    ->preload(),
+                \Filament\Tables\Filters\SelectFilter::make('feed_item_id')
+                    ->label('صنف العلف')
+                    ->relationship('feedItem', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

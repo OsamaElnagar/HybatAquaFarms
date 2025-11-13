@@ -18,7 +18,7 @@ class DailyFeedIssueResource extends Resource
 {
     protected static ?string $model = DailyFeedIssue::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     public static function getNavigationGroup(): ?string
     {
@@ -62,6 +62,7 @@ class DailyFeedIssueResource extends Resource
         return [
             'index' => ListDailyFeedIssues::route('/'),
             'create' => CreateDailyFeedIssue::route('/create'),
+            'view' => Pages\ViewDailyFeedIssue::route('/{record}'),
             'edit' => EditDailyFeedIssue::route('/{record}/edit'),
         ];
     }

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('unit_type'); // pond, tank, cage (stored as string, Laravel Enum in code)
             $table->integer('capacity')->nullable();
             $table->string('status')->default('active'); // active, inactive, maintenance
-            $table->foreignId('current_stock_id')->nullable()->constrained('batches')->nullOnDelete();
             $table->text('notes')->nullable();
             $table->timestamps();
 

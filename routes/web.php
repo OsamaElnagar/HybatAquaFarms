@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\SentimentAnalyzer;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -33,3 +34,5 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 });
+
+Route::get('/sentiment', SentimentAnalyzer::class)->name('sentiment.index');

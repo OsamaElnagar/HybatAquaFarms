@@ -5,8 +5,11 @@ namespace App\Filament\Resources\Traders\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class TradersTable
@@ -16,47 +19,75 @@ class TradersTable
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->searchable(),
+                    ->label('الكود')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('الاسم')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('contact_person')
-                    ->searchable(),
+                    ->label('الشخص المسؤول')
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('phone2')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('الهاتف')
                     ->searchable(),
                 TextColumn::make('trader_type')
-                    ->searchable(),
-                TextColumn::make('payment_terms_days')
-                    ->numeric()
+                    ->label('النوع')
+                    ->badge()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('sales_orders_count')
+                    ->counts('salesOrders')
+                    ->label('أوامر البيع')
+                    ->badge()
+                    ->color('primary')
+                    ->sortable(),
+                TextColumn::make('outstanding_balance')
+                    ->label('المستحقات')
+                    ->state(fn ($record) => number_format($record->outstanding_balance, 2))
+                    ->prefix('ج.م ')
+                    ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('credit_limit')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('حد الائتمان')
+                    ->numeric(decimalPlaces: 2)
+                    ->prefix('ج.م ')
+                    ->toggleable(),
                 IconColumn::make('is_active')
+                    ->label('نشط')
                     ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
+                TextColumn::make('email')
+                    ->label('البريد الإلكتروني')
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('created_at')
+                    ->label('تاريخ الإضافة')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('trader_type')
+                    ->label('نوع التاجر')
+                    ->options([
+                        'wholesale' => 'جملة',
+                        'retail' => 'تجزئة',
+                        'exporter' => 'مصدّر',
+                    ]),
+                TernaryFilter::make('is_active')
+                    ->label('نشط'),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف المحدد'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name');
     }
 }

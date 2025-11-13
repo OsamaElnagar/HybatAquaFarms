@@ -21,9 +21,13 @@ class DailyFeedIssueObserver
         // If quantity, warehouse, or feed item changed, update the movement
         if ($issue->wasChanged(['quantity', 'feed_warehouse_id', 'feed_item_id', 'date'])) {
             DB::transaction(function () use ($issue) {
-                // Find and update the associated movement
-                $movement = FeedMovement::where('source_type', $issue->getMorphClass())
-                    ->where('source_id', $issue->id)
+                // Find movement by matching feed_item_id, warehouse, and date
+                // Since we don't have source anymore, we match by these fields
+                $movement = FeedMovement::where('feed_item_id', $issue->feed_item_id)
+                    ->where('from_warehouse_id', $issue->feed_warehouse_id)
+                    ->where('date', $issue->date)
+                    ->where('movement_type', FeedMovementType::Out)
+                    ->where('description', 'like', '%صرف يومي%')
                     ->first();
 
                 if ($movement) {
@@ -40,9 +44,12 @@ class DailyFeedIssueObserver
     public function deleted(DailyFeedIssue $issue): void
     {
         DB::transaction(function () use ($issue) {
-            // Find and delete the associated movement (which will revert stock)
-            $movement = FeedMovement::where('source_type', $issue->getMorphClass())
-                ->where('source_id', $issue->id)
+            // Find movement by matching feed_item_id, warehouse, and date
+            $movement = FeedMovement::where('feed_item_id', $issue->feed_item_id)
+                ->where('from_warehouse_id', $issue->feed_warehouse_id)
+                ->where('date', $issue->date)
+                ->where('movement_type', FeedMovementType::Out)
+                ->where('description', 'like', '%صرف يومي%')
                 ->first();
 
             if ($movement) {
@@ -65,9 +72,6 @@ class DailyFeedIssueObserver
             throw new \Exception('Insufficient stock for daily feed issue');
         }
 
-        $averageCost = (float) $stock->average_cost;
-        $totalCost = $quantity * $averageCost;
-
         $unitCode = $issue->unit?->code ?? 'وحدة';
         $feedItemName = $issue->feedItem?->name ?? '';
 
@@ -78,11 +82,7 @@ class DailyFeedIssueObserver
             'to_warehouse_id' => null,
             'date' => $issue->date,
             'quantity' => $quantity,
-            'unit_cost' => $averageCost,
-            'total_cost' => $totalCost,
             'factory_id' => null,
-            'source_type' => $issue->getMorphClass(),
-            'source_id' => $issue->id,
             'description' => "صرف يومي - {$unitCode} - {$feedItemName}",
             'recorded_by' => $issue->recorded_by,
         ]);

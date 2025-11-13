@@ -39,9 +39,9 @@ class TransactionsRelationManager extends RelationManager
                     ->default('out'),
                 Select::make('expense_category_id')
                     ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name_arabic', fn ($query) => $query->where('is_active', true))
-                    ->visible(fn ($get) => $get('direction') === 'out')
-                    ->required(fn ($get) => $get('direction') === 'out')
+                    ->relationship('expenseCategory', 'name_arabic', fn($query) => $query->where('is_active', true))
+                    ->visible(fn($get) => $get('direction') === 'out')
+                    ->required(fn($get) => $get('direction') === 'out')
                     ->searchable()
                     ->preload(),
                 DatePicker::make('date')
@@ -76,12 +76,12 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('direction')
                     ->label('النوع')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'in' => 'success',
                         'out' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'in' => 'قبض (تزويد)',
                         'out' => 'صرف (مصروف)',
                         default => $state,
@@ -95,7 +95,7 @@ class TransactionsRelationManager extends RelationManager
                     ->label('المبلغ')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')
-                    ->color(fn ($record) => $record->direction === 'out' ? 'danger' : 'success')
+                    ->color(fn($record) => $record->direction === 'out' ? 'danger' : 'success')
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('الوصف')
@@ -126,18 +126,18 @@ class TransactionsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['recorded_by'] = Auth::id();
                         $data['petty_cash_id'] = $this->getOwnerRecord()->id;
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

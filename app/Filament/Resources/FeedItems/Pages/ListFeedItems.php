@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FeedItems\Pages;
 
 use App\Filament\Resources\FeedItems\FeedItemResource;
+use App\Filament\Resources\FeedItems\Widgets\FeedItemsStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListFeedItems extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FeedItemsStatsWidget::class,
         ];
     }
 }

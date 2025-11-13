@@ -4,60 +4,43 @@ namespace App\Filament\Resources\BatchMovements\Widgets;
 
 use App\Enums\MovementType;
 use App\Models\BatchMovement;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
 
-class BatchMovementsStatsWidget extends BaseWidget
+class BatchMovementsStatsWidget extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $today = Carbon::today();
-        $thisMonth = Carbon::now()->startOfMonth();
-        $thisYear = Carbon::now()->startOfYear();
-
         $totalMovements = BatchMovement::count();
-        $todayMovements = BatchMovement::whereDate('date', $today)->count();
-        $thisMonthMovements = BatchMovement::where('date', '>=', $thisMonth)->count();
+        $entryMovements = BatchMovement::where('movement_type', MovementType::Entry)->count();
+        $transferMovements = BatchMovement::where('movement_type', MovementType::Transfer)->count();
+        $harvestMovements = BatchMovement::where('movement_type', MovementType::Harvest)->count();
+        $mortalityMovements = BatchMovement::where('movement_type', MovementType::Mortality)->count();
 
-        $totalMortality = BatchMovement::where('movement_type', MovementType::Mortality)
-            ->sum('quantity');
-        $thisMonthMortality = BatchMovement::where('movement_type', MovementType::Mortality)
-            ->where('date', '>=', $thisMonth)
-            ->sum('quantity');
-
-        $totalHarvest = BatchMovement::where('movement_type', MovementType::Harvest)
-            ->sum('quantity');
-        $thisMonthHarvest = BatchMovement::where('movement_type', MovementType::Harvest)
-            ->where('date', '>=', $thisMonth)
-            ->sum('quantity');
-
-        $totalTransfers = BatchMovement::where('movement_type', MovementType::Transfer)
-            ->count();
-        $thisMonthTransfers = BatchMovement::where('movement_type', MovementType::Transfer)
-            ->where('date', '>=', $thisMonth)
-            ->count();
+        $thisMonthMovements = BatchMovement::whereMonth('date', Carbon::now()->month)->count();
+        $thisMonthQuantity = BatchMovement::whereMonth('date', Carbon::now()->month)->sum('quantity');
 
         return [
             Stat::make('إجمالي الحركات', number_format($totalMovements))
-                ->description('اليوم: '.number_format($todayMovements).' | هذا الشهر: '.number_format($thisMonthMovements))
+                ->description($entryMovements.' إدخال، '.$transferMovements.' نقل، '.$harvestMovements.' حصاد، '.$mortalityMovements.' نفوق')
                 ->descriptionIcon('heroicon-o-arrow-path')
                 ->color('primary'),
 
-            Stat::make('إجمالي النفوق', number_format($totalMortality))
-                ->description('هذا الشهر: '.number_format($thisMonthMortality))
-                ->descriptionIcon('heroicon-o-x-circle')
-                ->color('danger'),
+            Stat::make('حركات هذا الشهر', number_format($thisMonthMovements))
+                ->description('عدد الحركات في الشهر الحالي')
+                ->descriptionIcon('heroicon-o-calendar')
+                ->color('info'),
 
-            Stat::make('إجمالي الحصاد', number_format($totalHarvest))
-                ->description('هذا الشهر: '.number_format($thisMonthHarvest))
-                ->descriptionIcon('heroicon-o-check-circle')
+            Stat::make('الكمية هذا الشهر', number_format($thisMonthQuantity))
+                ->description('إجمالي الكمية المتحركة')
+                ->descriptionIcon('heroicon-o-cube')
                 ->color('success'),
 
-            Stat::make('عمليات النقل', number_format($totalTransfers))
-                ->description('هذا الشهر: '.number_format($thisMonthTransfers))
-                ->descriptionIcon('heroicon-o-arrows-right-left')
-                ->color('info'),
+            Stat::make('متوسط الحركات/يوم', $thisMonthMovements > 0 ? number_format($thisMonthMovements / Carbon::now()->day, 1) : '0')
+                ->description('متوسط عدد الحركات يومياً')
+                ->descriptionIcon('heroicon-o-chart-bar')
+                ->color('warning'),
         ];
     }
 }

@@ -18,7 +18,7 @@ class SalesOrderResource extends Resource
 {
     protected static ?string $model = SalesOrder::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     public static function getNavigationGroup(): ?string
     {
@@ -27,17 +27,17 @@ class SalesOrderResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'أوامر البيع';
+        return 'مبيعات';
     }
 
     public static function getModelLabel(): string
     {
-        return 'أمر بيع';
+        return 'عملية بيع';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'أوامر البيع';
+        return 'مبيعات';
     }
 
     public static function form(Schema $schema): Schema
@@ -53,7 +53,8 @@ class SalesOrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ItemsRelationManager::class,
+            RelationManagers\HarvestsRelationManager::class,
         ];
     }
 
@@ -62,6 +63,7 @@ class SalesOrderResource extends Resource
         return [
             'index' => ListSalesOrders::route('/'),
             'create' => CreateSalesOrder::route('/create'),
+            'view' => Pages\ViewSalesOrder::route('/{record}'),
             'edit' => EditSalesOrder::route('/{record}/edit'),
         ];
     }

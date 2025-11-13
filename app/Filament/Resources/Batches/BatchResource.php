@@ -19,7 +19,7 @@ class BatchResource extends Resource
 {
     protected static ?string $model = Batch::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     // sort
     protected static ?int $navigationSort = 1;
@@ -57,7 +57,9 @@ class BatchResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\PaymentsRelationManager::class,
             MovementsRelationManager::class,
+            RelationManagers\HarvestsRelationManager::class,
         ];
     }
 
@@ -66,6 +68,7 @@ class BatchResource extends Resource
         return [
             'index' => ListBatches::route('/'),
             'create' => CreateBatch::route('/create'),
+            'view' => Pages\ViewBatch::route('/{record}'),
             'edit' => EditBatch::route('/{record}/edit'),
         ];
     }

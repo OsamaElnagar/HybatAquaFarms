@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Factories\Pages;
 
 use App\Filament\Resources\Factories\FactoryResource;
+use App\Filament\Resources\Factories\Widgets\FactoriesStatsWidget;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListFactories extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FactoriesStatsWidget::class,
         ];
     }
 }

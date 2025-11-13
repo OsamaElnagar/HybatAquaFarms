@@ -62,4 +62,38 @@ class Employee extends Model
     {
         return $this->hasMany(Farm::class, 'manager_id');
     }
+
+    /**
+     * Get total outstanding advances for this employee.
+     */
+    public function getTotalOutstandingAdvancesAttribute(): float
+    {
+        return (float) $this->advances()
+            ->whereIn('status', ['approved', 'partially_paid'])
+            ->sum('balance_remaining');
+    }
+
+    /**
+     * Get total salary paid to this employee.
+     */
+    public function getTotalSalariesPaidAttribute(): float
+    {
+        return (float) $this->salaryRecords()->sum('net_salary');
+    }
+
+    /**
+     * Get salary records count.
+     */
+    public function getSalaryRecordsCountAttribute(): int
+    {
+        return $this->salaryRecords()->count();
+    }
+
+    /**
+     * Get advances count.
+     */
+    public function getAdvancesCountAttribute(): int
+    {
+        return $this->advances()->count();
+    }
 }

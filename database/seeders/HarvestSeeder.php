@@ -67,6 +67,6 @@ class HarvestSeeder extends Seeder
             }
         }
 
-        echo "تم إنشاء ".Harvest::count()." سجل حصاد بنجاح.\n";
+        echo 'تم إنشاء '.Harvest::count()." سجل حصاد بنجاح.\n";
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\Batches\Tables;
 
+use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -50,45 +52,46 @@ class BatchesTable
                     ->label('الكمية الحالية')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('mortality_rate')
-                    ->label('معدل النفوق')
-                    ->formatStateUsing(function ($record) {
-                        if (! $record->initial_quantity || $record->initial_quantity == 0) {
-                            return '0%';
-                        }
-                        $mortality = $record->initial_quantity - $record->current_quantity;
-                        $rate = ($mortality / $record->initial_quantity) * 100;
+                // TextColumn::make('mortality_rate')
+                //     ->label('معدل النفوق')
+                //     ->formatStateUsing(function ($record) {
+                //         if (! $record->initial_quantity || $record->initial_quantity == 0) {
+                //             return '0%';
+                //         }
+                //         $mortality = $record->initial_quantity - $record->current_quantity;
+                //         $rate = ($mortality / $record->initial_quantity) * 100;
 
-                        return number_format($rate, 2).'%';
-                    })
-                    ->badge()
-                    ->color(function ($record) {
-                        if (! $record->initial_quantity || $record->initial_quantity == 0) {
-                            return 'gray';
-                        }
-                        $mortality = $record->initial_quantity - $record->current_quantity;
-                        $rate = ($mortality / $record->initial_quantity) * 100;
+                //         return number_format($rate, 2).'%';
+                //     })
+                //     ->badge()
+                //     ->color(function ($record) {
+                //         if (! $record->initial_quantity || $record->initial_quantity == 0) {
+                //             return 'gray';
+                //         }
+                //         $mortality = $record->initial_quantity - $record->current_quantity;
+                //         $rate = ($mortality / $record->initial_quantity) * 100;
 
-                        return $rate > 10 ? 'danger' : ($rate > 5 ? 'warning' : 'success');
-                    })
-                    ->sortable(query: function ($query, string $direction) {
-                        return $query->orderByRaw("((initial_quantity - current_quantity) / NULLIF(initial_quantity, 0) * 100) {$direction}");
-                    })
-                    ->toggleable(),
-                TextColumn::make('days_since_entry')
-                    ->label('عدد الأيام')
-                    ->formatStateUsing(function ($record) {
-                        if (! $record->entry_date) {
-                            return '-';
-                        }
-                        $days = now()->diffInDays($record->entry_date);
+                //         return $rate > 10 ? 'danger' : ($rate > 5 ? 'warning' : 'success');
+                //     })
+                //     ->sortable(query: function ($query, string $direction) {
+                //         return $query->orderByRaw("((initial_quantity - current_quantity) / NULLIF(initial_quantity, 0) * 100) {$direction}");
+                //     })
+                //     ->toggleable(),
+                // TextColumn::make('days_since_entry')
+                //     ->label('عدد الأيام')
+                //     ->formatStateUsing(function ($record) {
+                //         if (! $record->entry_date) {
+                //             return '-';
+                //         }
+                //         $days = now()->diffInDays($record->entry_date);
 
-                        return $days.' يوم';
-                    })
-                    ->sortable(query: function ($query, string $direction) {
-                        return $query->orderBy('entry_date', $direction === 'asc' ? 'desc' : 'asc');
-                    })
-                    ->toggleable(),
+                //         return $days.' يوم';
+                //     })
+                //     ->sortable(query: function ($query, string $direction) {
+                //         return $query->orderBy('entry_date', $direction === 'asc' ? 'desc' : 'asc');
+                //     })
+                //     ->toggleable(),
+
                 TextColumn::make('initial_weight_avg')
                     ->label('متوسط الوزن الأولي (جم)')
                     ->numeric(decimalPlaces: 2)
@@ -112,20 +115,50 @@ class BatchesTable
                     ->prefix('ج.م ')
                     ->color('success')
                     ->sortable(),
+                TextColumn::make('total_paid')
+                    ->label('المدفوع')
+                    ->numeric(decimalPlaces: 2)
+                    ->prefix('ج.م ')
+                    ->color('info')
+                    ->sortable()
+                    ->toggleable()
+                    ->visible(fn ($record) => $record && ($record->total_cost ?? 0) > 0),
+                TextColumn::make('outstanding_balance')
+                    ->label('المتبقي')
+                    ->numeric(decimalPlaces: 2)
+                    ->prefix('ج.م ')
+                    ->color(fn ($record) => $record && ($record->outstanding_balance ?? 0) > 0 ? 'danger' : 'success')
+                    ->sortable()
+                    ->toggleable()
+                    ->visible(fn ($record) => $record && ($record->total_cost ?? 0) > 0),
+                TextColumn::make('payment_status')
+                    ->label('حالة الدفع')
+                    ->badge()
+                    ->formatStateUsing(function ($record) {
+                        if (! $record || ! $record->total_cost || $record->total_cost <= 0) {
+                            return 'لا يوجد تكلفة';
+                        }
+                        if ($record->is_fully_paid) {
+                            return 'مدفوع بالكامل';
+                        }
+                        $paidPercentage = ($record->total_paid / $record->total_cost) * 100;
+
+                        return number_format($paidPercentage, 1).'% مدفوع';
+                    })
+                    ->color(fn ($record) => $record ? $record->payment_status : 'gray')
+                    ->sortable()
+                    ->toggleable()
+                    ->visible(fn ($record) => $record && ($record->total_cost ?? 0) > 0),
                 TextColumn::make('source')
                     ->label('المصدر')
+                    ->badge()
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof BatchStatus ? $state->label() : $state)
-                    ->color(fn ($state) => match ($state instanceof BatchStatus ? $state->value : $state) {
-                        'active' => 'success',
-                        'harvested' => 'warning',
-                        'depleted' => 'gray',
-                        default => 'gray',
-                    })
+
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -161,16 +194,42 @@ class BatchesTable
                     ->preload(),
                 SelectFilter::make('source')
                     ->label('المصدر')
+                    ->options(BatchSource::class)
+                    ->native(false),
+                SelectFilter::make('payment_status')
+                    ->label('حالة الدفع')
                     ->options([
-                        'hatchery' => 'مفرخة',
-                        'transfer' => 'نقل',
-                        'purchase' => 'شراء',
+                        'fully_paid' => 'مدفوع بالكامل',
+                        'partially_paid' => 'مدفوع جزئياً',
+                        'unpaid' => 'غير مدفوع',
+                        'no_cost' => 'لا يوجد تكلفة',
                     ])
+                    ->query(function ($query, array $data) {
+                        if (! isset($data['value']) || $data['value'] === null) {
+                            return;
+                        }
+
+                        return match ($data['value']) {
+                            'fully_paid' => $query->whereRaw('total_cost > 0')
+                                ->whereRaw('(SELECT COALESCE(SUM(amount), 0) FROM batch_payments WHERE batch_payments.batch_id = batches.id) >= total_cost'),
+                            'partially_paid' => $query->whereRaw('total_cost > 0')
+                                ->whereRaw('(SELECT COALESCE(SUM(amount), 0) FROM batch_payments WHERE batch_payments.batch_id = batches.id) > 0')
+                                ->whereRaw('(SELECT COALESCE(SUM(amount), 0) FROM batch_payments WHERE batch_payments.batch_id = batches.id) < total_cost'),
+                            'unpaid' => $query->whereRaw('total_cost > 0')
+                                ->whereRaw('(SELECT COALESCE(SUM(amount), 0) FROM batch_payments WHERE batch_payments.batch_id = batches.id) = 0'),
+                            'no_cost' => $query->where(function ($q) {
+                                $q->whereNull('total_cost')
+                                    ->orWhere('total_cost', '<=', 0);
+                            }),
+                            default => $query,
+                        };
+                    })
                     ->native(false),
             ])
             ->defaultSort('entry_date', 'desc')
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Employees\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -46,9 +47,20 @@ class EmployeesTable
                 TextColumn::make('salary_amount')
                     ->label('المرتب')
                     ->numeric(decimalPlaces: 2)
-                    ->suffix(' ج.م ')
+                    ->prefix('ج.م ')
                     ->sortable(),
-
+                TextColumn::make('advances_count')
+                    ->counts('advances')
+                    ->label('السلف')
+                    ->badge()
+                    ->color('primary')
+                    ->sortable(),
+                TextColumn::make('outstanding_advances')
+                    ->label('سلف مستحقة')
+                    ->state(fn ($record) => number_format($record->total_outstanding_advances, 2))
+                    ->prefix('ج.م ')
+                    ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
@@ -81,7 +93,8 @@ class EmployeesTable
                     ->label('تاريخ إنهاء الخدمة'),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make()->label('عرض'),
+                EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

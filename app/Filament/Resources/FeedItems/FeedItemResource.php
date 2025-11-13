@@ -18,7 +18,7 @@ class FeedItemResource extends Resource
 {
     protected static ?string $model = FeedItem::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBeaker;
 
     public static function getNavigationGroup(): ?string
     {

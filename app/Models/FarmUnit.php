@@ -19,7 +19,6 @@ class FarmUnit extends Model
         'unit_type',
         'capacity',
         'status',
-        'current_stock_id',
         'notes',
     ];
 
@@ -35,11 +34,6 @@ class FarmUnit extends Model
         return $this->belongsTo(Farm::class);
     }
 
-    public function currentStock(): BelongsTo
-    {
-        return $this->belongsTo(Batch::class, 'current_stock_id');
-    }
-
     public function batches(): HasMany
     {
         return $this->hasMany(Batch::class, 'unit_id');
@@ -48,5 +42,39 @@ class FarmUnit extends Model
     public function dailyFeedIssues(): HasMany
     {
         return $this->hasMany(DailyFeedIssue::class, 'unit_id');
+    }
+
+    /**
+     * Get total feed consumed by this unit in a date range.
+     */
+    public function getTotalFeedConsumed(?string $startDate = null, ?string $endDate = null): float
+    {
+        $query = $this->dailyFeedIssues();
+
+        if ($startDate) {
+            $query->where('date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('date', '<=', $endDate);
+        }
+
+        return (float) $query->sum('quantity');
+    }
+
+    /**
+     * Get active batches in this unit.
+     */
+    public function getActiveBatchesAttribute()
+    {
+        return $this->batches()->where('status', 'active')->get();
+    }
+
+    /**
+     * Get total current stock in this unit.
+     */
+    public function getTotalCurrentStockAttribute(): int
+    {
+        return (int) $this->batches()->where('status', 'active')->sum('current_quantity');
     }
 }

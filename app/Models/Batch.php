@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,7 @@ class Batch extends Model
             'current_weight_avg' => 'decimal:3',
             'unit_cost' => 'decimal:2',
             'total_cost' => 'decimal:2',
+            'source' => BatchSource::class,
             'status' => BatchStatus::class,
         ];
     }
@@ -82,5 +84,65 @@ class Batch extends Model
     public function journalEntries(): MorphMany
     {
         return $this->morphMany(JournalEntry::class, 'source');
+    }
+
+    public function batchPayments(): HasMany
+    {
+        return $this->hasMany(BatchPayment::class);
+    }
+
+    public function harvests(): HasMany
+    {
+        return $this->hasMany(Harvest::class);
+    }
+
+    /**
+     * Calculate total amount paid for this batch.
+     */
+    public function getTotalPaidAttribute(): float
+    {
+        return (float) $this->batchPayments()->sum('amount');
+    }
+
+    /**
+     * Calculate outstanding balance for this batch.
+     * Total cost minus total payments.
+     */
+    public function getOutstandingBalanceAttribute(): float
+    {
+        $totalCost = (float) ($this->total_cost ?? 0);
+        $totalPaid = $this->total_paid;
+
+        return max(0, $totalCost - $totalPaid);
+    }
+
+    /**
+     * Check if batch is fully paid.
+     */
+    public function getIsFullyPaidAttribute(): bool
+    {
+        return $this->outstanding_balance <= 0 && $this->total_cost > 0;
+    }
+
+    /**
+     * Get payment status badge color.
+     */
+    public function getPaymentStatusAttribute(): string
+    {
+        if (! $this->total_cost || $this->total_cost <= 0) {
+            return 'gray'; // No cost to pay
+        }
+
+        if ($this->is_fully_paid) {
+            return 'success'; // Fully paid
+        }
+
+        $paidPercentage = ($this->total_paid / $this->total_cost) * 100;
+
+        if ($paidPercentage >= 80) {
+            return 'warning'; // Mostly paid
+        }
+
+        return 'danger'; // Not paid or partially paid
     }
 }

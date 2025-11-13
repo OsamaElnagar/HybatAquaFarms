@@ -18,7 +18,7 @@ class SalesItemResource extends Resource
 {
     protected static ?string $model = SalesItem::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
     public static function getNavigationGroup(): ?string
     {

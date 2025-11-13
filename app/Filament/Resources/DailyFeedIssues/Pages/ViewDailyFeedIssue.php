@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Filament\Resources\DailyFeedIssues\Pages;
+
+use App\Filament\Resources\DailyFeedIssues\DailyFeedIssueResource;
+use App\Filament\Resources\DailyFeedIssues\Infolists\DailyFeedIssueInfolist;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
+
+class ViewDailyFeedIssue extends ViewRecord
+{
+    protected static string $resource = DailyFeedIssueResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
+    }
+
+    public function infolist(Schema $schema): Schema
+    {
+        return DailyFeedIssueInfolist::configure($schema);
+    }
+}

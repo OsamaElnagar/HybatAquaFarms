@@ -31,19 +31,22 @@ class DatabaseSeeder extends Seeder
             FactorySeeder::class,
             DriverSeeder::class,
 
+            // Transactions (PostingRuleSeeder must run before operations that create accounting entries)
+            PostingRuleSeeder::class,
+
             // Operations
             PettyCashSeeder::class,
             BatchSeeder::class,
             BatchMovementSeeder::class,
             FeedStockSeeder::class,
-
-            // Transactions
-            PostingRuleSeeder::class,
             VoucherSeeder::class,
             SalesOrderSeeder::class,
+            HarvestSeeder::class,
             EmployeeAdvanceSeeder::class,
             FeedMovementSeeder::class,
             DailyFeedIssueSeeder::class,
+            FactoryPaymentSeeder::class,
+            BatchPaymentSeeder::class,
         ]);
     }
 }
