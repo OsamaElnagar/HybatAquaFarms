@@ -40,25 +40,25 @@ class MovementsRelationManager extends RelationManager
                     ->relationship('fromFarm', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn ($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
+                    ->visible(fn($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
                 Select::make('to_farm_id')
                     ->label('إلى المزرعة')
                     ->relationship('toFarm', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn ($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
+                    ->visible(fn($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
                 Select::make('from_unit_id')
                     ->label('من الوحدة')
                     ->relationship('fromUnit', 'code')
                     ->searchable()
                     ->preload()
-                    ->visible(fn ($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
+                    ->visible(fn($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
                 Select::make('to_unit_id')
                     ->label('إلى الوحدة')
                     ->relationship('toUnit', 'code')
                     ->searchable()
                     ->preload()
-                    ->visible(fn ($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
+                    ->visible(fn($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
                 TextInput::make('quantity')
                     ->label('الكمية')
                     ->required()
@@ -121,15 +121,6 @@ class MovementsRelationManager extends RelationManager
                 TextColumn::make('movement_type')
                     ->label('نوع الحركة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof MovementType ? $state->getLabel() : $state)
-
-                    // ->color(fn($state) => match ($state instanceof MovementType ? $state->value : $state) {
-                    //     'entry' => 'success',
-                    //     'transfer' => 'info',
-                    //     'harvest' => 'warning',
-                    //     'mortality' => 'danger',
-                    //     default => 'gray',
-                    // })
                     ->sortable(),
                 TextColumn::make('fromFarm.name')
                     ->label('من المزرعة')
@@ -170,19 +161,19 @@ class MovementsRelationManager extends RelationManager
                     ->native(false),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة حركة زريعه')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['batch_id'] = $this->getOwnerRecord()->id;
                         $data['recorded_by'] = Auth::id();
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

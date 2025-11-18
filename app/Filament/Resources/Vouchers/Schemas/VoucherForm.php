@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vouchers\Schemas;
 
+use App\Enums\PaymentMethod;
 use App\Enums\VoucherType;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -46,7 +47,8 @@ class VoucherForm
                 Textarea::make('description')
                     ->label('الوصف')
                     ->columnSpanFull(),
-                TextInput::make('payment_method')
+                Select::make('payment_method')
+                    ->options(PaymentMethod::class)
                     ->label('طريقة الدفع'),
                 TextInput::make('reference_number')
                     ->label('رقم المرجع'),

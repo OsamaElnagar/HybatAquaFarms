@@ -54,8 +54,6 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof BatchStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof BatchStatus ? $state->getColor() : 'gray')
                     ->sortable(),
             ])
             ->filters([
@@ -67,10 +65,10 @@ class BatchesRelationManager extends RelationManager
             ->headerActions([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

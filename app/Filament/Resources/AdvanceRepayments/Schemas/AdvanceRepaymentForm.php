@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AdvanceRepayments\Schemas;
 
+use App\Enums\PaymentMethod;
 use App\Models\EmployeeAdvance;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -60,14 +61,8 @@ class AdvanceRepaymentForm
                             ->helperText('قيمة القسط المدفوع حالياً'),
                         Select::make('payment_method')
                             ->label('طريقة السداد')
-                            ->options([
-                                'salary_deduction' => 'خصم من المرتب',
-                                'cash' => 'نقدي',
-                                'bank_transfer' => 'تحويل بنكي',
-                                'check' => 'شيك',
-                            ])
+                            ->options(PaymentMethod::class)
                             ->required()
-                            ->default('salary_deduction')
                             ->helperText('كيف تم سداد السلفة؟')
                             ->reactive(),
                         Select::make('salary_record_id')
@@ -75,7 +70,7 @@ class AdvanceRepaymentForm
                             ->relationship('salaryRecord', 'id', fn ($query) => $query->where('status', 'paid'))
                             ->searchable()
                             ->helperText('اختر سجل المرتب الذي تم خصم السلفة منه (إن وجد)')
-                            ->visible(fn (Get $get) => $get('payment_method') === 'salary_deduction'),
+                            ->visible(fn (Get $get) => $get('payment_method') === PaymentMethod::SALARY_DEDUCTION),
                         TextInput::make('balance_remaining')
                             ->label('الرصيد المتبقي بعد السداد')
                             ->numeric()

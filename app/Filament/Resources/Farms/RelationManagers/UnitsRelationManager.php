@@ -40,8 +40,6 @@ class UnitsRelationManager extends RelationManager
                 TextColumn::make('unit_type')
                     ->label('النوع')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof UnitType ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof UnitType ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('capacity')
                     ->label('السعة')
@@ -50,18 +48,16 @@ class UnitsRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof FarmStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof FarmStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('batches_count')
                     ->counts('batches')
                     ->label('الدفعات')
                     ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
+                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
                     ->sortable(),
                 TextColumn::make('feed_consumed')
                     ->label('استهلاك العلف (كجم)')
-                    ->state(fn ($record) => number_format($record->getTotalFeedConsumed(), 2))
+                    ->state(fn($record) => number_format($record->getTotalFeedConsumed(), 2))
                     ->color('info')
                     ->toggleable(),
             ])
@@ -76,19 +72,19 @@ class UnitsRelationManager extends RelationManager
                     ->native(false),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة حوض | وحدة')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['farm_id'] = $this->getOwnerRecord()->id;
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SalaryRecords\Tables;
 
+use App\Enums\SalaryStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -17,9 +18,10 @@ class SalaryRecordsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->withCount('advanceRepayments')
-                ->withSum('advanceRepayments', 'amount'),
+            ->modifyQueryUsing(
+                fn (Builder $query) => $query
+                    ->withCount('advanceRepayments')
+                    ->withSum('advanceRepayments', 'amount_paid'),
             )
             ->columns([
                 TextColumn::make('employee.name')
@@ -75,7 +77,7 @@ class SalaryRecordsTable
                     ->prefix('ج.م ')
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('advance_repayments_sum_amount')
+                TextColumn::make('advance_repayments_sum_amount_paid')
                     ->label('سداد السُلف')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')
@@ -107,18 +109,7 @@ class SalaryRecordsTable
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn (string $state) => match ($state) {
-                        'paid' => 'مدفوع',
-                        'pending' => 'قيد الانتظار',
-                        'cancelled' => 'ملغي',
-                        default => $state,
-                    })
-                    ->color(fn (string $state) => match ($state) {
-                        'paid' => 'success',
-                        'pending' => 'warning',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    })
+
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
@@ -145,11 +136,7 @@ class SalaryRecordsTable
                     ->preload(),
                 SelectFilter::make('status')
                     ->label('الحالة')
-                    ->options([
-                        'pending' => 'قيد الانتظار',
-                        'paid' => 'مدفوع',
-                        'cancelled' => 'ملغي',
-                    ])
+                    ->options(SalaryStatus::class)
                     ->native(false),
                 Filter::make('pay_period')
                     ->label('الفترة')
@@ -163,9 +150,10 @@ class SalaryRecordsTable
                             ->displayFormat('Y-m-d')
                             ->native(false),
                     ])
-                    ->query(fn (Builder $query, array $data): Builder => $query
-                        ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('pay_period_start', '>=', $date))
-                        ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('pay_period_end', '<=', $date)),
+                    ->query(
+                        fn (Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('pay_period_start', '>=', $date))
+                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('pay_period_end', '<=', $date)),
                     ),
             ])
             ->defaultSort('pay_period_start', 'desc')

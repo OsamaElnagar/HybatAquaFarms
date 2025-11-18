@@ -86,7 +86,7 @@ class SalaryRecordsRelationManager extends RelationManager
             ])
             ->filters([
                 Filter::make('date_range')
-                    ->form([
+                    ->schema([
                         DatePicker::make('from')
                             ->label('من تاريخ'),
                         DatePicker::make('to')
@@ -110,6 +110,10 @@ class SalaryRecordsRelationManager extends RelationManager
                     })
                     ->mutateDataUsing(function (array $data): array {
                         $data['employee_id'] = $this->getOwnerRecord()->id;
+
+                        foreach (['bonuses', 'deductions', 'advances_deducted'] as $field) {
+                            $data[$field] = (float) ($data[$field] ?? 0);
+                        }
 
                         return $data;
                     }),

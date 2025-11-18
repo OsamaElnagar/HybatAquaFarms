@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EmployeeAdvances\Schemas;
 
+use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -63,12 +64,7 @@ class EmployeeAdvanceForm
                     ->schema([
                         Select::make('approval_status')
                             ->label('حالة الموافقة')
-                            ->options([
-                                'pending' => 'قيد الانتظار',
-                                'approved' => 'موافق',
-                                'rejected' => 'مرفوض',
-                            ])
-                            ->default('pending')
+                            ->options(AdvanceApprovalStatus::class)
                             ->native(false)
                             ->required()
                             ->helperText('حالة طلب السلفة الحالية')

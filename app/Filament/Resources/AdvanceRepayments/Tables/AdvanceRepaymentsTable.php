@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AdvanceRepayments\Tables;
 
+use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -60,21 +61,7 @@ class AdvanceRepaymentsTable
                     ->label('طريقة الدفع')
                     ->badge()
                     ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(fn (?string $state) => match ($state ?? '') {
-                        'salary_deduction' => 'إستقطاع من الراتب',
-                        'cash' => 'نقدي',
-                        'bank_transfer' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                        default => 'غير محدد',
-                    })
-                    ->color(fn (?string $state) => match ($state ?? '') {
-                        'salary_deduction' => 'info',
-                        'cash' => 'success',
-                        'bank_transfer' => 'primary',
-                        'check' => 'warning',
-                        default => 'gray',
-                    }),
+                    ->sortable(),
                 TextColumn::make('salaryRecord.id')
                     ->label('رقم السجل المرتب')
                     ->formatStateUsing(fn ($state) => $state ? '#'.$state : 'السجل غير موجود')
@@ -101,22 +88,18 @@ class AdvanceRepaymentsTable
                     ->preload(),
                 SelectFilter::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->options([
-                        'salary_deduction' => 'إستقطاع من الراتب',
-                        'cash' => 'نقدي',
-                        'bank_transfer' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                    ])
+                    ->options(PaymentMethod::class)
                     ->native(false),
                 Filter::make('payment_date')
                     ->label('تاريخ الدفع')
-                    ->form([
+                    ->schema([
                         \Filament\Forms\Components\DatePicker::make('from')->label('من')->displayFormat('Y-m-d')->native(false),
                         \Filament\Forms\Components\DatePicker::make('to')->label('إلى')->displayFormat('Y-m-d')->native(false),
                     ])
-                    ->query(fn (Builder $query, array $data): Builder => $query
-                        ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('payment_date', '>=', $date))
-                        ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('payment_date', '<=', $date)),
+                    ->query(
+                        fn (Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('payment_date', '>=', $date))
+                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('payment_date', '<=', $date)),
                     ),
             ])
             ->defaultSort('payment_date', 'desc')

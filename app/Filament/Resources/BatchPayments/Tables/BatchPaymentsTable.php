@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BatchPayments\Tables;
 
+use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -35,19 +36,8 @@ class BatchPaymentsTable
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                        default => $state,
-                    })
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'cash' => 'success',
-                        'bank' => 'info',
-                        'check' => 'warning',
-                        default => 'gray',
-                    }),
+                    ->searchable(),
                 // TextColumn::make('reference_number')
                 //     ->label('رقم المرجع')
                 //     ->searchable()
@@ -79,11 +69,9 @@ class BatchPaymentsTable
                     ->preload(),
                 SelectFilter::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->options([
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                    ]),
+                    ->options(PaymentMethod::class)
+                    ->searchable()
+                    ->native(),
             ])
             ->defaultSort('date', 'desc')
             ->recordActions([

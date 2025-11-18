@@ -41,11 +41,11 @@ class TwoFactor extends Component
     {
         abort_unless(Features::enabled(Features::twoFactorAuthentication()), Response::HTTP_FORBIDDEN);
 
-        if (Fortify::confirmsTwoFactorAuthentication() && is_null(auth()->user()->two_factor_confirmed_at)) {
-            $disableTwoFactorAuthentication(auth()->user());
+        if (Fortify::confirmsTwoFactorAuthentication() && is_null(auth('web')->user()->two_factor_confirmed_at)) {
+            $disableTwoFactorAuthentication(auth('web')->user());
         }
 
-        $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
+        $this->twoFactorEnabled = auth('web')->user()->hasEnabledTwoFactorAuthentication();
         $this->requiresConfirmation = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
     }
 
@@ -54,10 +54,10 @@ class TwoFactor extends Component
      */
     public function enable(EnableTwoFactorAuthentication $enableTwoFactorAuthentication): void
     {
-        $enableTwoFactorAuthentication(auth()->user());
+        $enableTwoFactorAuthentication(auth('web')->user());
 
         if (! $this->requiresConfirmation) {
-            $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
+            $this->twoFactorEnabled = auth('web')->user()->hasEnabledTwoFactorAuthentication();
         }
 
         $this->loadSetupData();
@@ -70,7 +70,7 @@ class TwoFactor extends Component
      */
     private function loadSetupData(): void
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         try {
             $this->qrCodeSvg = $user?->twoFactorQrCodeSvg();
@@ -105,7 +105,7 @@ class TwoFactor extends Component
     {
         $this->validate();
 
-        $confirmTwoFactorAuthentication(auth()->user(), $this->code);
+        $confirmTwoFactorAuthentication(auth('web')->user(), $this->code);
 
         $this->closeModal();
 
@@ -127,7 +127,7 @@ class TwoFactor extends Component
      */
     public function disable(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void
     {
-        $disableTwoFactorAuthentication(auth()->user());
+        $disableTwoFactorAuthentication(auth('web')->user());
 
         $this->twoFactorEnabled = false;
     }
@@ -148,7 +148,7 @@ class TwoFactor extends Component
         $this->resetErrorBag();
 
         if (! $this->requiresConfirmation) {
-            $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
+            $this->twoFactorEnabled = auth('web')->user()->hasEnabledTwoFactorAuthentication();
         }
     }
 

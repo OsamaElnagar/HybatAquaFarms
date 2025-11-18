@@ -24,14 +24,6 @@ class BatchMovementsTable
                 TextColumn::make('movement_type')
                     ->label('نوع الحركة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\MovementType ? $state->getLabel() : $state)
-                    // ->color(fn($state) => match ($state instanceof \App\Enums\MovementType ? $state->value : $state) {
-                    //     'entry' => 'success',
-                    //     'transfer' => 'info',
-                    //     'harvest' => 'warning',
-                    //     'mortality' => 'danger',
-                    //     default => 'gray',
-                    // })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('fromFarm.name')

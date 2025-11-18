@@ -25,7 +25,7 @@ class RecoveryCodes extends Component
      */
     public function regenerateRecoveryCodes(GenerateNewRecoveryCodes $generateNewRecoveryCodes): void
     {
-        $generateNewRecoveryCodes(auth()->user());
+        $generateNewRecoveryCodes(auth('web')->user());
 
         $this->loadRecoveryCodes();
     }
@@ -35,7 +35,7 @@ class RecoveryCodes extends Component
      */
     private function loadRecoveryCodes(): void
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         if ($user->hasEnabledTwoFactorAuthentication() && $user->two_factor_recovery_codes) {
             try {

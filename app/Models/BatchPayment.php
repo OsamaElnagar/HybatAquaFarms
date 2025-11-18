@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,23 +12,45 @@ class BatchPayment extends Model
     /** @use HasFactory<\Database\Factories\BatchPaymentFactory> */
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if ($model->batch && $model->batch->is_cycle_closed) {
+                throw new \Exception("لا يمكن إضافة مدفوعات لدورة مقفلة");
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->batch && $model->batch->is_cycle_closed) {
+                throw new \Exception("لا يمكن تعديل مدفوعات دورة مقفلة");
+            }
+        });
+
+        static::deleting(function ($model) {
+            if ($model->batch && $model->batch->is_cycle_closed) {
+                throw new \Exception("لا يمكن حذف مدفوعات دورة مقفلة");
+            }
+        });
+    }
+
     protected $fillable = [
-        'batch_id',
-        'factory_id',
-        'date',
-        'amount',
-        'payment_method',
-        'reference_number',
-        'description',
-        'recorded_by',
-        'notes',
+        "batch_id",
+        "factory_id",
+        "date",
+        "amount",
+        "payment_method",
+        "reference_number",
+        "description",
+        "recorded_by",
+        "notes",
     ];
 
     protected function casts(): array
     {
         return [
-            'date' => 'date',
-            'amount' => 'decimal:2',
+            "date" => "date",
+            "amount" => "decimal:2",
+            "payment_method" => PaymentMethod::class,
         ];
     }
 
@@ -43,6 +66,6 @@ class BatchPayment extends Model
 
     public function recordedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'recorded_by');
+        return $this->belongsTo(User::class, "recorded_by");
     }
 }

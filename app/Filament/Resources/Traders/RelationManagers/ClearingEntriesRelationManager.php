@@ -60,18 +60,18 @@ class ClearingEntriesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة تسوية حساب')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['trader_id'] = $this->getOwnerRecord()->id;
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

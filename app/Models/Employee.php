@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeStatus;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +17,6 @@ class Employee extends Model
     protected $fillable = [
         'employee_number',
         'name',
-
         'phone',
         'phone2',
         'national_id',
@@ -23,8 +24,7 @@ class Employee extends Model
         'hire_date',
         'termination_date',
         'farm_id',
-        'salary_amount',
-
+        'basic_salary',
         'status',
         'notes',
     ];
@@ -34,7 +34,8 @@ class Employee extends Model
         return [
             'hire_date' => 'date',
             'termination_date' => 'date',
-            'salary_amount' => 'decimal:2',
+            'basic_salary' => 'decimal:2',
+            'status' => EmployeeStatus::class,
         ];
     }
 
@@ -95,5 +96,26 @@ class Employee extends Model
     public function getAdvancesCountAttribute(): int
     {
         return $this->advances()->count();
+    }
+
+    /**
+     * Scopes
+     */
+    #[Scope]
+    public function active($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    #[Scope]
+    public function inactive($query)
+    {
+        return $query->where('status', 'inactive');
+    }
+
+    #[Scope]
+    public function terminated($query)
+    {
+        return $query->where('status', 'terminated');
     }
 }

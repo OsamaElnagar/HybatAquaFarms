@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EmployeeAdvances\Tables;
 
+use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -18,9 +19,10 @@ class EmployeeAdvancesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->withCount('repayments')
-                ->withSum('repayments', 'amount_paid'),
+            ->modifyQueryUsing(
+                fn (Builder $query) => $query
+                    ->withCount('repayments')
+                    ->withSum('repayments', 'amount_paid'),
             )
             ->columns([
                 TextColumn::make('advance_number')
@@ -50,24 +52,10 @@ class EmployeeAdvancesTable
                 TextColumn::make('approval_status')
                     ->label('حالة الموافقة')
                     ->badge()
-                    ->formatStateUsing(fn (string $state) => match ($state) {
-                        'approved' => 'موافق',
-                        'pending' => 'قيد الانتظار',
-                        'rejected' => 'مرفوض',
-                        default => $state,
-                    })
-                    ->color(fn (string $state) => match ($state) {
-                        'approved' => 'success',
-                        'pending' => 'warning',
-                        'rejected' => 'danger',
-                        default => 'gray',
-                    })
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('الحالة الحالية')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof AdvanceStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof AdvanceStatus ? $state->getColor() : null)
                     ->sortable(),
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
@@ -137,11 +125,7 @@ class EmployeeAdvancesTable
                     ->preload(),
                 SelectFilter::make('approval_status')
                     ->label('حالة الموافقة')
-                    ->options([
-                        'pending' => 'قيد الانتظار',
-                        'approved' => 'موافق',
-                        'rejected' => 'مرفوض',
-                    ])
+                    ->options(AdvanceApprovalStatus::class)
                     ->native(false),
                 SelectFilter::make('status')
                     ->label('الحالة الحالية')
@@ -149,7 +133,7 @@ class EmployeeAdvancesTable
                     ->native(false),
                 Filter::make('request_date')
                     ->label('تاريخ الطلب')
-                    ->form([
+                    ->schema([
                         \Filament\Forms\Components\DatePicker::make('from')
                             ->label('من')
                             ->displayFormat('Y-m-d')
@@ -159,9 +143,10 @@ class EmployeeAdvancesTable
                             ->displayFormat('Y-m-d')
                             ->native(false),
                     ])
-                    ->query(fn (Builder $query, array $data): Builder => $query
-                        ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('request_date', '>=', $date))
-                        ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('request_date', '<=', $date)),
+                    ->query(
+                        fn (Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('request_date', '>=', $date))
+                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('request_date', '<=', $date)),
                     ),
             ])
             ->defaultSort('request_date', 'desc')

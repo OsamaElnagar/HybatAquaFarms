@@ -19,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jacobtims\FilamentLogger\FilamentLoggerPlugin;
+use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
@@ -69,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentLoggerPlugin::make(),
                 FilamentSpatieLaravelBackupPlugin::make(),
                 FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
+                FilamentAbyssThemePlugin::make()
             ])
             ->databaseNotifications()
             ->databaseNotificationspolling('10000s');

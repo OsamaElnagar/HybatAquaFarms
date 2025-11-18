@@ -44,8 +44,6 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof BatchStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof BatchStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('entry_date')
                     ->label('تاريخ الإدخال')
@@ -54,7 +52,7 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('current_quantity')
                     ->label('الكمية الحالية')
                     ->numeric()
-                    ->color(fn ($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
+                    ->color(fn($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('current_weight_avg')
                     ->label('متوسط الوزن')
@@ -77,18 +75,18 @@ class BatchesRelationManager extends RelationManager
                     ->relationship('unit', 'code'),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة دفعة زريعه')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['farm_id'] = $this->getOwnerRecord()->id;
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

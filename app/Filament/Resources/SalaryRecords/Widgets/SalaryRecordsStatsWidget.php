@@ -42,4 +42,3 @@ class SalaryRecordsStatsWidget extends StatsOverviewWidget
         ];
     }
 }
-

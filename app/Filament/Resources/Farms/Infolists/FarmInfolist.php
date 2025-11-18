@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Farms\Infolists;
 
-use App\Enums\FarmStatus;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -39,8 +38,6 @@ class FarmInfolist
                         TextEntry::make('status')
                             ->label('الحالة')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => $state instanceof FarmStatus ? $state->getLabel() : $state)
-                            ->color(fn ($state) => $state instanceof FarmStatus ? $state->getColor() : 'gray')
                             ->columnSpan(1),
                         TextEntry::make('manager.name')
                             ->label('المدير')

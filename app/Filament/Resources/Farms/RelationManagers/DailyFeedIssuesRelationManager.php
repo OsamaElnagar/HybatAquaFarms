@@ -79,8 +79,8 @@ class DailyFeedIssuesRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn (Builder $query, $date) => $query->where('date', '>=', $date))
-                            ->when($data['to'], fn (Builder $query, $date) => $query->where('date', '<=', $date));
+                            ->when($data['from'], fn(Builder $query, $date) => $query->where('date', '>=', $date))
+                            ->when($data['to'], fn(Builder $query, $date) => $query->where('date', '<=', $date));
                     }),
                 SelectFilter::make('unit_id')
                     ->label('الوحدة')
@@ -90,19 +90,19 @@ class DailyFeedIssuesRelationManager extends RelationManager
                     ->relationship('feedItem', 'name'),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة صرف علف')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['farm_id'] = $this->getOwnerRecord()->id;
                         $data['recorded_by'] = Auth::id();
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

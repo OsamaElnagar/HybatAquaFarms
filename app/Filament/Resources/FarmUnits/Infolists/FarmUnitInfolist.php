@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\FarmUnits\Infolists;
 
-use App\Enums\FarmStatus;
-use App\Enums\UnitType;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -25,8 +23,6 @@ class FarmUnitInfolist
                         TextEntry::make('unit_type')
                             ->label('نوع الوحدة')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => $state instanceof UnitType ? $state->getLabel() : $state)
-                            ->color(fn ($state) => $state instanceof UnitType ? $state->getColor() : 'gray')
                             ->columnSpan(1),
                         TextEntry::make('capacity')
                             ->label('السعة')
@@ -41,8 +37,6 @@ class FarmUnitInfolist
                         TextEntry::make('status')
                             ->label('الحالة')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => $state instanceof FarmStatus ? $state->getLabel() : $state)
-                            ->color(fn ($state) => $state instanceof FarmStatus ? $state->getColor() : 'gray')
                             ->columnSpan(1),
                         TextEntry::make('batches_count')
                             ->label('عدد الدفعات')

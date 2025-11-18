@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\SalesOrders\Infolists;
 
-use App\Enums\PaymentStatus;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -62,8 +61,6 @@ class SalesOrderInfolist
                         TextEntry::make('payment_status')
                             ->label('حالة الدفع')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => $state instanceof PaymentStatus ? $state->getLabel() : $state)
-                            ->color(fn ($state) => $state instanceof PaymentStatus ? $state->getColor() : 'gray')
                             ->columnSpan(1),
                         TextEntry::make('delivery_status')
                             ->label('حالة التوصيل')

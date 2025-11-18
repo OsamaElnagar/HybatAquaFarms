@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\BatchMovements\Infolists;
 
-use App\Enums\MovementType;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -21,14 +20,6 @@ class BatchMovementInfolist
                         TextEntry::make('movement_type')
                             ->label('نوع الحركة')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => $state instanceof MovementType ? $state->getLabel() : $state)
-                            ->color(fn ($state) => match ($state instanceof MovementType ? $state->value : $state) {
-                                'entry' => 'success',
-                                'transfer' => 'info',
-                                'harvest' => 'warning',
-                                'mortality' => 'danger',
-                                default => 'gray',
-                            })
                             ->columnSpan(1),
                         TextEntry::make('date')
                             ->label('التاريخ')

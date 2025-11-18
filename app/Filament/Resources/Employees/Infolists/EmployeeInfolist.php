@@ -52,7 +52,7 @@ class EmployeeInfolist
                             ->date('Y-m-d')
                             ->placeholder('لا يزال يعمل')
                             ->columnSpan(1),
-                        TextEntry::make('salary_amount')
+                        TextEntry::make('basic_salary')
                             ->label('المرتب الشهري')
                             ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
                             ->color('success')

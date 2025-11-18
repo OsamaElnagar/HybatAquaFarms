@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Factories\RelationManagers;
 
+use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
@@ -40,11 +41,7 @@ class PaymentsRelationManager extends RelationManager
                     ->prefix('ج.م '),
                 Select::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->options([
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                    ])
+                    ->options(PaymentMethod::class)
                     ->searchable(),
                 TextInput::make('reference_number')
                     ->label('رقم المرجع')
@@ -77,19 +74,7 @@ class PaymentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                        default => $state,
-                    })
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'cash' => 'success',
-                        'bank' => 'info',
-                        'check' => 'warning',
-                        default => 'gray',
-                    }),
+                    ->badge(),
                 TextColumn::make('reference_number')
                     ->label('رقم المرجع')
                     ->searchable()
@@ -111,17 +96,17 @@ class PaymentsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
-                        $data['recorded_by'] = auth()->id();
+                CreateAction::make()->label('إضافة دفعة مالية')
+                    ->mutateDataUsing(function (array $data): array {
+                        $data['recorded_by'] = auth('web')->id();
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

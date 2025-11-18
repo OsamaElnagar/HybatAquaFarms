@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\Vouchers\Tables;
 
+use App\Enums\PaymentMethod;
+use App\Enums\VoucherType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class VouchersTable
@@ -21,12 +24,6 @@ class VouchersTable
                 TextColumn::make('voucher_type')
                     ->label('نوع السند')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\VoucherType ? $state->getLabel() : $state)
-                    ->color(fn ($state) => match ($state instanceof \App\Enums\VoucherType ? $state->value : $state) {
-                        'receipt' => 'success',
-                        'payment' => 'danger',
-                        default => 'gray',
-                    })
                     ->sortable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
@@ -59,7 +56,7 @@ class VouchersTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric(decimalPlaces: 1)
                     ->prefix('ج.م ')
                     ->color(fn ($record) => $record->voucher_type?->value === 'receipt' ? 'success' : 'danger')
                     ->sortable(),
@@ -72,14 +69,14 @@ class VouchersTable
                     ->label('طريقة الدفع')
                     ->badge()
                     ->toggleable(),
-                TextColumn::make('reference_number')
-                    ->label('رقم المرجع')
-                    ->searchable()
-                    ->toggleable(),
-                TextColumn::make('createdBy.name')
-                    ->label('أنشأ بواسطة')
-                    ->sortable()
-                    ->toggleable(),
+                // TextColumn::make('reference_number')
+                //     ->label('رقم المرجع')
+                //     ->searchable()
+                //     ->toggleable(),
+                // TextColumn::make('createdBy.name')
+                //     ->label('أنشأ بواسطة')
+                //     ->sortable()
+                //     ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -90,7 +87,30 @@ class VouchersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // farm
+                SelectFilter::make('farm_id')
+                    ->label('المزرعة')
+                    ->relationship('farm', 'name'),
+
+                // pettyCash
+                SelectFilter::make('petty_cash_id')
+                    ->label('العهدة')
+                    ->relationship('pettyCash', 'name'),
+
+                // voucher_type
+
+                SelectFilter::make('voucher_type')
+                    ->label('نوع السند')
+                    ->options(VoucherType::class),
+
+                SelectFilter::make('payment_method')
+                    ->label('طريقة الدفع')
+                    ->options(PaymentMethod::class),
+
+                // createdBy
+                SelectFilter::make('created_by')
+                    ->label('أنشأ بواسطة')
+                    ->relationship('createdBy', 'name'),
             ])
             ->recordActions([
                 EditAction::make(),

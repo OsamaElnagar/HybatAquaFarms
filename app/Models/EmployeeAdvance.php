@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,6 +43,7 @@ class EmployeeAdvance extends Model
             'installment_amount' => 'decimal:2',
             'balance_remaining' => 'decimal:2',
             'status' => AdvanceStatus::class,
+            'approval_status' => AdvanceApprovalStatus::class,
         ];
     }
 
@@ -56,5 +60,23 @@ class EmployeeAdvance extends Model
     public function repayments(): HasMany
     {
         return $this->hasMany(AdvanceRepayment::class);
+    }
+
+    #[Scope]
+    public function pendingApproval(Builder $query): Builder
+    {
+        return $query->where('approval_status', AdvanceApprovalStatus::PENDING);
+    }
+
+    #[Scope]
+    public function approved(Builder $query): Builder
+    {
+        return $query->where('approval_status', AdvanceApprovalStatus::APPROVED);
+    }
+
+    #[Scope]
+    public function rejected(Builder $query): Builder
+    {
+        return $query->where('approval_status', AdvanceApprovalStatus::REJECTED);
     }
 }

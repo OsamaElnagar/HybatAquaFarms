@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Traders\RelationManagers;
 
+use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Resources\SalesOrders\Schemas\SalesOrderForm;
 use Filament\Actions\BulkActionGroup;
@@ -57,8 +58,6 @@ class SalesOrdersRelationManager extends RelationManager
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof PaymentStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof PaymentStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('delivery_status')
                     ->label('حالة التوصيل')
@@ -76,26 +75,23 @@ class SalesOrdersRelationManager extends RelationManager
                     ->native(false),
                 SelectFilter::make('delivery_status')
                     ->label('حالة التوصيل')
-                    ->options([
-                        'pending' => 'معلق',
-                        'delivered' => 'تم التوصيل',
-                        'cancelled' => 'ملغي',
-                    ]),
+                    ->options(DeliveryStatus::class)
+                    ->native(false),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة عملية مبيعات')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['trader_id'] = $this->getOwnerRecord()->id;
                         $data['created_by'] = Auth::id();
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

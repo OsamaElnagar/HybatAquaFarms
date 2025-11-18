@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
+use App\Enums\PaymentMethod;
 use App\Models\AdvanceRepayment;
 use App\Models\Employee;
 use App\Models\EmployeeAdvance;
@@ -26,7 +28,7 @@ class EmployeeAdvanceSeeder extends Seeder
                     'request_date' => now()->subMonths(rand(1, 12)),
                     'amount' => $amount,
                     'reason' => ['ظروف خاصة', 'مصروفات طبية', 'مناسبة عائلية', 'طلب شخصي'][rand(0, 3)],
-                    'approval_status' => 'approved',
+                    'approval_status' => AdvanceApprovalStatus::APPROVED->value,
                     'approved_date' => now()->subMonths(rand(1, 12)),
                     'disbursement_date' => now()->subMonths(rand(1, 12)),
                     'installments_count' => $installments,
@@ -41,7 +43,7 @@ class EmployeeAdvanceSeeder extends Seeder
                         'employee_advance_id' => $advance->id,
                         'payment_date' => $advance->disbursement_date->addMonths($j + 1),
                         'amount_paid' => $installmentAmount,
-                        'payment_method' => 'salary_deduction',
+                        'payment_method' => PaymentMethod::SALARY_DEDUCTION->value,
                         'balance_remaining' => $amount - (($j + 1) * $installmentAmount),
                     ]);
                 }

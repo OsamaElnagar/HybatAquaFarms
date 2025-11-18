@@ -63,8 +63,8 @@ class DailyFeedIssuesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة صرف علف')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['unit_id'] = $this->getOwnerRecord()->id;
                         $data['farm_id'] = $this->getOwnerRecord()->farm_id;
                         $data['recorded_by'] = Auth::id();
@@ -72,11 +72,11 @@ class DailyFeedIssuesRelationManager extends RelationManager
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

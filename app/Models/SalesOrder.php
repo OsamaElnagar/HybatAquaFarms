@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,6 +42,7 @@ class SalesOrder extends Model
             'discount_amount' => 'decimal:2',
             'total_amount' => 'decimal:2',
             'payment_status' => PaymentStatus::class,
+            'delivery_status' => DeliveryStatus::class,
         ];
     }
 

@@ -13,31 +13,52 @@ class Harvest extends Model
     /** @use HasFactory<\Database\Factories\HarvestFactory> */
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if ($model->batch && $model->batch->is_cycle_closed) {
+                throw new \Exception("لا يمكن إضافة حصاد لدورة مقفلة");
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->batch && $model->batch->is_cycle_closed) {
+                throw new \Exception("لا يمكن تعديل حصاد دورة مقفلة");
+            }
+        });
+
+        static::deleting(function ($model) {
+            if ($model->batch && $model->batch->is_cycle_closed) {
+                throw new \Exception("لا يمكن حذف حصاد دورة مقفلة");
+            }
+        });
+    }
+
     protected $fillable = [
-        'harvest_number',
-        'batch_id',
-        'farm_id',
-        'unit_id',
-        'sales_order_id',
-        'harvest_date',
-        'boxes_count',
-        'total_weight',
-        'average_weight_per_box',
-        'total_quantity',
-        'average_fish_weight',
-        'status',
-        'recorded_by',
-        'notes',
+        "harvest_number",
+        "batch_id",
+        "farm_id",
+        "unit_id",
+        "sales_order_id",
+        "harvest_date",
+        "boxes_count",
+        "total_weight",
+        "average_weight_per_box",
+        "total_quantity",
+        "average_fish_weight",
+        "status",
+        "recorded_by",
+        "notes",
     ];
 
     protected function casts(): array
     {
         return [
-            'harvest_date' => 'date',
-            'total_weight' => 'decimal:3',
-            'average_weight_per_box' => 'decimal:3',
-            'average_fish_weight' => 'decimal:3',
-            'status' => HarvestStatus::class,
+            "harvest_date" => "date",
+            "total_weight" => "decimal:3",
+            "average_weight_per_box" => "decimal:3",
+            "average_fish_weight" => "decimal:3",
+            "status" => HarvestStatus::class,
         ];
     }
 
@@ -53,7 +74,7 @@ class Harvest extends Model
 
     public function unit(): BelongsTo
     {
-        return $this->belongsTo(FarmUnit::class, 'unit_id');
+        return $this->belongsTo(FarmUnit::class, "unit_id");
     }
 
     public function salesOrder(): BelongsTo
@@ -63,7 +84,7 @@ class Harvest extends Model
 
     public function recordedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'recorded_by');
+        return $this->belongsTo(User::class, "recorded_by");
     }
 
     public function boxes(): HasMany

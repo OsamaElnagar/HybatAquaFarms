@@ -17,7 +17,7 @@ class EmployeesStatsWidget extends StatsOverviewWidget
         $activeEmployees = Employee::where('status', 'active')->count();
         $inactiveEmployees = Employee::where('status', 'inactive')->count();
 
-        $totalMonthlyPayroll = Employee::where('status', 'active')->sum('salary_amount');
+        $totalMonthlyPayroll = Employee::where('status', 'active')->sum('basic_salary');
 
         $totalAdvances = EmployeeAdvance::sum('amount');
         $outstandingAdvances = EmployeeAdvance::whereIn('status', ['approved', 'partially_paid'])->sum('balance_remaining');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,7 @@ class AdvanceRepayment extends Model
             'payment_date' => 'date',
             'amount_paid' => 'decimal:2',
             'balance_remaining' => 'decimal:2',
+            'payment_method' => PaymentMethod::class,
         ];
     }
 

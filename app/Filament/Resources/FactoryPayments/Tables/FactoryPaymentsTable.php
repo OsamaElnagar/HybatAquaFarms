@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FactoryPayments\Tables;
 
+use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -31,19 +32,7 @@ class FactoryPaymentsTable
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                        default => $state,
-                    })
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'cash' => 'success',
-                        'bank' => 'info',
-                        'check' => 'warning',
-                        default => 'gray',
-                    })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('reference_number')
@@ -78,11 +67,8 @@ class FactoryPaymentsTable
                     ->preload(),
                 SelectFilter::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->options([
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                    ]),
+                    ->options(PaymentMethod::class)
+                    ->native(),
             ])
             ->recordActions([
                 EditAction::make(),

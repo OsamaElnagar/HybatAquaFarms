@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SalesOrders\Schemas;
 
+use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -102,19 +103,14 @@ class SalesOrderForm
                         Select::make('payment_status')
                             ->label('حالة الدفع')
                             ->options(PaymentStatus::class)
-                            ->default(PaymentStatus::Pending)
+
                             ->required()
                             ->native(false)
                             ->helperText('حالة دفع عملية البيع')
                             ->columnSpan(1),
                         Select::make('delivery_status')
                             ->label('حالة التوصيل')
-                            ->options([
-                                'pending' => 'معلق',
-                                'delivered' => 'تم التوصيل',
-                                'cancelled' => 'ملغي',
-                            ])
-                            ->default('pending')
+                            ->options(DeliveryStatus::class)
                             ->native(false)
                             ->helperText('حالة توصيل المنتجات')
                             ->columnSpan(1),
@@ -127,7 +123,7 @@ class SalesOrderForm
                         Select::make('created_by')
                             ->label('أنشأ بواسطة')
                             ->relationship('createdBy', 'name')
-                            ->default(fn () => Auth::id())
+                            ->default(fn() => Auth::id())
                             ->searchable()
                             ->preload()
                             ->helperText('المستخدم الذي أنشأ العملية')

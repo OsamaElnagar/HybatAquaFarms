@@ -64,8 +64,6 @@ class HarvestsRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof HarvestStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof HarvestStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('salesOrder.order_number')
                     ->label('رقم العملية')
@@ -81,11 +79,11 @@ class HarvestsRelationManager extends RelationManager
             ->headerActions([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

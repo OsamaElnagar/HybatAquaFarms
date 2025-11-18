@@ -28,8 +28,6 @@ class FarmsTable
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof FarmStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof FarmStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('units_count')
                     ->counts('units')

@@ -20,13 +20,6 @@ class FeedMovementsTable
                 TextColumn::make('movement_type')
                     ->label('نوع الحركة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\FeedMovementType ? $state->getLabel() : $state)
-                    ->color(fn ($state) => match ($state instanceof \App\Enums\FeedMovementType ? $state->value : $state) {
-                        'in' => 'success',
-                        'out' => 'danger',
-                        'transfer' => 'info',
-                        default => 'gray',
-                    })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('feedItem.name')

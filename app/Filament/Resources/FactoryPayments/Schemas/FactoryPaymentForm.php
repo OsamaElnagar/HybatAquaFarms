@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FactoryPayments\Schemas;
 
+use App\Enums\PaymentMethod;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -38,11 +39,7 @@ class FactoryPaymentForm
                             ->helperText('أدخل مبلغ الدفعة بالجنيه المصري'),
                         Select::make('payment_method')
                             ->label('طريقة الدفع')
-                            ->options([
-                                'cash' => 'نقدي',
-                                'bank' => 'تحويل بنكي',
-                                'check' => 'شيك',
-                            ])
+                            ->options(PaymentMethod::class)
                             ->searchable()
                             ->helperText('اختر طريقة الدفع المستخدمة'),
                         TextInput::make('reference_number')
@@ -65,7 +62,7 @@ class FactoryPaymentForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth()->id())
+                            ->default(fn () => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل الدفعة'),
                         Textarea::make('notes')
                             ->label('ملاحظات')

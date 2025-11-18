@@ -43,6 +43,7 @@ class DatabaseSeeder extends Seeder
             SalesOrderSeeder::class,
             HarvestSeeder::class,
             EmployeeAdvanceSeeder::class,
+            SalaryRecordSeeder::class,
             FeedMovementSeeder::class,
             DailyFeedIssueSeeder::class,
             FactoryPaymentSeeder::class,

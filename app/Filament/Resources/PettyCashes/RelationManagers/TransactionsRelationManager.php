@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PettyCashes\RelationManagers;
 
+use App\Enums\PettyTransacionType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -76,16 +77,7 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('direction')
                     ->label('النوع')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'in' => 'success',
-                        'out' => 'danger',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'in' => 'قبض (تزويد)',
-                        'out' => 'صرف (مصروف)',
-                        default => $state,
-                    })
+
                     ->sortable(),
                 TextColumn::make('expenseCategory.name_arabic')
                     ->label('نوع المصروف')
@@ -114,10 +106,7 @@ class TransactionsRelationManager extends RelationManager
             ->filters([
                 Tables\Filters\SelectFilter::make('direction')
                     ->label('النوع')
-                    ->options([
-                        'out' => 'صرف (مصروف)',
-                        'in' => 'قبض (تزويد)',
-                    ]),
+                    ->options(PettyTransacionType::class),
                 Tables\Filters\SelectFilter::make('expense_category_id')
                     ->label('نوع المصروف')
                     ->relationship('expenseCategory', 'name_arabic')
@@ -125,7 +114,7 @@ class TransactionsRelationManager extends RelationManager
                     ->preload(),
             ])
             ->headerActions([
-                CreateAction::make()
+                CreateAction::make()->label('إضافة معاملة')
                     ->mutateDataUsing(function (array $data): array {
                         $data['recorded_by'] = Auth::id();
                         $data['petty_cash_id'] = $this->getOwnerRecord()->id;

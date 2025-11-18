@@ -21,8 +21,6 @@ class SpeciesTable
                     ->searchable(),
                 TextColumn::make('type')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof SpeciesType ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof SpeciesType ? $state->getColor() : 'gray')
                     ->searchable(),
                 IconColumn::make('is_active')
                     ->boolean(),

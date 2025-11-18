@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\FeedMovements\Infolists;
 
-use App\Enums\FeedMovementType;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -18,13 +17,6 @@ class FeedMovementInfolist
                         TextEntry::make('movement_type')
                             ->label('نوع الحركة')
                             ->badge()
-                            ->formatStateUsing(fn ($state) => $state instanceof FeedMovementType ? $state->getLabel() : $state)
-                            ->color(fn ($state) => match ($state instanceof FeedMovementType ? $state->value : $state) {
-                                'in' => 'success',
-                                'out' => 'danger',
-                                'transfer' => 'info',
-                                default => 'gray',
-                            })
                             ->columnSpan(1),
                         TextEntry::make('feedItem.name')
                             ->label('صنف العلف')

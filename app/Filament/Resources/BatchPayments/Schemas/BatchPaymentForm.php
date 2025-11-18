@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BatchPayments\Schemas;
 
+use App\Enums\PaymentMethod;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -63,11 +64,7 @@ class BatchPaymentForm
                                     ->columnSpan(1),
                                 Select::make('payment_method')
                                     ->label('طريقة الدفع')
-                                    ->options([
-                                        'cash' => 'نقدي',
-                                        'bank' => 'تحويل بنكي',
-                                        'check' => 'شيك',
-                                    ])
+                                    ->options(PaymentMethod::class)
                                     ->searchable()
                                     ->helperText('اختر طريقة الدفع المستخدمة')
                                     ->columnSpan(1),
@@ -94,7 +91,7 @@ class BatchPaymentForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth()->id())
+                            ->default(fn () => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل هذه الدفعة في النظام')
                             ->columnSpan(1),
                         Textarea::make('notes')

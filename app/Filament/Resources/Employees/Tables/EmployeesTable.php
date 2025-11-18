@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employees\Tables;
 
+use App\Enums\EmployeeStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -44,7 +45,7 @@ class EmployeesTable
                     ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('salary_amount')
+                TextColumn::make('basic_salary')
                     ->label('المرتب')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')
@@ -65,7 +66,8 @@ class EmployeesTable
                     ->label('الحالة')
                     ->badge()
                     ->searchable()
-                    ->sortable()->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                // ->toggleable(),
                 TextColumn::make('termination_date')
                     ->label('تاريخ إنهاء الخدمة')
                     ->date('Y-m-d')
@@ -86,7 +88,7 @@ class EmployeesTable
                     ->relationship('farm', 'name'),
                 SelectFilter::make('status')
                     ->label('الحالة')
-                    ->options(['active' => 'نشط', 'inactive' => 'غير نشط', 'terminated' => 'منهي']),
+                    ->options(EmployeeStatus::class),
                 TernaryFilter::make('hire_date')
                     ->label('تاريخ التوظيف'),
                 TernaryFilter::make('termination_date')

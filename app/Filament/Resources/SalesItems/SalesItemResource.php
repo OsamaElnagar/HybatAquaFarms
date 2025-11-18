@@ -20,24 +20,40 @@ class SalesItemResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
+    protected static ?int $navigationSort = 23;
+
     public static function getNavigationGroup(): ?string
     {
-        return 'المبيعات';
+        return "المبيعات";
     }
 
     public static function getNavigationLabel(): string
     {
-        return 'أصناف المبيعات';
+        return "أصناف المبيعات";
     }
 
     public static function getModelLabel(): string
     {
-        return 'صنف بيع';
+        return "صنف بيع";
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'أصناف المبيعات';
+        return "أصناف المبيعات";
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) SalesItem::where(
+            "fulfillment_status",
+            "pending",
+        )->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        $pending = SalesItem::where("fulfillment_status", "pending")->count();
+        return $pending > 0 ? "warning" : "success";
     }
 
     public static function form(Schema $schema): Schema
@@ -53,16 +69,16 @@ class SalesItemResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
-        ];
+                //
+            ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListSalesItems::route('/'),
-            'create' => CreateSalesItem::route('/create'),
-            'edit' => EditSalesItem::route('/{record}/edit'),
+            "index" => ListSalesItems::route("/"),
+            "create" => CreateSalesItem::route("/create"),
+            "edit" => EditSalesItem::route("/{record}/edit"),
         ];
     }
 }

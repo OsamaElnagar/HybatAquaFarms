@@ -79,7 +79,7 @@ class DailyFeedIssueForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth()->id())
+                            ->default(fn () => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
                         Textarea::make('notes')
                             ->label('ملاحظات')

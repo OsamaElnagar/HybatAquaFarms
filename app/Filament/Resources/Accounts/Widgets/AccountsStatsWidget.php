@@ -29,7 +29,7 @@ class AccountsStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success'),
 
-            Stat::make('حسب النوع', collect(AccountType::cases())->map(fn($t) => ($byType[$t->value] ?? 0).' '.$t->name)->join(' | '))
+            Stat::make('حسب النوع', collect(AccountType::cases())->map(fn ($t) => ($byType[$t->value] ?? 0).' '.$t->name)->join(' | '))
                 ->description('توزيع حسب النوع')
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('info'),

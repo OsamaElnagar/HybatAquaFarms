@@ -48,13 +48,11 @@ class AdvancesRelationManager extends RelationManager
                     ->label('المتبقي')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')
-                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
+                    ->color(fn($state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof AdvanceStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof AdvanceStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('installments_count')
                     ->label('الأقساط')
@@ -68,18 +66,18 @@ class AdvancesRelationManager extends RelationManager
                     ->native(false),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()->label('إضافة سلفة')
+                    ->mutateDataUsing(function (array $data): array {
                         $data['employee_id'] = $this->getOwnerRecord()->id;
 
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

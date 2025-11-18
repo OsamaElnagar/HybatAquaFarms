@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SalesOrders\Tables;
 
+use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -47,24 +48,10 @@ class SalesOrdersTable
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof PaymentStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof PaymentStatus ? $state->getColor() : 'gray')
                     ->sortable(),
                 TextColumn::make('delivery_status')
                     ->label('حالة التوصيل')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'pending' => 'معلق',
-                        'delivered' => 'تم التوصيل',
-                        'cancelled' => 'ملغي',
-                        default => $state,
-                    })
-                    ->color(fn ($state) => match ($state) {
-                        'pending' => 'warning',
-                        'delivered' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    })
                     ->sortable(),
                 TextColumn::make('delivery_date')
                     ->label('تاريخ التوصيل')
@@ -86,11 +73,8 @@ class SalesOrdersTable
                     ->native(false),
                 SelectFilter::make('delivery_status')
                     ->label('حالة التوصيل')
-                    ->options([
-                        'pending' => 'معلق',
-                        'delivered' => 'تم التوصيل',
-                        'cancelled' => 'ملغي',
-                    ]),
+                    ->options(DeliveryStatus::class)
+                    ->native(false),
                 SelectFilter::make('trader_id')
                     ->label('التاجر')
                     ->relationship('trader', 'name'),

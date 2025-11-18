@@ -13,12 +13,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class VoucherResource extends Resource
 {
     protected static ?string $model = Voucher::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCheck;
+
+    protected static ?string $recordTitleAttribute = 'voucher_number';
 
     public static function getNavigationGroup(): ?string
     {
@@ -48,6 +51,16 @@ class VoucherResource extends Resource
     public static function table(Table $table): Table
     {
         return VouchersTable::configure($table);
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['voucher_number', 'reference_number', 'description'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return (string) $record->voucher_number;
     }
 
     public static function getRelations(): array

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('hire_date')->nullable();
             $table->date('termination_date')->nullable();
             $table->foreignId('farm_id')->nullable()->constrained()->nullOnDelete();
-            $table->decimal('salary_amount', 10, 2)->default(0);
+            $table->decimal('basic_salary', 10, 2)->default(0);
             $table->string('status')->default('active')->comment('active/inactive/terminated');
             $table->text('notes')->nullable();
             $table->timestamps();

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\SalaryRecords\Schemas;
 
-use App\Models\SalaryRecord;
+use App\Enums\PaymentMethod;
+use App\Enums\SalaryStatus;
 use App\Models\Employee;
+use App\Models\SalaryRecord;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -29,8 +31,8 @@ class SalaryRecordForm
                             ->required()
                             ->helperText('اختر الموظف الذي يتم إعداد كشف المرتب له')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
-                            ->disabled(fn (Get $get) => filled($get('employee_id')))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->disabled(fn(Get $get) => filled($get('employee_id')))
                             ->columnSpan(1),
                         DatePicker::make('pay_period_start')
                             ->label('بداية الفترة')
@@ -40,7 +42,7 @@ class SalaryRecordForm
                             ->native(false)
                             ->helperText('تاريخ بداية فترة الإستحقاق')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
                                     $employeeId = (int) $get('employee_id');
@@ -55,14 +57,14 @@ class SalaryRecordForm
 
                                     $overlaps = SalaryRecord::query()
                                         ->where('employee_id', $employeeId)
-                                        ->when($currentId, fn ($q) => $q->where('id', '!=', $currentId))
+                                        ->when($currentId, fn($q) => $q->where('id', '!=', $currentId))
                                         ->where(function ($q) use ($start, $end) {
                                             $q->whereBetween('pay_period_start', [$start, $end])
-                                              ->orWhereBetween('pay_period_end', [$start, $end])
-                                              ->orWhere(function ($qq) use ($start, $end) {
-                                                  $qq->where('pay_period_start', '<=', $start)
-                                                     ->where('pay_period_end', '>=', $end);
-                                              });
+                                                ->orWhereBetween('pay_period_end', [$start, $end])
+                                                ->orWhere(function ($qq) use ($start, $end) {
+                                                    $qq->where('pay_period_start', '<=', $start)
+                                                        ->where('pay_period_end', '>=', $end);
+                                                });
                                         })
                                         ->exists();
 
@@ -81,7 +83,7 @@ class SalaryRecordForm
                             ->rule('after_or_equal:pay_period_start')
                             ->helperText('تاريخ نهاية فترة الإستحقاق')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
                                     $employeeId = (int) $get('employee_id');
@@ -96,14 +98,14 @@ class SalaryRecordForm
 
                                     $overlaps = SalaryRecord::query()
                                         ->where('employee_id', $employeeId)
-                                        ->when($currentId, fn ($q) => $q->where('id', '!=', $currentId))
+                                        ->when($currentId, fn($q) => $q->where('id', '!=', $currentId))
                                         ->where(function ($q) use ($start, $end) {
                                             $q->whereBetween('pay_period_start', [$start, $end])
-                                              ->orWhereBetween('pay_period_end', [$start, $end])
-                                              ->orWhere(function ($qq) use ($start, $end) {
-                                                  $qq->where('pay_period_start', '<=', $start)
-                                                     ->where('pay_period_end', '>=', $end);
-                                              });
+                                                ->orWhereBetween('pay_period_end', [$start, $end])
+                                                ->orWhere(function ($qq) use ($start, $end) {
+                                                    $qq->where('pay_period_start', '<=', $start)
+                                                        ->where('pay_period_end', '>=', $end);
+                                                });
                                         })
                                         ->exists();
 
@@ -120,7 +122,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(1)
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->helperText('أيام يتم خصمها من الحساب (غياب/إجازة غير مدفوعة)')
                             ->columnSpan(1),
                         TextInput::make('per_day_rate')
@@ -210,10 +212,10 @@ class SalaryRecordForm
                             ->default(now())
                             ->helperText('التاريخ المتوقع/الفعل للدفع')
                             ->columnSpan(1),
-                        TextInput::make('payment_method')
+                        Select::make('payment_method')
+                            ->options(PaymentMethod::class)
                             ->label('طريقة الدفع')
-                            ->maxLength(50)
-                            ->placeholder('نقدي، تحويل بنكي، شيك...')
+                            ->searchable()
                             ->helperText('كيف تم دفع المرتب؟')
                             ->columnSpan(1),
                         TextInput::make('payment_reference')
@@ -224,14 +226,10 @@ class SalaryRecordForm
                             ->columnSpan(1),
                         Select::make('status')
                             ->label('حالة الدفع')
-                            ->options([
-                                'pending' => 'قيد الانتظار',
-                                'paid' => 'مدفوع',
-                                'cancelled' => 'ملغي',
-                            ])
+                            ->options(SalaryStatus::class)
                             ->native(false)
                             ->required()
-                            ->default('pending')
+                            ->default(SalaryStatus::PENDING)
                             ->helperText('الحالة الحالية لسجل المرتب')
                             ->columnSpan(1),
                         Textarea::make('notes')
@@ -259,13 +257,14 @@ class SalaryRecordForm
             if ($employeeId) {
                 $employee = Employee::find($employeeId);
                 if ($employee) {
-                    $perDay = (float) $employee->salary_amount / 26;
+                    $perDay = (float) $employee->basic_salary / 26;
                     $set('per_day_rate', round($perDay, 2));
                     $set('working_days', null);
-                    $set('basic_salary', (float) $employee->salary_amount);
+                    $set('basic_salary', (float) $employee->basic_salary);
                     self::updateNetSalary($set, $get);
                 }
             }
+
             return;
         }
 
@@ -275,17 +274,51 @@ class SalaryRecordForm
         }
 
         // 26-day month per business rule
-        $perDay = (float) $employee->salary_amount / 26;
+        $perDay = (float) $employee->basic_salary / 26;
 
-        // Inclusive day count (calendar days)
+        // Prorate working days across months to ensure a full month equals 26
         $startDate = \Illuminate\Support\Carbon::parse($start)->startOfDay();
         $endDate = \Illuminate\Support\Carbon::parse($end)->startOfDay();
-        $days = max($startDate->diffInDays($endDate) + 1 - $unpaid, 0);
 
-        $basic = max(round($perDay * $days, 2), 0);
+        // Ensure chronological order
+        if ($endDate->lt($startDate)) {
+            $set('per_day_rate', round($perDay, 2));
+            $set('working_days', 0);
+            $set('basic_salary', 0);
+            self::updateNetSalary($set, $get);
+
+            return;
+        }
+
+        $cursor = $startDate->copy()->startOfDay();
+        $totalWorking = 0.0;
+        while ($cursor->lte($endDate)) {
+            $monthStart = $cursor->copy()->startOfMonth();
+            $monthEnd = $cursor->copy()->endOfMonth();
+
+            $segmentStart = $cursor->copy();
+            $segmentEnd = $endDate->min($monthEnd);
+
+            $daysInSegment = $segmentStart->diffInDays($segmentEnd) + 1; // inclusive
+            $daysInMonth = $monthStart->daysInMonth;
+
+            // Portion of 26-day base for this month segment
+            $portion = (26 * $daysInSegment) / $daysInMonth;
+            $totalWorking += $portion;
+
+            // Move to first day of next month
+            $cursor = $monthEnd->addDay()->startOfDay();
+        }
+
+        // Subtract unpaid days and clamp
+        $totalWorking = max($totalWorking - $unpaid, 0);
+
+        // Round working days to 2 decimals for display
+        $workingForDisplay = round($totalWorking, 2);
+        $basic = max(round($perDay * $totalWorking, 2), 0);
 
         $set('per_day_rate', round($perDay, 2));
-        $set('working_days', $days);
+        $set('working_days', $workingForDisplay);
         $set('basic_salary', $basic);
 
         self::updateNetSalary($set, $get);

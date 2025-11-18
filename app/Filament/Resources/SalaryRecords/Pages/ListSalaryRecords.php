@@ -58,20 +58,21 @@ class ListSalaryRecords extends ListRecords
                                 ->where('employee_id', $employee->id)
                                 ->where(function ($q) use ($from, $to) {
                                     $q->whereBetween('pay_period_start', [$from, $to])
-                                      ->orWhereBetween('pay_period_end', [$from, $to])
-                                      ->orWhere(function ($qq) use ($from, $to) {
-                                          $qq->where('pay_period_start', '<=', $from)
-                                             ->where('pay_period_end', '>=', $to);
-                                      });
+                                        ->orWhereBetween('pay_period_end', [$from, $to])
+                                        ->orWhere(function ($qq) use ($from, $to) {
+                                            $qq->where('pay_period_start', '<=', $from)
+                                                ->where('pay_period_end', '>=', $to);
+                                        });
                                 })
                                 ->exists();
 
                             if ($hasOverlap) {
                                 $skipped++;
+
                                 continue;
                             }
 
-                            $basic = (float) $employee->salary_amount;
+                            $basic = (float) $employee->basic_salary;
 
                             SalaryRecord::create([
                                 'employee_id' => $employee->id,

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
+use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
@@ -39,7 +40,7 @@ class PaymentsRelationManager extends RelationManager
                                     ->required()
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn ($livewire) => $livewire->getOwnerRecord()?->factory_id),
+                                    ->default(fn($livewire) => $livewire->getOwnerRecord()?->factory_id),
                                 DatePicker::make('date')
                                     ->label('تاريخ الدفعة')
                                     ->required()
@@ -58,11 +59,7 @@ class PaymentsRelationManager extends RelationManager
                                     ->step(0.01),
                                 Select::make('payment_method')
                                     ->label('طريقة الدفع')
-                                    ->options([
-                                        'cash' => 'نقدي',
-                                        'bank' => 'تحويل بنكي',
-                                        'check' => 'شيك',
-                                    ])
+                                    ->options(PaymentMethod::class)
                                     ->searchable(),
                             ]),
                         TextInput::make('reference_number')
@@ -106,22 +103,20 @@ class PaymentsRelationManager extends RelationManager
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')
                     ->color('success')
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize([
+                        \Filament\Tables\Columns\Summarizers\Sum::make()
+                            ->label('إجمالي المدفوع')
+                            ->numeric(decimalPlaces: 2)
+                            ->prefix('ج.م '),
+                        \Filament\Tables\Columns\Summarizers\Count::make()
+                            ->label('عدد الدفعات'),
+                    ]),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                        default => $state,
-                    })
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'cash' => 'success',
-                        'bank' => 'info',
-                        'check' => 'warning',
-                        default => 'gray',
-                    }),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('reference_number')
                     ->label('رقم المرجع')
                     ->searchable()
@@ -143,26 +138,14 @@ class PaymentsRelationManager extends RelationManager
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('payment_method')
                     ->label('طريقة الدفع')
-                    ->options([
-                        'cash' => 'نقدي',
-                        'bank' => 'تحويل بنكي',
-                        'check' => 'شيك',
-                    ]),
+                    ->options(PaymentMethod::class),
             ])
             ->defaultSort('date', 'desc')
-            ->summary([
-                \Filament\Tables\Columns\Summarizers\Sum::make('amount')
-                    ->label('إجمالي المدفوع')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م '),
-                \Filament\Tables\Columns\Summarizers\Count::make('amount')
-                    ->label('عدد الدفعات'),
-            ])
             ->headerActions([
-                CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data, $livewire): array {
+                CreateAction::make()->label('إضافة دفعة مالية')
+                    ->mutateDataUsing(function (array $data, $livewire): array {
                         $data['batch_id'] = $livewire->ownerRecord->id;
-                        $data['recorded_by'] = auth()->id();
+                        $data['recorded_by'] = auth('web')->id();
                         // Set factory_id from batch if not set
                         if (empty($data['factory_id']) && $livewire->ownerRecord->factory_id) {
                             $data['factory_id'] = $livewire->ownerRecord->factory_id;
@@ -171,10 +154,10 @@ class PaymentsRelationManager extends RelationManager
                         return $data;
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

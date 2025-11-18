@@ -27,8 +27,6 @@ class FarmUnitsTable
                     ->label('الكود'),
                 TextColumn::make('unit_type')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof UnitType ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof UnitType ? $state->getColor() : 'gray')
                     ->searchable()
                     ->label('نوع الوحدة'),
                 TextColumn::make('capacity')
@@ -37,8 +35,6 @@ class FarmUnitsTable
                     ->label('السعة'),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof FarmStatus ? $state->getLabel() : $state)
-                    ->color(fn ($state) => $state instanceof FarmStatus ? $state->getColor() : 'gray')
                     ->searchable()
                     ->label('حالة الوحدة'),
                 TextColumn::make('batches_count')

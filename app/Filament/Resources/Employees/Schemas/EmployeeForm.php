@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employees\Schemas;
 
+use App\Enums\EmployeeStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -72,7 +73,7 @@ class EmployeeForm
                             ->native(false)
                             ->helperText('تاريخ ترك العمل (إن وُجد)')
                             ->columnSpan(1),
-                        TextInput::make('salary_amount')
+                        TextInput::make('basic_salary')
                             ->label('المرتب الشهري')
                             ->numeric()
                             ->minValue(0)
@@ -82,13 +83,9 @@ class EmployeeForm
                             ->columnSpan(1),
                         Select::make('status')
                             ->label('الحالة')
-                            ->options([
-                                'active' => 'نشط',
-                                'inactive' => 'غير نشط',
-                                'terminated' => 'منهي',
-                            ])
+                            ->options(EmployeeStatus::class)
                             ->required()
-                            ->default('active')
+                            ->default(EmployeeStatus::ACTIVE)
                             ->native(false)
                             ->helperText('حالة الموظف الحالية')
                             ->columnSpan(1),

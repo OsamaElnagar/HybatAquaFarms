@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +40,7 @@ class SalaryRecord extends Model
             'deductions' => 'decimal:2',
             'advances_deducted' => 'decimal:2',
             'net_salary' => 'decimal:2',
+            'payment_method' => PaymentMethod::class,
         ];
     }
 

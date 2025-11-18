@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PaymentMethod;
 use App\Enums\VoucherType;
 use App\Models\Employee;
 use App\Models\Farm;
@@ -39,7 +40,7 @@ class VoucherSeeder extends Seeder
                     'petty_cash_id' => $pettyCash->id,
                     'amount' => rand(500, 5000),
                     'description' => ['سلفة', 'مصروف تشغيل', 'صيانة', 'نقل'][rand(0, 3)],
-                    'payment_method' => 'cash',
+                    'payment_method' => PaymentMethod::CASH->value,
                 ]);
             }
 
@@ -55,7 +56,7 @@ class VoucherSeeder extends Seeder
                     'petty_cash_id' => $pettyCash->id,
                     'amount' => rand(10000, 50000),
                     'description' => 'سداد مبيعات',
-                    'payment_method' => 'cash',
+                    'payment_method' => PaymentMethod::CASH->value,
                 ]);
             }
         });

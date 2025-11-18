@@ -215,6 +215,13 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
+  'osamanagi/filament-abyss-theme' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Nagi\\FilamentAbyssTheme\\FilamentAbyssThemeServiceProvider',
+    ),
+  ),
   'pestphp/pest-plugin-laravel' => 
   array (
     'providers' => 
