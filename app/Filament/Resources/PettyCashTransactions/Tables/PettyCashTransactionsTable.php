@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\PettyCashTransactions\Tables;
 
+use App\Enums\PettyTransacionType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PettyCashTransactionsTable
 {
@@ -26,18 +30,8 @@ class PettyCashTransactionsTable
                 TextColumn::make('direction')
                     ->label('النوع')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'in' => 'success',
-                        'out' => 'danger',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'in' => 'قبض (تزويد)',
-                        'out' => 'صرف (مصروف)',
-                        default => $state,
-                    })
                     ->sortable(),
-                TextColumn::make('expenseCategory.name_arabic')
+                TextColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
                     ->toggleable(),
@@ -45,7 +39,6 @@ class PettyCashTransactionsTable
                     ->label('المبلغ')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')
-                    ->color(fn ($record) => $record->direction === 'out' ? 'danger' : 'success')
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('الوصف')
@@ -73,16 +66,31 @@ class PettyCashTransactionsTable
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('direction')
-                    ->label('النوع')
-                    ->options([
-                        'out' => 'صرف (مصروف)',
-                        'in' => 'قبض (تزويد)',
-                    ]),
+                    ->label('الاتجاه | النوع')
+                    ->options(PettyTransacionType::class),
                 SelectFilter::make('expense_category_id')
                     ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name_arabic')
+                    ->relationship('expenseCategory', 'name')
                     ->searchable()
                     ->preload(),
+                Filter::make('date')
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label('من تاريخ'),
+                        DatePicker::make('date_to')
+                            ->label('إلى تاريخ'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_to'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    }),
             ])
             ->defaultSort('date', 'desc')
             ->recordActions([

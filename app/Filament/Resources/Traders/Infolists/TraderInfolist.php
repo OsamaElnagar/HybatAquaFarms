@@ -81,7 +81,7 @@ class TraderInfolist
                             ->columnSpan(1),
                         TextEntry::make('total_sales')
                             ->label('إجمالي المبيعات')
-                            ->state(fn ($record) => number_format($record->salesOrders()->sum('total_amount'), 2).' ج.م')
+                            ->state(fn ($record) => number_format($record->salesOrders()->sum('net_amount'), 2).' ج.م')
                             ->badge()
                             ->color('success')
                             ->columnSpan(1),

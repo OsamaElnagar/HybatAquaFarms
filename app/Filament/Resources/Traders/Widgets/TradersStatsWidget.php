@@ -16,7 +16,7 @@ class TradersStatsWidget extends StatsOverviewWidget
         $inactiveTraders = Trader::where('is_active', false)->count();
 
         $totalReceivables = Trader::get()->sum(fn ($trader) => $trader->outstanding_balance);
-        $totalRevenue = SalesOrder::sum('total_amount');
+        $totalRevenue = SalesOrder::sum('net_amount');
         $pendingOrders = SalesOrder::whereIn('payment_status', ['pending', 'partial'])->count();
 
         return [

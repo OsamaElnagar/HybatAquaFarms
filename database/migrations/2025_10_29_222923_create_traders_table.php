@@ -23,6 +23,10 @@ return new class extends Migration
             $table->string('trader_type')->nullable()->comment('wholesale/retail');
             $table->integer('payment_terms_days')->nullable();
             $table->decimal('credit_limit', 12, 2)->nullable();
+            $table->decimal('commission_rate', 5, 2)->nullable()->comment('نسبة العمولة %');
+            $table->string('commission_type')->default('percentage')->comment('percentage, fixed_per_kg, none');
+            $table->decimal('default_transport_cost_per_kg', 10, 2)->nullable()->comment('تكلفة النقل الافتراضية للكيلو');
+            $table->decimal('default_transport_cost_flat', 10, 2)->nullable()->comment('تكلفة النقل الافتراضية الثابتة');
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
             $table->timestamps();

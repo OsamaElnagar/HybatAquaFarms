@@ -34,13 +34,13 @@ class SalesOrdersTable
                     ->label('المزرعة')
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('items_count')
-                    ->counts('items')
-                    ->label('الأصناف')
-                    ->badge()
-                    ->color('primary')
-                    ->sortable(),
-                TextColumn::make('total_amount')
+                // TextColumn::make('items_count')
+                //     ->counts('items')
+                //     ->label('الأصناف')
+                //     ->badge()
+                //     ->color('primary')
+                //     ->sortable(),
+                TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')

@@ -4,12 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
+        // NOTE: This table is disabled - harvest_boxes now serve as the line items for sales orders
+        // Keeping migration file for reference but not creating the table
+
+        /*
         Schema::create("sales_items", function (Blueprint $table) {
             $table->id();
             $table
@@ -94,6 +99,7 @@ return new class extends Migration {
             $table->index(["batch_id", "species_id"]);
             $table->index("fulfillment_status");
         });
+        */
     }
 
     /**
@@ -101,6 +107,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists("sales_items");
+        // Schema::dropIfExists("sales_items");
     }
 };

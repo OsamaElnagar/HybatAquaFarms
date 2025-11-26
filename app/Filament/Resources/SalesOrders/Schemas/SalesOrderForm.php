@@ -57,7 +57,7 @@ class SalesOrderForm
 
                 Section::make('المبالغ')
                     ->schema([
-                        TextInput::make('subtotal')
+                        TextInput::make('boxes_subtotal')
                             ->label('المجموع الفرعي')
                             ->required()
                             ->numeric()
@@ -84,7 +84,7 @@ class SalesOrderForm
                             ->prefix('ج.م')
                             ->helperText('قيمة الخصم (إن وُجد)')
                             ->columnSpan(1),
-                        TextInput::make('total_amount')
+                        TextInput::make('net_amount')
                             ->label('المجموع الإجمالي')
                             ->required()
                             ->numeric()

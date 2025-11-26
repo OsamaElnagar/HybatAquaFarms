@@ -15,12 +15,12 @@ class SalesOrdersStatsWidget extends StatsOverviewWidget
         $pendingOrders = SalesOrder::where('payment_status', 'pending')->count();
         $paidOrders = SalesOrder::where('payment_status', 'paid')->count();
 
-        $totalRevenue = SalesOrder::sum('total_amount');
+        $totalRevenue = SalesOrder::sum('net_amount');
         $thisMonthRevenue = SalesOrder::whereMonth('date', Carbon::now()->month)
             ->whereYear('date', Carbon::now()->year)
-            ->sum('total_amount');
+            ->sum('net_amount');
 
-        $pendingValue = SalesOrder::whereIn('payment_status', ['pending', 'partial'])->sum('total_amount');
+        $pendingValue = SalesOrder::whereIn('payment_status', ['pending', 'partial'])->sum('net_amount');
         $deliveredOrders = SalesOrder::where('delivery_status', 'delivered')->count();
 
         return [

@@ -33,7 +33,7 @@ class SalesOrderInfolist
 
                 Section::make('المبالغ')
                     ->schema([
-                        TextEntry::make('subtotal')
+                        TextEntry::make('boxes_subtotal')
                             ->label('المجموع الفرعي')
                             ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
                             ->columnSpan(1),
@@ -46,7 +46,7 @@ class SalesOrderInfolist
                             ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
                             ->color('warning')
                             ->columnSpan(1),
-                        TextEntry::make('total_amount')
+                        TextEntry::make('net_amount')
                             ->label('المجموع الإجمالي')
                             ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
                             ->color('success')

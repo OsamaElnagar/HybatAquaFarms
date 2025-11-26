@@ -15,12 +15,9 @@ class ExpenseCategoriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name_arabic')
-                    ->label('الاسم (عربي)')
-                    ->searchable()
-                    ->sortable(),
+
                 TextColumn::make('name')
-                    ->label('الاسم (إنجليزي)')
+                    ->label('الاسم')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),

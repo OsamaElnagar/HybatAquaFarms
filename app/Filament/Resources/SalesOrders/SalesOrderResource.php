@@ -20,9 +20,11 @@ class SalesOrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
+    protected static ?int $navigationSort = 1;
+
     public static function getNavigationGroup(): ?string
     {
-        return 'المبيعات';
+        return 'الحصاد والمبيعات';
     }
 
     public static function getNavigationLabel(): string
@@ -53,7 +55,6 @@ class SalesOrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ItemsRelationManager::class,
             RelationManagers\HarvestsRelationManager::class,
         ];
     }

@@ -85,11 +85,6 @@ class Batch extends Model
         return $this->hasMany(BatchMovement::class);
     }
 
-    public function salesItems(): HasMany
-    {
-        return $this->hasMany(SalesItem::class);
-    }
-
     public function dailyFeedIssues(): HasMany
     {
         return $this->hasMany(DailyFeedIssue::class);
@@ -253,6 +248,7 @@ class Batch extends Model
 
     /**
      * Calculate total revenue from harvests/sales.
+     * UPDATED: Now uses harvest_boxes instead of sales_items
      */
     public function getTotalRevenueAttribute(): float
     {
@@ -264,12 +260,10 @@ class Batch extends Model
             return (float) $this->attributes["total_revenue"];
         }
 
-        // Sum all sales items for this batch
-        return (float) $this->salesItems()
-            ->whereHas("salesOrder", function ($query) {
-                $query->whereIn("status", ["completed", "delivered"]);
-            })
-            ->sum(\DB::raw("quantity * unit_price"));
+        // Sum all sold harvest boxes for this batch
+        return (float) \App\Models\HarvestBox::where('batch_id', $this->id)
+            ->where('is_sold', true)
+            ->sum('subtotal');
     }
 
     /**

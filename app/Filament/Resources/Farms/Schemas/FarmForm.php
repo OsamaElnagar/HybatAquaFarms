@@ -50,8 +50,15 @@ class FarmForm
 
                 Section::make('الحالة والإدارة')
                     ->schema([
+                        Select::make('manager_id')
+                            ->label('مدير المزرعه والمسؤول عن العهده')
+                            ->relationship('manager', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->helperText('اختر موظف لإدارة هذه المزرعة (اختياري)')
+                            ->columnSpan(1),
                         Select::make('status')
-                            ->label('الحالة')
+                            ->label('حالة المزرعه')
                             ->options(FarmStatus::class)
                             ->default(FarmStatus::Active)
                             ->required()
@@ -64,15 +71,9 @@ class FarmForm
                             ->native(false)
                             ->helperText('تاريخ تأسيس المزرعة (اختياري)')
                             ->columnSpan(1),
-                        Select::make('manager_id')
-                            ->label('المدير')
-                            ->relationship('manager', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->helperText('اختر موظف لإدارة هذه المزرعة (اختياري)')
-                            ->columnSpan(2),
+
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->collapsible(),
 

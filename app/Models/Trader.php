@@ -23,6 +23,10 @@ class Trader extends Model
         'trader_type',
         'payment_terms_days',
         'credit_limit',
+        'commission_rate',
+        'commission_type',
+        'default_transport_cost_per_kg',
+        'default_transport_cost_flat',
         'is_active',
         'notes',
     ];
@@ -32,6 +36,9 @@ class Trader extends Model
         return [
             'is_active' => 'boolean',
             'credit_limit' => 'decimal:2',
+            'commission_rate' => 'decimal:2',
+            'default_transport_cost_per_kg' => 'decimal:2',
+            'default_transport_cost_flat' => 'decimal:2',
         ];
     }
 
@@ -58,7 +65,7 @@ class Trader extends Model
     {
         $totalCreditSales = $this->salesOrders()
             ->whereIn('payment_status', ['pending', 'partial'])
-            ->sum('total_amount');
+            ->sum('net_amount');
 
         $totalSettled = $this->clearingEntries()->sum('amount');
 

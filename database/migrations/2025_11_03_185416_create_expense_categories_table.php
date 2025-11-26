@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('expense_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('name_arabic')->nullable();
             $table->string('code')->unique()->nullable();
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);

@@ -40,7 +40,7 @@ class TransactionsRelationManager extends RelationManager
                     ->default('out'),
                 Select::make('expense_category_id')
                     ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name_arabic', fn($query) => $query->where('is_active', true))
+                    ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
                     ->visible(fn($get) => $get('direction') === 'out')
                     ->required(fn($get) => $get('direction') === 'out')
                     ->searchable()
@@ -79,7 +79,7 @@ class TransactionsRelationManager extends RelationManager
                     ->badge()
 
                     ->sortable(),
-                TextColumn::make('expenseCategory.name_arabic')
+                TextColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
                     ->toggleable(),
@@ -109,7 +109,7 @@ class TransactionsRelationManager extends RelationManager
                     ->options(PettyTransacionType::class),
                 Tables\Filters\SelectFilter::make('expense_category_id')
                     ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name_arabic')
+                    ->relationship('expenseCategory', 'name')
                     ->searchable()
                     ->preload(),
             ])

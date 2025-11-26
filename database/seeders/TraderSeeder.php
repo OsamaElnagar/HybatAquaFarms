@@ -26,6 +26,10 @@ class TraderSeeder extends Seeder
                 'trader_type' => rand(1, 2) === 1 ? 'wholesale' : 'retail',
                 'payment_terms_days' => rand(0, 30),
                 'credit_limit' => rand(50000, 500000),
+                'commission_rate' => fake()->randomElement([1.5, 2.0, 2.5, 3.0, 3.5]),
+                'commission_type' => 'percentage',
+                'default_transport_cost_per_kg' => fake()->randomFloat(2, 0.5, 2.0),
+                'default_transport_cost_flat' => fake()->randomFloat(2, 50, 200),
                 'is_active' => true,
             ]);
         }

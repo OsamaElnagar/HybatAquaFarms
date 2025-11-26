@@ -35,7 +35,7 @@ class SalesOrderObserver
                 // This assumes the original sale was posted as credit (debit receivables)
                 // Now we're receiving cash (debit cash, credit receivables)
                 $this->posting->post('sales.payment', [
-                    'amount' => (float) $salesOrder->total_amount,
+                    'amount' => (float) $salesOrder->net_amount,
                     'farm_id' => $salesOrder->farm_id,
                     'date' => $salesOrder->date?->toDateString(),
                     'source_type' => $salesOrder->getMorphClass(),
@@ -55,7 +55,7 @@ class SalesOrderObserver
             : 'sales.credit';
 
         $this->posting->post($eventKey, [
-            'amount' => (float) $salesOrder->total_amount,
+            'amount' => (float) $salesOrder->net_amount,
             'farm_id' => $salesOrder->farm_id,
             'date' => $salesOrder->date?->toDateString(),
             'source_type' => $salesOrder->getMorphClass(),

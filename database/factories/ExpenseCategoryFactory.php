@@ -18,7 +18,6 @@ class ExpenseCategoryFactory extends Factory
     {
         return [
             'name' => fake()->words(2, true),
-            'name_arabic' => fake()->words(2, true),
             'code' => fake()->unique()->bothify('CAT-###'),
             'is_active' => true,
         ];

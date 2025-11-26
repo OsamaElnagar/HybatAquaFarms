@@ -14,11 +14,7 @@ class ExpenseCategoryForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('الاسم (إنجليزي)')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('name_arabic')
-                    ->label('الاسم (عربي)')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('code')

@@ -44,7 +44,7 @@ class SalesOrdersRelationManager extends RelationManager
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->sortable(),
-                TextColumn::make('total_amount')
+                TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
                     ->numeric(decimalPlaces: 2)
                     ->prefix('ج.م ')

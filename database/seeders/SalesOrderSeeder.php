@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
-use App\Models\Batch;
+use App\Enums\PricingUnit;
 use App\Models\Farm;
-use App\Models\SalesItem;
+use App\Models\HarvestBox;
 use App\Models\SalesOrder;
 use App\Models\Trader;
 use Illuminate\Database\Seeder;
@@ -18,205 +18,116 @@ class SalesOrderSeeder extends Seeder
         $traders = Trader::all();
 
         if ($traders->isEmpty()) {
-            $this->command->warn(
-                "No traders found. Skipping sales orders seeding.",
-            );
+            $this->command->warn("No traders found. Skipping sales orders seeding.");
             return;
         }
 
-        Farm::each(function ($farm) use ($traders) {
-            $batches = Batch::where("farm_id", $farm->id)->get();
+        // Get unsold harvest boxes
+        $unsoldBoxes = HarvestBox::where('is_sold', false)->get();
 
-            if ($batches->isEmpty()) {
-                $this->command->warn(
-                    "No batches found for farm {$farm->name}. Skipping.",
-                );
-                return;
-            }
+        if ($unsoldBoxes->isEmpty()) {
+            $this->command->warn("No unsold harvest boxes found. Run HarvestSeeder first.");
+            return;
+        }
 
-            // Create 3-7 sales orders per farm
-            $orderCount = rand(3, 7);
+        // Group boxes by farm for realistic orders
+        $boxesByFarm = $unsoldBoxes->groupBy('batch.farm_id');
+
+        foreach ($boxesByFarm as $farmId => $farmBoxes) {
+            $farm = Farm::find($farmId);
+
+            if (!$farm) continue;
+
+            // Create 2-5 sales orders per farm
+            $orderCount = rand(2, 5);
 
             for ($i = 0; $i < $orderCount; $i++) {
-                $orderDate = now()->subDays(rand(1, 90));
-                $itemsCount = rand(1, 4); // 1-4 items per order
+                $trader = $traders->random();
+                $orderDate = fake()->dateTimeBetween('-2 months', 'now');
 
+                // Select random boxes for this order (3-10 boxes)
+                $boxesForOrder = $farmBoxes
+                    ->where('is_sold', false)
+                    ->random(min(rand(3, 10), $farmBoxes->where('is_sold', false)->count()));
+
+                if ($boxesForOrder->isEmpty()) {
+                    break; // No more boxes available
+                }
+
+                // Create the sales order
                 $salesOrder = SalesOrder::create([
-                    "order_number" =>
-                    "{$farm->code}-SO-" .
-                        str_pad($i + 1, 4, "0", STR_PAD_LEFT),
-                    "farm_id" => $farm->id,
-                    "trader_id" => $traders->random()->id,
-                    "date" => $orderDate,
-                    "subtotal" => 0, // Will be calculated from items
-                    "tax_amount" => 0,
-                    "discount_amount" => 0, // Will be calculated from items
-                    "total_amount" => 0, // Will be calculated from items
-                    "payment_status" => fake()->randomElement([
+                    'farm_id' => $farmId,
+                    'trader_id' => $trader->id,
+                    'date' => $orderDate,
+                    'boxes_subtotal' => 0, // Will be calculated
+                    'commission_rate' => $trader->commission_rate ?? 2.0,
+                    'commission_amount' => 0,
+                    'transport_cost' => $trader->default_transport_cost_flat ?? fake()->randomFloat(2, 50, 200),
+                    'tax_amount' => 0,
+                    'discount_amount' => fake()->boolean(20) ? fake()->randomFloat(2, 50, 500) : 0,
+                    'total_before_commission' => 0,
+                    'net_amount' => 0,
+                    'payment_status' => fake()->randomElement([
                         PaymentStatus::Paid,
                         PaymentStatus::Paid,
                         PaymentStatus::Paid, // 60% paid
-                        // PaymentStatus::Partial,
-                        // PaymentStatus::Pending,
+                        PaymentStatus::Partial,
+                        PaymentStatus::Pending,
                     ]),
-                    "delivery_status" => fake()->randomElement([
+                    'delivery_status' => fake()->randomElement([
                         DeliveryStatus::DELIVERED,
                         DeliveryStatus::DELIVERED,
                         DeliveryStatus::DELIVERED, // 60% delivered
-                        // DeliveryStatus::PENDING,
-                        // DeliveryStatus::CANCELLED,
+                        DeliveryStatus::PENDING,
                     ]),
-                    "delivery_date" => $orderDate->copy()->addDays(rand(1, 7)),
-                    "delivery_address" => fake()->optional(0.7)->address(),
-                    "notes" => fake()->optional(0.3)->sentence(),
+                    'delivery_date' => fake()->dateTimeBetween($orderDate, '+7 days'),
+                    'delivery_address' => fake()->optional(0.7)->address(),
+                    'notes' => fake()->optional(0.3)->sentence(),
+                    'created_by' => 1,
                 ]);
 
-                // Create sales items for this order
-                $orderSubtotal = 0;
-                $orderTotalDiscount = 0;
+                // Assign boxes to this order with pricing
+                $lineNumber = 1;
 
-                for (
-                    $lineNumber = 1;
-                    $lineNumber <= $itemsCount;
-                    $lineNumber++
-                ) {
-                    $batch = $batches->random();
+                foreach ($boxesForOrder as $box) {
+                    // Price based on classification
+                    $unitPrice = $this->getPriceForClassification($box->classification);
 
-                    // Size categories with weights
-                    $sizeCategories = [
-                        "جامبو" => [
-                            "min" => 0.5,
-                            "max" => 1.0,
-                            "price" => rand(50, 70),
-                        ],
-                        "كبير" => [
-                            "min" => 0.3,
-                            "max" => 0.5,
-                            "price" => rand(40, 50),
-                        ],
-                        "متوسط" => [
-                            "min" => 0.15,
-                            "max" => 0.3,
-                            "price" => rand(30, 40),
-                        ],
-                        "صغير" => [
-                            "min" => 0.05,
-                            "max" => 0.15,
-                            "price" => rand(20, 30),
-                        ],
-                    ];
-
-                    $sizeCategory = fake()->randomElement(
-                        array_keys($sizeCategories),
-                    );
-                    $sizeData = $sizeCategories[$sizeCategory];
-
-                    // Grade with pricing multiplier
-                    $grades = [
-                        "A" => 1.2,
-                        "B" => 1.0,
-                        "C" => 0.85,
-                        "D" => 0.7,
-                    ];
-                    $grade = fake()->randomElement(array_keys($grades));
-                    $gradeMultiplier = $grades[$grade];
-
-                    // Calculate quantities and weights
-                    $quantity = rand(100, 1500);
-                    $avgFishWeightKg = fake()->randomFloat(
-                        3,
-                        $sizeData["min"],
-                        $sizeData["max"],
-                    );
-                    $avgFishWeightGrams = $avgFishWeightKg * 1000;
-                    $weightKg = $quantity * $avgFishWeightKg;
-
-                    // Pricing
-                    $pricingUnit = fake()->randomElement([
-                        "kg",
-                        "kg",
-                        "kg",
-                        "piece",
-                    ]); // 75% kg
-                    $baseUnitPrice = $sizeData["price"];
-                    $unitPrice = round($baseUnitPrice * $gradeMultiplier, 2);
-
-                    $subtotal =
-                        $pricingUnit === "piece"
-                        ? $quantity * $unitPrice
-                        : $weightKg * $unitPrice;
-
-                    // Discount (30% chance)
-                    $hasDiscount = fake()->boolean(30);
-                    $discountPercent = $hasDiscount
-                        ? fake()->randomFloat(2, 2, 15)
-                        : 0;
-                    $discountAmount = $subtotal * ($discountPercent / 100);
-                    $totalPrice = $subtotal - $discountAmount;
-
-                    // Fulfillment status
-                    $fulfillmentStatus = fake()->randomElement([
-                        "fulfilled",
-                        "fulfilled",
-                        "fulfilled",
-                        // "partial",
-                        // "pending",
+                    $box->update([
+                        'trader_id' => $trader->id,
+                        'sales_order_id' => $salesOrder->id,
+                        'unit_price' => $unitPrice,
+                        'pricing_unit' => PricingUnit::Kilogram->value,
+                        'is_sold' => true,
+                        'sold_at' => $orderDate,
+                        'line_number' => $lineNumber++,
                     ]);
-                    $fulfilledQuantity = match ($fulfillmentStatus) {
-                        "fulfilled" => $quantity,
-                        // "partial" => rand($quantity * 0.3, $quantity * 0.8),
-                        // "pending" => 0,
-                    };
-                    $fulfilledWeight =
-                        ($fulfilledQuantity / $quantity) * $weightKg;
-
-                    $itemName =
-                        $batch->species->name .
-                        " " .
-                        $sizeCategory .
-                        " - درجة " .
-                        $grade;
-
-                    SalesItem::create([
-                        "sales_order_id" => $salesOrder->id,
-                        "batch_id" => $batch->id,
-                        "species_id" => $batch->species_id,
-                        "item_name" => $itemName,
-                        "description" => fake()->optional(0.3)->sentence(),
-                        "quantity" => $quantity,
-                        "weight_kg" => round($weightKg, 3),
-                        "average_fish_weight" => round($avgFishWeightGrams, 3),
-                        "grade" => $grade,
-                        "size_category" => $sizeCategory,
-                        "unit_price" => $unitPrice,
-                        "pricing_unit" => $pricingUnit,
-                        "discount_percent" => round($discountPercent, 2),
-                        "discount_amount" => round($discountAmount, 2),
-                        "subtotal" => round($subtotal, 2),
-                        "total_price" => round($totalPrice, 2),
-                        "fulfilled_quantity" => round($fulfilledQuantity, 2),
-                        "fulfilled_weight" => round($fulfilledWeight, 3),
-                        "fulfillment_status" => $fulfillmentStatus,
-                        "line_number" => $lineNumber,
-                        "notes" => fake()->optional(0.2)->sentence(),
-                    ]);
-
-                    $orderSubtotal += $subtotal;
-                    $orderTotalDiscount += $discountAmount;
                 }
 
-                // Update sales order with calculated totals
-                $salesOrder->update([
-                    "subtotal" => round($orderSubtotal, 2),
-                    "discount_amount" => round($orderTotalDiscount, 2),
-                    "total_amount" => round(
-                        $orderSubtotal - $orderTotalDiscount,
-                        2,
-                    ),
-                ]);
+                // Recalculate totals (will be done by model observer, but let's be explicit)
+                $salesOrder->recalculateTotals();
             }
-        });
+        }
 
-        $this->command->info("Sales orders and items seeded successfully!");
+        $this->command->info("✅ Sales orders seeded successfully!");
+        $this->command->info("Created: ".SalesOrder::count()." orders");
+        $this->command->info("Sold boxes: ".HarvestBox::where('is_sold', true)->count());
+    }
+
+    /**
+     * Get realistic price per kg based on classification
+     */
+    private function getPriceForClassification(?string $classification): float
+    {
+        return match($classification) {
+            'جامبو' => fake()->randomFloat(2, 60, 75),
+            'بلطي' => fake()->randomFloat(2, 45, 60),
+            'نمرة 1' => fake()->randomFloat(2, 50, 65),
+            'نمرة 2' => fake()->randomFloat(2, 40, 55),
+            'نمرة 3' => fake()->randomFloat(2, 35, 45),
+            'نمرة 4' => fake()->randomFloat(2, 25, 35),
+            'خرط' => fake()->randomFloat(2, 20, 30),
+            default => fake()->randomFloat(2, 30, 50),
+        };
     }
 }

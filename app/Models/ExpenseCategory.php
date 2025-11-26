@@ -13,7 +13,6 @@ class ExpenseCategory extends Model
 
     protected $fillable = [
         'name',
-        'name_arabic',
         'code',
         'description',
         'is_active',

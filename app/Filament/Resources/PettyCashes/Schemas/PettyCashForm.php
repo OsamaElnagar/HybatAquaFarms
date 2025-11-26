@@ -20,10 +20,22 @@ class PettyCashForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->relationship('farm', 'name')
                             ->required()
                             ->searchable()
-                            ->preload()
+                            ->getSearchResultsUsing(function (string $search, $get) {
+                                $currentPettyCashId = $get('../../id');
+
+                                return \App\Models\Farm::query()
+                                    ->where('name', 'like', "%{$search}%")
+                                    ->whereDoesntHave('pettyCash', function ($q) use ($currentPettyCashId) {
+                                        if ($currentPettyCashId) {
+                                            $q->where('id', '!=', $currentPettyCashId);
+                                        }
+                                    })
+                                    ->limit(50)
+                                    ->pluck('name', 'id');
+                            })
+                            ->getOptionLabelUsing(fn ($value): ?string => \App\Models\Farm::find($value)?->name)
                             ->helperText('المزرعة التي تنتمي إليها العهدة')
                             ->columnSpan(1),
                         TextInput::make('name')
