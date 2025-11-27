@@ -38,7 +38,7 @@ class HarvestOperationForm
                             ->required()
                             ->native(false)
                             ->columnSpan(1),
-                    ])->columns(2),
+                    ])->columns(2)->columnSpanFull(),
 
                 Section::make('تفاصيل الدفعة والمزرعة')
                     ->schema([
@@ -67,7 +67,7 @@ class HarvestOperationForm
                             ->disabled()
                             ->dehydrated()
                             ->columnSpan(1),
-                    ])->columns(2),
+                    ])->columns(2)->columnSpanFull(),
 
                 Section::make('المدة الزمنية')
                     ->schema([
@@ -107,15 +107,17 @@ class HarvestOperationForm
                             ->dehydrated()
                             ->suffix('يوم')
                             ->columnSpan(1),
-                    ])->columns(3),
+                    ])->columns(3)->columnSpanFull(),
 
                 Section::make('ملاحظات إضافية')
                     ->schema([
                         Textarea::make('notes')
                             ->label('ملاحظات')
-                            ->rows(3)
-                            ->columnSpanFull(),
-                    ]),
+                            ->rows(3),
+
+                    ])->collapsible()
+                    ->collapsed()
+                    ->columnSpanFull(),
 
                 Hidden::make('created_by')
                     ->default(auth()->id()),

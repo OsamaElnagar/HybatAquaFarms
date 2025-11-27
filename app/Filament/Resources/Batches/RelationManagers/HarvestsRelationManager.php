@@ -37,29 +37,32 @@ class HarvestsRelationManager extends RelationManager
                 TextColumn::make('boxes_count')
                     ->label('الصناديق')
                     ->numeric()
-                    ->sortable()
+                    ->state(fn ($record) => $record->total_boxes)
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Sum::make()
-                            ->label('المجموع'),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المجموع')
+                            ->using(fn ($query) => $query->get()->sum('total_boxes')),
                     ]),
                 TextColumn::make('total_weight')
                     ->label('الوزن الإجمالي')
                     ->numeric(decimalPlaces: 3)
                     ->suffix(' كجم')
-                    ->sortable()
+                    ->state(fn ($record) => $record->total_weight)
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Sum::make()
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المجموع')
                             ->numeric(decimalPlaces: 3)
-                            ->suffix(' كجم'),
+                            ->suffix(' كجم')
+                            ->using(fn ($query) => $query->get()->sum('total_weight')),
                     ]),
                 TextColumn::make('total_quantity')
                     ->label('العدد')
                     ->numeric()
-                    ->sortable()
+                    ->state(fn ($record) => $record->total_quantity)
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Sum::make()
-                            ->label('المجموع'),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المجموع')
+                            ->using(fn ($query) => $query->get()->sum('total_quantity')),
                     ]),
                 TextColumn::make('status')
                     ->label('الحالة')
