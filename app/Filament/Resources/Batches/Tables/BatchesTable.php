@@ -61,7 +61,7 @@ class BatchesTable
                 //         $mortality = $record->initial_quantity - $record->current_quantity;
                 //         $rate = ($mortality / $record->initial_quantity) * 100;
 
-                //         return number_format($rate, 2).'%';
+                //         return number_format($rate).'%';
                 //     })
                 //     ->badge()
                 //     ->color(function ($record) {

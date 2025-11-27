@@ -20,7 +20,7 @@ class FeedItemsStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-rectangle-stack')
                 ->color('primary'),
 
-            Stat::make('متوسط التكلفة', number_format($avgCost, 2).' ج.م')
+            Stat::make('متوسط التكلفة', number_format($avgCost).' ج.م')
                 ->description('التكلفة القياسية')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('info'),

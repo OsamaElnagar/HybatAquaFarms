@@ -28,17 +28,17 @@ class FactoriesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-building-office')
                 ->color('primary'),
 
-            Stat::make('إجمالي المشتريات', number_format($totalPurchases, 2).' ج.م')
+            Stat::make('إجمالي المشتريات', number_format($totalPurchases).' ج.م')
                 ->description('زريعة وأعلاف')
                 ->descriptionIcon('heroicon-o-shopping-bag')
                 ->color('success'),
 
-            Stat::make('المستحقات للمصانع', number_format($totalPayables, 2).' ج.م')
+            Stat::make('المستحقات للمصانع', number_format($totalPayables).' ج.م')
                 ->description('المبالغ المستحقة للدفع')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalPayables > 0 ? 'warning' : 'success'),
 
-            Stat::make('متوسط قيمة الطلب', $totalFactories > 0 ? number_format($totalPurchases / $totalFactories, 2).' ج.م' : '0.00 ج.م')
+            Stat::make('متوسط قيمة الطلب', $totalFactories > 0 ? number_format($totalPurchases / $totalFactories).' ج.م' : '0.00 ج.م')
                 ->description('متوسط المشتريات لكل مصنع')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),

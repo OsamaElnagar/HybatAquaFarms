@@ -26,17 +26,17 @@ class DailyFeedIssuesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-calendar-days')
                 ->color('primary'),
 
-            Stat::make('صرف اليوم', number_format($todayQuantity, 3))
+            Stat::make('صرف اليوم', number_format($todayQuantity))
                 ->description($todayIssues.' سجل')
                 ->descriptionIcon('heroicon-o-sun')
                 ->color('success'),
 
-            Stat::make('صرف هذا الأسبوع', number_format($thisWeekQuantity, 3))
+            Stat::make('صرف هذا الأسبوع', number_format($thisWeekQuantity))
                 ->description($thisWeekIssues.' سجل')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('info'),
 
-            Stat::make('صرف هذا الشهر', number_format($thisMonthQuantity, 3))
+            Stat::make('صرف هذا الشهر', number_format($thisMonthQuantity))
                 ->description($thisMonthIssues.' سجل')
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('warning'),

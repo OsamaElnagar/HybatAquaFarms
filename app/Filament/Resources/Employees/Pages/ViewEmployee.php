@@ -80,7 +80,7 @@ class ViewEmployee extends ViewRecord
             //         DB::transaction(function () use ($employee, $from, $to, $unpaid): void {
             //             $perDay = (float) $employee->basic_salary / 26;
             //             $days = max($from->diffInDays($to) + 1 - $unpaid, 0);
-            //             $basic = max(round($perDay * $days, 2), 0);
+            //             $basic = max(round($perDay * $days), 0);
 
             //             SalaryRecord::create([
             //                 'employee_id' => $employee->id,

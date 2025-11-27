@@ -20,7 +20,7 @@ class BatchesStatsWidget extends BaseWidget
         $totalCurrentQuantity = Batch::sum('current_quantity');
         $mortalityCount = $totalInitialQuantity - $totalCurrentQuantity;
         $mortalityRate = $totalInitialQuantity > 0
-            ? round(($mortalityCount / $totalInitialQuantity) * 100, 2)
+            ? round(($mortalityCount / $totalInitialQuantity) * 100)
             : 0;
 
         $totalCost = Batch::whereNotNull('total_cost')->sum('total_cost');
@@ -44,8 +44,8 @@ class BatchesStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-cube')
                 ->color($mortalityRate > 10 ? 'danger' : ($mortalityRate > 5 ? 'warning' : 'success')),
 
-            Stat::make('إجمالي التكلفة', number_format($totalCost, 2).' ج.م')
-                ->description('هذا الشهر: '.number_format($thisMonthBatches).' دفعة - '.number_format($thisMonthCost, 2).' ج.م')
+            Stat::make('إجمالي التكلفة', number_format($totalCost).' ج.م')
+                ->description('هذا الشهر: '.number_format($thisMonthBatches).' دفعة - '.number_format($thisMonthCost).' ج.م')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('success'),
 
@@ -66,6 +66,6 @@ class BatchesStatsWidget extends BaseWidget
             return 'لا توجد بيانات';
         }
 
-        return number_format((float) $avgWeight, 2).' جم';
+        return number_format((float) $avgWeight).' جم';
     }
 }

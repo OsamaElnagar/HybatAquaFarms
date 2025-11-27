@@ -96,7 +96,7 @@ class PettyCashTransactionForm
                                         ? $currentBalance + $amount
                                         : $currentBalance - $amount;
 
-                                    return number_format($balanceAfter, 2).' جنيه';
+                                    return number_format($balanceAfter).' جنيه';
                                 }
 
                                 return '-';

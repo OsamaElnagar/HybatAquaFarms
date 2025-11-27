@@ -28,17 +28,17 @@ class PettyCashesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-wallet')
                 ->color('primary'),
 
-            Stat::make('إجمالي الأرصدة', number_format($totalBalance, 2).' ج.م')
+            Stat::make('إجمالي الأرصدة', number_format($totalBalance).' ج.م')
                 ->description('الرصيد الإجمالي لجميع العُهد')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('success'),
 
-            Stat::make('المصروفات هذا الشهر', number_format($thisMonthExpenses, 2).' ج.م')
+            Stat::make('المصروفات هذا الشهر', number_format($thisMonthExpenses).' ج.م')
                 ->description('إجمالي المصروفات من جميع العُهد')
                 ->descriptionIcon('heroicon-o-arrow-trending-down')
                 ->color('warning'),
 
-            Stat::make('متوسط الرصيد', $totalPettyCashes > 0 ? number_format($totalBalance / $totalPettyCashes, 2).' ج.م' : '0.00 ج.م')
+            Stat::make('متوسط الرصيد', $totalPettyCashes > 0 ? number_format($totalBalance / $totalPettyCashes).' ج.م' : '0.00 ج.م')
                 ->description('متوسط الرصيد لكل عهدة')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),

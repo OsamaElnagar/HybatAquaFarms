@@ -337,7 +337,7 @@ class HarvestBoxesRelationManager extends RelationManager
                                     'box' => $state,
                                     default => $weight * $state,
                                 };
-                                $set('subtotal', round($subtotal, 2));
+                                $set('subtotal', round($subtotal));
                             }
                         }),
 
@@ -364,7 +364,7 @@ class HarvestBoxesRelationManager extends RelationManager
                                     'box' => $unitPrice,
                                     default => $weight * $unitPrice,
                                 };
-                                $set('subtotal', round($subtotal, 2));
+                                $set('subtotal', round($subtotal));
                             }
                         }),
 

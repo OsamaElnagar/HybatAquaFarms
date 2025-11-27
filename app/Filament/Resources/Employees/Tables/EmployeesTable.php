@@ -58,7 +58,7 @@ class EmployeesTable
                     ->sortable(),
                 TextColumn::make('outstanding_advances')
                     ->label('سلف مستحقة')
-                    ->state(fn ($record) => number_format($record->total_outstanding_advances, 2))
+                    ->state(fn ($record) => number_format($record->total_outstanding_advances))
                     ->prefix('ج.م ')
                     ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                     ->toggleable(),

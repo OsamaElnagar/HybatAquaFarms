@@ -37,7 +37,7 @@ class PettyCashTransactionsTable
                     ->toggleable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric()
                     ->prefix('ج.م ')
                     ->sortable(),
                 TextColumn::make('description')

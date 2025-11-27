@@ -11,67 +11,67 @@ class BatchInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make("معلومات أساسية")
+            Section::make('معلومات أساسية')
                 ->schema([
-                    TextEntry::make("batch_code")
-                        ->label("كود الدفعة")
+                    TextEntry::make('batch_code')
+                        ->label('كود الدفعة')
                         ->columnSpan(1),
-                    TextEntry::make("farm.name")
-                        ->label("المزرعة")
+                    TextEntry::make('farm.name')
+                        ->label('المزرعة')
                         ->columnSpan(1),
-                    TextEntry::make("unit.code")
-                        ->label("الوحدة")
-                        ->placeholder("غير محدد")
+                    TextEntry::make('unit.code')
+                        ->label('الوحدة')
+                        ->placeholder('غير محدد')
                         ->columnSpan(1),
-                    TextEntry::make("species.name")
-                        ->label("النوع")
+                    TextEntry::make('species.name')
+                        ->label('النوع')
                         ->columnSpan(1),
-                    TextEntry::make("factory.name")
-                        ->label("مصنع التفريخ")
-                        ->placeholder("غير محدد")
+                    TextEntry::make('factory.name')
+                        ->label('مصنع التفريخ')
+                        ->placeholder('غير محدد')
                         ->columnSpan(1),
-                    TextEntry::make("entry_date")
-                        ->label("تاريخ الإدخال")
-                        ->date("Y-m-d")
+                    TextEntry::make('entry_date')
+                        ->label('تاريخ الإدخال')
+                        ->date('Y-m-d')
                         ->columnSpan(1),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
 
-            Section::make("الكميات والأوزان")
+            Section::make('الكميات والأوزان')
                 ->schema([
-                    TextEntry::make("initial_quantity")
-                        ->label("الكمية الأولية")
+                    TextEntry::make('initial_quantity')
+                        ->label('الكمية الأولية')
                         ->badge()
-                        ->color("primary")
+                        ->color('primary')
                         ->columnSpan(1),
-                    TextEntry::make("current_quantity")
-                        ->label("الكمية الحالية")
+                    TextEntry::make('current_quantity')
+                        ->label('الكمية الحالية')
                         ->badge()
                         ->color(
-                            fn($record) => $record->current_quantity <
+                            fn ($record) => $record->current_quantity <
                             $record->initial_quantity
-                                ? "warning"
-                                : "success",
+                                ? 'warning'
+                                : 'success',
                         )
                         ->columnSpan(1),
-                    TextEntry::make("mortality_count")
-                        ->label("عدد النفوق")
+                    TextEntry::make('mortality_count')
+                        ->label('عدد النفوق')
                         ->state(
-                            fn($record) => $record->initial_quantity -
+                            fn ($record) => $record->initial_quantity -
                                 $record->current_quantity,
                         )
                         ->badge()
-                        ->color("danger")
+                        ->color('danger')
                         ->columnSpan(1),
-                    TextEntry::make("mortality_rate")
-                        ->label("معدل النفوق")
+                    TextEntry::make('mortality_rate')
+                        ->label('معدل النفوق')
                         ->state(function ($record) {
                             if (
-                                !$record->initial_quantity ||
+                                ! $record->initial_quantity ||
                                 $record->initial_quantity == 0
                             ) {
-                                return "0%";
+                                return '0%';
                             }
                             $mortality =
                                 $record->initial_quantity -
@@ -79,15 +79,15 @@ class BatchInfolist
                             $rate =
                                 ($mortality / $record->initial_quantity) * 100;
 
-                            return number_format($rate, 2) . "%";
+                            return number_format($rate).'%';
                         })
                         ->badge()
                         ->color(function ($record) {
                             if (
-                                !$record->initial_quantity ||
+                                ! $record->initial_quantity ||
                                 $record->initial_quantity == 0
                             ) {
-                                return "gray";
+                                return 'gray';
                             }
                             $mortality =
                                 $record->initial_quantity -
@@ -96,279 +96,272 @@ class BatchInfolist
                                 ($mortality / $record->initial_quantity) * 100;
 
                             return $rate > 10
-                                ? "danger"
+                                ? 'danger'
                                 : ($rate > 5
-                                    ? "warning"
-                                    : "success");
+                                    ? 'warning'
+                                    : 'success');
                         })
                         ->columnSpan(1),
-                    TextEntry::make("initial_weight_avg")
-                        ->label("متوسط الوزن الأولي")
+                    TextEntry::make('initial_weight_avg')
+                        ->label('متوسط الوزن الأولي')
                         ->formatStateUsing(
-                            fn($state) => $state
-                                ? number_format($state, 2) . " جم"
-                                : "غير محدد",
+                            fn ($state) => $state
+                                ? number_format($state).' جم'
+                                : 'غير محدد',
                         )
                         ->columnSpan(1),
-                    TextEntry::make("current_weight_avg")
-                        ->label("متوسط الوزن الحالي")
+                    TextEntry::make('current_weight_avg')
+                        ->label('متوسط الوزن الحالي')
                         ->formatStateUsing(
-                            fn($state) => $state
-                                ? number_format($state, 2) . " جم"
-                                : "غير محدد",
+                            fn ($state) => $state
+                                ? number_format($state).' جم'
+                                : 'غير محدد',
                         )
                         ->columnSpan(1),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
 
-            Section::make("المصدر والحالة")
+            Section::make('المصدر والحالة')
                 ->schema([
-                    TextEntry::make("source")
-                        ->label("المصدر")
+                    TextEntry::make('source')
+                        ->label('المصدر')
                         ->badge()
                         ->columnSpan(1),
-                    TextEntry::make("status")
-                        ->label("الحالة")
+                    TextEntry::make('status')
+                        ->label('الحالة')
                         ->badge()
                         ->columnSpan(1),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
 
-            Section::make("التكاليف والمدفوعات")
+            Section::make('التكاليف والمدفوعات')
                 ->schema([
-                    TextEntry::make("unit_cost")
-                        ->label("تكلفة الوحدة")
+                    TextEntry::make('unit_cost')
+                        ->label('تكلفة الوحدة')
                         ->formatStateUsing(
-                            fn($state) => $state
-                                ? number_format($state, 2) . " ج.م"
-                                : "غير محدد",
+                            fn ($state) => $state
+                                ? number_format($state).' ج.م'
+                                : 'غير محدد',
                         )
                         ->columnSpan(1),
-                    TextEntry::make("total_cost")
-                        ->label("التكلفة الإجمالية")
+                    TextEntry::make('total_cost')
+                        ->label('التكلفة الإجمالية')
                         ->formatStateUsing(
-                            fn($state) => $state
-                                ? number_format($state, 2) . " ج.م"
-                                : "غير محدد",
-                        )
-                        ->badge()
-                        ->color("success")
-                        ->columnSpan(1),
-                    TextEntry::make("total_paid")
-                        ->label("المدفوع")
-                        ->formatStateUsing(
-                            fn($record) => $record->total_paid
-                                ? number_format($record->total_paid, 2) . " ج.م"
-                                : "0.00 ج.م",
+                            fn ($state) => $state
+                                ? number_format($state).' ج.م'
+                                : 'غير محدد',
                         )
                         ->badge()
-                        ->color("info")
+                        ->color('success')
                         ->columnSpan(1),
-                    TextEntry::make("outstanding_balance")
-                        ->label("المتبقي")
+                    TextEntry::make('total_paid')
+                        ->label('المدفوع')
                         ->formatStateUsing(
-                            fn($record) => $record->outstanding_balance
+                            fn ($record) => $record->total_paid
+                                ? number_format($record->total_paid).' ج.م'
+                                : '0.00 ج.م',
+                        )
+                        ->badge()
+                        ->color('info')
+                        ->columnSpan(1),
+                    TextEntry::make('outstanding_balance')
+                        ->label('المتبقي')
+                        ->formatStateUsing(
+                            fn ($record) => $record->outstanding_balance
                                 ? number_format(
-                                        $record->outstanding_balance,
-                                        2,
-                                    ) . " ج.م"
-                                : "0.00 ج.م",
+                                    $record->outstanding_balance,
+                                    2,
+                                ).' ج.م'
+                                : '0.00 ج.م',
                         )
                         ->badge()
                         ->color(
-                            fn($record) => $record->outstanding_balance > 0
-                                ? "warning"
-                                : "success",
+                            fn ($record) => $record->outstanding_balance > 0
+                                ? 'warning'
+                                : 'success',
                         )
                         ->columnSpan(1),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
 
-            Section::make("الإحصائيات")
+            Section::make('الإحصائيات')
                 ->schema([
-                    TextEntry::make("harvests_count")
-                        ->label("سجلات الحصاد")
-                        ->state(fn($record) => $record->harvests()->count())
+                    TextEntry::make('harvests_count')
+                        ->label('سجلات الحصاد')
+                        ->state(fn ($record) => $record->harvests()->count())
                         ->badge()
-                        ->color("primary")
+                        ->color('primary')
                         ->columnSpan(1),
-                    TextEntry::make("movements_count")
-                        ->label("الحركات")
-                        ->state(fn($record) => $record->movements()->count())
+                    TextEntry::make('movements_count')
+                        ->label('الحركات')
+                        ->state(fn ($record) => $record->movements()->count())
                         ->badge()
-                        ->color("info")
+                        ->color('info')
                         ->columnSpan(1),
-                    TextEntry::make("payments_count")
-                        ->label("المدفوعات")
+                    TextEntry::make('payments_count')
+                        ->label('المدفوعات')
                         ->state(
-                            fn($record) => $record->batchPayments()->count(),
+                            fn ($record) => $record->batchPayments()->count(),
                         )
                         ->badge()
-                        ->color("success")
+                        ->color('success')
                         ->columnSpan(1),
-                    TextEntry::make("days_since_entry")
-                        ->label("عدد الأيام")
+                    TextEntry::make('days_since_entry')
+                        ->label('عدد الأيام')
                         ->state(function ($record) {
-                            if (!$record->entry_date) {
-                                return "-";
+                            if (! $record->entry_date) {
+                                return '-';
                             }
 
-                            return now()->diffInDays($record->entry_date) .
-                                " يوم";
+                            return now()->diffInDays($record->entry_date).
+                                ' يوم';
                         })
                         ->badge()
-                        ->color("warning")
+                        ->color('warning')
                         ->columnSpan(1),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
 
-            Section::make("الربحية والتكاليف التشغيلية")
+            Section::make('الربحية والتكاليف التشغيلية')
                 ->schema([
-                    TextEntry::make("total_feed_consumed")
-                        ->label("إجمالي العلف المستهلك")
+                    TextEntry::make('total_feed_consumed')
+                        ->label('إجمالي العلف المستهلك')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->total_feed_consumed,
-                                2,
-                            ) . " كجم",
+                            fn ($record) => number_format(
+                                $record->total_feed_consumed
+                            ).' كجم',
                         )
                         ->badge()
-                        ->color("info")
+                        ->color('info')
                         ->columnSpan(1),
-                    TextEntry::make("total_feed_cost")
-                        ->label("تكلفة العلف")
+                    TextEntry::make('total_feed_cost')
+                        ->label('تكلفة العلف')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->total_feed_cost,
-                                2,
-                            ) . " ج.م",
+                            fn ($record) => number_format(
+                                $record->total_feed_cost
+                            ).' ج.م',
                         )
                         ->badge()
-                        ->color("warning")
+                        ->color('warning')
                         ->columnSpan(1),
-                    TextEntry::make("allocated_expenses")
-                        ->label("مصروفات تشغيلية مخصصة")
+                    TextEntry::make('allocated_expenses')
+                        ->label('مصروفات تشغيلية مخصصة')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->allocated_expenses,
-                                2,
-                            ) . " ج.م",
+                            fn ($record) => number_format(
+                                $record->allocated_expenses
+                            ).' ج.م',
                         )
                         ->badge()
-                        ->color("danger")
+                        ->color('danger')
                         ->columnSpan(1),
-                    TextEntry::make("total_cycle_expenses")
-                        ->label("إجمالي تكاليف الدورة")
+                    TextEntry::make('total_cycle_expenses')
+                        ->label('إجمالي تكاليف الدورة')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->total_cycle_expenses,
-                                2,
-                            ) . " ج.م",
+                            fn ($record) => number_format(
+                                $record->total_cycle_expenses
+                            ).' ج.م',
                         )
                         ->badge()
-                        ->color("danger")
+                        ->color('danger')
                         ->columnSpan(1),
-                    TextEntry::make("total_revenue")
-                        ->label("إجمالي الإيرادات")
+                    TextEntry::make('total_revenue')
+                        ->label('إجمالي الإيرادات')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->total_revenue,
-                                2,
-                            ) . " ج.م",
+                            fn ($record) => number_format(
+                                $record->total_revenue
+                            ).' ج.م',
                         )
                         ->badge()
-                        ->color("success")
+                        ->color('success')
                         ->columnSpan(1),
-                    TextEntry::make("net_profit")
-                        ->label("صافي الربح")
+                    TextEntry::make('net_profit')
+                        ->label('صافي الربح')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->net_profit,
-                                2,
-                            ) . " ج.م",
+                            fn ($record) => number_format(
+                                $record->net_profit
+                            ).' ج.م',
                         )
                         ->badge()
                         ->color(
-                            fn($record) => $record->net_profit >= 0
-                                ? "success"
-                                : "danger",
+                            fn ($record) => $record->net_profit >= 0
+                                ? 'success'
+                                : 'danger',
                         )
                         ->columnSpan(1),
-                    TextEntry::make("profit_margin")
-                        ->label("هامش الربح")
+                    TextEntry::make('profit_margin')
+                        ->label('هامش الربح')
                         ->formatStateUsing(
-                            fn($record) => number_format(
-                                $record->profit_margin,
-                                2,
-                            ) . "%",
+                            fn ($record) => number_format(
+                                $record->profit_margin
+                            ).'%',
                         )
                         ->badge()
                         ->color(
-                            fn($record) => $record->profit_margin >= 20
-                                ? "success"
+                            fn ($record) => $record->profit_margin >= 20
+                                ? 'success'
                                 : ($record->profit_margin >= 0
-                                    ? "warning"
-                                    : "danger"),
+                                    ? 'warning'
+                                    : 'danger'),
                         )
                         ->columnSpan(1),
-                    TextEntry::make("days_since_entry")
-                        ->label("عدد أيام الدورة")
+                    TextEntry::make('days_since_entry')
+                        ->label('عدد أيام الدورة')
                         ->formatStateUsing(
-                            fn($record) => $record->days_since_entry . " يوم",
+                            fn ($record) => $record->days_since_entry.' يوم',
                         )
                         ->badge()
-                        ->color("info")
+                        ->color('info')
                         ->columnSpan(1),
                 ])
                 ->columns(2)
                 ->columnSpanFull()
                 ->visible(
-                    fn($record) => $record->status->value === "harvested" ||
+                    fn ($record) => $record->status->value === 'harvested' ||
                         $record->is_cycle_closed,
                 ),
 
-            Section::make("إقفال الدورة")
+            Section::make('إقفال الدورة')
                 ->schema([
-                    TextEntry::make("is_cycle_closed")
-                        ->label("حالة الدورة")
+                    TextEntry::make('is_cycle_closed')
+                        ->label('حالة الدورة')
                         ->formatStateUsing(
-                            fn($state) => $state ? "مقفلة" : "مفتوحة",
+                            fn ($state) => $state ? 'مقفلة' : 'مفتوحة',
                         )
                         ->badge()
-                        ->color(fn($state) => $state ? "success" : "warning")
+                        ->color(fn ($state) => $state ? 'success' : 'warning')
                         ->columnSpan(1),
-                    TextEntry::make("closure_date")
-                        ->label("تاريخ الإقفال")
-                        ->date("Y-m-d")
-                        ->placeholder("لم يتم الإقفال بعد")
+                    TextEntry::make('closure_date')
+                        ->label('تاريخ الإقفال')
+                        ->date('Y-m-d')
+                        ->placeholder('لم يتم الإقفال بعد')
                         ->columnSpan(1),
-                    TextEntry::make("closedBy.name")
-                        ->label("أقفل بواسطة")
-                        ->placeholder("لم يتم الإقفال بعد")
+                    TextEntry::make('closedBy.name')
+                        ->label('أقفل بواسطة')
+                        ->placeholder('لم يتم الإقفال بعد')
                         ->columnSpan(1),
-                    TextEntry::make("closure_notes")
-                        ->label("ملاحظات الإقفال")
-                        ->placeholder("لا توجد ملاحظات")
+                    TextEntry::make('closure_notes')
+                        ->label('ملاحظات الإقفال')
+                        ->placeholder('لا توجد ملاحظات')
                         ->columnSpanFull(),
                 ])
                 ->columns(2)
                 ->columnSpanFull()
-                ->visible(fn($record) => $record->is_cycle_closed),
+                ->visible(fn ($record) => $record->is_cycle_closed),
 
-            Section::make("ملاحظات")
+            Section::make('ملاحظات')
                 ->schema([
-                    TextEntry::make("notes")
-                        ->label("الملاحظات")
-                        ->placeholder("لا توجد ملاحظات")
+                    TextEntry::make('notes')
+                        ->label('الملاحظات')
+                        ->placeholder('لا توجد ملاحظات')
                         ->columnSpanFull(),
                 ])
                 ->columnSpanFull()
                 ->collapsible()
-                ->collapsed(fn($record) => empty($record->notes)),
+                ->collapsed(fn ($record) => empty($record->notes)),
         ]);
     }
 }

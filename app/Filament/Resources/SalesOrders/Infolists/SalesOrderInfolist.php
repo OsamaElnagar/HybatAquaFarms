@@ -35,20 +35,20 @@ class SalesOrderInfolist
                     ->schema([
                         TextEntry::make('boxes_subtotal')
                             ->label('المجموع الفرعي')
-                            ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
                             ->columnSpan(1),
                         TextEntry::make('tax_amount')
                             ->label('الضرائب')
-                            ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
                             ->columnSpan(1),
                         TextEntry::make('discount_amount')
                             ->label('الخصم')
-                            ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
                             ->color('warning')
                             ->columnSpan(1),
                         TextEntry::make('net_amount')
                             ->label('المجموع الإجمالي')
-                            ->formatStateUsing(fn ($state) => number_format($state, 2).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
                             ->color('success')
                             ->weight('bold')
                             ->columnSpan(1),

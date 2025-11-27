@@ -33,17 +33,17 @@ class BatchPaymentSummaryWidget extends BaseWidget
         $paidPercentage = $totalCost > 0 ? round(($totalPaid / $totalCost) * 100, 1) : 0;
 
         return [
-            Stat::make('التكلفة الإجمالية', number_format($totalCost, 2).' ج.م')
+            Stat::make('التكلفة الإجمالية', number_format($totalCost).' ج.م')
                 ->description('إجمالي تكلفة شراء الزريعة')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('primary'),
 
-            Stat::make('المدفوع', number_format($totalPaid, 2).' ج.م')
+            Stat::make('المدفوع', number_format($totalPaid).' ج.م')
                 ->description("{$paymentCount} دفعة - {$paidPercentage}% من الإجمالي")
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color($paidPercentage >= 100 ? 'success' : ($paidPercentage >= 80 ? 'warning' : 'info')),
 
-            Stat::make('المتبقي', number_format($outstanding, 2).' ج.م')
+            Stat::make('المتبقي', number_format($outstanding).' ج.م')
                 ->description($outstanding > 0 ? 'مبلغ متبقي للدفع' : 'تم الدفع بالكامل')
                 ->descriptionIcon($outstanding > 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-check-badge')
                 ->color($outstanding > 0 ? 'danger' : 'success'),

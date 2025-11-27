@@ -46,7 +46,7 @@ class TradersTable
                     ->sortable(),
                 TextColumn::make('outstanding_balance')
                     ->label('المستحقات')
-                    ->state(fn ($record) => number_format($record->outstanding_balance, 2))
+                    ->state(fn ($record) => number_format($record->outstanding_balance))
                     ->prefix('ج.م ')
                     ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
                     ->sortable(),

@@ -48,7 +48,7 @@ class FarmsStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-cube')
                 ->color('success'),
 
-            Stat::make('استهلاك العلف هذا الشهر', number_format($thisMonthFeedConsumed, 2).' كجم')
+            Stat::make('استهلاك العلف هذا الشهر', number_format($thisMonthFeedConsumed).' كجم')
                 ->description($this->getFeedConsumptionComparison($thisMonthFeedConsumed, $lastMonthFeedConsumed))
                 ->descriptionIcon($thisMonthFeedConsumed > $lastMonthFeedConsumed ? 'heroicon-o-arrow-trending-up' : 'heroicon-o-arrow-trending-down')
                 ->color($this->getFeedConsumptionColor($thisMonthFeedConsumed, $lastMonthFeedConsumed)),

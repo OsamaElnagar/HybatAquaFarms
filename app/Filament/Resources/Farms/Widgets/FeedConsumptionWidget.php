@@ -27,22 +27,22 @@ class FeedConsumptionWidget extends StatsOverviewWidget
         $totalConsumption = $this->record->getTotalFeedConsumed();
 
         return [
-            Stat::make('استهلاك العلف اليوم', number_format($todayConsumption, 2).' كجم')
+            Stat::make('استهلاك العلف اليوم', number_format($todayConsumption).' كجم')
                 ->description('الاستهلاك اليومي للأعلاف')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('info'),
 
-            Stat::make('استهلاك العلف هذا الأسبوع', number_format($weekConsumption, 2).' كجم')
+            Stat::make('استهلاك العلف هذا الأسبوع', number_format($weekConsumption).' كجم')
                 ->description('من '.Carbon::now()->startOfWeek()->format('Y-m-d'))
                 ->descriptionIcon('heroicon-o-calendar-days')
                 ->color('primary'),
 
-            Stat::make('استهلاك العلف هذا الشهر', number_format($monthConsumption, 2).' كجم')
+            Stat::make('استهلاك العلف هذا الشهر', number_format($monthConsumption).' كجم')
                 ->description('من '.Carbon::now()->startOfMonth()->format('Y-m-d'))
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('success'),
 
-            Stat::make('إجمالي الاستهلاك', number_format($totalConsumption, 2).' كجم')
+            Stat::make('إجمالي الاستهلاك', number_format($totalConsumption).' كجم')
                 ->description('منذ بداية التسجيل')
                 ->descriptionIcon('heroicon-o-archive-box')
                 ->color('warning'),

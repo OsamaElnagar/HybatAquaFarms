@@ -46,7 +46,7 @@ class SalesOrdersRelationManager extends RelationManager
 
                 TextColumn::make('total_weight')
                     ->label('الوزن (كجم)')
-                    ->formatStateUsing(fn ($state) => number_format($state, 2)),
+                    ->formatStateUsing(fn ($state) => number_format($state)),
 
                 TextColumn::make('boxes_subtotal')
                     ->label('مجموع الصناديق')

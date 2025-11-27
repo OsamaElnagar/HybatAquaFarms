@@ -57,7 +57,7 @@ class UnitsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('feed_consumed')
                     ->label('استهلاك العلف (كجم)')
-                    ->state(fn($record) => number_format($record->getTotalFeedConsumed(), 2))
+                    ->state(fn($record) => number_format($record->getTotalFeedConsumed()))
                     ->color('info')
                     ->toggleable(),
             ])

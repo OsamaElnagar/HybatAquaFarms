@@ -29,12 +29,12 @@ class SalesOrdersStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-shopping-cart')
                 ->color('primary'),
 
-            Stat::make('إجمالي الإيرادات', number_format($totalRevenue, 2).' ج.م')
-                ->description('مبيعات هذا الشهر: '.number_format($thisMonthRevenue, 2).' ج.م')
+            Stat::make('إجمالي الإيرادات', number_format($totalRevenue).' ج.م')
+                ->description('مبيعات هذا الشهر: '.number_format($thisMonthRevenue).' ج.م')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('success'),
 
-            Stat::make('المستحقات', number_format($pendingValue, 2).' ج.م')
+            Stat::make('المستحقات', number_format($pendingValue).' ج.م')
                 ->description('مبيعات معلقة أو جزئية الدفع')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($pendingValue > 0 ? 'warning' : 'success'),

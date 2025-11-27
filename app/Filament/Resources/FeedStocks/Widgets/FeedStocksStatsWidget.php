@@ -26,12 +26,12 @@ class FeedStocksStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-cube')
                 ->color('info'),
 
-            Stat::make('القيمة الإجمالية', number_format($totalValue, 2).' ج.م')
+            Stat::make('القيمة الإجمالية', number_format($totalValue).' ج.م')
                 ->description('إجمالي قيمة المخزون')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('success'),
 
-            Stat::make('متوسط القيمة', number_format($averageValue, 2).' ج.م')
+            Stat::make('متوسط القيمة', number_format($averageValue).' ج.م')
                 ->description('متوسط قيمة كل رصيد')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('warning'),

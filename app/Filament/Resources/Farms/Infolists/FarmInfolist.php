@@ -23,7 +23,7 @@ class FarmInfolist
                             ->columnSpan(1),
                         TextEntry::make('size')
                             ->label('المساحة')
-                            ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) : 'غير محدد')
+                            ->formatStateUsing(fn ($state) => $state ? number_format($state) : 'غير محدد')
                             ->columnSpan(1),
                         TextEntry::make('location')
                             ->label('الموقع')
@@ -93,7 +93,7 @@ class FarmInfolist
                             ->state(fn ($record) => number_format($record->getTotalFeedConsumed(
                                 Carbon::today()->format('Y-m-d'),
                                 Carbon::today()->format('Y-m-d')
-                            ), 2).' كجم')
+                            )).' كجم')
                             ->badge()
                             ->color('info')
                             ->columnSpan(1),
@@ -102,7 +102,7 @@ class FarmInfolist
                             ->state(fn ($record) => number_format($record->getTotalFeedConsumed(
                                 Carbon::now()->startOfWeek()->format('Y-m-d'),
                                 Carbon::today()->format('Y-m-d')
-                            ), 2).' كجم')
+                            )).' كجم')
                             ->badge()
                             ->color('primary')
                             ->columnSpan(1),
@@ -111,13 +111,13 @@ class FarmInfolist
                             ->state(fn ($record) => number_format($record->getTotalFeedConsumed(
                                 Carbon::now()->startOfMonth()->format('Y-m-d'),
                                 Carbon::today()->format('Y-m-d')
-                            ), 2).' كجم')
+                            )).' كجم')
                             ->badge()
                             ->color('success')
                             ->columnSpan(1),
                         TextEntry::make('feed_total')
                             ->label('الإجمالي')
-                            ->state(fn ($record) => number_format($record->getTotalFeedConsumed(), 2).' كجم')
+                            ->state(fn ($record) => number_format($record->getTotalFeedConsumed()).' كجم')
                             ->badge()
                             ->color('warning')
                             ->columnSpan(1),

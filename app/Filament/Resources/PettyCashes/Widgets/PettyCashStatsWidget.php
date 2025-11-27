@@ -37,17 +37,17 @@ class PettyCashStatsWidget extends BaseWidget
             ->first();
 
         return [
-            Stat::make('الرصيد الحالي', number_format($currentBalance, 2).' ج.م')
+            Stat::make('الرصيد الحالي', number_format($currentBalance).' ج.م')
                 ->description('الرصيد المتاح حالياً')
                 ->descriptionIcon('heroicon-o-wallet')
                 ->color($currentBalance > 0 ? 'success' : 'danger'),
 
-            Stat::make('المصروفات هذا الشهر', number_format($monthlyExpenses, 2).' ج.م')
+            Stat::make('المصروفات هذا الشهر', number_format($monthlyExpenses).' ج.م')
                 ->description('إجمالي المصروفات منذ بداية '.Carbon::now()->format('F Y'))
                 ->descriptionIcon('heroicon-o-arrow-trending-down')
                 ->color('danger'),
 
-            Stat::make('التزويدات هذا الشهر', number_format($monthlyReplenishments, 2).' ج.م')
+            Stat::make('التزويدات هذا الشهر', number_format($monthlyReplenishments).' ج.م')
                 ->description('إجمالي التزويدات منذ بداية '.Carbon::now()->format('F Y'))
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->color('success'),
@@ -56,7 +56,7 @@ class PettyCashStatsWidget extends BaseWidget
                 ? $lastTransaction->date->format('Y-m-d')
                 : 'لا توجد')
                 ->description($lastTransaction
-                    ? ($lastTransaction->direction === 'out' ? 'صرف' : 'قبض').' - '.number_format($lastTransaction->amount, 2).' ج.م'
+                    ? ($lastTransaction->direction === 'out' ? 'صرف' : 'قبض').' - '.number_format($lastTransaction->amount).' ج.م'
                     : '')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('gray'),

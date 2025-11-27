@@ -23,12 +23,12 @@ class VouchersStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('primary'),
 
-            Stat::make('إجمالي المبالغ', number_format($total, 2).' ج.م')
+            Stat::make('إجمالي المبالغ', number_format($total).' ج.م')
                 ->description('كل السندات')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('info'),
 
-            Stat::make('هذا الشهر', number_format($thisMonth, 2).' ج.م')
+            Stat::make('هذا الشهر', number_format($thisMonth).' ج.م')
                 ->description('حسب التاريخ')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('success'),

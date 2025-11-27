@@ -258,7 +258,7 @@ class SalaryRecordForm
                 $employee = Employee::find($employeeId);
                 if ($employee) {
                     $perDay = (float) $employee->basic_salary / 26;
-                    $set('per_day_rate', round($perDay, 2));
+                    $set('per_day_rate', round($perDay));
                     $set('working_days', null);
                     $set('basic_salary', (float) $employee->basic_salary);
                     self::updateNetSalary($set, $get);
@@ -282,7 +282,7 @@ class SalaryRecordForm
 
         // Ensure chronological order
         if ($endDate->lt($startDate)) {
-            $set('per_day_rate', round($perDay, 2));
+            $set('per_day_rate', round($perDay));
             $set('working_days', 0);
             $set('basic_salary', 0);
             self::updateNetSalary($set, $get);
@@ -314,10 +314,10 @@ class SalaryRecordForm
         $totalWorking = max($totalWorking - $unpaid, 0);
 
         // Round working days to 2 decimals for display
-        $workingForDisplay = round($totalWorking, 2);
-        $basic = max(round($perDay * $totalWorking, 2), 0);
+        $workingForDisplay = round($totalWorking);
+        $basic = max(round($perDay * $totalWorking), 0);
 
-        $set('per_day_rate', round($perDay, 2));
+        $set('per_day_rate', round($perDay));
         $set('working_days', $workingForDisplay);
         $set('basic_salary', $basic);
 
@@ -333,6 +333,6 @@ class SalaryRecordForm
 
         $net = $basic + $bonuses - $deductions - $advances;
 
-        $set('net_salary', max(round($net, 2), 0));
+        $set('net_salary', max(round($net), 0));
     }
 }

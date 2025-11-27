@@ -35,27 +35,24 @@ class AdvanceRepaymentsTable
                     ->sortable(),
                 TextColumn::make('amount_paid')
                     ->label('المبلغ المدفوع')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('?.? ')
+                    ->numeric()
+
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي المبلغ المدفوع')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('?.? '),
+                            ->numeric(),
                     ]),
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('?.? ')
+                    ->numeric()
+
                     ->color(fn (float $state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('employeeAdvance.balance_remaining')
                     ->label('الرصيد المتبقي للسلفة')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('?.? ')
-                    ->formatStateUsing(fn ($state) => $state !== null ? number_format((float) $state, 2).' ?.?' : 'الرصيد غير موجود')
+                    ->numeric()
                     ->toggleable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')

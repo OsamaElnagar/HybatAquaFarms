@@ -20,12 +20,12 @@ class SalaryRecordsStatsWidget extends StatsOverviewWidget
         $averageNet = SalaryRecord::avg('net_salary') ?? 0;
 
         return [
-            Stat::make('إجمالي صافي المرتبات', number_format($totalNet, 2).' ج.م')
+            Stat::make('إجمالي صافي المرتبات', number_format($totalNet).' ج.م')
                 ->description('مجمل ما تم صرفه من مرتبات')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('primary'),
 
-            Stat::make('صافي هذا الشهر', number_format($currentMonthNet, 2).' ج.م')
+            Stat::make('صافي هذا الشهر', number_format($currentMonthNet).' ج.م')
                 ->description('صافي المرتبات المدفوعة خلال الشهر الحالي')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('success'),
@@ -35,7 +35,7 @@ class SalaryRecordsStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($pendingCount > 0 ? 'warning' : 'success'),
 
-            Stat::make('متوسط الصافي', number_format($averageNet, 2).' ج.م')
+            Stat::make('متوسط الصافي', number_format($averageNet).' ج.م')
                 ->description('متوسط صافي المرتب لكل سجل')
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('info'),

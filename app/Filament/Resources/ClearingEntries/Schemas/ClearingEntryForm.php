@@ -25,7 +25,7 @@ class ClearingEntryForm
                     ->afterStateUpdated(function ($state, callable $set, $get) {
                         if ($state) {
                             $trader = Trader::find($state);
-                            $set('trader_balance', number_format($trader->outstanding_balance, 2));
+                            $set('trader_balance', number_format($trader->outstanding_balance));
                         }
                     })
                     ->searchable()
@@ -38,7 +38,7 @@ class ClearingEntryForm
                         if ($traderId) {
                             $trader = Trader::find($traderId);
 
-                            return number_format($trader->outstanding_balance ?? 0, 2).' جنيه';
+                            return number_format($trader->outstanding_balance ?? 0).' جنيه';
                         }
 
                         return '0.00 جنيه';
@@ -52,7 +52,7 @@ class ClearingEntryForm
                     ->afterStateUpdated(function ($state, callable $set, $get) {
                         if ($state) {
                             $factory = Factory::find($state);
-                            $set('factory_balance', number_format($factory->outstanding_balance, 2));
+                            $set('factory_balance', number_format($factory->outstanding_balance));
                         }
                     })
                     ->searchable()
@@ -65,7 +65,7 @@ class ClearingEntryForm
                         if ($factoryId) {
                             $factory = Factory::find($factoryId);
 
-                            return number_format($factory->outstanding_balance ?? 0, 2).' جنيه';
+                            return number_format($factory->outstanding_balance ?? 0).' جنيه';
                         }
 
                         return '0.00 جنيه';

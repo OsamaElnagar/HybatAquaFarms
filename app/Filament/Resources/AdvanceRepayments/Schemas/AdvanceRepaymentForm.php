@@ -29,7 +29,7 @@ class AdvanceRepaymentForm
                             ->preload()
                             ->required()
                             ->helperText('اختر السلفة التي سيتم سداد جزء منها')
-                            ->getOptionLabelFromRecordUsing(fn (EmployeeAdvance $record) => "{$record->advance_number} - {$record->employee->name} (متبقي: ".number_format($record->balance_remaining, 2).' ج.م)')
+                            ->getOptionLabelFromRecordUsing(fn (EmployeeAdvance $record) => "{$record->advance_number} - {$record->employee->name} (متبقي: ".number_format($record->balance_remaining).' ج.م)')
                             ->reactive()
                             ->afterStateUpdated(fn (Set $set, $state) => self::syncRemainingFromAdvance($set, $state)),
                         DatePicker::make('payment_date')
@@ -112,7 +112,7 @@ class AdvanceRepaymentForm
             return;
         }
 
-        $set('balance_remaining', round($advance->balance_remaining, 2));
+        $set('balance_remaining', round($advance->balance_remaining));
     }
 
     protected static function updateRemaining(Set $set, Get $get): void
@@ -131,7 +131,7 @@ class AdvanceRepaymentForm
 
         $remaining = max($advance->balance_remaining - $amountPaid, 0);
 
-        $set('balance_remaining', round($remaining, 2));
+        $set('balance_remaining', round($remaining));
     }
 
     protected static function advanceSummary(?int $advanceId): ?string
@@ -146,8 +146,8 @@ class AdvanceRepaymentForm
         }
 
         $approvedDate = optional($advance->approved_date)->format('Y-m-d') ?? 'غير محدد';
-        $total = number_format($advance->amount_paid, 2);
-        $remaining = number_format($advance->balance_remaining, 2);
+        $total = number_format($advance->amount_paid);
+        $remaining = number_format($advance->balance_remaining);
 
         return "الموظف: {$advance->employee->name} | المبلغ الكلي: {$total} ج.م | المتبقي: {$remaining} ج.م | تاريخ الموافقة: {$approvedDate}";
     }
