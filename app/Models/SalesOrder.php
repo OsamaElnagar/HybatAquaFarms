@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
+use App\Services\PostingService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -58,13 +59,19 @@ class SalesOrder extends Model
     {
         static::creating(function ($model) {
             // Auto-generate order number
-            if (!$model->order_number) {
+            if (! $model->order_number) {
                 $model->order_number = static::generateOrderNumber();
             }
 
             // Copy commission rate from trader if not set
-            if ($model->trader && !$model->commission_rate) {
+            if ($model->trader && ! $model->commission_rate) {
                 $model->commission_rate = $model->trader->commission_rate ?? 0;
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->isDirty('payment_status') && $model->payment_status === PaymentStatus::Paid) {
+                PostingService::post($model, 'sales.payment', $model->net_amount);
             }
         });
     }
@@ -76,7 +83,8 @@ class SalesOrder extends Model
     {
         $lastOrder = static::latest('id')->first();
         $number = $lastOrder ? ((int) substr($lastOrder->order_number, 3)) + 1 : 1;
-        return 'SO-' . str_pad($number, 5, '0', STR_PAD_LEFT);
+
+        return 'SO-'.str_pad($number, 5, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -95,10 +103,10 @@ class SalesOrder extends Model
         }
 
         // Total before commission
-        $this->total_before_commission = 
-            $this->boxes_subtotal + 
-            ($this->transport_cost ?? 0) + 
-            ($this->tax_amount ?? 0) - 
+        $this->total_before_commission =
+            $this->boxes_subtotal +
+            ($this->transport_cost ?? 0) +
+            ($this->tax_amount ?? 0) -
             ($this->discount_amount ?? 0);
 
         // Net amount (after commission)

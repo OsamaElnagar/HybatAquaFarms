@@ -27,6 +27,10 @@ class AccountsTable
                 TextColumn::make('parent.name')
                     ->numeric()
                     ->sortable(),
+                IconColumn::make('is_cash')
+                    ->label('نقدي')
+                    ->boolean()
+                    ->color(fn ($state) => $state ? 'success' : 'gray'),
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('created_at')

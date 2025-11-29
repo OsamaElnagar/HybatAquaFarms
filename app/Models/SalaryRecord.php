@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Services\PostingService;
 
 class SalaryRecord extends Model
 {
@@ -52,5 +53,14 @@ class SalaryRecord extends Model
     public function advanceRepayments(): HasMany
     {
         return $this->hasMany(AdvanceRepayment::class);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($model) {
+            if ($model->wasRecentlyCreated && $model->net_salary > 0) {
+                PostingService::post($model, 'salary.payment', $model->net_salary);
+            }
+        });
     }
 }
