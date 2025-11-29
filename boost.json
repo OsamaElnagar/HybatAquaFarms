@@ -1,9 +1,10 @@
 {
     "agents": [
-        "cursor"
+        "claude_code"
     ],
     "editors": [
-        "cursor"
+        "claude_code"
     ],
-    "guidelines": []
+    "guidelines": [],
+    "herd_mcp": true
 }
