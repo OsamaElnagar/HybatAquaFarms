@@ -142,7 +142,7 @@ class BatchInfolist
                         ->label('تكلفة الوحدة')
                         ->formatStateUsing(
                             fn ($state) => $state
-                                ? number_format($state).' ج.م'
+                                ? number_format($state).' EGP '
                                 : 'غير محدد',
                         )
                         ->columnSpan(1),
@@ -150,7 +150,7 @@ class BatchInfolist
                         ->label('التكلفة الإجمالية')
                         ->formatStateUsing(
                             fn ($state) => $state
-                                ? number_format($state).' ج.م'
+                                ? number_format($state).' EGP '
                                 : 'غير محدد',
                         )
                         ->badge()
@@ -160,7 +160,7 @@ class BatchInfolist
                         ->label('المدفوع')
                         ->formatStateUsing(
                             fn ($record) => $record->total_paid
-                                ? number_format($record->total_paid).' ج.م'
+                                ? number_format($record->total_paid).' EGP '
                                 : '0.00 ج.م',
                         )
                         ->badge()
@@ -173,7 +173,7 @@ class BatchInfolist
                                 ? number_format(
                                     $record->outstanding_balance,
                                     2,
-                                ).' ج.م'
+                                ).' EGP '
                                 : '0.00 ج.م',
                         )
                         ->badge()
@@ -243,7 +243,7 @@ class BatchInfolist
                         ->formatStateUsing(
                             fn ($record) => number_format(
                                 $record->total_feed_cost
-                            ).' ج.م',
+                            ).' EGP ',
                         )
                         ->badge()
                         ->color('warning')
@@ -253,7 +253,7 @@ class BatchInfolist
                         ->formatStateUsing(
                             fn ($record) => number_format(
                                 $record->allocated_expenses
-                            ).' ج.م',
+                            ).' EGP ',
                         )
                         ->badge()
                         ->color('danger')
@@ -263,7 +263,7 @@ class BatchInfolist
                         ->formatStateUsing(
                             fn ($record) => number_format(
                                 $record->total_cycle_expenses
-                            ).' ج.م',
+                            ).' EGP ',
                         )
                         ->badge()
                         ->color('danger')
@@ -273,7 +273,7 @@ class BatchInfolist
                         ->formatStateUsing(
                             fn ($record) => number_format(
                                 $record->total_revenue
-                            ).' ج.م',
+                            ).' EGP ',
                         )
                         ->badge()
                         ->color('success')
@@ -283,7 +283,7 @@ class BatchInfolist
                         ->formatStateUsing(
                             fn ($record) => number_format(
                                 $record->net_profit
-                            ).' ج.م',
+                            ).' EGP ',
                         )
                         ->badge()
                         ->color(

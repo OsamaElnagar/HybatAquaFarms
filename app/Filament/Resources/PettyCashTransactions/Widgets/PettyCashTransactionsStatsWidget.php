@@ -28,17 +28,17 @@ class PettyCashTransactionsStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-rectangle-stack')
                 ->color('primary'),
 
-            Stat::make('إيرادات الشهر', number_format($thisMonthIn, 0).' ج.م')
+            Stat::make('إيرادات الشهر', number_format($thisMonthIn, 0).' EGP ')
                 ->description('حركة واردة')
                 ->descriptionIcon('heroicon-o-arrow-down-circle')
                 ->color('success'),
 
-            Stat::make('مصروفات الشهر', number_format($thisMonthOut, 0).' ج.م')
+            Stat::make('مصروفات الشهر', number_format($thisMonthOut, 0).' EGP ')
                 ->description('حركة منصرفة')
                 ->descriptionIcon('heroicon-o-arrow-up-circle')
                 ->color('warning'),
 
-            Stat::make('صافي الشهر', number_format($net, 0).' ج.م')
+            Stat::make('صافي الشهر', number_format($net, 0).' EGP ')
                 ->description('الوارد - المنصرف')
                 ->descriptionIcon('heroicon-o-scale')
                 ->color($net >= 0 ? 'info' : 'danger'),

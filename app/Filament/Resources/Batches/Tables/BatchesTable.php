@@ -94,31 +94,31 @@ class BatchesTable
 
                 TextColumn::make("initial_weight_avg")
                     ->label("متوسط الوزن الأولي (جم)")
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric()
                     ->suffix(" جم")
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make("current_weight_avg")
                     ->label("متوسط الوزن الحالي (جم)")
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric()
                     ->suffix(" جم")
                     ->sortable(),
                 TextColumn::make("unit_cost")
                     ->label("تكلفة الوحدة")
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix("ج.م ")
+                    ->numeric()
+                    ->suffix("ج.م ")
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make("total_cost")
                     ->label("التكلفة الإجمالية")
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix("ج.م ")
+                    ->numeric()
+                    ->suffix("ج.م ")
                     ->color("success")
                     ->sortable(),
                 TextColumn::make("total_paid")
                     ->label("المدفوع")
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix("ج.م ")
+                    ->numeric()
+                    ->suffix("ج.م ")
                     ->color("info")
                     ->sortable()
                     ->toggleable()
@@ -128,8 +128,8 @@ class BatchesTable
                     ),
                 TextColumn::make("outstanding_balance")
                     ->label("المتبقي")
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix("ج.م ")
+                    ->numeric()
+                    ->suffix("ج.م ")
                     ->color(
                         fn($record) => $record &&
                         ($record->outstanding_balance ?? 0) > 0
@@ -195,8 +195,8 @@ class BatchesTable
                     ->toggleable(),
                 TextColumn::make("net_profit")
                     ->label("صافي الربح")
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix("ج.م ")
+                    ->numeric()
+                    ->suffix("ج.م ")
                     ->color(
                         fn($record) => $record && $record->net_profit >= 0
                             ? "success"

@@ -39,15 +39,15 @@ class EmployeeAdvancesTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('مبلغ السلفة')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('primary')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي السلف')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('approval_status')
                     ->label('حالة الموافقة')
@@ -59,20 +59,20 @@ class EmployeeAdvancesTable
                     ->sortable(),
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color(fn (float $state) => $state > 0 ? 'warning' : 'success')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('المتبقي')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('repayments_sum_amount')
                     ->label('إجمالي السداد')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('repayments_count')
@@ -89,8 +89,8 @@ class EmployeeAdvancesTable
                     ->toggleable(),
                 TextColumn::make('installment_amount')
                     ->label('مبلغ القسط')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('approved_date')

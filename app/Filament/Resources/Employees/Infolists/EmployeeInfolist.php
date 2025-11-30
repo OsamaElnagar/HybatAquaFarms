@@ -54,7 +54,7 @@ class EmployeeInfolist
                             ->columnSpan(1),
                         TextEntry::make('basic_salary')
                             ->label('المرتب الشهري')
-                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
                             ->color('success')
                             ->columnSpan(1),
                         TextEntry::make('status')
@@ -87,7 +87,7 @@ class EmployeeInfolist
                             ->columnSpan(1),
                         TextEntry::make('outstanding_advances')
                             ->label('السلف المستحقة')
-                            ->state(fn ($record) => number_format($record->total_outstanding_advances).' ج.م')
+                            ->state(fn ($record) => number_format($record->total_outstanding_advances).' EGP ')
                             ->badge()
                             ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                             ->columnSpan(1),
@@ -99,7 +99,7 @@ class EmployeeInfolist
                             ->columnSpan(1),
                         TextEntry::make('total_salaries_paid')
                             ->label('إجمالي الرواتب المدفوعة')
-                            ->state(fn ($record) => number_format($record->total_salaries_paid).' ج.م')
+                            ->state(fn ($record) => number_format($record->total_salaries_paid).' EGP ')
                             ->badge()
                             ->color('success')
                             ->columnSpan(1),

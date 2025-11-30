@@ -57,7 +57,7 @@ class VouchersTable
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->numeric(decimalPlaces: 1)
-                    ->prefix('ج.م ')
+                    ->suffix(' EGP ')
                     ->color(fn ($record) => $record->voucher_type?->value === 'receipt' ? 'success' : 'danger')
                     ->sortable(),
                 TextColumn::make('pettyCash.name')

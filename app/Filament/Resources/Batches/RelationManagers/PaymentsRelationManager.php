@@ -54,7 +54,7 @@ class PaymentsRelationManager extends RelationManager
                                     ->label('المبلغ')
                                     ->required()
                                     ->numeric()
-                                    ->prefix('ج.م ')
+                                    ->suffix(' EGP ')
                                     ->minValue(0.01)
                                     ->step(0.01),
                                 Select::make('payment_method')
@@ -100,15 +100,15 @@ class PaymentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('إجمالي المدفوع')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                         \Filament\Tables\Columns\Summarizers\Count::make()
                             ->label('عدد الدفعات'),
                     ]),

@@ -42,8 +42,8 @@ class SalesOrdersTable
                 //     ->sortable(),
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable(),
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')

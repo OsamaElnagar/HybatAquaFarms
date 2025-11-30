@@ -64,7 +64,7 @@ class PettyCashForm
                             ->minValue(0)
                             ->step(0.01)
                             ->default(0)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('الرصيد الأولي عند إنشاء العهدة')
                             ->columnSpan(1),
                         DatePicker::make('opening_date')

@@ -62,8 +62,8 @@ class BatchesRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة الإجمالية')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->toggleable(),
             ])
             ->filters([

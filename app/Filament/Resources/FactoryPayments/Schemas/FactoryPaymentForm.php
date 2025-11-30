@@ -35,7 +35,7 @@ class FactoryPaymentForm
                             ->label('المبلغ')
                             ->required()
                             ->numeric()
-                            ->prefix('ج.م ')
+                            ->suffix(' EGP ')
                             ->helperText('أدخل مبلغ الدفعة بالجنيه المصري'),
                         Select::make('payment_method')
                             ->label('طريقة الدفع')

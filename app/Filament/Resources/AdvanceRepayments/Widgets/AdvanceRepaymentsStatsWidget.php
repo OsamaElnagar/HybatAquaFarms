@@ -19,17 +19,17 @@ class AdvanceRepaymentsStatsWidget extends StatsOverviewWidget
         $count = AdvanceRepayment::count();
 
         return [
-            Stat::make('إجمالي السداد', number_format($totalAmount).' ج.م')
+            Stat::make('إجمالي السداد', number_format($totalAmount).' EGP ')
                 ->description('عدد الدفعات: '.number_format($count))
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('primary'),
 
-            Stat::make('الرصيد المتبقي', number_format($outstanding).' ج.م')
+            Stat::make('الرصيد المتبقي', number_format($outstanding).' EGP ')
                 ->description('بعد السداد')
                 ->descriptionIcon('heroicon-o-wallet')
                 ->color($outstanding > 0 ? 'warning' : 'success'),
 
-            Stat::make('سداد هذا الشهر', number_format($thisMonth).' ج.م')
+            Stat::make('سداد هذا الشهر', number_format($thisMonth).' EGP ')
                 ->description('حسب تاريخ السداد')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('success'),

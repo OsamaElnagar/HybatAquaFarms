@@ -78,7 +78,7 @@ class EmployeeForm
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('المرتب الشهري الأساسي')
                             ->columnSpan(1),
                         Select::make('status')

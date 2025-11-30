@@ -64,9 +64,9 @@ class HarvestBoxesRelationManager extends RelationManager
 
                 TextColumn::make('weight')
                     ->label('الوزن (كجم)')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric()
                     ->sortable()
-                    ->summarize(Sum::make()->label('المجموع')->numeric(decimalPlaces: 2)),
+                    ->summarize(Sum::make()->label('المجموع')->numeric()),
 
                 TextColumn::make('fish_count')
                     ->label('العدد')
@@ -320,7 +320,7 @@ class HarvestBoxesRelationManager extends RelationManager
                     TextInput::make('unit_price')
                         ->label('سعر الوحدة')
                         ->numeric()
-                        ->prefix('EGP')
+                        ->suffix('EGP')
                         ->step(0.01)
                         ->visible(fn (Get $get) => $get('is_sold'))
                         ->required(fn (Get $get) => $get('is_sold'))
@@ -371,7 +371,7 @@ class HarvestBoxesRelationManager extends RelationManager
                     TextInput::make('subtotal')
                         ->label('الإجمالي')
                         ->numeric()
-                        ->prefix('EGP')
+                        ->suffix('EGP')
                         ->disabled()
                         ->dehydrated()
                         ->visible(fn (Get $get) => $get('is_sold'))

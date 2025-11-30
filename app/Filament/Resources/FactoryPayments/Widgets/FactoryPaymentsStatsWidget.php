@@ -18,12 +18,12 @@ class FactoryPaymentsStatsWidget extends StatsOverviewWidget
             ->sum('amount');
 
         return [
-            Stat::make('إجمالي مدفوعات المصانع', number_format($total).' ج.م')
+            Stat::make('إجمالي مدفوعات المصانع', number_format($total).' EGP ')
                 ->description('عدد العمليات: '.number_format($count))
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('primary'),
 
-            Stat::make('هذا الشهر', number_format($thisMonth).' ج.م')
+            Stat::make('هذا الشهر', number_format($thisMonth).' EGP ')
                 ->description('حسب التاريخ')
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('success'),

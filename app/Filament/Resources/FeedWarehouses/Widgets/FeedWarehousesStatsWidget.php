@@ -31,12 +31,12 @@ class FeedWarehousesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-archive-box')
                 ->color('info'),
 
-            Stat::make('قيمة المخزون', number_format($totalStockValue).' ج.م')
+            Stat::make('قيمة المخزون', number_format($totalStockValue).' EGP ')
                 ->description('القيمة الإجمالية للأعلاف')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success'),
 
-            Stat::make('متوسط قيمة المخزن', $totalWarehouses > 0 ? number_format($totalStockValue / $totalWarehouses).' ج.م' : '0.00 ج.م')
+            Stat::make('متوسط قيمة المخزن', $totalWarehouses > 0 ? number_format($totalStockValue / $totalWarehouses).' EGP ' : '0.00 ج.م')
                 ->description('متوسط قيمة المخزون لكل مخزن')
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('warning'),

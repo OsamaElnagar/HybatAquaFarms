@@ -68,7 +68,7 @@ class FarmsTable
                     ->toggleable(),
                 TextColumn::make('size')
                     ->label('المساحة')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('established_date')

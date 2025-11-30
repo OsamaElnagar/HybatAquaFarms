@@ -29,8 +29,8 @@ class ClearingEntriesTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->color('success'),
                 TextColumn::make('description')

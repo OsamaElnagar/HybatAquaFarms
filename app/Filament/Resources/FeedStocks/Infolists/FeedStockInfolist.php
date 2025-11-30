@@ -42,11 +42,11 @@ class FeedStockInfolist
                             ->columnSpan(1),
                         TextEntry::make('average_cost')
                             ->label('متوسط التكلفة')
-                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
                             ->columnSpan(1),
                         TextEntry::make('total_value')
                             ->label('القيمة الإجمالية')
-                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
                             ->badge()
                             ->color('success')
                             ->columnSpan(1),

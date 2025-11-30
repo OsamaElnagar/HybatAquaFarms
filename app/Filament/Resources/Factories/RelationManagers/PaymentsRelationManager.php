@@ -38,7 +38,7 @@ class PaymentsRelationManager extends RelationManager
                     ->label('المبلغ')
                     ->required()
                     ->numeric()
-                    ->prefix('ج.م '),
+                    ->suffix(' EGP '),
                 Select::make('payment_method')
                     ->label('طريقة الدفع')
                     ->options(PaymentMethod::class)
@@ -68,8 +68,8 @@ class PaymentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('success')
                     ->sortable(),
                 TextColumn::make('payment_method')

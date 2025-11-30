@@ -41,13 +41,13 @@ class AdvancesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('amount_paid')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable(),
                 TextColumn::make('balance_remaining')
                     ->label('المتبقي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color(fn($state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('status')

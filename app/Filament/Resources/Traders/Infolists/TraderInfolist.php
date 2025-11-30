@@ -65,7 +65,7 @@ class TraderInfolist
                             ->columnSpan(1),
                         TextEntry::make('credit_limit')
                             ->label('حد الائتمان')
-                            ->formatStateUsing(fn ($state) => $state ? number_format($state).' ج.م' : 'غير محدد')
+                            ->formatStateUsing(fn ($state) => $state ? number_format($state).' EGP ' : 'غير محدد')
                             ->columnSpan(1),
                     ])
                     ->columns(2)
@@ -81,13 +81,13 @@ class TraderInfolist
                             ->columnSpan(1),
                         TextEntry::make('total_sales')
                             ->label('إجمالي المبيعات')
-                            ->state(fn ($record) => number_format($record->salesOrders()->sum('net_amount')).' ج.م')
+                            ->state(fn ($record) => number_format($record->salesOrders()->sum('net_amount')).' EGP ')
                             ->badge()
                             ->color('success')
                             ->columnSpan(1),
                         TextEntry::make('outstanding_balance')
                             ->label('الرصيد المستحق')
-                            ->state(fn ($record) => number_format($record->outstanding_balance).' ج.م')
+                            ->state(fn ($record) => number_format($record->outstanding_balance).' EGP ')
                             ->badge()
                             ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
                             ->columnSpan(1),

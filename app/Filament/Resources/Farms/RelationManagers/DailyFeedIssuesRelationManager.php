@@ -48,13 +48,13 @@ class DailyFeedIssuesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric()
                     ->suffix(' كجم')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('المجموع')
-                            ->numeric(decimalPlaces: 2)
+                            ->numeric()
                             ->suffix(' كجم'),
                     ]),
                 TextColumn::make('batch.batch_code')

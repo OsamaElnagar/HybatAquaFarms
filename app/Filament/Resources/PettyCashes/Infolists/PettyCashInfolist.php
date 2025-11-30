@@ -38,7 +38,7 @@ class PettyCashInfolist
                     ->schema([
                         TextEntry::make('opening_balance')
                             ->label('الرصيد الافتتاحي')
-                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
                             ->columnSpan(1),
                         TextEntry::make('opening_date')
                             ->label('تاريخ الافتتاح')
@@ -47,7 +47,7 @@ class PettyCashInfolist
                             ->columnSpan(1),
                         TextEntry::make('current_balance')
                             ->label('الرصيد الحالي')
-                            ->formatStateUsing(fn ($state) => number_format($state).' ج.م')
+                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
                             ->badge()
                             ->color(fn ($state) => $state > 0 ? 'success' : 'danger')
                             ->columnSpan(1),

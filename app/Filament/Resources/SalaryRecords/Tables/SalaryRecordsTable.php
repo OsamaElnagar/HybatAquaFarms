@@ -38,49 +38,49 @@ class SalaryRecordsTable
                     ->sortable(),
                 TextColumn::make('basic_salary')
                     ->label('الراتب الأساسي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي الأساسي')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('bonuses')
                     ->label('المكافآت')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->toggleable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي المكافآت')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('deductions')
                     ->label('الخصومات')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->toggleable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي الخصومات')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('advances_deducted')
                     ->label('السُلف المخصومة')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('advance_repayments_sum_amount_paid')
                     ->label('سداد السُلف')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('advance_repayments_count')
@@ -92,15 +92,15 @@ class SalaryRecordsTable
                     ->toggleable(),
                 TextColumn::make('net_salary')
                     ->label('صافي المرتب')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي الصافي')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('payment_date')
                     ->label('تاريخ الدفع')

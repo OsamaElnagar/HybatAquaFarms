@@ -32,7 +32,7 @@ class EditPettyCash extends EditRecord
                         ->label('المبلغ')
                         ->required()
                         ->numeric()
-                        ->prefix('ج.م')
+                        ->suffix(' EGP ')
                         ->minValue(0.01)
                         ->step(0.01),
                     Textarea::make('description')

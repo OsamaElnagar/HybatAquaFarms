@@ -25,17 +25,17 @@ class TradersStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-user-circle')
                 ->color('primary'),
 
-            Stat::make('المبيعات الإجمالية', number_format($totalRevenue).' ج.م')
+            Stat::make('المبيعات الإجمالية', number_format($totalRevenue).' EGP ')
                 ->description('إجمالي قيمة أوامر البيع')
                 ->descriptionIcon('heroicon-o-shopping-cart')
                 ->color('success'),
 
-            Stat::make('المستحقات', number_format($totalReceivables).' ج.م')
+            Stat::make('المستحقات', number_format($totalReceivables).' EGP ')
                 ->description($pendingOrders.' أمر بيع معلق')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalReceivables > 0 ? 'warning' : 'success'),
 
-            Stat::make('متوسط قيمة الطلب', $totalTraders > 0 ? number_format($totalRevenue / max(1, SalesOrder::count())).' ج.م' : '0.00 ج.م')
+            Stat::make('متوسط قيمة الطلب', $totalTraders > 0 ? number_format($totalRevenue / max(1, SalesOrder::count())).' EGP ' : '0.00 ج.م')
                 ->description('متوسط قيمة أمر البيع')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),

@@ -30,13 +30,13 @@ class FeedStocksTable
                     ->sortable(),
                 TextColumn::make('average_cost')
                     ->label('متوسط التكلفة')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable(),
                 TextColumn::make('total_value')
                     ->label('القيمة الإجمالية')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('success')
                     ->sortable(),
                 TextColumn::make('created_at')

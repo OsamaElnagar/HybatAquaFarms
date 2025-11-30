@@ -57,7 +57,7 @@ class BatchPaymentForm
                                     ->label('المبلغ')
                                     ->required()
                                     ->numeric()
-                                    ->prefix('ج.م ')
+                                    ->suffix(' EGP ')
                                     ->minValue(0.01)
                                     ->step(0.01)
                                     ->helperText('المبلغ المدفوع بالجنيه المصري')

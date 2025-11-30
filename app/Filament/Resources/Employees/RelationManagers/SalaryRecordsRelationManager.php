@@ -43,37 +43,37 @@ class SalaryRecordsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('basic_salary')
                     ->label('المرتب الأساسي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable(),
                 TextColumn::make('bonuses')
                     ->label('الحوافز')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->toggleable(),
                 TextColumn::make('deductions')
                     ->label('الخصومات')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('danger')
                     ->toggleable(),
                 TextColumn::make('advances_deducted')
                     ->label('خصم السلف')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('warning')
                     ->toggleable(),
                 TextColumn::make('net_salary')
                     ->label('الصافي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('المجموع')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('payment_date')
                     ->label('تاريخ الدفع')
@@ -94,8 +94,8 @@ class SalaryRecordsRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn(Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
-                            ->when($data['to'], fn(Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
+                            ->when($data['from'], fn (Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
+                            ->when($data['to'], fn (Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
                     }),
                 SelectFilter::make('status')
                     ->label('الحالة')

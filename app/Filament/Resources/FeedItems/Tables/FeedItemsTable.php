@@ -29,8 +29,8 @@ class FeedItemsTable
                     ->sortable(),
                 TextColumn::make('standard_cost')
                     ->label('التكلفة القياسية')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->label('نشط')

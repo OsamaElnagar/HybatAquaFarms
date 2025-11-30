@@ -53,7 +53,7 @@ class TransactionsRelationManager extends RelationManager
                     ->label('المبلغ')
                     ->required()
                     ->numeric()
-                    ->prefix('ج.م')
+                    ->suffix(' EGP ')
                     ->minValue(0.01)
                     ->step(0.01),
                 Textarea::make('description')
@@ -85,8 +85,8 @@ class TransactionsRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color(fn($record) => $record->direction === 'out' ? 'danger' : 'success')
                     ->sortable(),
                 TextColumn::make('description')

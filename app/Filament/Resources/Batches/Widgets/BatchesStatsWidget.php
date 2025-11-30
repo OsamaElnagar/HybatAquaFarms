@@ -44,8 +44,8 @@ class BatchesStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-cube')
                 ->color($mortalityRate > 10 ? 'danger' : ($mortalityRate > 5 ? 'warning' : 'success')),
 
-            Stat::make('إجمالي التكلفة', number_format($totalCost).' ج.م')
-                ->description('هذا الشهر: '.number_format($thisMonthBatches).' دفعة - '.number_format($thisMonthCost).' ج.م')
+            Stat::make('إجمالي التكلفة', number_format($totalCost).' EGP ')
+                ->description('هذا الشهر: '.number_format($thisMonthBatches).' دفعة - '.number_format($thisMonthCost).' EGP ')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('success'),
 

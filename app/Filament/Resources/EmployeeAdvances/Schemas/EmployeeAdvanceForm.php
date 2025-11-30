@@ -48,7 +48,7 @@ class EmployeeAdvanceForm
                             ->numeric()
                             ->minValue(0.01)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('قيمة السلفة الإجمالية')
                             ->columnSpan(1),
                         Textarea::make('reason')
@@ -105,7 +105,7 @@ class EmployeeAdvanceForm
                             ->numeric()
                             ->minValue(0.01)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('قيمة كل قسط (يُملأ تلقائياً إذا وُجد نظام أقساط)')
                             ->columnSpan(1),
                         TextInput::make('balance_remaining')
@@ -114,7 +114,7 @@ class EmployeeAdvanceForm
                             ->minValue(0)
                             ->default(0)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('المبلغ المتبقي بعد عمليات السداد')
                             ->columnSpan(1),
                         Select::make('status')

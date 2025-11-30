@@ -32,17 +32,17 @@ class EmployeesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-user-group')
                 ->color('primary'),
 
-            Stat::make('إجمالي الرواتب الشهرية', number_format($totalMonthlyPayroll).' ج.م')
+            Stat::make('إجمالي الرواتب الشهرية', number_format($totalMonthlyPayroll).' EGP ')
                 ->description('رواتب الموظفين النشطين')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('success'),
 
-            Stat::make('السُلف المستحقة', number_format($outstandingAdvances).' ج.م')
-                ->description('من إجمالي '.number_format($totalAdvances).' ج.م')
+            Stat::make('السُلف المستحقة', number_format($outstandingAdvances).' EGP ')
+                ->description('من إجمالي '.number_format($totalAdvances).' EGP ')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color($outstandingAdvances > 0 ? 'warning' : 'success'),
 
-            Stat::make('رواتب هذا الشهر', number_format($thisMonthSalaries).' ج.م')
+            Stat::make('رواتب هذا الشهر', number_format($thisMonthSalaries).' EGP ')
                 ->description('إجمالي الرواتب المدفوعة هذا الشهر')
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('info'),

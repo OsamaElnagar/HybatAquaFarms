@@ -29,14 +29,14 @@ class PettyCashesTable
                     ->toggleable(),
                 TextColumn::make('current_balance')
                     ->label('الرصيد الحالي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->color(fn ($record) => $record->current_balance > 0 ? 'success' : 'danger')
                     ->sortable(),
                 TextColumn::make('opening_balance')
                     ->label('الرصيد الافتتاحي')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->toggleable(),
                 TextColumn::make('opening_date')
                     ->label('تاريخ الافتتاح')

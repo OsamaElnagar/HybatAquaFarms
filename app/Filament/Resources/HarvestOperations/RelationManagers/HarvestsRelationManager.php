@@ -62,7 +62,7 @@ class HarvestsRelationManager extends RelationManager
 
                 TextColumn::make('total_weight')
                     ->label('الوزن (كجم)')
-                    ->numeric(decimalPlaces: 2),
+                    ->numeric(),
 
                 TextColumn::make('total_quantity')
                     ->label('عدد الأسماك')

@@ -79,7 +79,7 @@ class ClearingEntryForm
                     ->label('المبلغ')
                     ->required()
                     ->numeric()
-                    ->prefix('ج.م')
+                    ->suffix(' EGP ')
                     // ->suffix('')
                     ->minValue(0.01)
                     ->step(0.01)

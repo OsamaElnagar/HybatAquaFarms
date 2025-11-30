@@ -39,14 +39,14 @@ class ClearingEntriesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('المجموع')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('description')
                     ->label('الوصف')

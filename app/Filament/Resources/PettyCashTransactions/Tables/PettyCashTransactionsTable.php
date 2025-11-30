@@ -38,7 +38,7 @@ class PettyCashTransactionsTable
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->numeric()
-                    ->prefix('ج.م ')
+                    ->suffix(' EGP ')
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('الوصف')

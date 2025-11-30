@@ -63,7 +63,7 @@ class SalesOrderForm
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('المجموع قبل الضرائب والخصم')
                             ->columnSpan(1),
                         TextInput::make('tax_amount')
@@ -72,7 +72,7 @@ class SalesOrderForm
                             ->minValue(0)
                             ->step(0.01)
                             ->default(0)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('قيمة الضرائب (إن وُجدت)')
                             ->columnSpan(1),
                         TextInput::make('discount_amount')
@@ -81,7 +81,7 @@ class SalesOrderForm
                             ->minValue(0)
                             ->step(0.01)
                             ->default(0)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('قيمة الخصم (إن وُجد)')
                             ->columnSpan(1),
                         TextInput::make('net_amount')
@@ -90,7 +90,7 @@ class SalesOrderForm
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('المبلغ النهائي بعد الضرائب والخصم')
                             ->columnSpan(1),
                     ])

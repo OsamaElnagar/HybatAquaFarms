@@ -42,14 +42,14 @@ class BatchesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة')
-                    ->numeric(decimalPlaces: 2)
-                    ->prefix('ج.م ')
+                    ->numeric()
+                    ->suffix(' EGP ')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('المجموع')
-                            ->numeric(decimalPlaces: 2)
-                            ->prefix('ج.م '),
+                            ->numeric()
+                            ->suffix(' EGP '),
                     ]),
                 TextColumn::make('status')
                     ->label('الحالة')

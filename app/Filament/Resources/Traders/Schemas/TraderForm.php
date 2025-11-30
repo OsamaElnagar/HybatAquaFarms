@@ -87,7 +87,7 @@ class TraderForm
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('الحد الأقصى للائتمان المسموح')
                             ->columnSpan(1),
                     ])

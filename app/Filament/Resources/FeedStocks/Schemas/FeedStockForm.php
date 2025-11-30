@@ -53,7 +53,7 @@ class FeedStockForm
                             ->minValue(0)
                             ->step(0.01)
                             ->default(0)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('متوسط تكلفة الوحدة الواحدة')
                             ->columnSpan(1),
                         TextInput::make('total_value')
@@ -63,7 +63,7 @@ class FeedStockForm
                             ->minValue(0)
                             ->step(0.01)
                             ->default(0)
-                            ->prefix('ج.م')
+                            ->suffix(' EGP ')
                             ->helperText('القيمة الإجمالية = الكمية × متوسط التكلفة')
                             ->columnSpan(2),
                     ])
