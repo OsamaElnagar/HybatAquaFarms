@@ -6,7 +6,6 @@ use App\Enums\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Services\PostingService;
 
 class FactoryPayment extends Model
 {
@@ -41,14 +40,5 @@ class FactoryPayment extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
-    }
-
-    protected static function booted()
-    {
-        static::saved(function ($model) {
-            if ($model->wasRecentlyCreated) {
-                PostingService::post($model, 'factory.payment', $model->amount);
-            }
-        });
     }
 }

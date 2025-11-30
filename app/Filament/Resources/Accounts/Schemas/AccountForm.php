@@ -34,9 +34,6 @@ class AccountForm
                 Toggle::make('is_active')
                     ->label('نشط')
                     ->required(),
-                Toggle::make('is_cash')
-                    ->label('حساب نقدي')
-                    ->helperText('يُحسب في إجمالي الخزينة'),
                 Textarea::make('description')
                     ->label('الوصف')
                     ->columnSpanFull(),

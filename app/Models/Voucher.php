@@ -71,17 +71,4 @@ class Voucher extends Model
     {
         return $this->hasMany(PettyCashTransaction::class);
     }
-
-    protected static function booted()
-    {
-        static::saved(function ($model) {
-            if ($model->wasRecentlyCreated) {
-                $eventKey = match($model->voucher_type) {
-                    \App\Enums\VoucherType::Payment => 'voucher.payment',
-                    \App\Enums\VoucherType::Receipt => 'voucher.receipt',
-                };
-                \App\Services\PostingService::post($model, $eventKey, $model->amount);
-            }
-        });
-    }
 }

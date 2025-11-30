@@ -14,7 +14,6 @@ class Account extends Model
     use HasFactory;
 
     protected $fillable = [
-        'is_cash',
         'code',
         'name',
         'type',
@@ -22,16 +21,13 @@ class Account extends Model
         'parent_id',
         'is_active',
         'description',
-        'is_cash',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_cash' => 'boolean',
             'type' => AccountType::class,
             'is_active' => 'boolean',
-            'is_cash' => 'boolean',
         ];
     }
 
@@ -67,16 +63,5 @@ class Account extends Model
         }
 
         return $credits - $debits;
-    }
-
-    public function scopeCash($query)
-    {
-        return $query->where('is_cash', true)
-                     ->orWhereRaw("code LIKE '111%' OR code = '1120'");
-    }
-
-    public function getTreasuryCashBalanceAttribute(): float
-    {
-        return self::cash()->sum('balance');
     }
 }

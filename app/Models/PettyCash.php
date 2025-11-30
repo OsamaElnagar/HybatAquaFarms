@@ -16,7 +16,6 @@ class PettyCash extends Model
         'farm_id',
         'name',
         'custodian_employee_id',
-        'account_id',
         'opening_balance',
         'opening_date',
         'is_active',
@@ -52,23 +51,11 @@ class PettyCash extends Model
         return $this->hasMany(Voucher::class);
     }
 
-    public function account(): BelongsTo
-    {
-        return $this->belongsTo(Account::class);
-    }
-
     public function getCurrentBalanceAttribute(): float
     {
         $totalIn = $this->transactions()->where('direction', 'in')->sum('amount');
         $totalOut = $this->transactions()->where('direction', 'out')->sum('amount');
 
-        $balance = (float) $this->opening_balance + $totalIn - $totalOut;
-
-        // If linked to account, add account balance (accounting postings)
-        if ($this->account) {
-            $balance += $this->account->balance;
-        }
-
-        return $balance;
+        return (float) $this->opening_balance + $totalIn - $totalOut;
     }
 }

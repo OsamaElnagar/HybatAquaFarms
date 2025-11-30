@@ -13,9 +13,6 @@ class PostingRuleSeeder extends Seeder
         $id = fn (string $code) => (int) Account::query()->where('code', $code)->value('id');
 
         $rules = [
-            ['event_key' => 'salary.payment', 'debit' => '5200', 'credit' => '1110', 'description' => 'دفعة مرتب - نقدي'],
-            ['event_key' => 'petty.in', 'debit' => '1110', 'credit' => '1120', 'description' => 'إيداع في العهدة'],
-            ['event_key' => 'petty.out', 'debit' => '5000', 'credit' => '1120', 'description' => 'صرف من العهدة - مصروف'],
             ['event_key' => 'voucher.payment', 'debit' => '5000', 'credit' => '1120', 'description' => 'صرف من العهدة - مصروف'],
             ['event_key' => 'voucher.receipt', 'debit' => '1110', 'credit' => '4000', 'description' => 'قبض نقدي - إيرادات'],
 

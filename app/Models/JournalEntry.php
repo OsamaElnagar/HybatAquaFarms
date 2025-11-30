@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Facades\Cache;
 
 class JournalEntry extends Model
 {
@@ -62,22 +61,5 @@ class JournalEntry extends Model
     public function isBalanced(): bool
     {
         return abs($this->total_debit - $this->total_credit) < 0.01;
-    }
-
-    public static function generateEntryNumber(): string
-    {
-        $prefix = 'JE-' . now()->format('Ymd');
-        $last = static::where('entry_number', 'LIKE', $prefix . '%')->latest('entry_number')->first();
-        $number = $last ? (int) substr($last->entry_number, strlen($prefix)) + 1 : 1;
-        return $prefix . str_pad($number, 4, '0', STR_PAD_LEFT);
-    }
-
-    protected static function booted()
-    {
-        static::updated(function (self $entry) {
-            if ($entry->is_posted && $entry->wasChanged('is_posted')) {
-                Cache::tags('treasury')->flush();
-            }
-        });
     }
 }
