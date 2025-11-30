@@ -1,0 +1,22 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "php",
+            "args": ["artisan", "boost:mcp"]
+        },
+        "herd": {
+            "command": "php",
+            "args": ["C:/Users/osama/.config/herd/bin/herd-mcp.phar"],
+            "env": {
+                "SITE_PATH": "D:\\HybatAquaFarms\\HybatAquaFarms"
+            }
+        },
+        "github": {
+            "command": "npx",
+            "args": ["@modelcontextprotocol/server-github"],
+            "env": {
+                "GITHUB_TOKEN": "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"
+            }
+        }
+    }
+}
