@@ -80,26 +80,26 @@ class PettyCashTransactionForm
                             ->columnSpanFull()
                             ->maxLength(1000)
                             ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
-                        Placeholder::make('balance_after')
-                            ->label('الرصيد بعد المعاملة')
-                            ->content(function ($get, $record) {
-                                $amount = (float) ($get('amount') ?? $record?->amount ?? 0);
-                                $direction = $get('direction') ?? $record?->direction ?? 'out';
-                                $pettyCashId = $get('petty_cash_id') ?? $record?->petty_cash_id;
+                        // Placeholder::make('balance_after')
+                        //     ->label('الرصيد بعد المعاملة')
+                        //     ->content(function ($get, $record) {
+                        //         $amount = (float) ($get('amount') ?? $record?->amount ?? 0);
+                        //         $direction = $get('direction') ?? $record?->direction ?? 'out';
+                        //         $pettyCashId = $get('petty_cash_id') ?? $record?->petty_cash_id;
 
-                                if ($pettyCashId) {
-                                    $pettyCash = PettyCash::find($pettyCashId);
-                                    $currentBalance = $pettyCash->current_balance;
-                                    $balanceAfter = $direction === 'in'
-                                        ? $currentBalance + $amount
-                                        : $currentBalance - $amount;
+                        //         if ($pettyCashId) {
+                        //             $pettyCash = PettyCash::find($pettyCashId);
+                        //             $currentBalance = $pettyCash->current_balance;
+                        //             $balanceAfter = $direction === 'in'
+                        //                 ? $currentBalance + $amount
+                        //                 : $currentBalance - $amount;
 
-                                    return number_format($balanceAfter).'  EGP ';
-                                }
+                        //             return number_format($balanceAfter).'  EGP ';
+                        //         }
 
-                                return '-';
-                            })
-                            ->visible(fn ($get) => filled($get('petty_cash_id')) && filled($get('amount'))),
+                        //         return '-';
+                        //     })
+                        //     ->visible(fn ($get) => filled($get('petty_cash_id')) && filled($get('amount'))),
                     ])
                     ->columnSpanFull(),
             ]);
