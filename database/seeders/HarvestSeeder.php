@@ -9,6 +9,7 @@ use App\Models\Harvest;
 use App\Models\HarvestBox;
 use App\Models\HarvestOperation;
 use App\Models\HarvestUnit;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class HarvestSeeder extends Seeder
@@ -28,7 +29,7 @@ class HarvestSeeder extends Seeder
 
         foreach ($operations as $operation) {
             // Calculate duration
-            $durationDays = $operation->start_date->diffInDays($operation->end_date) + 1;
+            $durationDays = Carbon::parse($operation->start_date)->diffInDays(Carbon::parse($operation->end_date)) + 1;
             $harvestDays = min($durationDays, 10); // Max 10 daily harvests per operation
 
             // Get units from the batch
@@ -43,7 +44,7 @@ class HarvestSeeder extends Seeder
 
             // Create harvests across the operation days
             for ($day = 0; $day < $harvestDays; $day++) {
-                $harvestDate = (clone $operation->start_date)->modify("+{$day} days");
+                $harvestDate = Carbon::parse($operation->start_date)->addDays($day);
 
                 $harvest = Harvest::create([
                     'harvest_operation_id' => $operation->id,
