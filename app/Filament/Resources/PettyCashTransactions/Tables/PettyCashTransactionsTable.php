@@ -48,7 +48,7 @@ class PettyCashTransactionsTable
                 TextColumn::make('voucher.voucher_number')
                     ->label('رقم السند')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('recordedBy.name')
                     ->label('سجل بواسطة')
                     ->sortable()

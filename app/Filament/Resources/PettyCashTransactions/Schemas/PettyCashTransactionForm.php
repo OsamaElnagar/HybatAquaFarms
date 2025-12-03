@@ -39,10 +39,10 @@ class PettyCashTransactionForm
                                 if ($pettyCashId) {
                                     $pettyCash = PettyCash::find($pettyCashId);
 
-                                    return number_format($pettyCash->current_balance ?? 0, 0).' جنيه';
+                                    return number_format($pettyCash->current_balance ?? 0, 0).'  EGP ';
                                 }
 
-                                return '0 جنيه';
+                                return '0  EGP ';
                             }),
                         // ->visible(fn ($get) => filled($get('petty_cash_id'))),
                         Select::make('direction')
@@ -74,9 +74,7 @@ class PettyCashTransactionForm
                             ->label('المبلغ')
                             ->required()
                             ->numeric()
-                            ->suffix(' EGP ')
-                            ->minValue(0.01)
-                            ->step(0.01),
+                            ->suffix(' EGP '),
                         Textarea::make('description')
                             ->label('الوصف التفصيلي')
                             ->columnSpanFull()
@@ -96,7 +94,7 @@ class PettyCashTransactionForm
                                         ? $currentBalance + $amount
                                         : $currentBalance - $amount;
 
-                                    return number_format($balanceAfter).' جنيه';
+                                    return number_format($balanceAfter).'  EGP ';
                                 }
 
                                 return '-';

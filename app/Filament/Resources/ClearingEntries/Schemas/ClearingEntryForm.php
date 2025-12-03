@@ -38,10 +38,10 @@ class ClearingEntryForm
                         if ($traderId) {
                             $trader = Trader::find($traderId);
 
-                            return number_format($trader->outstanding_balance ?? 0).' جنيه';
+                            return number_format($trader->outstanding_balance ?? 0).'  EGP ';
                         }
 
-                        return '0.00 جنيه';
+                        return '0.00  EGP ';
                     })
                     ->visible(fn ($get) => filled($get('trader_id'))),
                 Select::make('factory_id')
@@ -65,10 +65,10 @@ class ClearingEntryForm
                         if ($factoryId) {
                             $factory = Factory::find($factoryId);
 
-                            return number_format($factory->outstanding_balance ?? 0).' جنيه';
+                            return number_format($factory->outstanding_balance ?? 0).'  EGP ';
                         }
 
-                        return '0.00 جنيه';
+                        return '0.00  EGP ';
                     })
                     ->visible(fn ($get) => filled($get('factory_id'))),
                 DatePicker::make('date')
