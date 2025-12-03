@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\AccountType;
+use App\Observers\AccountObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy([AccountObserver::class])]
 class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */

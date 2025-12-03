@@ -5,7 +5,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum PricingUnit: string implements HasLabel, HasColor
+enum PricingUnit: string implements HasColor, HasLabel
 {
     case Kilogram = 'kg';
     case Piece = 'piece';

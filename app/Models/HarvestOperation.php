@@ -40,7 +40,7 @@ class HarvestOperation extends Model
     protected static function booted()
     {
         static::creating(function ($model) {
-            if (!$model->operation_number) {
+            if (! $model->operation_number) {
                 $model->operation_number = static::generateOperationNumber();
             }
         });
@@ -53,7 +53,8 @@ class HarvestOperation extends Model
     {
         $lastOperation = static::latest('id')->first();
         $number = $lastOperation ? ((int) substr($lastOperation->operation_number, 4)) + 1 : 1;
-        return 'HOP-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+
+        return 'HOP-'.str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 
     // Relationships
@@ -127,15 +128,17 @@ class HarvestOperation extends Model
 
     public function getActualDurationAttribute(): ?int
     {
-        if (!$this->end_date) {
+        if (! $this->end_date) {
             return null;
         }
+
         return $this->start_date->diffInDays($this->end_date) + 1;
     }
 
     public function getDaysRunningAttribute(): int
     {
         $endDate = $this->end_date ?? now();
+
         return $this->start_date->diffInDays($endDate) + 1;
     }
 
@@ -143,7 +146,7 @@ class HarvestOperation extends Model
     {
         return in_array($this->status, [
             HarvestOperationStatus::Ongoing,
-            HarvestOperationStatus::Paused
+            HarvestOperationStatus::Paused,
         ]);
     }
 

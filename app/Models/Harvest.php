@@ -17,24 +17,24 @@ class Harvest extends Model
     {
         static::creating(function ($model) {
             if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception("لا يمكن إضافة حصاد لدورة مقفلة");
+                throw new \Exception('لا يمكن إضافة حصاد لدورة مقفلة');
             }
 
             // Auto-generate harvest number
-            if (!$model->harvest_number) {
+            if (! $model->harvest_number) {
                 $model->harvest_number = static::generateHarvestNumber();
             }
         });
 
         static::updating(function ($model) {
             if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception("لا يمكن تعديل حصاد دورة مقفلة");
+                throw new \Exception('لا يمكن تعديل حصاد دورة مقفلة');
             }
         });
 
         static::deleting(function ($model) {
             if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception("لا يمكن حذف حصاد دورة مقفلة");
+                throw new \Exception('لا يمكن حذف حصاد دورة مقفلة');
             }
         });
     }
@@ -46,26 +46,27 @@ class Harvest extends Model
     {
         $lastHarvest = static::latest('id')->first();
         $number = $lastHarvest ? ((int) substr($lastHarvest->harvest_number, 2)) + 1 : 1;
-        return 'H-' . str_pad($number, 5, '0', STR_PAD_LEFT);
+
+        return 'H-'.str_pad($number, 5, '0', STR_PAD_LEFT);
     }
 
     protected $fillable = [
-        "harvest_number",
-        "harvest_operation_id",
-        "batch_id",
-        "farm_id",
-        "harvest_date",
-        "shift",
-        "status",
-        "recorded_by",
-        "notes",
+        'harvest_number',
+        'harvest_operation_id',
+        'batch_id',
+        'farm_id',
+        'harvest_date',
+        'shift',
+        'status',
+        'recorded_by',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            "harvest_date" => "date",
-            "status" => HarvestStatus::class,
+            'harvest_date' => 'date',
+            'status' => HarvestStatus::class,
         ];
     }
 
@@ -87,7 +88,7 @@ class Harvest extends Model
 
     public function recordedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, "recorded_by");
+        return $this->belongsTo(User::class, 'recorded_by');
     }
 
     public function boxes(): HasMany
@@ -103,7 +104,7 @@ class Harvest extends Model
                 'fish_count_harvested',
                 'fish_count_remaining',
                 'percentage_harvested',
-                'notes'
+                'notes',
             ])
             ->withTimestamps()
             ->using(HarvestUnit::class);
@@ -133,14 +134,20 @@ class Harvest extends Model
     public function getAverageWeightPerBoxAttribute(): ?float
     {
         $count = $this->total_boxes;
-        if ($count == 0) return null;
+        if ($count == 0) {
+            return null;
+        }
+
         return $this->total_weight / $count;
     }
 
     public function getAverageFishWeightAttribute(): ?float
     {
         $count = $this->total_quantity;
-        if ($count == 0) return null;
+        if ($count == 0) {
+            return null;
+        }
+
         // Convert to grams
         return ($this->total_weight * 1000) / $count;
     }

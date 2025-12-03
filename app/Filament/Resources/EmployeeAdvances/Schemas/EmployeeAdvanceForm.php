@@ -21,10 +21,9 @@ class EmployeeAdvanceForm
                     ->schema([
                         TextInput::make('advance_number')
                             ->label('رقم السلفة')
-                            ->required()
-                            ->maxLength(50)
-                            ->unique(ignoreRecord: true)
-                            ->helperText('رقم مرجعي فريد للسلفة')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('يتم توليده تلقائياً')
                             ->columnSpan(1),
                         Select::make('employee_id')
                             ->label('الموظف')

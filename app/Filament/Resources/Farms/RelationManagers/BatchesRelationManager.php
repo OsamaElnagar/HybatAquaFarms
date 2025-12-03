@@ -52,7 +52,7 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('current_quantity')
                     ->label('الكمية الحالية')
                     ->numeric()
-                    ->color(fn($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
+                    ->color(fn ($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('current_weight_avg')
                     ->label('متوسط الوزن')

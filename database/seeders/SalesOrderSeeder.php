@@ -18,7 +18,8 @@ class SalesOrderSeeder extends Seeder
         $traders = Trader::all();
 
         if ($traders->isEmpty()) {
-            $this->command->warn("No traders found. Skipping sales orders seeding.");
+            $this->command->warn('No traders found. Skipping sales orders seeding.');
+
             return;
         }
 
@@ -26,7 +27,8 @@ class SalesOrderSeeder extends Seeder
         $unsoldBoxes = HarvestBox::where('is_sold', false)->get();
 
         if ($unsoldBoxes->isEmpty()) {
-            $this->command->warn("No unsold harvest boxes found. Run HarvestSeeder first.");
+            $this->command->warn('No unsold harvest boxes found. Run HarvestSeeder first.');
+
             return;
         }
 
@@ -36,7 +38,9 @@ class SalesOrderSeeder extends Seeder
         foreach ($boxesByFarm as $farmId => $farmBoxes) {
             $farm = Farm::find($farmId);
 
-            if (!$farm) continue;
+            if (! $farm) {
+                continue;
+            }
 
             // Create 2-5 sales orders per farm
             $orderCount = rand(2, 5);
@@ -109,9 +113,9 @@ class SalesOrderSeeder extends Seeder
             }
         }
 
-        $this->command->info("✅ Sales orders seeded successfully!");
-        $this->command->info("Created: ".SalesOrder::count()." orders");
-        $this->command->info("Sold boxes: ".HarvestBox::where('is_sold', true)->count());
+        $this->command->info('✅ Sales orders seeded successfully!');
+        $this->command->info('Created: '.SalesOrder::count().' orders');
+        $this->command->info('Sold boxes: '.HarvestBox::where('is_sold', true)->count());
     }
 
     /**
@@ -119,7 +123,7 @@ class SalesOrderSeeder extends Seeder
      */
     private function getPriceForClassification(?string $classification): float
     {
-        return match($classification) {
+        return match ($classification) {
             'جامبو' => fake()->randomFloat(2, 60, 75),
             'بلطي' => fake()->randomFloat(2, 45, 60),
             'نمرة 1' => fake()->randomFloat(2, 50, 65),

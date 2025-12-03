@@ -17,7 +17,9 @@ class AccountForm
             ->components([
                 TextInput::make('code')
                     ->label('الكود')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->helperText('يتم توليده تلقائياً'),
                 TextInput::make('name')
                     ->label('الاسم')
                     ->required(),

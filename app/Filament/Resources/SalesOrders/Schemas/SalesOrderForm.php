@@ -22,10 +22,9 @@ class SalesOrderForm
                     ->schema([
                         TextInput::make('order_number')
                             ->label('رقم العملية')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->helperText('رقم فريد لعملية البيع')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('يتم توليده تلقائياً')
                             ->columnSpan(1),
                         DatePicker::make('date')
                             ->label('التاريخ')
@@ -123,7 +122,7 @@ class SalesOrderForm
                         Select::make('created_by')
                             ->label('أنشأ بواسطة')
                             ->relationship('createdBy', 'name')
-                            ->default(fn() => Auth::id())
+                            ->default(fn () => Auth::id())
                             ->searchable()
                             ->preload()
                             ->helperText('المستخدم الذي أنشأ العملية')

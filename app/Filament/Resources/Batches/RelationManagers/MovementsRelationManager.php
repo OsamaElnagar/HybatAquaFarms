@@ -40,25 +40,25 @@ class MovementsRelationManager extends RelationManager
                     ->relationship('fromFarm', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
+                    ->visible(fn ($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
                 Select::make('to_farm_id')
                     ->label('إلى المزرعة')
                     ->relationship('toFarm', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
+                    ->visible(fn ($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
                 Select::make('from_unit_id')
                     ->label('من الوحدة')
                     ->relationship('fromUnit', 'code')
                     ->searchable()
                     ->preload()
-                    ->visible(fn($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
+                    ->visible(fn ($get) => in_array($get('movement_type'), ['transfer', 'harvest', 'mortality'])),
                 Select::make('to_unit_id')
                     ->label('إلى الوحدة')
                     ->relationship('toUnit', 'code')
                     ->searchable()
                     ->preload()
-                    ->visible(fn($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
+                    ->visible(fn ($get) => in_array($get('movement_type'), ['entry', 'transfer'])),
                 TextInput::make('quantity')
                     ->label('الكمية')
                     ->required()

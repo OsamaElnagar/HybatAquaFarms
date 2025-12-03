@@ -40,7 +40,7 @@ class PaymentsRelationManager extends RelationManager
                                     ->required()
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn($livewire) => $livewire->getOwnerRecord()?->factory_id),
+                                    ->default(fn ($livewire) => $livewire->getOwnerRecord()?->factory_id),
                                 DatePicker::make('date')
                                     ->label('تاريخ الدفعة')
                                     ->required()

@@ -28,10 +28,9 @@ class FarmUnitForm
                             ->columnSpan(1),
                         TextInput::make('code')
                             ->label('الكود')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true)
-                            ->helperText('كود فريد للوحدة (مثل: حوض-1، POND-A1)')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('يتم توليده تلقائياً')
                             ->columnSpan(1),
                         Select::make('unit_type')
                             ->label('نوع الوحدة')

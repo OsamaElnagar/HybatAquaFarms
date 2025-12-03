@@ -20,10 +20,9 @@ class FarmForm
                     ->schema([
                         TextInput::make('code')
                             ->label('الكود')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->helperText('كود فريد للمزرعة لسهولة التعرف عليها')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('يتم توليده تلقائياً')
                             ->columnSpan(1),
                         TextInput::make('name')
                             ->label('الاسم')

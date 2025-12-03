@@ -5,7 +5,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum CommissionType: string implements HasLabel, HasColor
+enum CommissionType: string implements HasColor, HasLabel
 {
     case Percentage = 'percentage';
     case FixedPerKg = 'fixed_per_kg';

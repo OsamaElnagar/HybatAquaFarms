@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Observers\FarmUnitObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy([FarmUnitObserver::class])]
 class FarmUnit extends Model
 {
     /** @use HasFactory<\Database\Factories\FarmUnitFactory> */

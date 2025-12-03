@@ -79,8 +79,8 @@ class DailyFeedIssuesRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn(Builder $query, $date) => $query->where('date', '>=', $date))
-                            ->when($data['to'], fn(Builder $query, $date) => $query->where('date', '<=', $date));
+                            ->when($data['from'], fn (Builder $query, $date) => $query->where('date', '>=', $date))
+                            ->when($data['to'], fn (Builder $query, $date) => $query->where('date', '<=', $date));
                     }),
                 SelectFilter::make('unit_id')
                     ->label('الوحدة')

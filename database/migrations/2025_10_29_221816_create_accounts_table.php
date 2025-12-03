@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('farm_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_treasury')->default(false);
             $table->text('description')->nullable();
             $table->timestamps();
 

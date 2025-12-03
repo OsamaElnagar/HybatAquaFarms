@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use App\Enums\PaymentMethod;
+use App\Enums\SalaryStatus;
+use App\Observers\SalaryRecordObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy([SalaryRecordObserver::class])]
 class SalaryRecord extends Model
 {
     /** @use HasFactory<\Database\Factories\SalaryRecordFactory> */
@@ -41,6 +45,7 @@ class SalaryRecord extends Model
             'advances_deducted' => 'decimal:2',
             'net_salary' => 'decimal:2',
             'payment_method' => PaymentMethod::class,
+            'status' => SalaryStatus::class,
         ];
     }
 

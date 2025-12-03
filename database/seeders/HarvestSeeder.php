@@ -13,7 +13,7 @@ use Illuminate\Database\Seeder;
 
 class HarvestSeeder extends Seeder
 {
- /**
+    /**
      * Run the database seeds.
      */
     public function run(): void
@@ -22,6 +22,7 @@ class HarvestSeeder extends Seeder
 
         if ($operations->isEmpty()) {
             echo "⚠️ No harvest operations found. Run HarvestOperationSeeder first.\n";
+
             return;
         }
 
@@ -60,7 +61,7 @@ class HarvestSeeder extends Seeder
 
                 foreach ($harvestedUnits as $unit) {
                     $fishBefore = rand(500, 2000);
-                    $fishHarvested = rand(200, (int)($fishBefore * 0.8));
+                    $fishHarvested = rand(200, (int) ($fishBefore * 0.8));
 
                     HarvestUnit::create([
                         'harvest_id' => $harvest->id,
@@ -110,6 +111,6 @@ class HarvestSeeder extends Seeder
             }
         }
 
-        echo '✅ تم إنشاء '.Harvest::count()." حصاد و ".HarvestBox::count()." صندوق بنجاح.\n";
+        echo '✅ تم إنشاء '.Harvest::count().' حصاد و '.HarvestBox::count()." صندوق بنجاح.\n";
     }
 }

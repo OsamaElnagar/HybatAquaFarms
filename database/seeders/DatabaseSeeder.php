@@ -40,12 +40,12 @@ class DatabaseSeeder extends Seeder
             BatchMovementSeeder::class,
             FeedStockSeeder::class,
             VoucherSeeder::class,
-            
+
             // Harvesting (order matters!)
             HarvestOperationSeeder::class, // Must come before HarvestSeeder
             HarvestSeeder::class,          // Creates harvests, units, and boxes
             SalesOrderSeeder::class,       // Assigns boxes to sales orders
-            
+
             // Other operations
             EmployeeAdvanceSeeder::class,
             SalaryRecordSeeder::class,

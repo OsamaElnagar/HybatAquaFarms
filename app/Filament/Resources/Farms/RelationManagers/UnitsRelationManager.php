@@ -53,11 +53,11 @@ class UnitsRelationManager extends RelationManager
                     ->counts('batches')
                     ->label('الدفعات')
                     ->badge()
-                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
                     ->sortable(),
                 TextColumn::make('feed_consumed')
                     ->label('استهلاك العلف (كجم)')
-                    ->state(fn($record) => number_format($record->getTotalFeedConsumed()))
+                    ->state(fn ($record) => number_format($record->getTotalFeedConsumed()))
                     ->color('info')
                     ->toggleable(),
             ])

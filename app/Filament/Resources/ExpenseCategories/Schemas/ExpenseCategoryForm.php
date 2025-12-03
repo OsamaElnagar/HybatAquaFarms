@@ -19,9 +19,9 @@ class ExpenseCategoryForm
                     ->maxLength(255),
                 TextInput::make('code')
                     ->label('الكود')
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(50)
-                    ->helperText('كود فريد للفئة (اختياري)'),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->helperText('يتم توليده تلقائياً'),
                 Textarea::make('description')
                     ->label('الوصف')
                     ->columnSpanFull()

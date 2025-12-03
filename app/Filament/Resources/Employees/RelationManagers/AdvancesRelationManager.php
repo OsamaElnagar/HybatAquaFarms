@@ -48,7 +48,7 @@ class AdvancesRelationManager extends RelationManager
                     ->label('المتبقي')
                     ->numeric()
                     ->suffix(' EGP ')
-                    ->color(fn($state) => $state > 0 ? 'warning' : 'success')
+                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('الحالة')

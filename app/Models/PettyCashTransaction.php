@@ -13,23 +13,23 @@ class PettyCashTransaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        "petty_cash_id",
-        "batch_id",
-        "voucher_id",
-        "expense_category_id",
-        "date",
-        "direction",
-        "amount",
-        "description",
-        "recorded_by",
+        'petty_cash_id',
+        'batch_id',
+        'voucher_id',
+        'expense_category_id',
+        'date',
+        'direction',
+        'amount',
+        'description',
+        'recorded_by',
     ];
 
     protected function casts(): array
     {
         return [
-            "date" => "date",
-            "amount" => "decimal:2",
-            "direction" => PettyTransacionType::class,
+            'date' => 'date',
+            'amount' => 'decimal:2',
+            'direction' => PettyTransacionType::class,
         ];
     }
 
@@ -50,7 +50,7 @@ class PettyCashTransaction extends Model
 
     public function recordedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, "recorded_by");
+        return $this->belongsTo(User::class, 'recorded_by');
     }
 
     public function expenseCategory(): BelongsTo

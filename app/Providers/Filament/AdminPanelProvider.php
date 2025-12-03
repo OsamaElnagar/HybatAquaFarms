@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile()
             ->favicon(asset('favicon.ico'))
 
             ->brandName(config('app.name'))
@@ -70,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentLoggerPlugin::make(),
                 FilamentSpatieLaravelBackupPlugin::make(),
                 FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
-                FilamentAbyssThemePlugin::make()
+                FilamentAbyssThemePlugin::make(),
             ])
             ->databaseNotifications()
             ->databaseNotificationspolling('10000s');

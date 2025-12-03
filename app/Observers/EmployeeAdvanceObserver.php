@@ -9,6 +9,13 @@ class EmployeeAdvanceObserver
 {
     public function __construct(private PostingService $posting) {}
 
+    public function creating(EmployeeAdvance $advance): void
+    {
+        if (! $advance->advance_number) {
+            $advance->advance_number = static::generateAdvanceNumber();
+        }
+    }
+
     public function created(EmployeeAdvance $advance): void
     {
         $this->posting->post('employee.advance', [
@@ -19,5 +26,13 @@ class EmployeeAdvanceObserver
             'source_id' => $advance->id,
             'description' => $advance->reason,
         ]);
+    }
+
+    protected static function generateAdvanceNumber(): string
+    {
+        $lastAdvance = EmployeeAdvance::latest('id')->first();
+        $number = $lastAdvance ? ((int) substr($lastAdvance->advance_number, 4)) + 1 : 1;
+
+        return 'ADV-'.str_pad($number, 5, '0', STR_PAD_LEFT);
     }
 }

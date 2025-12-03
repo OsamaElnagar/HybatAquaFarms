@@ -20,10 +20,9 @@ class EmployeeForm
                     ->schema([
                         TextInput::make('employee_number')
                             ->label('رقم الموظف')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->helperText('رقم فريد لتعريف الموظف')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('يتم توليده تلقائياً')
                             ->columnSpan(1),
                         TextInput::make('name')
                             ->label('الاسم')

@@ -4,59 +4,62 @@ namespace App\Models;
 
 use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
+use App\Observers\BatchObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+#[ObservedBy([BatchObserver::class])]
 class Batch extends Model
 {
     /** @use HasFactory<\Database\Factories\BatchFactory> */
     use HasFactory;
 
     protected $fillable = [
-        "batch_code",
-        "farm_id",
-        "unit_id",
-        "species_id",
-        "factory_id",
-        "entry_date",
-        "initial_quantity",
-        "current_quantity",
-        "initial_weight_avg",
-        "current_weight_avg",
-        "unit_cost",
-        "total_cost",
-        "source",
-        "status",
-        "notes",
-        "is_cycle_closed",
-        "closure_date",
-        "total_feed_cost",
-        "total_operating_expenses",
-        "total_revenue",
-        "net_profit",
-        "closed_by",
-        "closure_notes",
+        'batch_code',
+        'farm_id',
+        'unit_id',
+        'species_id',
+        'factory_id',
+        'entry_date',
+        'initial_quantity',
+        'current_quantity',
+        'initial_weight_avg',
+        'current_weight_avg',
+        'unit_cost',
+        'total_cost',
+        'source',
+        'status',
+        'notes',
+        'is_cycle_closed',
+        'closure_date',
+        'total_feed_cost',
+        'total_operating_expenses',
+        'total_revenue',
+        'net_profit',
+        'closed_by',
+        'closure_notes',
     ];
 
     protected function casts(): array
     {
         return [
-            "entry_date" => "date",
-            "initial_weight_avg" => "decimal:3",
-            "current_weight_avg" => "decimal:3",
-            "unit_cost" => "decimal:2",
-            "total_cost" => "decimal:2",
-            "source" => BatchSource::class,
-            "status" => BatchStatus::class,
-            "is_cycle_closed" => "boolean",
-            "closure_date" => "date",
-            "total_feed_cost" => "decimal:2",
-            "total_operating_expenses" => "decimal:2",
-            "total_revenue" => "decimal:2",
-            "net_profit" => "decimal:2",
+            'entry_date' => 'date',
+            'initial_weight_avg' => 'decimal:3',
+            'current_weight_avg' => 'decimal:3',
+            'unit_cost' => 'decimal:2',
+            'total_cost' => 'decimal:2',
+            'source' => BatchSource::class,
+            'status' => BatchStatus::class,
+            'is_cycle_closed' => 'boolean',
+            'closure_date' => 'date',
+            'total_feed_cost' => 'decimal:2',
+            'total_operating_expenses' => 'decimal:2',
+            'total_revenue' => 'decimal:2',
+            'net_profit' => 'decimal:2',
         ];
     }
 
@@ -67,7 +70,7 @@ class Batch extends Model
 
     public function unit(): BelongsTo
     {
-        return $this->belongsTo(FarmUnit::class, "unit_id");
+        return $this->belongsTo(FarmUnit::class, 'unit_id');
     }
 
     public function species(): BelongsTo
@@ -92,7 +95,7 @@ class Batch extends Model
 
     public function journalEntries(): MorphMany
     {
-        return $this->morphMany(JournalEntry::class, "source");
+        return $this->morphMany(JournalEntry::class, 'source');
     }
 
     public function batchPayments(): HasMany
@@ -107,7 +110,7 @@ class Batch extends Model
 
     public function closedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, "closed_by");
+        return $this->belongsTo(User::class, 'closed_by');
     }
 
     public function vouchers(): HasMany
@@ -125,7 +128,7 @@ class Batch extends Model
      */
     public function getTotalPaidAttribute(): float
     {
-        return (float) $this->batchPayments()->sum("amount");
+        return (float) $this->batchPayments()->sum('amount');
     }
 
     /**
@@ -153,21 +156,21 @@ class Batch extends Model
      */
     public function getPaymentStatusAttribute(): string
     {
-        if (!$this->total_cost || $this->total_cost <= 0) {
-            return "gray"; // No cost to pay
+        if (! $this->total_cost || $this->total_cost <= 0) {
+            return 'gray'; // No cost to pay
         }
 
         if ($this->is_fully_paid) {
-            return "success"; // Fully paid
+            return 'success'; // Fully paid
         }
 
         $paidPercentage = ($this->total_paid / $this->total_cost) * 100;
 
         if ($paidPercentage >= 80) {
-            return "warning"; // Mostly paid
+            return 'warning'; // Mostly paid
         }
 
-        return "danger"; // Not paid or partially paid
+        return 'danger'; // Not paid or partially paid
     }
 
     /**
@@ -175,7 +178,7 @@ class Batch extends Model
      */
     public function getTotalFeedConsumedAttribute(): float
     {
-        return (float) $this->dailyFeedIssues()->sum("quantity");
+        return (float) $this->dailyFeedIssues()->sum('quantity');
     }
 
     /**
@@ -187,17 +190,17 @@ class Batch extends Model
         // If cycle is closed, return saved value
         if (
             $this->is_cycle_closed &&
-            $this->attributes["total_feed_cost"] !== null
+            $this->attributes['total_feed_cost'] !== null
         ) {
-            return (float) $this->attributes["total_feed_cost"];
+            return (float) $this->attributes['total_feed_cost'];
         }
 
         $totalCost = 0;
 
         foreach ($this->dailyFeedIssues as $issue) {
             // Try to get average cost from feed stock
-            $feedStock = FeedStock::where("feed_item_id", $issue->feed_item_id)
-                ->where("feed_warehouse_id", $issue->feed_warehouse_id)
+            $feedStock = FeedStock::where('feed_item_id', $issue->feed_item_id)
+                ->where('feed_warehouse_id', $issue->feed_warehouse_id)
                 ->first();
 
             $costPerUnit =
@@ -218,18 +221,18 @@ class Batch extends Model
         // If cycle is closed, return saved value
         if (
             $this->is_cycle_closed &&
-            $this->attributes["total_operating_expenses"] !== null
+            $this->attributes['total_operating_expenses'] !== null
         ) {
-            return (float) $this->attributes["total_operating_expenses"];
+            return (float) $this->attributes['total_operating_expenses'];
         }
 
         // Sum batch-specific vouchers
-        $voucherTotal = (float) $this->vouchers()->sum("amount");
+        $voucherTotal = (float) $this->vouchers()->sum('amount');
 
         // Sum batch-specific petty cash transactions (expenses only)
         $pettyCashTotal = (float) $this->pettyCashTransactions()
-            ->where("type", "expense")
-            ->sum("amount");
+            ->where('type', 'expense')
+            ->sum('amount');
 
         return $voucherTotal + $pettyCashTotal;
     }
@@ -255,9 +258,9 @@ class Batch extends Model
         // If cycle is closed, return saved value
         if (
             $this->is_cycle_closed &&
-            $this->attributes["total_revenue"] !== null
+            $this->attributes['total_revenue'] !== null
         ) {
-            return (float) $this->attributes["total_revenue"];
+            return (float) $this->attributes['total_revenue'];
         }
 
         // Sum all sold harvest boxes for this batch
@@ -274,9 +277,9 @@ class Batch extends Model
         // If cycle is closed, return saved value
         if (
             $this->is_cycle_closed &&
-            $this->attributes["net_profit"] !== null
+            $this->attributes['net_profit'] !== null
         ) {
-            return (float) $this->attributes["net_profit"];
+            return (float) $this->attributes['net_profit'];
         }
 
         return $this->total_revenue - $this->total_cycle_expenses;
@@ -307,7 +310,7 @@ class Batch extends Model
      */
     public function getDaysSinceEntryAttribute(): int
     {
-        if (!$this->entry_date) {
+        if (! $this->entry_date) {
             return 0;
         }
 

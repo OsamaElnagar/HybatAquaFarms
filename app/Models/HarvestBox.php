@@ -68,7 +68,7 @@ class HarvestBox extends Model
             }
 
             // Track sold timestamp
-            if ($model->isDirty('is_sold') && $model->is_sold && !$model->sold_at) {
+            if ($model->isDirty('is_sold') && $model->is_sold && ! $model->sold_at) {
                 $model->sold_at = now();
             }
         });
@@ -86,12 +86,13 @@ class HarvestBox extends Model
      */
     public function calculateSubtotal(): void
     {
-        if (!$this->unit_price) {
+        if (! $this->unit_price) {
             $this->subtotal = null;
+
             return;
         }
 
-        $this->subtotal = match($this->pricing_unit) {
+        $this->subtotal = match ($this->pricing_unit) {
             PricingUnit::Kilogram => $this->weight * $this->unit_price,
             PricingUnit::Piece => $this->fish_count * $this->unit_price,
             PricingUnit::Box => $this->unit_price,
@@ -131,7 +132,7 @@ class HarvestBox extends Model
     }
 
     // Helper Methods
-    public function assignToSalesOrder(SalesOrder $salesOrder, float $unitPrice, PricingUnit $pricingUnit = null): void
+    public function assignToSalesOrder(SalesOrder $salesOrder, float $unitPrice, ?PricingUnit $pricingUnit = null): void
     {
         $this->sales_order_id = $salesOrder->id;
         $this->trader_id = $salesOrder->trader_id;
@@ -161,7 +162,7 @@ class HarvestBox extends Model
 
         if ($this->classification) {
             $parts[] = $this->classification;
-        } else if ($this->species) {
+        } elseif ($this->species) {
             $parts[] = $this->species->name;
         }
 

@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enums\MovementType;
+use App\Observers\BatchMovementObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy([BatchMovementObserver::class])]
 class BatchMovement extends Model
 {
     /** @use HasFactory<\Database\Factories\BatchMovementFactory> */
@@ -16,44 +19,44 @@ class BatchMovement extends Model
     {
         static::creating(function ($model) {
             if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception("لا يمكن إضافة حركات لدورة مقفلة");
+                throw new \Exception('لا يمكن إضافة حركات لدورة مقفلة');
             }
         });
 
         static::updating(function ($model) {
             if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception("لا يمكن تعديل حركات دورة مقفلة");
+                throw new \Exception('لا يمكن تعديل حركات دورة مقفلة');
             }
         });
 
         static::deleting(function ($model) {
             if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception("لا يمكن حذف حركات دورة مقفلة");
+                throw new \Exception('لا يمكن حذف حركات دورة مقفلة');
             }
         });
     }
 
     protected $fillable = [
-        "batch_id",
-        "movement_type",
-        "from_farm_id",
-        "to_farm_id",
-        "from_unit_id",
-        "to_unit_id",
-        "quantity",
-        "weight",
-        "date",
-        "reason",
-        "recorded_by",
-        "notes",
+        'batch_id',
+        'movement_type',
+        'from_farm_id',
+        'to_farm_id',
+        'from_unit_id',
+        'to_unit_id',
+        'quantity',
+        'weight',
+        'date',
+        'reason',
+        'recorded_by',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            "date" => "date",
-            "weight" => "decimal:3",
-            "movement_type" => MovementType::class,
+            'date' => 'date',
+            'weight' => 'decimal:3',
+            'movement_type' => MovementType::class,
         ];
     }
 
@@ -64,26 +67,26 @@ class BatchMovement extends Model
 
     public function fromFarm(): BelongsTo
     {
-        return $this->belongsTo(Farm::class, "from_farm_id");
+        return $this->belongsTo(Farm::class, 'from_farm_id');
     }
 
     public function toFarm(): BelongsTo
     {
-        return $this->belongsTo(Farm::class, "to_farm_id");
+        return $this->belongsTo(Farm::class, 'to_farm_id');
     }
 
     public function fromUnit(): BelongsTo
     {
-        return $this->belongsTo(FarmUnit::class, "from_unit_id");
+        return $this->belongsTo(FarmUnit::class, 'from_unit_id');
     }
 
     public function toUnit(): BelongsTo
     {
-        return $this->belongsTo(FarmUnit::class, "to_unit_id");
+        return $this->belongsTo(FarmUnit::class, 'to_unit_id');
     }
 
     public function recordedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, "recorded_by");
+        return $this->belongsTo(User::class, 'recorded_by');
     }
 }
