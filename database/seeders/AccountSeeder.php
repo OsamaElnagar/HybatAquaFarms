@@ -111,6 +111,14 @@ class AccountSeeder extends Seeder
             'parent_id' => $equity->id,
         ]);
 
+        Account::create([
+            'code' => '3900',
+            'name' => 'أرصدة افتتاحية',
+            'type' => AccountType::Equity,
+            'parent_id' => $equity->id,
+            'description' => 'حساب الأرصدة الافتتاحية - يستخدم عند بدء تشغيل النظام',
+        ]);
+
         // Income
         $income = Account::create([
             'code' => '4000',

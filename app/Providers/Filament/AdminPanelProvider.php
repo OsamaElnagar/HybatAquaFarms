@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
+use Caresome\FilamentAuthDesigner\Data\AuthPageConfig;
+use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,6 +22,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jacobtims\FilamentLogger\FilamentLoggerPlugin;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
@@ -35,7 +39,6 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->profile()
             ->favicon(asset('favicon.ico'))
-
             ->brandName(config('app.name'))
             ->brandLogoHeight('50px')
             ->brandLogo(asset('android-chrome-512x512.png'))
@@ -72,7 +75,16 @@ class AdminPanelProvider extends PanelProvider
                 FilamentSpatieLaravelBackupPlugin::make(),
                 FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
                 FilamentAbyssThemePlugin::make(),
+                FilamentApexChartsPlugin::make(),
             ])
+            ->plugin(
+                AuthDesignerPlugin::make()
+                    ->login(fn (AuthPageConfig $config) => $config
+                        ->media(asset('assets/images/pexel-waterfall.mp4'))
+                        ->mediaPosition(MediaPosition::Cover)
+                        ->blur(0)
+                    )
+            )
             ->databaseNotifications()
             ->databaseNotificationspolling('10000s');
     }
