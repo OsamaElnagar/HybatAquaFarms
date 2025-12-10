@@ -1,10 +1,5 @@
 <x-filament-panels::page>
-    <x-filament-panels::form wire:submit="create">
-        {{ $this->form }}
-
-        <x-filament-panels::form.actions :actions="$this->getFormActions()" />
-    </x-filament-panels::form>
-
+    {{ $this->form }}
     <x-filament::section class="mt-6">
         <x-slot name="heading">
             💡 كيفية إدخال الأرصدة الافتتاحية
