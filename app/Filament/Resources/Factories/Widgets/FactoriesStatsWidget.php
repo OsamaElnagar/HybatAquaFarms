@@ -38,7 +38,7 @@ class FactoriesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalPayables > 0 ? 'warning' : 'success'),
 
-            Stat::make('متوسط قيمة الطلب', $totalFactories > 0 ? number_format($totalPurchases / $totalFactories).' EGP ' : '0.00 ج.م')
+            Stat::make('متوسط قيمة الطلب', $totalFactories > 0 ? number_format($totalPurchases / $totalFactories).' EGP ' : '0.00 EGP')
                 ->description('متوسط المشتريات لكل مصنع')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),

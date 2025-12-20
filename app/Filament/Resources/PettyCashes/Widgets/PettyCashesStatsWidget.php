@@ -38,7 +38,7 @@ class PettyCashesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-arrow-trending-down')
                 ->color('warning'),
 
-            Stat::make('متوسط الرصيد', $totalPettyCashes > 0 ? number_format($totalBalance / $totalPettyCashes).' EGP ' : '0.00 ج.م')
+            Stat::make('متوسط الرصيد', $totalPettyCashes > 0 ? number_format($totalBalance / $totalPettyCashes).' EGP ' : '0.00 EGP')
                 ->description('متوسط الرصيد لكل عهدة')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),

@@ -21,7 +21,7 @@ class HarvestsRelationManager extends RelationManager
 {
     protected static string $relationship = 'harvests';
 
-    protected static ?string $title = 'جلسات الحصاد اليومية';
+    protected static ?string $title = 'جلسات الحصاد (Daily Sessions)';
 
     protected static ?string $recordTitleAttribute = 'harvest_number';
 

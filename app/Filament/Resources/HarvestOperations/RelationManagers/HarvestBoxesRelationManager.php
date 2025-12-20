@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\HarvestOperations\RelationManagers;
 
+use App\Models\Trader;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
@@ -28,7 +30,7 @@ class HarvestBoxesRelationManager extends RelationManager
 {
     protected static string $relationship = 'harvestBoxes';
 
-    protected static ?string $title = 'صناديق الحصاد';
+    protected static ?string $title = 'الإنتاج (Boxes)';
 
     protected static ?string $recordTitleAttribute = 'box_number';
 
@@ -158,6 +160,83 @@ class HarvestBoxesRelationManager extends RelationManager
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    BulkAction::make('sell_selected')
+                        ->label('بيع المحدد')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->color('success')
+                        ->form([
+                            Select::make('trader_id')
+                                ->label('التاجر')
+                                ->options(Trader::query()->pluck('name', 'id'))
+                                ->searchable()
+                                ->preload()
+                                ->required(),
+                            \Filament\Forms\Components\DatePicker::make('date')
+                                ->label('تاريخ البيع')
+                                ->default(now())
+                                ->required(),
+                            Select::make('pricing_unit')
+                                ->label('وحدة التسعير')
+                                ->options([
+                                    'kilogram' => 'كيلوجرام',
+                                    'piece' => 'قطعة',
+                                    'box' => 'صندوق',
+                                ])
+                                ->default('kilogram')
+                                ->required(),
+                            TextInput::make('unit_price')
+                                ->label('سعر موحد (اختياري)')
+                                ->numeric()
+                                ->step(0.01)
+                                ->helperText('سيتم تطبيق هذا السعر على جميع الصناديق المحددة'),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
+                            $firstRecord = $records->first();
+                            if (! $firstRecord) {
+                                return;
+                            }
+
+                            $operation = $firstRecord->harvestOperation;
+
+                            // Create Sales Order
+                            $salesOrder = \App\Models\SalesOrder::create([
+                                'farm_id' => $operation->farm_id,
+                                'trader_id' => $data['trader_id'],
+                                'date' => $data['date'],
+                                'created_by' => auth()->id(),
+                                'notes' => "تم إنشاء أمر بيع لـ {$records->count()} صندوق من عملية الحصاد رقم: {$operation->operation_number}",
+                            ]);
+
+                            // Update boxes
+                            foreach ($records as $box) {
+                                $box->update([
+                                    'sales_order_id' => $salesOrder->id,
+                                    'trader_id' => $salesOrder->trader_id,
+                                    'is_sold' => true,
+                                    'sold_at' => $data['date'],
+                                    'pricing_unit' => $data['pricing_unit'],
+                                    'unit_price' => $data['unit_price'] ?? $box->unit_price,
+                                ]);
+
+                                // Trigger subtotal calc manually if needed, but model observer handles it on update if fields are dirty
+                                if ($data['unit_price']) {
+                                    $box->calculateSubtotal();
+                                    $box->saveQuietly();
+                                }
+                            }
+
+                            $salesOrder->recalculateTotals();
+
+                            \Filament\Notifications\Notification::make()
+                                ->title('تم إنشاء أمر البيع للصناديق المحددة')
+                                ->success()
+                                ->send();
+
+                            // Redirect using simple redirect as we are in a closure
+                            // We can't easily redirect safely from a bulk action in all contexts without checking
+                            // But notification is enough usually.
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->defaultSort('box_number', 'asc');

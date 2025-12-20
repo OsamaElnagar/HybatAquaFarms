@@ -29,7 +29,7 @@ class AdvanceRepaymentForm
                             ->preload()
                             ->required()
                             ->helperText('اختر السلفة التي سيتم سداد جزء منها')
-                            ->getOptionLabelFromRecordUsing(fn (EmployeeAdvance $record) => "{$record->advance_number} - {$record->employee->name} (متبقي: ".number_format($record->balance_remaining).' ج.م)')
+                            ->getOptionLabelFromRecordUsing(fn (EmployeeAdvance $record) => "{$record->advance_number} - {$record->employee->name} (متبقي: ".number_format($record->balance_remaining).' EGP)')
                             ->reactive()
                             ->afterStateUpdated(fn (Set $set, $state) => self::syncRemainingFromAdvance($set, $state)),
                         DatePicker::make('payment_date')
@@ -149,6 +149,6 @@ class AdvanceRepaymentForm
         $total = number_format($advance->amount_paid);
         $remaining = number_format($advance->balance_remaining);
 
-        return "الموظف: {$advance->employee->name} | المبلغ الكلي: {$total} ج.م | المتبقي: {$remaining} ج.م | تاريخ الموافقة: {$approvedDate}";
+        return "الموظف: {$advance->employee->name} | المبلغ الكلي: {$total} EGP | المتبقي: {$remaining} EGP | تاريخ الموافقة: {$approvedDate}";
     }
 }

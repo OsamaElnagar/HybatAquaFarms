@@ -36,7 +36,7 @@ class FeedWarehousesStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success'),
 
-            Stat::make('متوسط قيمة المخزن', $totalWarehouses > 0 ? number_format($totalStockValue / $totalWarehouses).' EGP ' : '0.00 ج.م')
+            Stat::make('متوسط قيمة المخزن', $totalWarehouses > 0 ? number_format($totalStockValue / $totalWarehouses).' EGP ' : '0.00 EGP')
                 ->description('متوسط قيمة المخزون لكل مخزن')
                 ->descriptionIcon('heroicon-o-chart-bar')
                 ->color('warning'),

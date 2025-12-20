@@ -67,7 +67,8 @@ class Trader extends Model
             ->whereIn('payment_status', ['pending', 'partial'])
             ->sum('net_amount');
 
-        $totalSettled = $this->clearingEntries()->sum('amount');
+        $totalSettled = $this->clearingEntries()->sum('amount')
+            + $this->vouchers()->where('voucher_type', \App\Enums\VoucherType::Receipt)->sum('amount');
 
         return (float) max(0, $totalCreditSales - $totalSettled);
     }

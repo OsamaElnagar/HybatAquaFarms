@@ -66,7 +66,7 @@ class ViewBatch extends ViewRecord
                         ->body(
                             "تم إقفال دورة {$record->batch_code} بصافي ربح: ".
                                 number_format($record->net_profit).
-                                ' ج.م',
+                                ' EGP',
                         )
                         ->send();
                 }),

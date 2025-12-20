@@ -12,21 +12,21 @@
             <div>
                 <div class="text-gray-600 dark:text-gray-400">إجمالي المدين</div>
                 <div class="text-lg font-bold text-success-600">
-                    {{ number_format($totalDebit, 2) }} ج.م
+                    {{ number_format($totalDebit, 2) }} EGP
                 </div>
             </div>
 
             <div>
                 <div class="text-gray-600 dark:text-gray-400">إجمالي الدائن</div>
                 <div class="text-lg font-bold text-danger-600">
-                    {{ number_format($totalCredit, 2) }} ج.م
+                    {{ number_format($totalCredit, 2) }} EGP
                 </div>
             </div>
 
             <div>
                 <div class="text-gray-600 dark:text-gray-400">الفرق</div>
                 <div class="text-lg font-bold {{ $isBalanced ? 'text-success-600' : 'text-warning-600' }}">
-                    {{ number_format(abs($difference), 2) }} ج.م
+                    {{ number_format(abs($difference), 2) }} EGP
                     @if($isBalanced)
                         <span class="text-xs">✓ متوازن</span>
                     @else

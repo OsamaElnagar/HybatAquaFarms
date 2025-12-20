@@ -13,10 +13,10 @@ class AccountsStatsWidget extends StatsOverviewWidget
     {
         $total = Account::count();
         $active = Account::where('is_active', true)->count();
-        $byType = Account::query()
-            ->selectRaw('type, COUNT(*) as c')
-            ->groupBy('type')
-            ->pluck('c', 'type');
+        // $byType = Account::query()
+        //     ->selectRaw('type, COUNT(*) as c')
+        //     ->groupBy('type')
+        //     ->pluck('c', 'type');
 
         return [
             Stat::make('إجمالي الحسابات', number_format($total))
@@ -29,10 +29,10 @@ class AccountsStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success'),
 
-            Stat::make('حسب النوع', collect(AccountType::cases())->map(fn ($t) => ($byType[$t->value] ?? 0).' '.$t->name)->join(' | '))
-                ->description('توزيع حسب النوع')
-                ->descriptionIcon('heroicon-o-chart-bar')
-                ->color('info'),
+            // Stat::make('حسب النوع', collect(AccountType::cases())->map(fn ($t) => ($byType[$t->value] ?? 0).' '.$t->name)->join(' | '))
+            //     ->description('توزيع حسب النوع')
+            //     ->descriptionIcon('heroicon-o-chart-bar')
+            //     ->color('info'),
         ];
     }
 }

@@ -23,17 +23,17 @@ class TreasuryOverview extends StatsOverviewWidget
             ->sum('credit');
 
         return [
-            Stat::make('إجمالي رصيد الخزينة', number_format($totalBalance, 2).' ج.م')
+            Stat::make('إجمالي رصيد الخزينة', number_format($totalBalance, 2).' EGP')
                 ->description('مجموع أرصدة الصناديق والبنوك')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
 
-            Stat::make('وارد اليوم', number_format($todayIncoming, 2).' ج.م')
+            Stat::make('وارد اليوم', number_format($todayIncoming, 2).' EGP')
                 ->description('إجمالي المقبوضات اليوم')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),
 
-            Stat::make('صادر اليوم', number_format($todayOutgoing, 2).' ج.م')
+            Stat::make('صادر اليوم', number_format($todayOutgoing, 2).' EGP')
                 ->description('إجمالي المدفوعات اليوم')
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('danger'),

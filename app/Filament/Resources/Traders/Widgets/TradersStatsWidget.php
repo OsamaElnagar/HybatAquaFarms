@@ -35,7 +35,7 @@ class TradersStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalReceivables > 0 ? 'warning' : 'success'),
 
-            Stat::make('متوسط قيمة الطلب', $totalTraders > 0 ? number_format($totalRevenue / max(1, SalesOrder::count())).' EGP ' : '0.00 ج.م')
+            Stat::make('متوسط قيمة الطلب', $totalTraders > 0 ? number_format($totalRevenue / max(1, SalesOrder::count())).' EGP ' : '0.00 EGP')
                 ->description('متوسط قيمة أمر البيع')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),

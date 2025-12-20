@@ -81,14 +81,14 @@ class ManualJournalEntry extends Page implements HasForms
                             ->label('مدين')
                             ->numeric()
                             ->default(0)
-                            ->suffix('ج.م')
+                            ->suffix('EGP')
                             ->reactive(),
 
                         TextInput::make('credit')
                             ->label('دائن')
                             ->numeric()
                             ->default(0)
-                            ->suffix('ج.م')
+                            ->suffix('EGP')
                             ->reactive(),
 
                         TextInput::make('description')

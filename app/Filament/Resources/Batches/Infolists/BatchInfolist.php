@@ -161,7 +161,7 @@ class BatchInfolist
                         ->formatStateUsing(
                             fn ($record) => $record->total_paid
                                 ? number_format($record->total_paid).' EGP '
-                                : '0.00 ج.م',
+                                : '0.00 EGP',
                         )
                         ->badge()
                         ->color('info')
@@ -174,7 +174,7 @@ class BatchInfolist
                                     $record->outstanding_balance,
                                     2,
                                 ).' EGP '
-                                : '0.00 ج.م',
+                                : '0.00 EGP',
                         )
                         ->badge()
                         ->color(

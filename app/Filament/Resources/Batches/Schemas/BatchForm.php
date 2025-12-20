@@ -100,26 +100,40 @@ class BatchForm
                 SchemaSection::make('معلومات المورد والتكلفة')
                     ->description('معلومات مصنع التفريخ والتكلفة')
                     ->schema([
-                        SchemaGrid::make(2)
+                        SchemaGrid::make(1)
                             ->schema([
                                 Select::make('factory_id')
-                                    ->label('مصنع التفريخ/المفرخة')
+                                    ->label('المفرخ')
                                     ->relationship('factory', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->helperText('المورد الذي تم شراء الزريعة منه (اختياري - فقط إذا كانت من مفرخة)')
                                     ->columnSpan(1),
 
-                                Select::make('source')
-                                    ->label('المصدر')
-                                    ->options(BatchSource::class)
-                                    ->native(false)
-                                    ->helperText('مصدر الزريعة: مفرخة، نقل، أو شراء')
-                                    ->columnSpan(1),
+                                // Select::make('source')
+                                //     ->label('المصدر')
+                                //     ->options(BatchSource::class)
+                                //     ->native(false)
+                                //     ->helperText('مصدر الزريعة: مفرخة، نقل، أو شراء')
+                                //     ->columnSpan(1),
                             ]),
 
                         SchemaGrid::make(3)
                             ->schema([
+                                TextInput::make('initial_quantity')
+                                    ->label('الكمية الأولية')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->live(false)
+                                    ->afterStateUpdated(function ($state, callable $set, $get) {
+                                        $unitCost = $get('unit_cost');
+                                        if ($unitCost && $state) {
+                                            $set('total_cost', (float) $unitCost * (int) $state);
+                                        }
+                                    })
+                                    ->helperText('عدد الأسماك/الزريعة عند الإدخال')
+                                    ->columnSpan(1),
                                 TextInput::make('unit_cost')
                                     ->label('تكلفة الوحدة')
                                     ->numeric()
@@ -134,21 +148,6 @@ class BatchForm
                                         }
                                     })
                                     ->helperText('تكلفة الوحدة الواحدة من المفرخة (بالجنيه المصري)')
-                                    ->columnSpan(1),
-
-                                TextInput::make('initial_quantity')
-                                    ->label('الكمية الأولية')
-                                    ->required()
-                                    ->numeric()
-                                    ->minValue(1)
-                                    ->live()
-                                    ->afterStateUpdated(function ($state, callable $set, $get) {
-                                        $unitCost = $get('unit_cost');
-                                        if ($unitCost && $state) {
-                                            $set('total_cost', (float) $unitCost * (int) $state);
-                                        }
-                                    })
-                                    ->helperText('عدد الأسماك/الزريعة عند الإدخال')
                                     ->columnSpan(1),
 
                                 TextInput::make('total_cost')
@@ -207,8 +206,7 @@ class BatchForm
                             ->helperText('أي ملاحظات إضافية حول الدفعة (اختياري)')
                             ->columnSpanFull(),
                     ])
-                    ->collapsible()
-                    ->collapsed(),
+                    ->collapsible(),
             ]);
     }
 }
