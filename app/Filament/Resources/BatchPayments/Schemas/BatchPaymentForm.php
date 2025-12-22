@@ -81,7 +81,7 @@ class BatchPaymentForm
                             ->helperText('وصف تفصيلي للدفعة (اختياري) - مثال: "دفعة جزئية للزريعة - دفعة BATCH-2024-001"')
                             ->columnSpanFull(),
                     ])
-                    ->columns(1),
+                    ->columnSpanFull(),
 
                 Section::make('معلومات إضافية')
                     ->description('معلومات المستخدم والملاحظات')
@@ -101,7 +101,7 @@ class BatchPaymentForm
                             ->helperText('أي ملاحظات إضافية متعلقة بهذه الدفعة (اختياري)')
                             ->columnSpanFull(),
                     ])
-                    ->columns(1)
+                    ->columnSpanFull()
                     ->collapsible()
                     ->collapsed(),
             ]);

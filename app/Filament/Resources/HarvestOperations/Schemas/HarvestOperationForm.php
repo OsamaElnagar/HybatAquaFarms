@@ -94,8 +94,8 @@ class HarvestOperationForm
                             ->afterStateUpdated(function (Set $set, Get $get, $state) {
                                 $startDate = $get('start_date');
                                 if ($state && $startDate) {
-                                    $days = \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($state)) + 1;
-                                    $set('estimated_duration_days', $days);
+                                    $days = \Carbon\Carbon::parse($startDate)->floatDiffInDays(\Carbon\Carbon::parse($state));
+                                    $set('estimated_duration_days', round($days, 1));
                                 }
                             })
                             ->columnSpan(1),

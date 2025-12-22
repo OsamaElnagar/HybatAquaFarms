@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\HarvestOperations\RelationManagers;
 
+use App\Enums\PricingUnit;
 use App\Models\Trader;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -177,12 +178,8 @@ class HarvestBoxesRelationManager extends RelationManager
                                 ->required(),
                             Select::make('pricing_unit')
                                 ->label('وحدة التسعير')
-                                ->options([
-                                    'kilogram' => 'كيلوجرام',
-                                    'piece' => 'قطعة',
-                                    'box' => 'صندوق',
-                                ])
-                                ->default('kilogram')
+                                ->options(PricingUnit::class)
+                                ->default(PricingUnit::Kilogram)
                                 ->required(),
                             TextInput::make('unit_price')
                                 ->label('سعر موحد (اختياري)')
@@ -412,7 +409,7 @@ class HarvestBoxesRelationManager extends RelationManager
 
                             if ($state && $pricingUnit) {
                                 $subtotal = match ($pricingUnit) {
-                                    'kilogram' => $weight * $state,
+                                    'kg' => $weight * $state,
                                     'piece' => $fishCount * $state,
                                     'box' => $state,
                                     default => $weight * $state,
@@ -424,11 +421,11 @@ class HarvestBoxesRelationManager extends RelationManager
                     Select::make('pricing_unit')
                         ->label('وحدة التسعير')
                         ->options([
-                            'kilogram' => 'كيلوجرام',
+                            'kg' => 'كيلوجرام',
                             'piece' => 'قطعة',
                             'box' => 'صندوق',
                         ])
-                        ->default('kilogram')
+                        ->default('kg')
                         ->visible(fn (Get $get) => $get('is_sold'))
                         ->required(fn (Get $get) => $get('is_sold'))
                         ->live()
@@ -439,7 +436,7 @@ class HarvestBoxesRelationManager extends RelationManager
 
                             if ($state && $unitPrice) {
                                 $subtotal = match ($state) {
-                                    'kilogram' => $weight * $unitPrice,
+                                    'kg' => $weight * $unitPrice,
                                     'piece' => $fishCount * $unitPrice,
                                     'box' => $unitPrice,
                                     default => $weight * $unitPrice,
