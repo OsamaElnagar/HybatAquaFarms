@@ -276,6 +276,7 @@ class HarvestBoxesRelationManager extends RelationManager
                                 ->label('رقم الحصاد')
                                 ->default(fn () => \App\Models\Harvest::generateHarvestNumber())
                                 ->required()
+                                ->copyable()
                                 ->unique(),
                             \Filament\Forms\Components\DatePicker::make('harvest_date')
                                 ->label('التاريخ')

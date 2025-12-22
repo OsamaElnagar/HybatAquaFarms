@@ -15,7 +15,7 @@ class SalesOrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'salesOrders';
 
-    protected static ?string $title = 'أوامر المبيعات';
+    protected static ?string $title = 'المبيعات';
 
     protected static ?string $recordTitleAttribute = 'order_number';
 

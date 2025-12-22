@@ -57,7 +57,7 @@ class FarmFeedConsumptionStats extends BaseWidget
                 ->descriptionIcon('heroicon-m-scale')
                 ->color('primary'),
 
-            Stat::make('تيكلفة العلف التقديرية', Number::currency($totalCost, 'EGP'))
+            Stat::make('تكلفة العلف التقديرية', Number::currency($totalCost, 'EGP'))
                 ->description('بناءً على التكلفة المعيارية')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('success'),

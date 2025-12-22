@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.2",
         "caresome/filament-auth-designer": "^2.0",
-        "filament/filament": "4.0",
+        "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "4.0",
         "hugomyb/filament-media-action": "^4.0",
         "jacobtims/filament-logger": "^1.0",
