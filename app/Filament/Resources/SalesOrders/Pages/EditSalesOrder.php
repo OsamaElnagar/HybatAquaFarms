@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\SalesOrders\Pages;
 
-use App\Filament\Resources\SalesOrders\SalesOrderResource;
 use App\Enums\PaymentStatus;
 use App\Enums\VoucherType;
+use App\Filament\Resources\SalesOrders\SalesOrderResource;
 use App\Models\PettyCash;
 use App\Models\SalesOrder;
 use App\Models\Voucher;
@@ -62,9 +62,9 @@ class EditSalesOrder extends EditRecord
                     ]);
 
                     if ($data['amount'] >= $record->net_amount) {
-                         $record->update(['payment_status' => PaymentStatus::Paid]);
+                        $record->update(['payment_status' => PaymentStatus::Paid]);
                     } else {
-                         $record->update(['payment_status' => PaymentStatus::Partial]);
+                        $record->update(['payment_status' => PaymentStatus::Partial]);
                     }
 
                     Notification::make()

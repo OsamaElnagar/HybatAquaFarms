@@ -62,6 +62,13 @@
       0 => 'Filament\\Notifications\\NotificationsServiceProvider',
     ),
   ),
+  'filament/query-builder' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Filament\\QueryBuilder\\QueryBuilderServiceProvider',
+    ),
+  ),
   'filament/schemas' => 
   array (
     'providers' => 
@@ -117,6 +124,13 @@
     'providers' => 
     array (
       0 => 'Kirschbaum\\PowerJoins\\PowerJoinsServiceProvider',
+    ),
+  ),
+  'laradumps/laradumps' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaraDumps\\LaraDumps\\LaraDumpsServiceProvider',
     ),
   ),
   'laravel/boost' => 

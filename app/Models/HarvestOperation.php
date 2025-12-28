@@ -96,34 +96,9 @@ class HarvestOperation extends Model
     }
 
     // Calculated Attributes
-    public function getTotalBoxesAttribute(): int
-    {
-        return $this->harvestBoxes()->count();
-    }
-
-    public function getTotalWeightAttribute(): float
-    {
-        return (float) $this->harvestBoxes()->sum('weight');
-    }
-
     public function getTotalFishCountAttribute(): int
     {
         return (int) $this->harvestBoxes()->sum('fish_count');
-    }
-
-    public function getSoldBoxesCountAttribute(): int
-    {
-        return $this->harvestBoxes()->where('is_sold', true)->count();
-    }
-
-    public function getUnsoldBoxesCountAttribute(): int
-    {
-        return $this->harvestBoxes()->where('is_sold', false)->count();
-    }
-
-    public function getTotalRevenueAttribute(): float
-    {
-        return (float) $this->harvestBoxes()->where('is_sold', true)->sum('subtotal');
     }
 
     public function getActualDurationAttribute(): ?int

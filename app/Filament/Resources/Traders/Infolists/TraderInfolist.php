@@ -16,6 +16,8 @@ class TraderInfolist
                     ->schema([
                         TextEntry::make('code')
                             ->label('الكود')
+                            ->copyable()
+                    ->copyMessage('تم نسخ الكود')
                             ->columnSpan(1),
                         TextEntry::make('name')
                             ->label('الاسم')

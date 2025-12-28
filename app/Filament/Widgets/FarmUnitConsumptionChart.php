@@ -39,7 +39,7 @@ class FarmUnitConsumptionChart extends ApexChartWidget
             ->with('unit')
             ->get();
 
-        $labels = $data->map(fn ($item) => $item->unit?->code ?? 'Unit #' . $item->unit_id)->toArray();
+        $labels = $data->map(fn ($item) => $item->unit?->code ?? 'Unit #'.$item->unit_id)->toArray();
         $series = $data->map(fn ($item) => (float) $item->total)->toArray();
 
         return [

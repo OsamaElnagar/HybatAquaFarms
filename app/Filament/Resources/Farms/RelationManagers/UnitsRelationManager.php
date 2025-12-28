@@ -35,6 +35,8 @@ class UnitsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
+                    ->copyable()
+                    ->copyMessage('تم نسخ الكود')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('unit_type')

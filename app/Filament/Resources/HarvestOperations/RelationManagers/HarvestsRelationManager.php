@@ -166,7 +166,7 @@ class HarvestsRelationManager extends RelationManager
                         ->default('morning'),
 
                     Hidden::make('recorded_by')
-                        ->default(auth()->id()),
+                        ->default(auth('web')->id()),
                 ])
                 ->columns(2)->columnSpanFull(),
 

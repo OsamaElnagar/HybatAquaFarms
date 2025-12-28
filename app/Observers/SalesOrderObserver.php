@@ -17,6 +17,13 @@ class SalesOrderObserver
 
     public function updated(SalesOrder $salesOrder): void
     {
+        // Double Accounting Fix:
+        // We do NOT post 'sales.payment' here anymore because payments should be handled
+        // via Vouchers. If we post here, and also create a Voucher (which posts voucher.receipt),
+        // we duplicate the cash entry.
+        // The SalesOrder status change to 'Paid' is now just an informational state change.
+
+        /*
         // Only handle payment status changes
         if (! $salesOrder->wasChanged('payment_status')) {
             return;
@@ -45,6 +52,7 @@ class SalesOrderObserver
                 ]);
             }
         }
+        */
     }
 
     protected function postSalesOrder(SalesOrder $salesOrder): void

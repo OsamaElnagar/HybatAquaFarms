@@ -1,9 +1,16 @@
 {
     "agents": [
-        "cursor"
+        "claude_code",
+        "cursor",
+        "gemini"
     ],
     "editors": [
-        "cursor"
+        "claude_code",
+        "cursor",
+        "gemini"
     ],
-    "guidelines": []
+    "guidelines": [
+        "filament/filament"
+    ],
+    "herd_mcp": true
 }

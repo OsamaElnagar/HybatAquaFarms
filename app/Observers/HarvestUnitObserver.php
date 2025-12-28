@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Enums\MovementType;
 use App\Models\BatchMovement;
 use App\Models\HarvestUnit;
-use Illuminate\Support\Facades\Log;
 
 class HarvestUnitObserver
 {

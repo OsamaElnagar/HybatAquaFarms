@@ -39,29 +39,25 @@ class ViewHarvestOperation extends ViewRecord
                         ->required(),
                 ])
                 ->action(function (array $data, HarvestOperation $record) {
-                    // Create Sales Order
-                    $salesOrder = SalesOrder::create([
-                        'farm_id' => $record->farm_id,
-                        'trader_id' => $data['trader_id'],
-                        'date' => $data['date'],
-                        'created_by' => auth()->id(),
-                        'notes' => "تم إنشاؤه من عملية الحصاد رقم: {$record->operation_number}",
-                    ]);
-
-                    // Link unsold boxes
+                    $trader = Trader::findOrFail($data['trader_id']);
+                    $date = \Illuminate\Support\Carbon::parse($data['date']);
                     $boxes = $record->harvestBoxes()->where('is_sold', false)->get();
-                    foreach ($boxes as $box) {
-                        $box->update([
-                            'sales_order_id' => $salesOrder->id,
-                            'trader_id' => $salesOrder->trader_id,
-                            'is_sold' => true,
-                            // Set default sold_at to order date? HarvestBox updates this automatically on 'is_sold' change to now(), but maybe we want the order date?
-                            // For now rely on HarvestBox observer logic or explicit if needed.
-                            'sold_at' => $data['date'], 
-                        ]);
+
+                    if ($boxes->isEmpty()) {
+                        Notification::make()
+                            ->title('لا يوجد صناديق متاحة للبيع')
+                            ->warning()
+                            ->send();
+                        return;
                     }
 
-                    $salesOrder->recalculateTotals();
+                    $salesOrder = app(\App\Actions\Sales\CreateSalesOrderFromBoxes::class)->execute(
+                        farm: $record->farm,
+                        trader: $trader,
+                        date: $date,
+                        boxes: $boxes,
+                        notes: "تم إنشاؤه من عملية الحصاد رقم: {$record->operation_number}"
+                    );
 
                     Notification::make()
                         ->title('تم إنشاء أمر البيع بنجاح')

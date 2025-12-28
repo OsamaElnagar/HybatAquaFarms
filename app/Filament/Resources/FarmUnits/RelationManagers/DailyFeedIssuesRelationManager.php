@@ -44,7 +44,7 @@ class DailyFeedIssuesRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric(decimalPlaces: 3)
+                    ->numeric()
                     ->suffix(' كجم')
                     ->sortable(),
                 TextColumn::make('batch.batch_code')

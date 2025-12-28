@@ -20,29 +20,39 @@ class FactoryForm
                     ->helperText('يتم توليده تلقائياً'),
                 TextInput::make('name')
                     ->label('الاسم')
-                    ->required(),
+                    ->required()
+                    ->helperText('أدخل الاسم الكامل للمصنع'),
                 TextInput::make('contact_person')
-                    ->label('الشخص المسؤول'),
+                    ->label('الشخص المسؤول')
+                    ->helperText('اسم الشخص المسؤول عن التواصل مع المصنع'),
                 TextInput::make('phone')
                     ->label('الهاتف')
-                    ->tel(),
+                    ->tel()
+                    ->helperText('رقم هاتف أساسي للتواصل مع المصنع'),
                 TextInput::make('phone2')
                     ->label('هاتف بديل')
-                    ->tel(),
+                    ->tel()
+                    ->helperText('رقم هاتف إضافي للتواصل في حالة عدم التمكن من الوصول للهاتف الأساسي'),
                 TextInput::make('email')
                     ->label('البريد الإلكتروني')
-                    ->email(),
+                    ->email()
+                    ->helperText('البريد الإلكتروني الرسمي للمصنع'),
                 Textarea::make('address')
                     ->label('العنوان')
+                    ->helperText('العنوان التفصيلي للمصنع بما في ذلك المدينة والمنطقة')
                     ->columnSpanFull(),
                 TextInput::make('payment_terms_days')
                     ->label('أيام الدفع')
-                    ->numeric(),
+                    ->numeric()
+                    ->helperText('عدد الأيام التي يجب على العميل الدفع للمنتجات/الخدمات التي يشترها من المصنع'),
                 Toggle::make('is_active')
                     ->label('نشط')
-                    ->required(),
+                    ->default(true)
+                    ->required()
+                    ->helperText('تفعيل/تعطيل المصنع من النظام'),
                 Textarea::make('notes')
                     ->label('ملاحظات')
+                    ->helperText('أي معلومات إضافية أو ملاحظات خاصة بالمصنع')
                     ->columnSpanFull(),
             ]);
     }

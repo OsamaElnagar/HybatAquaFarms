@@ -56,15 +56,6 @@ class Account extends Model
 
     public function getBalanceAttribute(): float
     {
-        $debits = $this->journalLines()->sum('debit');
-        $credits = $this->journalLines()->sum('credit');
-
-        // For asset and expense accounts, debit increases balance
-        // For liability, equity, and income accounts, credit increases balance
-        if (in_array($this->type, [AccountType::Asset, AccountType::Expense])) {
-            return $debits - $credits;
-        }
-
-        return $credits - $debits;
+        return (float) $this->current_balance;
     }
 }

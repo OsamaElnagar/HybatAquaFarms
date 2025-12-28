@@ -23,6 +23,8 @@ class ExpenseCategoriesTable
                     ->toggleable(),
                 TextColumn::make('code')
                     ->label('الكود')
+                    ->copyable()
+                    ->copyMessage('تم نسخ الكود')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),

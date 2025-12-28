@@ -55,6 +55,7 @@ class SalesOrderResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\OrderItemsRelationManager::class,
             RelationManagers\HarvestsRelationManager::class,
         ];
     }

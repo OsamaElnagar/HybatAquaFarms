@@ -64,11 +64,11 @@ class SalesByCustomerChart extends ChartWidget
                     'label' => 'المبيعات',
                     'data' => $results->pluck('total')->toArray(),
                     'backgroundColor' => [
-                        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'
+                        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
                     ],
                 ],
             ],
-            'labels' => $results->map(fn($item) => $item->trader->name ?? 'Unknown')->toArray(),
+            'labels' => $results->map(fn ($item) => $item->trader->name ?? 'Unknown')->toArray(),
         ];
     }
 

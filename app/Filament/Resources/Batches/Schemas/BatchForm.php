@@ -125,7 +125,7 @@ class BatchForm
                                     ->required()
                                     ->numeric()
                                     ->minValue(1)
-                                    ->live(false)
+                                    ->live(true)
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         $unitCost = $get('unit_cost');
                                         if ($unitCost && $state) {
@@ -140,7 +140,7 @@ class BatchForm
                                     ->suffix(' EGP ')
                                     ->step(0.01)
                                     ->minValue(0)
-                                    ->live()
+                                    ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         $quantity = $get('initial_quantity');
                                         if ($state && $quantity) {

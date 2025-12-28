@@ -20,6 +20,8 @@ class TradersTable
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
+                    ->copyable()
+                    ->copyMessage('تم نسخ الكود')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')

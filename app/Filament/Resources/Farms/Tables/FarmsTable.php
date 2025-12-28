@@ -20,6 +20,8 @@ class FarmsTable
                 TextColumn::make('code')
                     ->label('الكود')
                     ->searchable()
+                    ->copyable()
+                    ->copyMessage('تم نسخ الكود')
                     ->sortable(),
                 TextColumn::make('name')
                     ->label('الاسم')

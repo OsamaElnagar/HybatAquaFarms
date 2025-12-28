@@ -4,14 +4,12 @@ namespace App\Filament\Widgets;
 
 use App\Models\SalesOrder;
 use Filament\Widgets\ChartWidget;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
 
 class SalesTrendChart extends ChartWidget
 {
     protected ?string $heading = 'تحليل إتجاه المبيعات (صافي)';
-    
-    protected int | string | array $columnSpan = 'full';
+
+    protected int|string|array $columnSpan = 'full';
 
     protected $listeners = ['updateCharts' => '$refresh'];
 

@@ -18,11 +18,9 @@ class TraderForm
                     ->schema([
                         TextInput::make('code')
                             ->label('الكود')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->helperText('كود فريد للتاجر')
-                            ->columnSpan(1),
+                            ->required()->disabled()
+                            ->hidden()
+                            ->dehydrated(false),
                         TextInput::make('name')
                             ->label('الاسم')
                             ->required()

@@ -16,6 +16,17 @@ class HarvestOperationsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function ($query) {
+                return $query
+                    ->withCount([
+                        'harvestBoxes as total_boxes',
+                        'harvestBoxes as sold_boxes_count' => fn ($q) => $q->where('is_sold', true),
+                        'harvestBoxes as unsold_boxes_count' => fn ($q) => $q->where('is_sold', false),
+                    ])
+                    ->withSum('harvestBoxes', 'weight')
+                    ->withSum(['harvestBoxes as sold_revenue' => fn ($q) => $q->where('is_sold', true)], 'subtotal')
+                    ->with(['batch.species', 'farm']);
+            })
             ->columns([
                 TextColumn::make('operation_number')
                     ->label('رقم العملية')
@@ -62,25 +73,29 @@ class HarvestOperationsTable
                     ->label('الصناديق')
                     ->numeric()
                     ->alignCenter()
-                    ->description(fn ($record) => number_format($record->total_weight, 1).' كجم'),
+                    ->state(fn ($record) => $record->total_boxes ?? 0)
+                    ->description(fn ($record) => number_format($record->harvest_boxes_sum_weight ?? 0, 1).' كجم'),
 
                 TextColumn::make('sold_boxes_count')
                     ->label('مباع')
                     ->numeric()
                     ->alignCenter()
-                    ->color('success'),
+                    ->color('success')
+                    ->state(fn ($record) => $record->sold_boxes_count ?? 0),
 
                 TextColumn::make('unsold_boxes_count')
                     ->label('متاح')
                     ->numeric()
                     ->alignCenter()
-                    ->color('warning'),
+                    ->color('warning')
+                    ->state(fn ($record) => $record->unsold_boxes_count ?? 0),
 
                 TextColumn::make('total_revenue')
                     ->label('الإيرادات')
                     ->money('EGP')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->state(fn ($record) => $record->sold_revenue_sum_subtotal ?? 0),
 
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
@@ -117,7 +132,7 @@ class HarvestOperationsTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc')
-            ->poll('30s'); // Auto-refresh every 30 seconds
+            ->defaultSort('created_at', 'desc');
+        // ->poll('30s') // Auto-refresh every 30 seconds
     }
 }

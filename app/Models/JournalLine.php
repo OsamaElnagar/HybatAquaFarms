@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\JournalLineObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy([JournalLineObserver::class])]
 class JournalLine extends Model
 {
     /** @use HasFactory<\Database\Factories\JournalLineFactory> */

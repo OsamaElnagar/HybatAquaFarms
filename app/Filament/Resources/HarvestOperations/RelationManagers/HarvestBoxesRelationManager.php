@@ -194,44 +194,29 @@ class HarvestBoxesRelationManager extends RelationManager
                             }
 
                             $operation = $firstRecord->harvestOperation;
+                            $farm = $operation->farm;
+                            $trader = Trader::findOrFail($data['trader_id']);
+                            $date = \Illuminate\Support\Carbon::parse($data['date']);
+                            
+                            // Map string to Enum if needed
+                            $pricingUnit = $data['pricing_unit'] instanceof PricingUnit 
+                                ? $data['pricing_unit'] 
+                                : PricingUnit::tryFrom($data['pricing_unit']);
 
-                            // Create Sales Order
-                            $salesOrder = \App\Models\SalesOrder::create([
-                                'farm_id' => $operation->farm_id,
-                                'trader_id' => $data['trader_id'],
-                                'date' => $data['date'],
-                                'created_by' => auth()->id(),
-                                'notes' => "تم إنشاء أمر بيع لـ {$records->count()} صندوق من عملية الحصاد رقم: {$operation->operation_number}",
-                            ]);
-
-                            // Update boxes
-                            foreach ($records as $box) {
-                                $box->update([
-                                    'sales_order_id' => $salesOrder->id,
-                                    'trader_id' => $salesOrder->trader_id,
-                                    'is_sold' => true,
-                                    'sold_at' => $data['date'],
-                                    'pricing_unit' => $data['pricing_unit'],
-                                    'unit_price' => $data['unit_price'] ?? $box->unit_price,
-                                ]);
-
-                                // Trigger subtotal calc manually if needed, but model observer handles it on update if fields are dirty
-                                if ($data['unit_price']) {
-                                    $box->calculateSubtotal();
-                                    $box->saveQuietly();
-                                }
-                            }
-
-                            $salesOrder->recalculateTotals();
+                            $salesOrder = app(\App\Actions\Sales\CreateSalesOrderFromBoxes::class)->execute(
+                                farm: $farm,
+                                trader: $trader,
+                                date: $date,
+                                boxes: $records,
+                                pricingUnit: $pricingUnit,
+                                unitPrice: $data['unit_price'] ? (float) $data['unit_price'] : null,
+                                notes: "تم إنشاء أمر بيع لـ {$records->count()} صندوق من عملية الحصاد رقم: {$operation->operation_number}"
+                            );
 
                             \Filament\Notifications\Notification::make()
                                 ->title('تم إنشاء أمر البيع للصناديق المحددة')
                                 ->success()
                                 ->send();
-
-                            // Redirect using simple redirect as we are in a closure
-                            // We can't easily redirect safely from a bulk action in all contexts without checking
-                            // But notification is enough usually.
                         })
                         ->deselectRecordsAfterCompletion(),
                 ]),
