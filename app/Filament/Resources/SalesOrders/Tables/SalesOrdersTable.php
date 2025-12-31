@@ -30,6 +30,10 @@ class SalesOrdersTable
                     ->label('التاجر')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('harvestOperation.operation_number')
+                    ->label('عملية الحصاد')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->sortable()
@@ -42,7 +46,7 @@ class SalesOrdersTable
                 //     ->sortable(),
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
-                    ->numeric()
+                    ->numeric(0)
                     ->suffix(' EGP ')
                     ->sortable(),
                 TextColumn::make('payment_status')
@@ -78,9 +82,16 @@ class SalesOrdersTable
                 SelectFilter::make('trader_id')
                     ->label('التاجر')
                     ->relationship('trader', 'name'),
+                SelectFilter::make('harvest_operation_id')
+                    ->label('عملية الحصاد')
+                    ->relationship('harvestOperation', 'operation_number')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('farm_id')
                     ->label('المزرعة')
-                    ->relationship('farm', 'name'),
+                    ->relationship('farm', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->recordActions([
                 ViewAction::make()->label('عرض'),

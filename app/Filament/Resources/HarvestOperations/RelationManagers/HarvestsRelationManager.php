@@ -7,7 +7,6 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -21,7 +20,7 @@ class HarvestsRelationManager extends RelationManager
 {
     protected static string $relationship = 'harvests';
 
-    protected static ?string $title = 'جلسات الحصاد (Daily Sessions)';
+    protected static ?string $title = 'جلسات الحصاد';
 
     protected static ?string $recordTitleAttribute = 'harvest_number';
 
@@ -56,31 +55,10 @@ class HarvestsRelationManager extends RelationManager
                         default => 'gray'
                     }),
 
-                TextColumn::make('total_boxes')
-                    ->label('الصناديق')
-                    ->numeric(),
-
-                TextColumn::make('total_weight')
-                    ->label('الوزن (كجم)')
-                    ->numeric(),
-
-                TextColumn::make('total_quantity')
-                    ->label('عدد الأسماك')
-                    ->numeric(),
-
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
                     ->sortable(),
-
-                TextColumn::make('soldBoxesCount')
-                    ->label('مباع')
-                    ->numeric()
-                    ->color('success'),
-
-                TextColumn::make('recordedBy.name')
-                    ->label('المسجل')
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -115,15 +93,6 @@ class HarvestsRelationManager extends RelationManager
             Section::make('المعلومات الأساسية')
                 ->description('بيانات جلسة الحصاد')
                 ->schema([
-                    Hidden::make('harvest_operation_id')
-                        ->default(fn ($livewire) => $livewire->ownerRecord->id),
-
-                    Hidden::make('batch_id')
-                        ->default(fn ($livewire) => $livewire->ownerRecord->batch_id),
-
-                    Hidden::make('farm_id')
-                        ->default(fn ($livewire) => $livewire->ownerRecord->farm_id),
-
                     TextInput::make('harvest_number')
                         ->label('رقم الحصاد')
                         ->default(fn () => \App\Models\Harvest::generateHarvestNumber())
@@ -133,19 +102,6 @@ class HarvestsRelationManager extends RelationManager
                         ->disabled()
                         ->dehydrated()
                         ->helperText('يتم التوليد تلقائياً'),
-
-                    Select::make('status')
-                        ->label('الحالة')
-                        ->options(HarvestStatus::class)
-                        ->default(HarvestStatus::Pending)
-                        ->required()
-                        ->native(false),
-                ])
-                ->columns(2)->columnSpanFull(),
-
-            Section::make('التاريخ والفترة')
-                ->description('موعد جلسة الحصاد')
-                ->schema([
                     DatePicker::make('harvest_date')
                         ->label('تاريخ الحصاد')
                         ->required()
@@ -164,9 +120,12 @@ class HarvestsRelationManager extends RelationManager
                         ->required()
                         ->native(false)
                         ->default('morning'),
-
-                    Hidden::make('recorded_by')
-                        ->default(auth('web')->id()),
+                    Select::make('status')
+                        ->label('الحالة')
+                        ->options(HarvestStatus::class)
+                        ->default(HarvestStatus::Pending)
+                        ->required()
+                        ->native(false),
                 ])
                 ->columns(2)->columnSpanFull(),
 

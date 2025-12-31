@@ -44,7 +44,9 @@ class DatabaseSeeder extends Seeder
             // Harvesting (order matters!)
             HarvestOperationSeeder::class, // Must come before HarvestSeeder
             HarvestSeeder::class,          // Creates harvests, units, and boxes
-            SalesOrderSeeder::class,       // Assigns boxes to sales orders
+            BoxSeeder::class,              // Create Box Types (needed for Orders)
+            OrderSeeder::class,            // Creates orders utilizing harvests and boxes
+            SalesOrderSeeder::class,       // Assigns orders to sales receipts
 
             // Other operations
             EmployeeAdvanceSeeder::class,

@@ -18,10 +18,10 @@ class ListSalesOrders extends ListRecords
         ];
     }
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            SalesOrdersStatsWidget::class,
-        ];
-    }
+    // protected function getHeaderWidgets(): array
+    // {
+    //     return [
+    //         SalesOrdersStatsWidget::class,
+    //     ];
+    // }
 }

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -20,7 +19,7 @@ class SalesOrder extends Model
 
     protected $fillable = [
         'order_number',
-        'farm_id',
+        'harvest_operation_id',
         'trader_id',
         'date',
         'boxes_subtotal',
@@ -84,12 +83,12 @@ class SalesOrder extends Model
     }
 
     /**
-     * Recalculate all totals from linked harvest boxes
+     * Recalculate all totals from linked orders
      */
     public function recalculateTotals(): void
     {
-        // Sum all boxes
-        $this->boxes_subtotal = $this->harvestBoxes()->sum('subtotal') ?? 0;
+        // Sum all orders items
+        $this->boxes_subtotal = $this->orders->map(fn ($order) => $order->items->sum('subtotal'))->sum();
 
         // Calculate commission
         if ($this->commission_rate) {
@@ -112,9 +111,14 @@ class SalesOrder extends Model
     }
 
     // Relationships
-    public function farm(): BelongsTo
+    public function harvestOperation(): BelongsTo
     {
-        return $this->belongsTo(Farm::class);
+        return $this->belongsTo(HarvestOperation::class);
+    }
+
+    public function farm(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    {
+        return $this->hasOneThrough(Farm::class, HarvestOperation::class, 'id', 'id', 'harvest_operation_id', 'farm_id');
     }
 
     public function trader(): BelongsTo
@@ -132,20 +136,20 @@ class SalesOrder extends Model
         return $this->morphMany(JournalEntry::class, 'source');
     }
 
-    public function harvestBoxes(): HasMany
+    public function orders(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->hasMany(HarvestBox::class);
+        return $this->belongsToMany(Order::class);
     }
 
     public function harvests(): HasManyThrough
     {
         return $this->hasManyThrough(
             Harvest::class,
-            HarvestBox::class,
-            'sales_order_id',
-            'id',
-            'id',
-            'harvest_id'
+            Order::class,
+            'sales_order_id', // Foreign key on orders table...
+            'id', // Foreign key on harvests table...
+            'id', // Local key on sales_orders table...
+            'harvest_id' // Local key on orders table...
         )->distinct();
     }
 
@@ -153,7 +157,7 @@ class SalesOrder extends Model
     {
         return $this->hasManyThrough(
             HarvestOperation::class,
-            HarvestBox::class,
+            Order::class,
             'sales_order_id',
             'id',
             'id',
@@ -164,17 +168,17 @@ class SalesOrder extends Model
     // Calculated Attributes
     public function getTotalBoxesAttribute(): int
     {
-        return $this->harvestBoxes()->count();
+        return (int) $this->orders->map(fn ($order) => $order->items->sum('quantity'))->sum();
     }
 
     public function getTotalWeightAttribute(): float
     {
-        return (float) $this->harvestBoxes()->sum('weight');
+        return (float) $this->orders->map(fn ($order) => $order->items->sum('total_weight'))->sum();
     }
 
     public function getTotalQuantityAttribute(): int
     {
-        return (int) $this->harvestBoxes()->sum('fish_count');
+        return $this->total_boxes;
     }
 
     // Legacy compatibility - map old total_amount to net_amount

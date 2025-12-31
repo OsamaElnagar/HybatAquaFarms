@@ -189,9 +189,9 @@ class BatchInfolist
 
             Section::make('الإحصائيات')
                 ->schema([
-                    TextEntry::make('harvests_count')
-                        ->label('سجلات الحصاد')
-                        ->state(fn ($record) => $record->harvests()->count())
+                    TextEntry::make('harvest_operations_count')
+                        ->label('عمليات الحصاد')
+                        ->state(fn ($record) => $record->harvestOperations()->count())
                         ->badge()
                         ->color('primary')
                         ->columnSpan(1),

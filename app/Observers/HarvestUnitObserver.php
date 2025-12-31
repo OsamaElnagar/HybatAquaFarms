@@ -25,11 +25,11 @@ class HarvestUnitObserver
 
     protected function syncBatchMovement(HarvestUnit $harvestUnit): void
     {
-        // Ensure we have the harvest relation loaded
-        $harvestUnit->loadMissing('harvest');
+        // Ensure we have the harvest relation and operation loaded
+        $harvestUnit->loadMissing('harvest.harvestOperation');
         $harvest = $harvestUnit->harvest;
 
-        if (! $harvest) {
+        if (! $harvest || ! $harvest->harvestOperation) {
             return;
         }
 
@@ -43,7 +43,7 @@ class HarvestUnitObserver
         $notes = "Auto-generated from Harvest Unit ID: {$harvestUnit->id}";
 
         $data = [
-            'batch_id' => $harvest->batch_id,
+            'batch_id' => $harvest->harvestOperation->batch_id,
             'movement_type' => MovementType::Harvest,
             'from_farm_id' => $harvest->farm_id,
             'from_unit_id' => $harvestUnit->unit_id,

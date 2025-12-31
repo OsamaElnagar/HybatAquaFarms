@@ -36,6 +36,7 @@ class DriverForm
                     ->label('رقم اللوحة'),
                 Toggle::make('is_active')
                     ->label('نشط')
+                    ->default(true)
                     ->required(),
                 Textarea::make('notes')
                     ->label('ملاحظات')

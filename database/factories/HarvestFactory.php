@@ -16,19 +16,12 @@ class HarvestFactory extends Factory
      */
     public function definition(): array
     {
-        $boxesCount = fake()->numberBetween(5, 20);
-        $totalWeight = fake()->randomFloat(3, 50, 500);
-        $totalQuantity = fake()->numberBetween(100, 1000);
-
         return [
-            'harvest_number' => 'HRV-'.date('Y').'-'.fake()->unique()->numberBetween(1000, 9999),
+            'harvest_number' => \App\Models\Harvest::generateHarvestNumber(),
+            'harvest_operation_id' => \App\Models\HarvestOperation::factory(),
             'harvest_date' => fake()->dateTimeBetween('-3 months', 'now'),
-            'boxes_count' => $boxesCount,
-            'total_weight' => $totalWeight,
-            'average_weight_per_box' => $totalWeight / $boxesCount,
-            'total_quantity' => $totalQuantity,
-            'average_fish_weight' => ($totalWeight * 1000) / $totalQuantity, // convert kg to grams
-            'status' => fake()->randomElement(['pending', 'completed', 'sold']),
+            'shift' => fake()->randomElement(['morning', 'afternoon', 'night', null]),
+            'status' => \App\Enums\HarvestStatus::Pending, // Default per migration or random
             'notes' => fake()->optional()->sentence(),
         ];
     }

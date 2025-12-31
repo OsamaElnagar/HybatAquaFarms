@@ -4,9 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
-use App\Enums\PricingUnit;
-use App\Models\Farm;
-use App\Models\HarvestBox;
 use App\Models\SalesOrder;
 use App\Models\Trader;
 use Illuminate\Database\Seeder;
@@ -15,123 +12,88 @@ class SalesOrderSeeder extends Seeder
 {
     public function run(): void
     {
-        $traders = Trader::all();
+        $orders = \App\Models\Order::whereDoesntHave('salesOrders')->with('items', 'trader', 'harvestOperation.farm')->get();
+        $this->command->info('Found '.$orders->count().' unbilled orders.');
 
-        if ($traders->isEmpty()) {
-            $this->command->warn('No traders found. Skipping sales orders seeding.');
-
-            return;
-        }
-
-        // Get unsold harvest boxes
-        $unsoldBoxes = HarvestBox::where('is_sold', false)->get();
-
-        if ($unsoldBoxes->isEmpty()) {
-            $this->command->warn('No unsold harvest boxes found. Run HarvestSeeder first.');
+        if ($orders->isEmpty()) {
+            $this->command->warn('No unbilled orders found. Run OrderSeeder first.');
 
             return;
         }
 
-        // Group boxes by farm for realistic orders
-        $boxesByFarm = $unsoldBoxes->groupBy('batch.farm_id');
+        // Group by Trader and Harvest Operation
+        $ordersGrouped = $orders->groupBy(fn ($order) => $order->trader_id.'_'.$order->harvest_operation_id);
 
-        foreach ($boxesByFarm as $farmId => $farmBoxes) {
-            $farm = Farm::find($farmId);
+        foreach ($ordersGrouped as $key => $groupOrders) {
+            $traderId = $groupOrders->first()->trader_id;
+            $operationId = $groupOrders->first()->harvest_operation_id;
 
-            if (! $farm) {
+            $trader = Trader::find($traderId);
+            if (! $trader) {
                 continue;
             }
 
-            // Create 2-5 sales orders per farm
-            $orderCount = rand(2, 5);
+            // Chunk group orders into sales orders
+            $chunks = $groupOrders->chunk(rand(2, 5));
 
-            for ($i = 0; $i < $orderCount; $i++) {
-                $trader = $traders->random();
-                $orderDate = fake()->dateTimeBetween('-2 months', 'now');
+            foreach ($chunks as $chunkOrders) {
+                $orderDate = $chunkOrders->max('date');
 
-                // Select random boxes for this order (3-10 boxes)
-                $boxesForOrder = $farmBoxes
-                    ->where('is_sold', false)
-                    ->random(min(rand(3, 10), $farmBoxes->where('is_sold', false)->count()));
-
-                if ($boxesForOrder->isEmpty()) {
-                    break; // No more boxes available
-                }
-
-                // Create the sales order
                 $salesOrder = SalesOrder::create([
-                    'farm_id' => $farmId,
-                    'trader_id' => $trader->id,
+                    'order_number' => SalesOrder::generateOrderNumber(),
+                    'harvest_operation_id' => $operationId,
+                    'trader_id' => $traderId,
                     'date' => $orderDate,
-                    'boxes_subtotal' => 0, // Will be calculated
-                    'commission_rate' => $trader->commission_rate ?? 2.0,
-                    'commission_amount' => 0,
-                    'transport_cost' => $trader->default_transport_cost_flat ?? fake()->randomFloat(2, 50, 200),
-                    'tax_amount' => 0,
-                    'discount_amount' => fake()->boolean(20) ? fake()->randomFloat(2, 50, 500) : 0,
-                    'total_before_commission' => 0,
-                    'net_amount' => 0,
-                    'payment_status' => fake()->randomElement([
-                        PaymentStatus::Paid,
-                        PaymentStatus::Paid,
-                        PaymentStatus::Paid, // 60% paid
-                        PaymentStatus::Partial,
-                        PaymentStatus::Pending,
-                    ]),
-                    'delivery_status' => fake()->randomElement([
-                        DeliveryStatus::DELIVERED,
-                        DeliveryStatus::DELIVERED,
-                        DeliveryStatus::DELIVERED, // 60% delivered
-                        DeliveryStatus::PENDING,
-                    ]),
-                    'delivery_date' => fake()->dateTimeBetween($orderDate, '+7 days'),
-                    'delivery_address' => fake()->optional(0.7)->address(),
-                    'notes' => fake()->optional(0.3)->sentence(),
+                    'commission_rate' => $trader->commission_rate ?? 0,
+                    'payment_status' => PaymentStatus::Pending,
+                    'delivery_status' => DeliveryStatus::DELIVERED,
                     'created_by' => 1,
                 ]);
 
-                // Assign boxes to this order with pricing
-                $lineNumber = 1;
+                // Attach orders
+                $salesOrder->orders()->attach($chunkOrders->pluck('id'));
 
-                foreach ($boxesForOrder as $box) {
-                    // Price based on classification
-                    $unitPrice = $this->getPriceForClassification($box->classification);
+                foreach ($chunkOrders as $order) {
 
-                    $box->update([
-                        'trader_id' => $trader->id,
-                        'sales_order_id' => $salesOrder->id,
-                        'unit_price' => $unitPrice,
-                        'pricing_unit' => PricingUnit::Kilogram->value,
-                        'is_sold' => true,
-                        'sold_at' => $orderDate,
-                        'line_number' => $lineNumber++,
-                    ]);
+                    // Update Item Prices if 0
+                    foreach ($order->items as $item) {
+                        // Determine price based on box name or classification if available
+                        // Box model has full_name.
+                        $boxName = $item->box->name; // assuming relation exists
+                        $price = $this->getPriceForClassification($boxName);
+
+                        $item->update([
+                            'unit_price' => $price,
+                            'subtotal' => $item->total_weight * $price,
+                        ]);
+                    }
                 }
 
-                // Recalculate totals (will be done by model observer, but let's be explicit)
                 $salesOrder->recalculateTotals();
             }
         }
-
-        $this->command->info('✅ Sales orders seeded successfully!');
-        $this->command->info('Created: '.SalesOrder::count().' orders');
-        $this->command->info('Sold boxes: '.HarvestBox::where('is_sold', true)->count());
     }
 
-    /**
-     * Get realistic price per kg based on classification
-     */
-    private function getPriceForClassification(?string $classification): float
+    private function getPriceForClassification(?string $name): float
     {
-        return match ($classification) {
-            'جامبو' => fake()->randomFloat(2, 60, 75),
-            'بلطي' => fake()->randomFloat(2, 45, 60),
-            'نمرة 1' => fake()->randomFloat(2, 50, 65),
-            'نمرة 2' => fake()->randomFloat(2, 40, 55),
-            'نمرة 3' => fake()->randomFloat(2, 35, 45),
-            'نمرة 4' => fake()->randomFloat(2, 25, 35),
-            'خرط' => fake()->randomFloat(2, 20, 30),
-            default => fake()->randomFloat(2, 30, 50),
-        };
+        if (! $name) {
+            return 45;
+        }
+
+        // Simple mock logic
+        if (str_contains($name, 'جامبو')) {
+            return 70;
+        }
+        if (str_contains($name, '1')) {
+            return 60;
+        }
+        if (str_contains($name, '2')) {
+            return 50;
+        }
+        if (str_contains($name, '3')) {
+            return 40;
+        }
+
+        return 45;
     }
 }

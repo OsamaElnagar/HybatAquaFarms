@@ -28,7 +28,6 @@ class HarvestOperationSeeder extends Seeder
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'status' => HarvestOperationStatus::Completed,
-                'estimated_duration_days' => $durationDays,
                 'notes' => fake()->optional(0.3)->sentence(),
                 'created_by' => 1,
             ]);

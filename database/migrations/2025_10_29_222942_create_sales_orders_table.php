@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sales_orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_number')->unique();
-            $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('harvest_operation_id')->constrained()->cascadeOnDelete();
             $table->foreignId('trader_id')->constrained()->cascadeOnDelete();
             $table->date('date');
 
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['farm_id', 'date']);
+            $table->index(['harvest_operation_id', 'date']);
             $table->index(['trader_id', 'date']);
             $table->index('payment_status');
         });

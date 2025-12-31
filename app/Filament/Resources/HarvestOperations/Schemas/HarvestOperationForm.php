@@ -10,7 +10,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
@@ -31,20 +30,9 @@ class HarvestOperationForm
                             ->unique(ignoreRecord: true)
                             ->columnSpan(1),
 
-                        Select::make('status')
-                            ->label('الحالة')
-                            ->options(HarvestOperationStatus::class)
-                            ->default(HarvestOperationStatus::Planned->value)
-                            ->required()
-                            ->native(false)
-                            ->columnSpan(1),
-                    ])->columns(2)->columnSpanFull(),
-
-                Section::make('تفاصيل الدفعة والمزرعة')
-                    ->schema([
                         Select::make('batch_id')
                             ->label('الدفعة')
-                            ->relationship('batch', 'batch_code')
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest()->with('species'))
                             ->searchable()
                             ->preload()
                             ->required()
@@ -67,6 +55,13 @@ class HarvestOperationForm
                             ->disabled()
                             ->dehydrated()
                             ->columnSpan(1),
+                        Select::make('status')
+                            ->label('الحالة')
+                            ->options(HarvestOperationStatus::class)
+                            ->default(HarvestOperationStatus::Planned->value)
+                            ->required()
+                            ->native(false)
+                            ->columnSpan(1),
                     ])->columns(2)->columnSpanFull(),
 
                 Section::make('المدة الزمنية')
@@ -76,38 +71,17 @@ class HarvestOperationForm
                             ->required()
                             ->default(now())
                             ->native(false)
-                            ->live()
-                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                $endDate = $get('end_date');
-                                if ($state && $endDate) {
-                                    $days = \Carbon\Carbon::parse($state)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1;
-                                    $set('estimated_duration_days', $days);
-                                }
-                            })
+
                             ->columnSpan(1),
 
                         DatePicker::make('end_date')
                             ->label('تاريخ الانتهاء')
                             ->native(false)
                             ->after('start_date')
-                            ->live()
-                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                $startDate = $get('start_date');
-                                if ($state && $startDate) {
-                                    $days = \Carbon\Carbon::parse($startDate)->floatDiffInDays(\Carbon\Carbon::parse($state));
-                                    $set('estimated_duration_days', round($days, 1));
-                                }
-                            })
+
                             ->columnSpan(1),
 
-                        TextInput::make('estimated_duration_days')
-                            ->label('المدة المتوقعة (أيام)')
-                            ->numeric()
-                            ->disabled()
-                            ->dehydrated()
-                            ->suffix('يوم')
-                            ->columnSpan(1),
-                    ])->columns(3)->columnSpanFull(),
+                    ])->columns(2)->columnSpanFull(),
 
                 Section::make('ملاحظات إضافية')
                     ->schema([

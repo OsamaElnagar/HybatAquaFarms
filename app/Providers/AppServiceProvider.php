@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
@@ -37,5 +39,17 @@ class AppServiceProvider extends ServiceProvider
             // ->deferLoading()
             // ->defaultPaginationPageOption(20);
         });
+
+        if (config('app.debug')) {
+            DB::listen(function ($query) {
+                Log::info(
+                    $query->sql,
+                    [
+                        'bindings' => $query->bindings,
+                        'time' => $query->time,
+                    ]
+                );
+            });
+        }
     }
 }

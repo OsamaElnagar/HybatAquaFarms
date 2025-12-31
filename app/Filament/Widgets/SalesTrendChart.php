@@ -22,12 +22,15 @@ class SalesTrendChart extends ChartWidget
         $batchId = $filters['batch_id'] ?? null;
 
         if ($batchId) {
-            // Filter by batch via harvest boxes
-            // We want Sales Date vs Subtotal of boxes from this batch
-            $query = \App\Models\HarvestBox::query()
-                ->selectRaw('DATE(sales_orders.date) as day, sum(harvest_boxes.subtotal) as total')
-                ->join('sales_orders', 'harvest_boxes.sales_order_id', '=', 'sales_orders.id')
-                ->where('harvest_boxes.batch_id', $batchId)
+            // Filter by batch via order items
+            // We want Sales Date vs Subtotal of items from this batch
+            $query = \App\Models\OrderItem::query()
+                ->selectRaw('DATE(sales_orders.date) as day, sum(orders_items.subtotal) as total')
+                ->join('orders', 'orders_items.order_id', '=', 'orders.id')
+                ->join('order_sales_order', 'orders.id', '=', 'order_sales_order.order_id')
+                ->join('sales_orders', 'order_sales_order.sales_order_id', '=', 'sales_orders.id')
+                ->join('harvest_operations', 'orders.harvest_operation_id', '=', 'harvest_operations.id')
+                ->where('harvest_operations.batch_id', $batchId)
                 ->whereDate('sales_orders.date', '>=', $startDate)
                 ->whereDate('sales_orders.date', '<=', $endDate);
         } else {

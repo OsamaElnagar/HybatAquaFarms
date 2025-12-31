@@ -20,7 +20,6 @@ class HarvestOperation extends Model
         'start_date',
         'end_date',
         'status',
-        'estimated_duration_days',
         'notes',
         'created_by',
     ];
@@ -78,55 +77,37 @@ class HarvestOperation extends Model
         return $this->hasMany(Harvest::class);
     }
 
-    public function harvestBoxes(): HasMany
+    public function orders(): HasMany
     {
-        return $this->hasMany(HarvestBox::class);
+        return $this->hasMany(Order::class);
     }
 
-    public function salesOrders(): HasManyThrough
+    public function orderItems(): HasManyThrough
     {
-        return $this->hasManyThrough(
-            SalesOrder::class,
-            HarvestBox::class,
-            'harvest_operation_id', // Foreign key on harvest_boxes
-            'id',                    // Foreign key on sales_orders
-            'id',                    // Local key on harvest_operations
-            'sales_order_id'         // Local key on harvest_boxes
-        )->distinct();
+        return $this->hasManyThrough(OrderItem::class, Order::class);
     }
 
-    // Calculated Attributes
-    public function getTotalFishCountAttribute(): int
+    public function salesOrders(): HasMany
     {
-        return (int) $this->harvestBoxes()->sum('fish_count');
+        return $this->hasMany(SalesOrder::class);
     }
 
-    public function getActualDurationAttribute(): ?int
+    public function getTotalBoxesAttribute(): int
     {
-        if (! $this->end_date) {
-            return null;
-        }
-
-        return $this->start_date->diffInDays($this->end_date) + 1;
+        return (int) $this->orderItems()->sum('quantity');
     }
 
-    public function getDaysRunningAttribute(): int
+    public function getTotalWeightAttribute(): float
     {
-        $endDate = $this->end_date ?? now();
-
-        return $this->start_date->diffInDays($endDate) + 1;
+        return (float) $this->orderItems()->sum('total_weight');
     }
 
-    public function getIsActiveAttribute(): bool
+    public function getFullDisplayNameAttribute(): string
     {
-        return in_array($this->status, [
-            HarvestOperationStatus::Ongoing,
-            HarvestOperationStatus::Paused,
-        ]);
-    }
+        /** @var \Carbon\Carbon|null $startDate */
+        $startDate = $this->start_date;
+        $date = $startDate?->format('Y-m-d') ?? '—';
 
-    public function getIsCompletedAttribute(): bool
-    {
-        return $this->status === HarvestOperationStatus::Completed;
+        return "{$this->operation_number} - {$this->farm->name} - ({$date})";
     }
 }

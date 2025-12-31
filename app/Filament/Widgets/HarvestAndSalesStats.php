@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\HarvestBox;
 use App\Models\SalesOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -19,61 +18,61 @@ class HarvestAndSalesStats extends BaseWidget
         $farmId = $filters['farm_id'] ?? null;
         $batchId = $filters['batch_id'] ?? null;
 
-        // 1. Total Harvested Weight
-        $harvestQuery = HarvestBox::query();
-
-        $harvestQuery->whereHas('harvest', function ($q) use ($startDate, $endDate, $farmId, $batchId) {
+        // 1. Total Harvested Weight (From Order Items)
+        $weightQuery = \App\Models\OrderItem::query();
+        $weightQuery->whereHas('order', function ($q) use ($startDate, $endDate, $farmId, $batchId) {
+            // Order has harvest_id and harvest_operation_id
             if ($startDate) {
-                $q->whereDate('harvest_date', '>=', $startDate);
+                $q->whereDate('date', '>=', $startDate);
             }
             if ($endDate) {
-                $q->whereDate('harvest_date', '<=', $endDate);
+                $q->whereDate('date', '<=', $endDate);
             }
+
             if ($farmId) {
-                $q->where('farm_id', $farmId);
+                $q->whereHas('harvestOperation', function ($hop) use ($farmId) {
+                    $hop->where('farm_id', $farmId);
+                });
             }
+
             if ($batchId) {
-                $q->where('batch_id', $batchId);
+                $q->whereHas('harvestOperation', function ($hop) use ($batchId) {
+                    $hop->where('batch_id', $batchId);
+                });
             }
         });
 
-        $totalHarvestWeight = $harvestQuery->sum('weight'); // In Kg
+        $totalHarvestWeight = $weightQuery->sum('total_weight'); // In Kg
 
         // 2. Total Sales Revenue
-        // If batch is selected, we MUST look at harvest boxes linked to that batch
-        // If NO batch is selected, we can look at sales orders directly (faster) BUT
-        // to stay consistent with filters, let's look at boxes if batch is present.
+        $salesQuery = SalesOrder::query();
 
+        if ($startDate) {
+            $salesQuery->whereDate('date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $salesQuery->whereDate('date', '<=', $endDate);
+        }
+        if ($farmId) {
+            $salesQuery->where('farm_id', $farmId);
+        }
         if ($batchId) {
-            // Precise revenue for this batch only
-            $totalRevenue = HarvestBox::query()
-                ->where('batch_id', $batchId)
-                ->where('is_sold', true)
-                ->sum('subtotal');
-        } else {
-            // General Sales Revenue based on Order Filters
-            $salesQuery = SalesOrder::query();
-
-            if ($startDate) {
-                $salesQuery->whereDate('date', '>=', $startDate);
-            }
-            if ($endDate) {
-                $salesQuery->whereDate('date', '<=', $endDate);
-            }
-            if ($farmId) {
-                $salesQuery->where('farm_id', $farmId);
-            }
-            $totalRevenue = $salesQuery->sum('net_amount');
+            // SalesOrders don't directly have batch_id, we infer from linked orders -> harvestOperation
+            $salesQuery->whereHas('orders.harvestOperation', function ($q) use ($batchId) {
+                $q->where('batch_id', $batchId);
+            });
         }
 
-        // 3. Average Selling Price (Revenue / Sold Weight)
-        $soldBoxesQuery = HarvestBox::query()->whereNotNull('sales_order_id');
+        $totalRevenue = $salesQuery->sum('net_amount');
 
-        if ($batchId) {
-            $soldBoxesQuery->where('batch_id', $batchId);
-        } else {
-            // Use same harvest/sales order filters
-            $soldBoxesQuery->whereHas('salesOrder', function ($q) use ($startDate, $endDate, $farmId) {
+        // 3. Average Selling Price (Total Revenue / Total Sold Weight)
+        // We assume all "SalesOrders" encompass "Sold" items.
+        // We need weight of items IN those sales orders to account for partial sales logic if it existed (but here SalesOrder = Sold).
+
+        // Re-use sales query filters to find sold weight
+        $soldWeightQuery = \App\Models\OrderItem::query()
+            ->whereHas('order.salesOrders', function ($q) use ($startDate, $endDate, $farmId) {
+                // Same filters as sales query
                 if ($startDate) {
                     $q->whereDate('date', '>=', $startDate);
                 }
@@ -83,10 +82,17 @@ class HarvestAndSalesStats extends BaseWidget
                 if ($farmId) {
                     $q->where('farm_id', $farmId);
                 }
+                // Batch filter already handled by joining through order->harvestOperation in strict sense,
+                // but here we filter the SalesOrder itself.
+            });
+
+        if ($batchId) {
+            $soldWeightQuery->whereHas('order.harvestOperation', function ($hop) use ($batchId) {
+                $hop->where('batch_id', $batchId);
             });
         }
 
-        $soldWeight = $soldBoxesQuery->sum('weight');
+        $soldWeight = $soldWeightQuery->sum('total_weight');
         $avgPrice = $soldWeight > 0 ? ($totalRevenue / $soldWeight) : 0;
 
         return [

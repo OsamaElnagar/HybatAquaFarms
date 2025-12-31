@@ -120,5 +120,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'editor' => 'windsurf',
+    'editor' => 'antigravity',
 ];

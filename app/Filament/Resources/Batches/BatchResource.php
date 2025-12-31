@@ -59,7 +59,7 @@ class BatchResource extends Resource
         return [
             RelationManagers\PaymentsRelationManager::class,
             MovementsRelationManager::class,
-            RelationManagers\HarvestsRelationManager::class,
+            RelationManagers\HarvestOperationsRelationManager::class,
         ];
     }
 

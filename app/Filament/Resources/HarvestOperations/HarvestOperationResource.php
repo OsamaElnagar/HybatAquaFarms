@@ -6,6 +6,9 @@ use App\Filament\Resources\HarvestOperations\Pages\CreateHarvestOperation;
 use App\Filament\Resources\HarvestOperations\Pages\EditHarvestOperation;
 use App\Filament\Resources\HarvestOperations\Pages\ListHarvestOperations;
 use App\Filament\Resources\HarvestOperations\Pages\ViewHarvestOperation;
+use App\Filament\Resources\HarvestOperations\RelationManagers\HarvestsRelationManager;
+use App\Filament\Resources\HarvestOperations\RelationManagers\OrderItemsRelationManager;
+use App\Filament\Resources\HarvestOperations\RelationManagers\OrdersRelationManager;
 use App\Filament\Resources\HarvestOperations\Schemas\HarvestOperationForm;
 use App\Filament\Resources\HarvestOperations\Tables\HarvestOperationsTable;
 use App\Models\HarvestOperation;
@@ -44,12 +47,18 @@ class HarvestOperationResource extends Resource
         return HarvestOperationsTable::configure($table);
     }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['batch.species', 'farm']);
+    }
+
     public static function getRelations(): array
     {
         return [
-            RelationManagers\HarvestsRelationManager::class,
-            RelationManagers\HarvestBoxesRelationManager::class,
-            RelationManagers\SalesOrdersRelationManager::class,
+            HarvestsRelationManager::class,
+            OrdersRelationManager::class,
+            OrderItemsRelationManager::class,
         ];
     }
 

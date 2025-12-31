@@ -22,7 +22,7 @@ class BatchMovementForm
                     ->schema([
                         Select::make('batch_id')
                             ->label('الدفعة')
-                            ->relationship('batch', 'batch_code')
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                             ->searchable()
                             ->preload()
                             ->required()

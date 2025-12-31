@@ -10,6 +10,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class SalesOrderForm
@@ -34,13 +35,15 @@ class SalesOrderForm
                             ->native(false)
                             ->helperText('تاريخ إصدار عملية البيع')
                             ->columnSpan(1),
-                        Select::make('farm_id')
-                            ->label('المزرعة')
-                            ->relationship('farm', 'name')
+                        Select::make('harvest_operation_id')
+                            ->label('عملية الحصاد')
+                            ->relationship('harvestOperation', 'operation_number', modifyQueryUsing: fn ($query) => $query->with('farm'))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_display_name)
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('المزرعة المصدر للمنتجات')
+                            ->live()
+                            ->helperText('عملية الحصاد المصدر للمنتجات')
                             ->columnSpan(1),
                         Select::make('trader_id')
                             ->label('التاجر (العميل)')
@@ -49,7 +52,27 @@ class SalesOrderForm
                             ->searchable()
                             ->preload()
                             ->helperText('التاجر المشتري')
+                            ->live() // Make it live to filter orders maybe?
                             ->columnSpan(1),
+                        Select::make('orders')
+                            ->label('الطلبات')
+                            ->relationship('orders', 'code', modifyQueryUsing: function (Builder $query, $get) {
+                                // Filter by trader if selected
+                                $traderId = $get('trader_id');
+                                if ($traderId) {
+                                    $query->where('trader_id', $traderId);
+                                }
+
+                                // Filter by harvest operation if selected
+                                $hopId = $get('harvest_operation_id');
+                                if ($hopId) {
+                                    $query->where('harvest_operation_id', $hopId);
+                                }
+                            })
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

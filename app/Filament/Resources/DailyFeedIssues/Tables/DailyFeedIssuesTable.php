@@ -116,7 +116,7 @@ class DailyFeedIssuesTable
                     ->preload(),
                 SelectFilter::make('batch_id')
                     ->label('دفعة الزريعة')
-                    ->relationship('batch', 'batch_code')
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('recorded_by')

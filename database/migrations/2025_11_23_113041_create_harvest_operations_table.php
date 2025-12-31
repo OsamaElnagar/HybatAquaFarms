@@ -19,7 +19,6 @@ return new class extends Migration
             $table->date('start_date')->comment('تاريخ بدء الحصاد');
             $table->date('end_date')->nullable()->comment('تاريخ انتهاء الحصاد');
             $table->string('status')->default('planned')->comment('planned, ongoing, paused, completed, cancelled');
-            $table->integer('estimated_duration_days')->nullable()->comment('المدة المتوقعة بالأيام');
             $table->text('notes')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

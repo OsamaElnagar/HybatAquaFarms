@@ -22,7 +22,7 @@ class BatchPaymentForm
                     ->schema([
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
-                            ->relationship('batch', 'batch_code')
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                             ->required()
                             ->searchable()
                             ->preload()

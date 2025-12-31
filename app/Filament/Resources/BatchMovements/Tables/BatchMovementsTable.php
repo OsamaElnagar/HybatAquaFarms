@@ -87,7 +87,7 @@ class BatchMovementsTable
                     ->native(false),
                 SelectFilter::make('batch_id')
                     ->label('الدفعة')
-                    ->relationship('batch', 'batch_code')
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('from_farm_id')

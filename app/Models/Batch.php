@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[ObservedBy([BatchObserver::class])]
@@ -103,9 +104,14 @@ class Batch extends Model
         return $this->hasMany(BatchPayment::class);
     }
 
-    public function harvests(): HasMany
+    public function harvestOperations(): HasMany
     {
-        return $this->hasMany(Harvest::class);
+        return $this->hasMany(HarvestOperation::class);
+    }
+
+    public function harvests(): HasManyThrough
+    {
+        return $this->hasManyThrough(Harvest::class, HarvestOperation::class);
     }
 
     public function closedBy(): BelongsTo
@@ -251,7 +257,7 @@ class Batch extends Model
 
     /**
      * Calculate total revenue from harvests/sales.
-     * UPDATED: Now uses harvest_boxes instead of sales_items
+     * UPDATED: Now uses order_items via orders/sales_orders
      */
     public function getTotalRevenueAttribute(): float
     {
@@ -263,9 +269,14 @@ class Batch extends Model
             return (float) $this->attributes['total_revenue'];
         }
 
-        // Sum all sold harvest boxes for this batch
-        return (float) \App\Models\HarvestBox::where('batch_id', $this->id)
-            ->where('is_sold', true)
+        // Sum subtotal of all OrderItems belonging to this batch that are part of a SalesOrder
+        return (float) \App\Models\OrderItem::query()
+            ->whereHas('order', function ($q) {
+                $q->has('salesOrders') // Must be sold
+                    ->whereHas('harvestOperation', function ($hop) {
+                        $hop->where('batch_id', $this->id);
+                    });
+            })
             ->sum('subtotal');
     }
 

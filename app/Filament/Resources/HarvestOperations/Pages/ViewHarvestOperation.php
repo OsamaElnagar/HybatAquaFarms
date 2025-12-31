@@ -5,7 +5,6 @@ namespace App\Filament\Resources\HarvestOperations\Pages;
 use App\Filament\Resources\HarvestOperations\HarvestOperationResource;
 use App\Filament\Resources\SalesOrders\SalesOrderResource;
 use App\Models\HarvestOperation;
-use App\Models\SalesOrder;
 use App\Models\Trader;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -22,45 +21,52 @@ class ViewHarvestOperation extends ViewRecord
     {
         return [
             Action::make('sell_harvest')
-                ->label('بيع الحصاد')
+                ->label('إصدار فاتورة بيع')
                 ->icon('heroicon-o-currency-dollar')
                 ->color('success')
-                ->visible(fn (HarvestOperation $record) => $record->harvestBoxes()->where('is_sold', false)->exists())
+                ->visible(fn (HarvestOperation $record) => $record->orders()->whereDoesntHave('salesOrders')->exists())
                 ->form([
                     Select::make('trader_id')
                         ->label('التاجر')
-                        ->options(Trader::query()->pluck('name', 'id'))
+                        ->options(fn (HarvestOperation $record) => Trader::whereIn('id', $record->orders()->whereDoesntHave('salesOrders')->pluck('trader_id'))
+                            ->pluck('name', 'id')
+                        )
                         ->searchable()
                         ->preload()
                         ->required(),
                     DatePicker::make('date')
-                        ->label('تاريخ البيع')
+                        ->label('تاريخ الفاتورة')
                         ->default(now())
                         ->required(),
                 ])
                 ->action(function (array $data, HarvestOperation $record) {
                     $trader = Trader::findOrFail($data['trader_id']);
                     $date = \Illuminate\Support\Carbon::parse($data['date']);
-                    $boxes = $record->harvestBoxes()->where('is_sold', false)->get();
 
-                    if ($boxes->isEmpty()) {
+                    $orders = $record->orders()
+                        ->where('trader_id', $trader->id)
+                        ->whereDoesntHave('salesOrders')
+                        ->get();
+
+                    if ($orders->isEmpty()) {
                         Notification::make()
-                            ->title('لا يوجد صناديق متاحة للبيع')
+                            ->title('لا توجد طلبات غير مفوترة لهذا التاجر')
                             ->warning()
                             ->send();
+
                         return;
                     }
 
-                    $salesOrder = app(\App\Actions\Sales\CreateSalesOrderFromBoxes::class)->execute(
-                        farm: $record->farm,
+                    $salesOrder = app(\App\Actions\Sales\CreateSalesOrderFromOrders::class)->execute(
+                        harvestOperation: $record,
                         trader: $trader,
                         date: $date,
-                        boxes: $boxes,
+                        orders: $orders,
                         notes: "تم إنشاؤه من عملية الحصاد رقم: {$record->operation_number}"
                     );
 
                     Notification::make()
-                        ->title('تم إنشاء أمر البيع بنجاح')
+                        ->title('تم إنشاء فاتورة البيع بنجاح')
                         ->success()
                         ->send();
 

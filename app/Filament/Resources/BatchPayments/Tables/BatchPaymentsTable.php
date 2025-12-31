@@ -59,7 +59,7 @@ class BatchPaymentsTable
             ->filters([
                 SelectFilter::make('batch_id')
                     ->label('الدفعة')
-                    ->relationship('batch', 'batch_code')
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('factory_id')
