@@ -24,4 +24,11 @@ class TreasuryDashboard extends Page
             \App\Filament\Widgets\TreasuryOverview::class,
         ];
     }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\TreasuryTransactions::class,
+        ];
+    }
 }

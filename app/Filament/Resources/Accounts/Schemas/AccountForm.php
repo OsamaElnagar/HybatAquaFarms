@@ -35,7 +35,12 @@ class AccountForm
                     ->relationship('parent', 'name'),
                 Toggle::make('is_active')
                     ->label('نشط')
+                    ->default(true)
                     ->required(),
+                Toggle::make('is_treasury')
+                    ->label('حساب خزينة')
+                    ->helperText('حدد هذا الخيار إذا كان الحساب يمثل صندوق نقدية أو حساب بنكي ليظهر في لوحة تحكم الخزينة')
+                    ->default(false),
                 Textarea::make('description')
                     ->label('الوصف')
                     ->columnSpanFull(),

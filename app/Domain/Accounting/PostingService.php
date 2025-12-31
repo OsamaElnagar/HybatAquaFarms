@@ -30,7 +30,7 @@ class PostingService
 
             JournalLine::create([
                 'journal_entry_id' => $entry->id,
-                'account_id' => $rule->debit_account_id,
+                'account_id' => $context['debit_account_id'] ?? $rule->debit_account_id,
                 'farm_id' => $farmId,
                 'debit' => $amount,
                 'credit' => 0,
@@ -39,7 +39,7 @@ class PostingService
 
             JournalLine::create([
                 'journal_entry_id' => $entry->id,
-                'account_id' => $rule->credit_account_id,
+                'account_id' => $context['credit_account_id'] ?? $rule->credit_account_id,
                 'farm_id' => $farmId,
                 'debit' => 0,
                 'credit' => $amount,
@@ -53,7 +53,7 @@ class PostingService
     protected function generateEntryNumber(): string
     {
         $prefix = now()->format('Ymd');
-        $seq = str_pad((string) (JournalEntry::whereDate('created_at', today())->count() + 1), 4, '0', STR_PAD_LEFT);
+        $seq = str_pad((string) (JournalEntry::whereDate('created_at', today()->toDateString())->count() + 1), 4, '0', STR_PAD_LEFT);
 
         return "JE-{$prefix}-{$seq}";
     }

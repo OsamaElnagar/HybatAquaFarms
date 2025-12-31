@@ -27,6 +27,8 @@ class Voucher extends Model
         'counterparty_type',
         'counterparty_id',
         'petty_cash_id',
+        'treasury_account_id',
+        'account_id',
         'amount',
         'description',
         'payment_method',
@@ -73,5 +75,15 @@ class Voucher extends Model
     public function pettyCashTransactions(): HasMany
     {
         return $this->hasMany(PettyCashTransaction::class);
+    }
+
+    public function treasuryAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'treasury_account_id');
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'account_id');
     }
 }

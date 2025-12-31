@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,7 +19,13 @@ class JournalEntryFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'entry_number' => 'JE-'.$this->faker->unique()->numerify('######'),
+            'date' => now(),
+            'description' => $this->faker->sentence(),
+            'source_type' => 'App\Models\Account', // Dummy source for factory
+            'source_id' => 1,
+            'is_posted' => true,
+            'posted_at' => now(),
         ];
     }
 }

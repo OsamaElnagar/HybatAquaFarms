@@ -17,7 +17,11 @@ class PostingRuleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'event_key' => $this->faker->unique()->word,
+            'description' => $this->faker->sentence,
+            'debit_account_id' => \App\Models\Account::factory(),
+            'credit_account_id' => \App\Models\Account::factory(),
+            'is_active' => true,
         ];
     }
 }

@@ -54,8 +54,39 @@ class Account extends Model
         return $this->hasMany(JournalLine::class);
     }
 
+    /**
+     * Calculate account balance from journal lines
+     * Balance = Total Debits - Total Credits
+     */
     public function getBalanceAttribute(): float
     {
-        return (float) $this->current_balance;
+        $debits = (float) $this->journalLines()->sum('debit');
+        $credits = (float) $this->journalLines()->sum('credit');
+
+        return $debits - $credits;
+    }
+
+    /**
+     * Get balance as of a specific date
+     */
+    public function getBalanceAsOf(string $date): float
+    {
+        $debits = (float) $this->journalLines()
+            ->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '<=', $date))
+            ->sum('debit');
+
+        $credits = (float) $this->journalLines()
+            ->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '<=', $date))
+            ->sum('credit');
+
+        return $debits - $credits;
+    }
+
+    /**
+     * Scope for treasury accounts only
+     */
+    public function scopeTreasury($query)
+    {
+        return $query->where('is_treasury', true);
     }
 }
