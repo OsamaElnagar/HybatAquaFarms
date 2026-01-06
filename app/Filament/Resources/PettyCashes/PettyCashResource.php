@@ -10,10 +10,13 @@ use App\Filament\Resources\PettyCashes\Schemas\PettyCashForm;
 use App\Filament\Resources\PettyCashes\Tables\PettyCashesTable;
 use App\Models\PettyCash;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class PettyCashResource extends Resource
 {
@@ -23,7 +26,7 @@ class PettyCashResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'العُهدات';
     }
 
     public static function getNavigationLabel(): string
@@ -41,6 +44,24 @@ class PettyCashResource extends Resource
         return 'العُهد';
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'farm.name', 'custodian.name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PettyCashForm::configure($schema);
@@ -49,6 +70,14 @@ class PettyCashResource extends Resource
     public static function table(Table $table): Table
     {
         return PettyCashesTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['farm', 'custodian'])
+            ->withSum(['transactions as total_in' => fn ($query) => $query->where('direction', 'in')], 'amount')
+            ->withSum(['transactions as total_out' => fn ($query) => $query->where('direction', 'out')], 'amount');
     }
 
     public static function getRelations(): array

@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 
 class FarmsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalFarms = Farm::count();

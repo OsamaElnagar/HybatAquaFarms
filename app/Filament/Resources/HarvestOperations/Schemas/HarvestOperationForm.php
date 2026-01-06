@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
@@ -71,7 +72,14 @@ class HarvestOperationForm
                             ->required()
                             ->default(now())
                             ->native(false)
+                            ->minDate(function (Get $get) {
+                                $batchId = $get('batch_id');
+                                if (! $batchId) {
+                                    return null;
+                                }
 
+                                return Batch::find($batchId)?->entry_date;
+                            })
                             ->columnSpan(1),
 
                         DatePicker::make('end_date')
@@ -94,7 +102,7 @@ class HarvestOperationForm
                     ->columnSpanFull(),
 
                 Hidden::make('created_by')
-                    ->default(auth()->id()),
+                    ->default(auth('web')->id()),
             ]);
     }
 }

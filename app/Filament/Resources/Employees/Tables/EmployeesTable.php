@@ -47,8 +47,7 @@ class EmployeesTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('basic_salary')
                     ->label('المرتب')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('advances_count')
                     ->counts('advances')
@@ -59,7 +58,7 @@ class EmployeesTable
                 TextColumn::make('outstanding_advances')
                     ->label('سلف مستحقة')
                     ->state(fn ($record) => number_format($record->total_outstanding_advances))
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                     ->toggleable(),
                 TextColumn::make('status')

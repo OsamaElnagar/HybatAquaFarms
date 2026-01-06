@@ -46,14 +46,12 @@ class SalesOrdersRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('المجموع')
-                            ->numeric()
-                            ->suffix(' EGP '),
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')

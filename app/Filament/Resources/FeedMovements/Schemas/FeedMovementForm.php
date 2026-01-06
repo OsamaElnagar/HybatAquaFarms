@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,7 +31,17 @@ class FeedMovementForm
                             })
                             ->required()
                             ->native(false)
+                            ->live()
                             ->helperText('ملاحظة: حركات الصرف (Out) يتم إنشاؤها تلقائياً من خلال الصرف اليومي للأعلاف')
+                            ->columnSpan(1),
+                        Select::make('factory_id')
+                            ->label('المصنع')
+                            ->relationship('factory', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In->value)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::In->value)
+                            ->helperText('مطلوب للحركات الواردة (In)')
                             ->columnSpan(1),
                         Select::make('feed_item_id')
                             ->label('صنف العلف')
@@ -67,8 +78,8 @@ class FeedMovementForm
                             ->relationship('fromWarehouse', 'name')
                             ->searchable()
                             ->preload()
-                            ->visible(fn ($get) => in_array($get('movement_type'), ['transfer']))
-                            ->required(fn ($get) => $get('movement_type') === 'transfer')
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::Transfer->value)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::Transfer->value)
                             ->helperText('مطلوب للحركات النقل (Transfer)')
                             ->columnSpan(1),
                         Select::make('to_warehouse_id')
@@ -76,8 +87,8 @@ class FeedMovementForm
                             ->relationship('toWarehouse', 'name')
                             ->searchable()
                             ->preload()
-                            ->visible(fn ($get) => in_array($get('movement_type'), ['in', 'transfer']))
-                            ->required(fn ($get) => in_array($get('movement_type'), ['in', 'transfer']))
+
+                            ->required(fn (Get $get) => $get('movement_type') !== FeedMovementType::Out)
                             ->helperText('مطلوب للحركات الواردة (In) والنقل (Transfer)')
                             ->columnSpan(1),
                     ])
@@ -87,15 +98,7 @@ class FeedMovementForm
 
                 Section::make('معلومات إضافية')
                     ->schema([
-                        Select::make('factory_id')
-                            ->label('المصنع')
-                            ->relationship('factory', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->visible(fn ($get) => $get('movement_type') === 'in')
-                            ->required(fn ($get) => $get('movement_type') === 'in')
-                            ->helperText('مطلوب للحركات الواردة (In)')
-                            ->columnSpan(1),
+
                         Select::make('recorded_by')
                             ->label('سجل بواسطة')
                             ->relationship('recordedBy', 'name')

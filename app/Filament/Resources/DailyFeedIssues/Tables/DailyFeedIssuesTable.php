@@ -3,18 +3,23 @@
 namespace App\Filament\Resources\DailyFeedIssues\Tables;
 
 use App\Models\FarmUnit;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Shreejan\ActionableColumn\Tables\Columns\ActionableColumn;
 
 class DailyFeedIssuesTable
 {
@@ -30,23 +35,84 @@ class DailyFeedIssuesTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('feedItem.name')
+                ActionableColumn::make('feedItem.name')
                     ->badge()
                     ->label('صنف العلف')
-                    ->sortable(),
-                TextColumn::make('warehouse.name')
+                    ->sortable()
+                    ->actionIcon(Heroicon::PencilSquare)
+                    ->actionIconColor('primary')
+                    ->clickableColumn()
+                    ->tapAction(
+                        Action::make('changeFeedItem')
+                            ->label('تغيير صنف العلف')
+                            ->schema([
+                                Select::make('feed_item_id')
+                                    ->label('Feed Item')
+                                    ->relationship('feedItem', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                            ])
+                            ->fillForm(fn ($record) => [
+                                'feed_item_id' => $record->feed_item_id,
+                            ])
+                            ->action(function ($record, array $data) {
+                                $record->update($data);
+                            })
+                    ),
+                ActionableColumn::make('warehouse.name')
                     ->label('المخزن')
-                    ->sortable(),
+                    ->sortable()
+                    ->actionIcon(Heroicon::PencilSquare)
+                    ->actionIconColor('primary')
+                    ->clickableColumn()
+                    ->tapAction(
+                        Action::make('changeWarehouse')
+                            ->label('تغيير المخزن')
+                            ->schema([
+                                Select::make('feed_warehouse_id')
+                                    ->label('Warehouse')
+                                    ->relationship('warehouse', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                            ])
+                            ->fillForm(fn ($record) => [
+                                'feed_warehouse_id' => $record->feed_warehouse_id,
+                            ])
+                            ->action(function ($record, array $data) {
+                                $record->update($data);
+                            })
+                    ),
                 TextColumn::make('date')
                     ->label('التاريخ')
                     ->date()
                     ->sortable(),
-                TextColumn::make('quantity')
+                ActionableColumn::make('quantity')
                     ->badge()
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0)
                     ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
-                    ->sortable(),
+                    ->sortable()
+                    ->actionIcon(Heroicon::PencilSquare)
+                    ->actionIconColor('primary')
+                    ->clickableColumn()
+                    ->tapAction(
+                        Action::make('changeQuantity')
+                            ->label('تغيير الكمية')
+                            ->schema([
+                                TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->fillForm(fn ($record) => [
+                                'quantity' => $record->quantity,
+                            ])
+                            ->action(function ($record, array $data) {
+                                $record->update($data);
+                            })
+                    ),
                 TextColumn::make('batch.batch_code')
                     ->label('دفعة الزريعة')
                     ->sortable(),
@@ -139,6 +205,19 @@ class DailyFeedIssuesTable
             ->recordActions([
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
+                ReplicateAction::make()
+                    ->label('نسخ')
+                    ->excludeAttributes(['recorded_by', 'created_at', 'updated_at'])
+                    ->mutateRecordDataUsing(function (array $data): array {
+                        // Set current user as recorded_by
+                        $data['recorded_by'] = auth('web')->id();
+                        // Set date to today by default, can be changed in form
+                        $data['date'] = now()->format('Y-m-d');
+
+                        return $data;
+                    })
+                    ->successRedirectUrl(fn () => route('filament.admin.resources.daily-feed-issues.index'))
+                    ->successNotificationTitle('تم نسخ صرف العلف بنجاح'),
             ])
             ->defaultSort('date', 'desc')
             ->toolbarActions([

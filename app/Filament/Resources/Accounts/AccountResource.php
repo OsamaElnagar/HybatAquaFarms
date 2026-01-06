@@ -9,10 +9,13 @@ use App\Filament\Resources\Accounts\Schemas\AccountForm;
 use App\Filament\Resources\Accounts\Tables\AccountsTable;
 use App\Models\Account;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class AccountResource extends Resource
 {
@@ -22,7 +25,7 @@ class AccountResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'المحاسبة و المالية';
     }
 
     public static function getNavigationLabel(): string
@@ -38,6 +41,24 @@ class AccountResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'الحسابات';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['code', 'name', 'farm.name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name.' - '.$record->code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

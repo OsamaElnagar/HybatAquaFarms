@@ -14,7 +14,7 @@ class TreasuryOverview extends StatsOverviewWidget
         $totalBalance = $service->getTreasuryBalance();
 
         return [
-            Stat::make('إجمالي رصيد الخزينة', number_format($totalBalance, 0).' EGP')
+            Stat::make('إجمالي رصيد الخزنة', number_format($totalBalance, 0).' EGP')
                 ->description('مجموع أرصدة الصناديق والبنوك')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),

@@ -24,7 +24,7 @@ class OrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'orders';
 
-    protected static ?string $title = 'الإيصالات (البيعات)';
+    protected static ?string $title = 'الإيصالات (أوردرات للحلقات)';
 
     public function form(Schema $schema): Schema
     {
@@ -42,6 +42,7 @@ class OrdersRelationManager extends RelationManager
                         'harvest_number',
                         modifyQueryUsing: fn (Builder $query) => $query->where('harvest_operation_id', $this->getOwnerRecord()->id),
                     )
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->harvest_number.' - '.$record->harvest_date->format('Y-m-d'))
                     ->required(),
                 Select::make('trader_id')
                     ->label('التاجر')
@@ -95,18 +96,18 @@ class OrdersRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()->label('إنشاء إيصال'),
                 // AssociateAction::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('تعديل إيصال'),
                 // DissociateAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()->label('حذف إيصال'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     // DissociateBulkAction::make(),
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف إيصالات'),
                 ]),
             ]);
     }

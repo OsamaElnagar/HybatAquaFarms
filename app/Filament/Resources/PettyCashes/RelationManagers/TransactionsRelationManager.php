@@ -9,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -52,13 +53,11 @@ class TransactionsRelationManager extends RelationManager
                 TextInput::make('amount')
                     ->label('المبلغ')
                     ->required()
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->minValue(0.01)
                     ->step(0.01),
                 Textarea::make('description')
                     ->label('الوصف التفصيلي')
-                    ->required()
                     ->columnSpanFull()
                     ->maxLength(1000)
                     ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
@@ -85,8 +84,7 @@ class TransactionsRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($record) => $record->direction === 'out' ? 'danger' : 'success')
                     ->sortable(),
                 TextColumn::make('description')
@@ -114,12 +112,71 @@ class TransactionsRelationManager extends RelationManager
                     ->preload(),
             ])
             ->headerActions([
-                CreateAction::make()->label('إضافة معاملة')
+                CreateAction::make()
+                    ->label('إضافة معاملة')
                     ->mutateDataUsing(function (array $data): array {
                         $data['recorded_by'] = Auth::id();
                         $data['petty_cash_id'] = $this->getOwnerRecord()->id;
 
                         return $data;
+                    }),
+                CreateAction::make('bulkTransactions')
+                    ->label('إضافة معاملات متعددة')
+                    ->modalHeading('إضافة معاملات متعددة للعهدة')
+                    ->schema([
+                        Repeater::make('transactions')
+                            ->label('المعاملات')
+                            ->schema([
+                                Select::make('direction')
+                                    ->label('النوع')
+                                    ->options([
+                                        'out' => 'صرف (مصروف)',
+                                        'in' => 'قبض (تزويد)',
+                                    ])
+                                    ->required()
+                                    ->live()
+                                    ->default('out'),
+                                Select::make('expense_category_id')
+                                    ->label('نوع المصروف')
+                                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
+                                    ->visible(fn ($get) => $get('direction') === 'out')
+                                    ->required(fn ($get) => $get('direction') === 'out')
+                                    ->searchable()
+                                    ->preload(),
+                                DatePicker::make('date')
+                                    ->label('التاريخ')
+                                    ->required()
+                                    ->default(now()),
+                                TextInput::make('amount')
+                                    ->label('المبلغ')
+                                    ->required()
+                                    ->numeric()
+                                    ->suffix(' EGP ')
+                                    ->minValue(0.01)
+                                    ->step(0.01),
+                                Textarea::make('description')
+                                    ->label('الوصف التفصيلي')
+                                    ->columnSpanFull()
+                                    ->maxLength(1000)
+                                    ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
+                            ])
+                            ->minItems(1)
+                            ->reorderable()
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function (array $data): void {
+                        $pettyCash = $this->getOwnerRecord();
+
+                        foreach ($data['transactions'] ?? [] as $transactionData) {
+                            $pettyCash->transactions()->create([
+                                'direction' => $transactionData['direction'],
+                                'expense_category_id' => $transactionData['expense_category_id'] ?? null,
+                                'date' => $transactionData['date'],
+                                'amount' => $transactionData['amount'],
+                                'description' => $transactionData['description'],
+                                'recorded_by' => Auth::id(),
+                            ]);
+                        }
                     }),
             ])
             ->recordActions([

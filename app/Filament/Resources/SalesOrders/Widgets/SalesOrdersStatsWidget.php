@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class SalesOrdersStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalOrders = SalesOrder::count();

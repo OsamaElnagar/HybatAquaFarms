@@ -9,10 +9,13 @@ use App\Filament\Resources\SalesOrders\Schemas\SalesOrderForm;
 use App\Filament\Resources\SalesOrders\Tables\SalesOrdersTable;
 use App\Models\SalesOrder;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderResource extends Resource
 {
@@ -40,6 +43,24 @@ class SalesOrderResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'مبيعات';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['order_number', 'date', 'farm.name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return 'فاتورة بيع - '.$record->order_number.' - '.$record->date->format('Y-m-d');
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

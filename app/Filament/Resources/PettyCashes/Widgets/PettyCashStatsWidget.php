@@ -11,6 +11,8 @@ class PettyCashStatsWidget extends BaseWidget
 {
     public ?PettyCash $record = null;
 
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $record = $this->record ?? $this->getParent()->record ?? null;
@@ -56,7 +58,7 @@ class PettyCashStatsWidget extends BaseWidget
                 ? $lastTransaction->date->format('Y-m-d')
                 : 'لا توجد')
                 ->description($lastTransaction
-                    ? ($lastTransaction->direction === 'out' ? 'صرف' : 'قبض').' - '.number_format($lastTransaction->amount).' EGP '
+                    ? $lastTransaction->direction->getLabel().' - '.number_format($lastTransaction->amount).' EGP '
                     : '')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('gray'),

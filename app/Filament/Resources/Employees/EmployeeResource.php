@@ -27,12 +27,12 @@ class EmployeeResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name'];
+        return ['name', 'employee_number', 'farm.name'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return $record->name;
+        return $record->name.' - '.$record->employee_number;
     }
 
     public static function getNavigationGroup(): ?string

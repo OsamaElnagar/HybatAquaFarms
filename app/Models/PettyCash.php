@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PettyCash extends Model
 {
     /** @use HasFactory<\Database\Factories\PettyCashFactory> */
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     protected $fillable = [
         'farm_id',
@@ -46,15 +47,15 @@ class PettyCash extends Model
         return $this->hasMany(PettyCashTransaction::class);
     }
 
-    public function vouchers(): HasMany
-    {
-        return $this->hasMany(Voucher::class);
-    }
-
     public function getCurrentBalanceAttribute(): float
     {
-        $totalIn = $this->transactions()->where('direction', 'in')->sum('amount');
-        $totalOut = $this->transactions()->where('direction', 'out')->sum('amount');
+        $totalIn = array_key_exists('total_in', $this->attributes)
+            ? (float) $this->attributes['total_in']
+            : (float) $this->transactions()->where('direction', 'in')->sum('amount');
+
+        $totalOut = array_key_exists('total_out', $this->attributes)
+            ? (float) $this->attributes['total_out']
+            : (float) $this->transactions()->where('direction', 'out')->sum('amount');
 
         return (float) $this->opening_balance + $totalIn - $totalOut;
     }

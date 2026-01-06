@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 
 class ExpenseCategoriesStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $total = ExpenseCategory::count();

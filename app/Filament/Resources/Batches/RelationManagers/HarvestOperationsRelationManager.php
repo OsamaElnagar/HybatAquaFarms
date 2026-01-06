@@ -81,7 +81,7 @@ class HarvestOperationsRelationManager extends RelationManager
                 CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['farm_id'] = $this->getOwnerRecord()->farm_id;
-                        $data['created_by'] = auth()->id();
+                        $data['created_by'] = auth('web')->id();
 
                         return $data;
                     }),

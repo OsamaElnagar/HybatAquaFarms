@@ -26,7 +26,6 @@ class Voucher extends Model
         'date',
         'counterparty_type',
         'counterparty_id',
-        'petty_cash_id',
         'treasury_account_id',
         'account_id',
         'amount',
@@ -60,11 +59,6 @@ class Voucher extends Model
     public function counterparty(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function pettyCash(): BelongsTo
-    {
-        return $this->belongsTo(PettyCash::class);
     }
 
     public function createdBy(): BelongsTo

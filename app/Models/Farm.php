@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\FarmStatus;
 use App\Observers\FarmObserver;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Farm extends Model
 {
     /** @use HasFactory<\Database\Factories\FarmFactory> */
-    use HasFactory;
+    use Cacheable, HasFactory;
 
     protected $fillable = [
         'code',
@@ -113,5 +115,11 @@ class Farm extends Model
     public function getTotalCurrentStockAttribute(): int
     {
         return (int) $this->batches()->where('status', 'active')->sum('current_quantity');
+    }
+
+    #[Scope]
+    public function active($query)
+    {
+        $query->where('status', FarmStatus::Active);
     }
 }

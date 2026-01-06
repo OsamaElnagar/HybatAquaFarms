@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e490070828a63daa55aa801812acb50",
+    "content-hash": "451fd4238d7d614d63505939dde46ea5",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -480,6 +480,53 @@
                 "source": "https://github.com/caresome/filament-auth-designer/tree/v2.0.3"
             },
             "time": "2025-12-06T16:40:38+00:00"
+        },
+        {
+            "name": "charrafimed/global-search-modal",
+            "version": "v4.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CharrafiMed/global-search-modal.git",
+                "reference": "51cd19e497a1211af6ba5ed440f4e6eb9b70e150"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CharrafiMed/global-search-modal/zipball/51cd19e497a1211af6ba5ed440f4e6eb9b70e150",
+                "reference": "51cd19e497a1211af6ba5ed440f4e6eb9b70e150",
+                "shasum": ""
+            },
+            "require": {
+                "filament/support": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CharrafiMed\\GlobalSearchModal\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CharrafiMed",
+                    "email": "charrafimohamed27@gmail.com"
+                }
+            ],
+            "description": "advanced global search modal",
+            "support": {
+                "issues": "https://github.com/CharrafiMed/global-search-modal/issues",
+                "source": "https://github.com/CharrafiMed/global-search-modal/tree/v4.2.3"
+            },
+            "time": "2025-12-02T12:45:46+00:00"
         },
         {
             "name": "chillerlan/php-qrcode",
@@ -1244,6 +1291,87 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "elipzis/laravel-cacheable-model",
+            "version": "v0.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elipZis/laravel-cacheable-model.git",
+                "reference": "3ff54cf4adffb046bf45c57cd335c02eb45c7980"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elipZis/laravel-cacheable-model/zipball/3ff54cf4adffb046bf45c57cd335c02eb45c7980",
+                "reference": "3ff54cf4adffb046bf45c57cd335c02eb45c7980",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0|^12.0",
+                "php": "^8.3|^8.4",
+                "spatie/laravel-package-tools": "^1.14"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.8",
+                "nunomaduro/collision": "^8.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^9.0|^10.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^11.0|^12.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ElipZis\\Cacheable\\CacheableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ElipZis\\Cacheable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elipZis GmbH",
+                    "email": "contact@elipzis.com",
+                    "homepage": "https://elipZis.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Automatic query-based model cache for your Laravel app",
+            "homepage": "https://github.com/elipzis/laravel-cacheable-model",
+            "keywords": [
+                "cache",
+                "config",
+                "elipZis",
+                "eloquent",
+                "laravel",
+                "model",
+                "query",
+                "querybuilder"
+            ],
+            "support": {
+                "issues": "https://github.com/elipZis/laravel-cacheable-model/issues",
+                "source": "https://github.com/elipZis/laravel-cacheable-model/tree/v0.5.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/elipZis",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-03-07T09:58:38+00:00"
         },
         {
             "name": "filament/actions",
@@ -6093,6 +6221,65 @@
                 }
             ],
             "time": "2022-12-17T21:53:22+00:00"
+        },
+        {
+            "name": "shreejan/actionable-column",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shreejanpandit/actionable-column.git",
+                "reference": "91ca6f35baa7ef295a30901b8e2abaf14a504f69"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shreejanpandit/actionable-column/zipball/91ca6f35baa7ef295a30901b8e2abaf14a504f69",
+                "reference": "91ca6f35baa7ef295a30901b8e2abaf14a504f69",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Shreejan\\ActionableColumn\\ActionableColumnServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Shreejan\\ActionableColumn\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shreejan Pandit",
+                    "email": "shreezanpandit@gmail.com"
+                }
+            ],
+            "description": "Interactive table column with clickable actions for Filament v4",
+            "keywords": [
+                "actionable-column",
+                "clickable-column",
+                "filament",
+                "filament-plugin",
+                "interactive-column",
+                "table-columns"
+            ],
+            "support": {
+                "issues": "https://github.com/shreejanpandit/actionable-column/issues",
+                "source": "https://github.com/shreejanpandit/actionable-column/tree/v1.0.0"
+            },
+            "time": "2025-12-04T07:24:21+00:00"
         },
         {
             "name": "shuvroroy/filament-spatie-laravel-backup",

@@ -10,10 +10,13 @@ use App\Filament\Resources\Batches\Schemas\BatchForm;
 use App\Filament\Resources\Batches\Tables\BatchesTable;
 use App\Models\Batch;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class BatchResource extends Resource
 {
@@ -42,6 +45,24 @@ class BatchResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'دفعات الزريعة';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['batch_code', 'farm.name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return 'دورة زريعة -  '.$record->batch_code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

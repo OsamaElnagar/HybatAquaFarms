@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class PettyCashTransactionsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $count = PettyCashTransaction::count();

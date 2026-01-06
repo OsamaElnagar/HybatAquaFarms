@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[ObservedBy([SalesOrderObserver::class])]
@@ -141,28 +140,24 @@ class SalesOrder extends Model
         return $this->belongsToMany(Order::class);
     }
 
-    public function harvests(): HasManyThrough
+    public function harvests()
     {
-        return $this->hasManyThrough(
-            Harvest::class,
-            Order::class,
-            'sales_order_id', // Foreign key on orders table...
-            'id', // Foreign key on harvests table...
-            'id', // Local key on sales_orders table...
-            'harvest_id' // Local key on orders table...
-        )->distinct();
+        return Harvest::whereIn('id', function ($query) {
+            $query->select('orders.harvest_id')
+                ->from('orders')
+                ->join('order_sales_order', 'orders.id', '=', 'order_sales_order.order_id')
+                ->where('order_sales_order.sales_order_id', $this->id);
+        });
     }
 
-    public function harvestOperations(): HasManyThrough
+    public function harvestOperations()
     {
-        return $this->hasManyThrough(
-            HarvestOperation::class,
-            Order::class,
-            'sales_order_id',
-            'id',
-            'id',
-            'harvest_operation_id'
-        )->distinct();
+        return HarvestOperation::whereIn('id', function ($query) {
+            $query->select('orders.harvest_operation_id')
+                ->from('orders')
+                ->join('order_sales_order', 'orders.id', '=', 'order_sales_order.order_id')
+                ->where('order_sales_order.sales_order_id', $this->id);
+        });
     }
 
     // Calculated Attributes

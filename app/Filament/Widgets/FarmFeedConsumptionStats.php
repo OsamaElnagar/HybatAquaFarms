@@ -6,6 +6,7 @@ use App\Models\DailyFeedIssue;
 use App\Models\Farm;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 
 class FarmFeedConsumptionStats extends BaseWidget
@@ -13,6 +14,8 @@ class FarmFeedConsumptionStats extends BaseWidget
     protected $listeners = ['updateCharts' => '$refresh'];
 
     protected static ?int $sort = 1;
+
+    protected ?string $pollingInterval = null;
 
     protected function getStats(): array
     {
@@ -44,7 +47,7 @@ class FarmFeedConsumptionStats extends BaseWidget
 
         // Calculate Cost: Join with feed_items to get standard_cost
         $totalCost = $costQuery->join('feed_items', 'daily_feed_issues.feed_item_id', '=', 'feed_items.id')
-            ->sum(\DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
+            ->sum(DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
 
         $activeBatches = $batchesQuery->distinct('batch_id')->count('batch_id');
 

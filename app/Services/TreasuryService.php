@@ -76,7 +76,7 @@ class TreasuryService
                 'source_type' => get_class($source),
                 'source_id' => $source->id,
                 'is_posted' => true,
-                'posted_by' => auth()->id(),
+                'posted_by' => auth('web')->id(),
                 'posted_at' => now(),
             ]);
 
@@ -133,7 +133,7 @@ class TreasuryService
                 'source_type' => get_class($source),
                 'source_id' => $source->id,
                 'is_posted' => true,
-                'posted_by' => auth()->id(),
+                'posted_by' => auth('web')->id(),
                 'posted_at' => now(),
             ]);
 
@@ -166,7 +166,7 @@ class TreasuryService
         ?Farm $farm = null,
         ?string $startDate = null,
         ?string $endDate = null
-    ): \Illuminate\Database\Eloquent\Collection {
+    ) {
         $query = JournalLine::query()
             ->with(['account', 'journalEntry.source'])
             ->whereHas('account', function ($q) {

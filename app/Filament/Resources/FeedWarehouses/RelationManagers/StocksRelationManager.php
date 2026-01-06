@@ -52,7 +52,7 @@ class StocksRelationManager extends RelationManager
                 TextColumn::make('stock_value')
                     ->label('القيمة')
                     ->state(fn ($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->toggleable(),
             ])

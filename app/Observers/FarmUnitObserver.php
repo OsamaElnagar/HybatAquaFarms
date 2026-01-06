@@ -15,12 +15,8 @@ class FarmUnitObserver
 
     protected static function generateCode(FarmUnit $unit): string
     {
-        // Get the last unit for the same farm
-        $lastUnit = FarmUnit::where('farm_id', $unit->farm_id)
-            ->latest('id')
-            ->first();
-
-        $number = $lastUnit ? ((int) substr($lastUnit->code, 5)) + 1 : 1;
+        $lastId = FarmUnit::max('id') ?? 0;
+        $number = $lastId + 1;
 
         return 'UNIT-'.str_pad($number, 3, '0', STR_PAD_LEFT);
     }

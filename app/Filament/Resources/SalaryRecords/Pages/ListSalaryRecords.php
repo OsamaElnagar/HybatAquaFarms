@@ -26,7 +26,7 @@ class ListSalaryRecords extends ListRecords
                 ->label('تشغيل كشوف المرتبات')
                 ->icon('heroicon-o-banknotes')
                 ->modalHeading('تشغيل كشوف المرتبات للفترة')
-                ->form([
+                ->schema([
                     DatePicker::make('from')
                         ->label('من تاريخ')
                         ->required()

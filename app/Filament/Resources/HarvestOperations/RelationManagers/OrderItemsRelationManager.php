@@ -8,6 +8,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -21,7 +22,7 @@ class OrderItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'orderItems';
 
-    protected static ?string $title = 'العناصر - البكس';
+    protected static ?string $title = 'بكس وعناصر كل أوردر';
 
     public function isReadOnly(): bool
     {
@@ -36,7 +37,10 @@ class OrderItemsRelationManager extends RelationManager
                     ->label('الطلب')
                     ->options(function () {
                         return Order::where('harvest_operation_id', $this->getOwnerRecord()->id)
-                            ->pluck('code', 'id');
+                            ->get()
+                            ->mapWithKeys(fn (Order $order) => [
+                                $order->id => $order->code.' - '.$order->date->format('Y-m-d'),
+                            ]);
                     })
                     ->searchable()
                     ->required(),
@@ -75,16 +79,17 @@ class OrderItemsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('quantity')
                     ->label('عدد البكس')
-                    ->summarize(Sum::make()->label('إجمالي العدد'))
+                    ->summarize(Sum::make()->label('إجمالي العدد')->numeric(locale: 'en'))
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('weight_per_box')
                     ->label('وزن البوكسه')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric(decimalPlaces: 0, locale: 'en')
                     ->sortable(),
                 TextColumn::make('total_weight')
                     ->label('إجمالي الوزن')
-                    ->summarize(Sum::make()->label('إجمالي الوزن'))
-                    ->numeric(decimalPlaces: 2)
+                    ->summarize(Sum::make()->label('إجمالي الوزن')->numeric(locale: 'en'))
+                    ->numeric(decimalPlaces: 0, locale: 'en')
                     ->sortable(),
             ])
             ->filters([
@@ -92,17 +97,19 @@ class OrderItemsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
+                    ->label('إضافة صنف وعدد بكس')
                     ->using(function (array $data, string $model): Model {
                         return $model::create($data);
                     }),
             ])
-            ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
+            ->recordActions([
+                EditAction::make()->label('تعديل '),
+                DeleteAction::make()->label('حذف '),
+                ReplicateAction::make()->label('استنساخ '),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف العناصر'),
                 ]),
             ]);
     }

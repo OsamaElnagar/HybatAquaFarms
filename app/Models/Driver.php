@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Filament\Resources\Drivers\Tables\DriversTable;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Driver extends Model
 {
     /** @use HasFactory<\Database\Factories\DriverFactory> */
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected $fillable = [
         'code',

@@ -43,37 +43,31 @@ class SalaryRecordsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('basic_salary')
                     ->label('المرتب الأساسي')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('bonuses')
                     ->label('الحوافز')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->toggleable(),
                 TextColumn::make('deductions')
                     ->label('الخصومات')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('danger')
                     ->toggleable(),
                 TextColumn::make('advances_deducted')
                     ->label('خصم السلف')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('warning')
                     ->toggleable(),
                 TextColumn::make('net_salary')
                     ->label('الصافي')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('المجموع')
-                            ->numeric()
-                            ->suffix(' EGP '),
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('payment_date')
                     ->label('تاريخ الدفع')

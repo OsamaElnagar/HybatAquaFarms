@@ -105,20 +105,17 @@ class BatchesTable
                     ->sortable(),
                 TextColumn::make('unit_cost')
                     ->label('تكلفة الوحدة')
-                    ->numeric()
-                    ->suffix('EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة الإجمالية')
-                    ->numeric()
-                    ->suffix('EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->sortable(),
                 TextColumn::make('total_paid')
                     ->label('المدفوع')
-                    ->numeric()
-                    ->suffix('EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('info')
                     ->sortable()
                     ->toggleable()
@@ -128,8 +125,7 @@ class BatchesTable
                     ),
                 TextColumn::make('outstanding_balance')
                     ->label('المتبقي')
-                    ->numeric()
-                    ->suffix('EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(
                         fn ($record) => $record &&
                         ($record->outstanding_balance ?? 0) > 0
@@ -195,8 +191,7 @@ class BatchesTable
                     ->toggleable(),
                 TextColumn::make('net_profit')
                     ->label('صافي الربح')
-                    ->numeric()
-                    ->suffix('EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(
                         fn ($record) => $record && $record->net_profit >= 0
                             ? 'success'

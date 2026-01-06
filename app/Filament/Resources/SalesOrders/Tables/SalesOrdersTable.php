@@ -21,6 +21,7 @@ class SalesOrdersTable
                 TextColumn::make('order_number')
                     ->label('رقم العملية')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
@@ -46,8 +47,7 @@ class SalesOrdersTable
                 //     ->sortable(),
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
-                    ->numeric(0)
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')

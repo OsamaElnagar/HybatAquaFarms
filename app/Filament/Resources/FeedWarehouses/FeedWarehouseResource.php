@@ -9,10 +9,13 @@ use App\Filament\Resources\FeedWarehouses\Schemas\FeedWarehouseForm;
 use App\Filament\Resources\FeedWarehouses\Tables\FeedWarehousesTable;
 use App\Models\FeedWarehouse;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class FeedWarehouseResource extends Resource
 {
@@ -38,6 +41,24 @@ class FeedWarehouseResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'مخازن الأعلاف';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'code', 'farm.name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name.' - '.$record->code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

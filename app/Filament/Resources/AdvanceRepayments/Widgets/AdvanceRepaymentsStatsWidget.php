@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class AdvanceRepaymentsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalAmount = AdvanceRepayment::sum('amount_paid');

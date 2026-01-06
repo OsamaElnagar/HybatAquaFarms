@@ -9,6 +9,8 @@ class BatchPaymentSummaryWidget extends BaseWidget
 {
     public ?\App\Models\Batch $record = null;
 
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $record = $this->record ?? $this->getParent()?->record ?? null;

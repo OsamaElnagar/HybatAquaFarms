@@ -35,6 +35,7 @@ class FarmUnitForm
                         Select::make('unit_type')
                             ->label('نوع الوحدة')
                             ->options(UnitType::class)
+                            ->default(UnitType::Pond)
                             ->required()
                             ->native(false)
                             ->helperText('نوع الوحدة: حوض، خزان، أو قفص')
@@ -43,6 +44,7 @@ class FarmUnitForm
                             ->label('السعة')
                             ->numeric()
                             ->minValue(0)
+                            ->suffix('فدان')
                             ->helperText('السعة القصوى للوحدة (اختياري)')
                             ->columnSpan(1),
                     ])

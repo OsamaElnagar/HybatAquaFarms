@@ -8,6 +8,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -32,18 +33,9 @@ class PettyCashTransactionForm
                             })
                             ->searchable()
                             ->preload(),
-                        Placeholder::make('current_balance')
+                        TextEntry::make('current_balance')
                             ->label('رصيد العهده الحالي')
-                            ->content(function ($get) {
-                                $pettyCashId = $get('petty_cash_id');
-                                if ($pettyCashId) {
-                                    $pettyCash = PettyCash::find($pettyCashId);
-
-                                    return number_format($pettyCash->current_balance ?? 0, 0).'  EGP ';
-                                }
-
-                                return '0  EGP ';
-                            }),
+                            ->placeholder('حدد عهده للبدأ'),
                         // ->visible(fn ($get) => filled($get('petty_cash_id'))),
                         Select::make('direction')
                             ->label('النوع')

@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class BatchPaymentsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $total = BatchPayment::sum('amount');

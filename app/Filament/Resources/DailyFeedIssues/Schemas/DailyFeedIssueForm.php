@@ -21,7 +21,7 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->relationship('farm', 'name')
+                            ->relationship('farm', 'name', fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
                             ->preload()
@@ -29,7 +29,7 @@ class DailyFeedIssueForm
                             ->afterStateUpdated(fn (callable $set) => $set('unit_id', null))
                             ->helperText('يرجى اختيار المزرعة ذات الصلة'),
                         Select::make('unit_id')
-                            ->label('الوحدة')
+                            ->label('الوحدة او الحوض')
                             ->options(function (callable $get) {
                                 $farmId = $get('farm_id');
                                 if (! $farmId) {
@@ -58,6 +58,7 @@ class DailyFeedIssueForm
                         DatePicker::make('date')
                             ->label('التاريخ')
                             ->required()
+                            ->maxDate(now()->tomorrow())
                             ->helperText('تاريخ عملية الصرف'),
                         TextInput::make('quantity')
                             ->label('الكمية (كجم)')
@@ -69,7 +70,7 @@ class DailyFeedIssueForm
                             ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                             ->helperText('حدد دفعة الزريعة إذا كانت موجودة'),
                     ])
-                    ->columns(2),
+                    ->columns(2)->columnSpanFull(),
 
                 Section::make('إضافات وملاحظات')
                     ->description('معلومات المستخدم والملاحظات الإضافية')
@@ -87,7 +88,7 @@ class DailyFeedIssueForm
                             ->maxLength(1000)
                             ->helperText('أضف أية ملاحظات إضافية متعلقة بالصرف'),
                     ])
-                    ->columns(1),
+                    ->columns(1)->columnSpanFull(),
             ]);
     }
 }

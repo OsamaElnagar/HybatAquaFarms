@@ -21,7 +21,7 @@ class ListPettyCashes extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            PettyCashesStatsWidget::class,
+            // PettyCashesStatsWidget::class,
         ];
     }
 }

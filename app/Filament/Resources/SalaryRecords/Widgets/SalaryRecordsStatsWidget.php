@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class SalaryRecordsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalNet = SalaryRecord::sum('net_salary');

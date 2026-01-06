@@ -24,11 +24,6 @@ return new class extends Migration
             $table->string('voucher_number'); // unique per farm+type
             $table->date('date');
             $table->morphs('counterparty'); // employee, trader, factory, driver, supplier
-            $table
-                ->foreignId('petty_cash_id')
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
             $table->decimal('amount', 12, 2);
             $table->text('description')->nullable();
             $table->string('payment_method')->nullable(); // cash, bank, check

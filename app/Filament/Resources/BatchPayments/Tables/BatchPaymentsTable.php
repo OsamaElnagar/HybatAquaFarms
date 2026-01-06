@@ -30,8 +30,7 @@ class BatchPaymentsTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->sortable(),
                 TextColumn::make('payment_method')

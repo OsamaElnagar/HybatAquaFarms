@@ -35,7 +35,7 @@ class ManualJournalEntry extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'المحاسبة و المالية';
     }
 
     protected string $view = 'filament.pages.manual-journal-entry';
@@ -80,8 +80,8 @@ class ManualJournalEntry extends Page implements HasForms
                         TextInput::make('debit')
                             ->label('مدين')
                             ->numeric()
-                            ->default(0)
                             ->suffix('EGP')
+                            ->default(0)
                             ->reactive(),
 
                         TextInput::make('credit')
@@ -96,7 +96,7 @@ class ManualJournalEntry extends Page implements HasForms
                             ->columnSpan(2),
                     ])
                     ->columns(6)
-                    ->defaultItems(2)
+                    ->defaultItems(1)
                     ->addActionLabel('إضافة بند')
                     ->reorderable(false)
                     ->collapsible()
@@ -150,7 +150,7 @@ class ManualJournalEntry extends Page implements HasForms
                     'date' => $data['date'],
                     'description' => $data['description'] ?? 'قيد يدوي',
                     'is_posted' => true,
-                    'posted_by' => auth()->id(),
+                    'posted_by' => auth('web')->id(),
                     'posted_at' => now(),
                     'source_type' => self::class,
                     'source_id' => 0, // Manual entry

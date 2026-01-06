@@ -13,10 +13,13 @@ use App\Filament\Resources\HarvestOperations\Schemas\HarvestOperationForm;
 use App\Filament\Resources\HarvestOperations\Tables\HarvestOperationsTable;
 use App\Models\HarvestOperation;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class HarvestOperationResource extends Resource
 {
@@ -35,7 +38,27 @@ class HarvestOperationResource extends Resource
 
     protected static ?string $pluralModelLabel = 'عمليات الحصاد';
 
-    protected static ?string $recordTitleAttribute = 'operation_number';
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'operation_number',
+            'start_date',
+            'farm.name',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return 'صيادة - '.$record->farm->name.' - '.$record->operation_number;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {

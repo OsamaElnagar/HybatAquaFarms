@@ -39,15 +39,13 @@ class EmployeeAdvancesTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('مبلغ السلفة')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('primary')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي السلف')
-                            ->numeric()
-                            ->suffix(' EGP '),
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('approval_status')
                     ->label('حالة الموافقة')
@@ -59,20 +57,17 @@ class EmployeeAdvancesTable
                     ->sortable(),
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn (float $state) => $state > 0 ? 'warning' : 'success')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('المتبقي')
-                            ->numeric()
-                            ->suffix(' EGP '),
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('repayments_sum_amount')
                     ->label('إجمالي السداد')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('repayments_count')
@@ -89,8 +84,7 @@ class EmployeeAdvancesTable
                     ->toggleable(),
                 TextColumn::make('installment_amount')
                     ->label('مبلغ القسط')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('approved_date')

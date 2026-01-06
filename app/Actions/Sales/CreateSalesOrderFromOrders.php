@@ -24,7 +24,7 @@ class CreateSalesOrderFromOrders
                 'harvest_operation_id' => $harvestOperation->id,
                 'trader_id' => $trader->id,
                 'date' => $date,
-                'created_by' => auth()->id(),
+                'created_by' => auth('web')->id(),
                 'notes' => $notes,
             ]);
 
@@ -39,17 +39,6 @@ class CreateSalesOrderFromOrders
 
             // 3. Recalculate Totals
             $salesOrder->recalculateTotals();
-
-            // 4. Post Invoice (Accounting)
-            app(\App\Domain\Accounting\PostingService::class)->post('sales.credit', [
-                'amount' => (float) $salesOrder->net_amount,
-                'farm_id' => $harvestOperation->farm_id,
-                'date' => $salesOrder->date?->toDateString(),
-                'source_type' => $salesOrder->getMorphClass(),
-                'source_id' => $salesOrder->id,
-                'description' => "مبيعات - أمر رقم {$salesOrder->order_number} (عملية حصاد #{$harvestOperation->operation_number})",
-                'user_id' => $salesOrder->created_by,
-            ]);
 
             return $salesOrder;
         });

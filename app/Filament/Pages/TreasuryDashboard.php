@@ -11,10 +11,10 @@ class TreasuryDashboard extends Page
 
     public static function getNavigationLabel(): string
     {
-        return 'الخزينة';
+        return 'الخزنة';
     }
 
-    protected static ?string $title = 'لوحة تحكم الخزينة';
+    protected static ?string $title = 'لوحة تحكم الخزنة';
 
     protected string $view = 'filament.pages.treasury-dashboard';
 

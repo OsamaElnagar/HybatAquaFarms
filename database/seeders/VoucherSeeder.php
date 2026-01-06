@@ -6,7 +6,6 @@ use App\Enums\PaymentMethod;
 use App\Enums\VoucherType;
 use App\Models\Employee;
 use App\Models\Farm;
-use App\Models\PettyCash;
 use App\Models\Trader;
 use App\Models\Voucher;
 use Illuminate\Database\Seeder;
@@ -16,11 +15,6 @@ class VoucherSeeder extends Seeder
     public function run(): void
     {
         Farm::each(function ($farm) {
-            $pettyCash = PettyCash::where('farm_id', $farm->id)->first();
-            if (! $pettyCash) {
-                return;
-            }
-
             $employees = Employee::where('farm_id', $farm->id)->get();
             $traders = Trader::take(3)->get();
 
@@ -37,7 +31,6 @@ class VoucherSeeder extends Seeder
                     'date' => now()->subDays(rand(1, 90)),
                     'counterparty_type' => get_class($counterparty),
                     'counterparty_id' => $counterparty->id,
-                    'petty_cash_id' => $pettyCash->id,
                     'amount' => rand(500, 5000),
                     'description' => ['سلفة', 'مصروف تشغيل', 'صيانة', 'نقل'][rand(0, 3)],
                     'payment_method' => PaymentMethod::CASH->value,
@@ -53,7 +46,6 @@ class VoucherSeeder extends Seeder
                     'date' => now()->subDays(rand(1, 90)),
                     'counterparty_type' => Trader::class,
                     'counterparty_id' => $traders->random()->id,
-                    'petty_cash_id' => $pettyCash->id,
                     'amount' => rand(10000, 50000),
                     'description' => 'سداد مبيعات',
                     'payment_method' => PaymentMethod::CASH->value,

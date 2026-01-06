@@ -57,18 +57,35 @@ class SalesOrderObserver
 
     protected function postSalesOrder(SalesOrder $salesOrder): void
     {
-        // Determine event key based on payment status
-        $eventKey = $salesOrder->payment_status === PaymentStatus::Paid
-            ? 'sales.cash'
-            : 'sales.credit';
+        // If it's a cash sale (which we are forcing now), we DON'T post a 'sales.cash' entry here
+        // because the Voucher created in CreateSalesOrder page will handle the GL entry:
+        // Debit Cash / Credit Sales
 
-        $this->posting->post($eventKey, [
+        // However, if for some reason no voucher was created (legacy or bulk import),
+        // we might still need this. But given the user's request to "Treat Sales Order as Receipt",
+        // we should rely on the Voucher.
+
+        // BUT, the system design (HarvestBox -> SalesOrder) implies SalesOrder is the "Invoice".
+        // If we disable posting here, we lose the "Sales" record if the Voucher isn't created.
+
+        // STRATEGY:
+        // 1. If it is Paid (Cash Sale), we assume the Voucher handles the Cash <-> Sales entry.
+        //    So we do NOTHING here to avoid duplication.
+        // 2. If it is Credit (unlikely now), we post sales.credit.
+
+        if ($salesOrder->payment_status === PaymentStatus::Paid) {
+            return;
+        }
+
+        $farmId = $salesOrder->farm_id ?? $salesOrder->harvestOperation?->farm_id;
+
+        $this->posting->post('sales.credit', [
             'amount' => (float) $salesOrder->net_amount,
-            'farm_id' => $salesOrder->farm_id,
+            'farm_id' => $farmId,
             'date' => $salesOrder->date?->toDateString(),
             'source_type' => $salesOrder->getMorphClass(),
             'source_id' => $salesOrder->id,
-            'description' => "مبيعات - أمر رقم {$salesOrder->order_number}",
+            'description' => "مبيعات آجلة - أمر رقم {$salesOrder->order_number}",
             'user_id' => $salesOrder->created_by,
         ]);
     }

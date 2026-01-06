@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->string('type'); // asset, liability, equity, income, expense
+            $table->decimal('current_balance', 15, 2)->default(0);
             $table->foreignId('farm_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->boolean('is_active')->default(true);

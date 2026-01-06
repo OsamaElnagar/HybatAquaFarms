@@ -20,9 +20,11 @@ class Account extends Model
         'code',
         'name',
         'type',
+        'current_balance',
         'farm_id',
         'parent_id',
         'is_active',
+        'is_treasury',
         'description',
     ];
 
@@ -31,6 +33,8 @@ class Account extends Model
         return [
             'type' => AccountType::class,
             'is_active' => 'boolean',
+            'is_treasury' => 'boolean',
+            'current_balance' => 'decimal:2',
         ];
     }
 

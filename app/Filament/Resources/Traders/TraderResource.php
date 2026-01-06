@@ -9,10 +9,13 @@ use App\Filament\Resources\Traders\Schemas\TraderForm;
 use App\Filament\Resources\Traders\Tables\TradersTable;
 use App\Models\Trader;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class TraderResource extends Resource
 {
@@ -38,6 +41,24 @@ class TraderResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'التجار';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['code', 'name', 'phone', 'email'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name.' - '.$record->code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

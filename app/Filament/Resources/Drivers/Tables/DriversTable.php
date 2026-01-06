@@ -16,29 +16,41 @@ class DriversTable
         return $table
             ->columns([
                 TextColumn::make('code')
+                    ->label('الكود')
+                    ->copyable()
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label('الاسم')
                     ->searchable(),
                 TextColumn::make('phone')
+                    ->label('الهاتف')
                     ->searchable(),
                 TextColumn::make('phone2')
+                    ->label('الهاتف 2')
                     ->searchable(),
                 TextColumn::make('license_number')
+                    ->label('رقم الرخصة')
                     ->searchable(),
                 TextColumn::make('license_expiry')
+                    ->label('انتهاء الرخصة')
                     ->date()
                     ->sortable(),
                 TextColumn::make('vehicle_type')
+                    ->label('نوع المركبة')
                     ->searchable(),
                 TextColumn::make('vehicle_plate')
+                    ->label('لوحة المركبة')
                     ->searchable(),
                 IconColumn::make('is_active')
+                    ->label('نشط')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('تاريخ التحديث')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

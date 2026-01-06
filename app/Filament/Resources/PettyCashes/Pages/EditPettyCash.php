@@ -23,7 +23,7 @@ class EditPettyCash extends EditRecord
                 ->label('تزويد سريع')
                 ->icon('heroicon-o-plus-circle')
                 ->color('success')
-                ->form([
+                ->schema([
                     DatePicker::make('date')
                         ->label('التاريخ')
                         ->required()

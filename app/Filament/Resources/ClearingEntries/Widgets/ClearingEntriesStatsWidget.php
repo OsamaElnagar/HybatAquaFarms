@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class ClearingEntriesStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $count = ClearingEntry::count();

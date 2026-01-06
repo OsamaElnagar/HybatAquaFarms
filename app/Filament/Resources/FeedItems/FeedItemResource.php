@@ -9,10 +9,13 @@ use App\Filament\Resources\FeedItems\Schemas\FeedItemForm;
 use App\Filament\Resources\FeedItems\Tables\FeedItemsTable;
 use App\Models\FeedItem;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class FeedItemResource extends Resource
 {
@@ -38,6 +41,24 @@ class FeedItemResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'أصناف الأعلاف';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'code'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name.' - '.$record->code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

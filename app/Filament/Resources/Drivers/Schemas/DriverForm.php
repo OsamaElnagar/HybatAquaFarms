@@ -16,6 +16,7 @@ class DriverForm
             ->components([
                 TextInput::make('code')
                     ->label('الكود')
+                    ->copyable()
                     ->required(),
                 TextInput::make('name')
                     ->label('الاسم')

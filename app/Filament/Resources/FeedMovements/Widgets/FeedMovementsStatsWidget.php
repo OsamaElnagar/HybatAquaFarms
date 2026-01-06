@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 
 class FeedMovementsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalMovements = FeedMovement::count();

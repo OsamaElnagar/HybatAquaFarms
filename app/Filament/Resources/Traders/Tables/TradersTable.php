@@ -48,14 +48,12 @@ class TradersTable
                     ->sortable(),
                 TextColumn::make('outstanding_balance')
                     ->label('المستحقات')
-                    ->state(fn ($record) => number_format($record->outstanding_balance))
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('credit_limit')
                     ->label('حد الائتمان')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('نشط')

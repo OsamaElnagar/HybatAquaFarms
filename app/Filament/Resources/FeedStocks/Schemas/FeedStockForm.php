@@ -38,9 +38,10 @@ class FeedStockForm
                 Section::make('الكميات والتكاليف')
                     ->schema([
                         TextInput::make('quantity_in_stock')
-                            ->label('الكمية في المخزون')
+                            ->label('الكمية في المخزون بالكيلوجرام')
                             ->required()
                             ->numeric()
+                            ->suffix('كجم')
                             ->minValue(0)
                             ->step(0.001)
                             ->default(0)
@@ -48,7 +49,7 @@ class FeedStockForm
                             ->columnSpan(1),
                         TextInput::make('average_cost')
                             ->label('متوسط التكلفة')
-                            ->required()
+
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)
@@ -58,7 +59,7 @@ class FeedStockForm
                             ->columnSpan(1),
                         TextInput::make('total_value')
                             ->label('القيمة الإجمالية')
-                            ->required()
+
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)

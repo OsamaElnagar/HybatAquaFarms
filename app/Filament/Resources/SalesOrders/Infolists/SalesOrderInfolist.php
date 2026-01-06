@@ -16,6 +16,7 @@ class SalesOrderInfolist
                     ->schema([
                         TextEntry::make('order_number')
                             ->label('رقم العملية')
+                            ->copyable()
                             ->columnSpan(1),
                         TextEntry::make('date')
                             ->label('التاريخ')
@@ -35,20 +36,20 @@ class SalesOrderInfolist
                     ->schema([
                         TextEntry::make('boxes_subtotal')
                             ->label('المجموع الفرعي')
-                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0)
                             ->columnSpan(1),
                         TextEntry::make('tax_amount')
                             ->label('الضرائب')
-                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0)
                             ->columnSpan(1),
                         TextEntry::make('discount_amount')
                             ->label('الخصم')
-                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0)
                             ->color('warning')
                             ->columnSpan(1),
                         TextEntry::make('net_amount')
                             ->label('المجموع الإجمالي')
-                            ->formatStateUsing(fn ($state) => number_format($state).' EGP ')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0)
                             ->color('success')
                             ->weight('bold')
                             ->columnSpan(1),

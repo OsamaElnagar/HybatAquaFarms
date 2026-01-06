@@ -20,6 +20,7 @@ class VouchersTable
                 TextColumn::make('voucher_number')
                     ->label('رقم السند')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('voucher_type')
                     ->label('نوع السند')
@@ -56,15 +57,9 @@ class VouchersTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric(decimalPlaces: 1)
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($record) => $record->voucher_type?->value === 'receipt' ? 'success' : 'danger')
                     ->sortable(),
-                TextColumn::make('pettyCash.name')
-                    ->label('العهدة')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
                     ->badge()
@@ -91,11 +86,6 @@ class VouchersTable
                 SelectFilter::make('farm_id')
                     ->label('المزرعة')
                     ->relationship('farm', 'name'),
-
-                // pettyCash
-                SelectFilter::make('petty_cash_id')
-                    ->label('العهدة')
-                    ->relationship('pettyCash', 'name'),
 
                 // voucher_type
 

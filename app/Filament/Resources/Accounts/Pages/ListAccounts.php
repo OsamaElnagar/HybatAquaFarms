@@ -21,7 +21,7 @@ class ListAccounts extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            AccountsStatsWidget::class,
+            // AccountsStatsWidget::class,
         ];
     }
 }

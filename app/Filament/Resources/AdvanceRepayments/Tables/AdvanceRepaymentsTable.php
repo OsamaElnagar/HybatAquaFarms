@@ -35,24 +35,22 @@ class AdvanceRepaymentsTable
                     ->sortable(),
                 TextColumn::make('amount_paid')
                     ->label('المبلغ المدفوع')
-                    ->numeric()
-
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         Sum::make()
                             ->label('إجمالي المبلغ المدفوع')
-                            ->numeric(),
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
-                    ->numeric()
-
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn (float $state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('employeeAdvance.balance_remaining')
                     ->label('الرصيد المتبقي للسلفة')
-                    ->numeric()
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->toggleable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')

@@ -50,6 +50,11 @@ class Trader extends Model
         return $this->hasMany(SalesOrder::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function vouchers(): MorphMany
     {
         return $this->morphMany(Voucher::class, 'counterparty');

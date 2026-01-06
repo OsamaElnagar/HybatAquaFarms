@@ -40,16 +40,16 @@ class AppServiceProvider extends ServiceProvider
             // ->defaultPaginationPageOption(20);
         });
 
-        if (config('app.debug')) {
-            DB::listen(function ($query) {
-                Log::info(
-                    $query->sql,
-                    [
-                        'bindings' => $query->bindings,
-                        'time' => $query->time,
-                    ]
-                );
-            });
-        }
+        // if (config('app.debug')) {
+        //     DB::listen(function ($query) {
+        //         Log::info(
+        //             $query->sql,
+        //             [
+        //                 'bindings' => $query->bindings,
+        //                 'time' => $query->time,
+        //             ]
+        //         );
+        //     });
+        // }
     }
 }

@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class FactoryPaymentsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $total = FactoryPayment::sum('amount');

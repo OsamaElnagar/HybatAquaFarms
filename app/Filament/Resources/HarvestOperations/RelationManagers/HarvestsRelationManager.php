@@ -20,7 +20,7 @@ class HarvestsRelationManager extends RelationManager
 {
     protected static string $relationship = 'harvests';
 
-    protected static ?string $title = 'جلسات الحصاد';
+    protected static ?string $title = '(الصياده) جلسات الحصاد';
 
     protected static ?string $recordTitleAttribute = 'harvest_number';
 
@@ -77,10 +77,10 @@ class HarvestsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('تسجيل حصاد جديد')
+                    ->label('جلسة حصاد جديده')
                     ->icon('heroicon-o-plus'),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])

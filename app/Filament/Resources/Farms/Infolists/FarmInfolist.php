@@ -17,6 +17,7 @@ class FarmInfolist
                     ->schema([
                         TextEntry::make('code')
                             ->label('الكود')
+                            ->copyable()
                             ->columnSpan(1),
                         TextEntry::make('name')
                             ->label('الاسم')

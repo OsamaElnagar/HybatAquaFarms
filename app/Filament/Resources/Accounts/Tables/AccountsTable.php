@@ -16,18 +16,25 @@ class AccountsTable
         return $table
             ->columns([
                 TextColumn::make('code')
+                    ->label('الكود')
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label('اسم الحساب')
                     ->searchable(),
                 TextColumn::make('type')
+                    ->label('النوع')
                     ->searchable(),
                 TextColumn::make('farm.name')
-                    ->numeric()
+                    ->label('المزرعة')
                     ->sortable(),
                 TextColumn::make('parent.name')
-                    ->numeric()
+                    ->label('الحساب الأب')
                     ->sortable(),
                 IconColumn::make('is_active')
+                    ->label('نشط')
+                    ->boolean(),
+                IconColumn::make('is_treasury')
+                    ->label('حساب خزينة')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()

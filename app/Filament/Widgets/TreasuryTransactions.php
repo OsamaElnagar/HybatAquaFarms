@@ -2,13 +2,14 @@
 
 namespace App\Filament\Widgets;
 
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
 class TreasuryTransactions extends TableWidget
 {
-    protected static ?string $heading = 'تحركات الخزينة الأخيرة';
+    protected static ?string $heading = 'تحركات الخزنة الأخيرة';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -22,28 +23,28 @@ class TreasuryTransactions extends TableWidget
                     ->orderBy('created_at', 'desc')
             )
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('journalEntry.date')
+                TextColumn::make('journalEntry.date')
                     ->label('التاريخ')
                     ->date()
                     ->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('account.name')
+                TextColumn::make('account.name')
                     ->label('الحساب')
                     ->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('debit')
+                TextColumn::make('debit')
                     ->label('وارد (+)')
-                    ->money('EGP')
+                    ->money('EGP', decimalPlaces: 0, locale: 'en')
                     ->color('success')
                     ->hidden(fn ($record) => $record && $record->debit <= 0),
-                \Filament\Tables\Columns\TextColumn::make('credit')
+                TextColumn::make('credit')
                     ->label('صادر (-)')
-                    ->money('EGP')
+                    ->money('EGP', decimalPlaces: 0, locale: 'en')
                     ->color('danger')
                     ->hidden(fn ($record) => $record && $record->credit <= 0),
-                \Filament\Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('الوصف')
                     ->searchable()
                     ->wrap(),
-                \Filament\Tables\Columns\TextColumn::make('journalEntry.source_type')
+                TextColumn::make('journalEntry.source_type')
                     ->label('المصدر')
                     ->formatStateUsing(fn ($state) => class_basename($state))
                     ->badge(),

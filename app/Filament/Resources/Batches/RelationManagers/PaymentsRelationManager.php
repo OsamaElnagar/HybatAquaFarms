@@ -32,36 +32,32 @@ class PaymentsRelationManager extends RelationManager
             ->components([
                 \Filament\Schemas\Components\Section::make('تفاصيل الدفعة')
                     ->schema([
-                        \Filament\Schemas\Components\Grid::make(2)
-                            ->schema([
-                                Select::make('factory_id')
-                                    ->label('المورد')
-                                    ->relationship('factory', 'name')
-                                    ->required()
-                                    ->searchable()
-                                    ->preload()
-                                    ->default(fn ($livewire) => $livewire->getOwnerRecord()?->factory_id),
-                                DatePicker::make('date')
-                                    ->label('تاريخ الدفعة')
-                                    ->required()
-                                    ->default(now())
-                                    ->displayFormat('Y-m-d')
-                                    ->native(false),
-                            ]),
-                        \Filament\Schemas\Components\Grid::make(2)
-                            ->schema([
-                                TextInput::make('amount')
-                                    ->label('المبلغ')
-                                    ->required()
-                                    ->numeric()
-                                    ->suffix(' EGP ')
-                                    ->minValue(0.01)
-                                    ->step(0.01),
-                                Select::make('payment_method')
-                                    ->label('طريقة الدفع')
-                                    ->options(PaymentMethod::class)
-                                    ->searchable(),
-                            ]),
+                        Select::make('factory_id')
+                            ->label('المورد')
+                            ->relationship('factory', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->default(fn ($livewire) => $livewire->getOwnerRecord()?->factory_id),
+                        DatePicker::make('date')
+                            ->label('تاريخ الدفعة')
+                            ->required()
+                            ->default(now())
+                            ->displayFormat('Y-m-d')
+                            ->native(false),
+
+                        TextInput::make('amount')
+                            ->label('المبلغ')
+                            ->required()
+                            ->numeric()
+                            ->suffix(' EGP ')
+                            ->minValue(0.01)
+                            ->step(0.01),
+                        Select::make('payment_method')
+                            ->label('طريقة الدفع')
+                            ->options(PaymentMethod::class)
+                            ->searchable(),
+
                         TextInput::make('reference_number')
                             ->label('رقم المرجع')
                             ->maxLength(255)
@@ -73,7 +69,8 @@ class PaymentsRelationManager extends RelationManager
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
-                    ->columns(1),
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 \Filament\Schemas\Components\Section::make('ملاحظات')
                     ->schema([
@@ -100,15 +97,13 @@ class PaymentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric()
-                    ->suffix(' EGP ')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
                             ->label('إجمالي المدفوع')
-                            ->numeric()
-                            ->suffix(' EGP '),
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Count::make()
                             ->label('عدد الدفعات'),
                     ]),

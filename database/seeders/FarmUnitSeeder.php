@@ -18,7 +18,6 @@ class FarmUnitSeeder extends Seeder
             for ($i = 1; $i <= $pondCount; $i++) {
                 FarmUnit::create([
                     'farm_id' => $farm->id,
-                    'code' => "حوض-{$i}",
                     'unit_type' => UnitType::Pond,
                     'capacity' => rand(5000, 20000),
                     'status' => rand(1, 10) > 2 ? 'active' : 'maintenance',
@@ -29,7 +28,6 @@ class FarmUnitSeeder extends Seeder
             if (rand(1, 3) === 1) {
                 FarmUnit::create([
                     'farm_id' => $farm->id,
-                    'code' => 'خزان-1',
                     'unit_type' => UnitType::Tank,
                     'capacity' => rand(2000, 5000),
                     'status' => 'active',

@@ -21,11 +21,9 @@ class VoucherResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCheck;
 
-    protected static ?string $recordTitleAttribute = 'voucher_number';
-
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'المحاسبة و المالية';
     }
 
     public static function getNavigationLabel(): string
@@ -55,12 +53,12 @@ class VoucherResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['voucher_number', 'reference_number', 'description'];
+        return ['voucher_number', 'date'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string
     {
-        return (string) $record->voucher_number;
+        return (string) $record->voucher_number.' - '.$record->date->format('y-m-d');
     }
 
     public static function getRelations(): array

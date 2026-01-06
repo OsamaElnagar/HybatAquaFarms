@@ -18,7 +18,8 @@ class PostingRuleForm
                     ->label('مفتاح الحدث')
                     ->required()
                     ->helperText('مفتاح فريد لتحديد نوع الحدث (مثل: voucher.payment, sales.cash)')
-                    ->maxLength(100),
+                    ->maxLength(100)
+                    ->disabledOn('edit'),
                 TextInput::make('description')
                     ->label('الوصف')
                     ->required()

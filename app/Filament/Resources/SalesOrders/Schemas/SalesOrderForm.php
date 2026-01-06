@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,7 @@ class SalesOrderForm
                             ->disabled()
                             ->dehydrated(false)
                             ->helperText('يتم توليده تلقائياً')
+                            ->hidden()
                             ->columnSpan(1),
                         DatePicker::make('date')
                             ->label('التاريخ')
@@ -33,26 +35,35 @@ class SalesOrderForm
                             ->default(now())
                             ->displayFormat('Y-m-d')
                             ->native(false)
-                            ->helperText('تاريخ إصدار عملية البيع')
+                            ->helperText('تاريخ إستلام الفاتورة')
                             ->columnSpan(1),
                         Select::make('harvest_operation_id')
                             ->label('عملية الحصاد')
-                            ->relationship('harvestOperation', 'operation_number', modifyQueryUsing: fn ($query) => $query->with('farm'))
+                            ->relationship('harvestOperation', 'operation_number', modifyQueryUsing: fn ($query) => $query->with('farm')->latest())
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_display_name)
                             ->required()
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->helperText('عملية الحصاد المصدر للمنتجات')
+                            ->helperText('عملية الحصاد المصدره للمنتجات')
                             ->columnSpan(1),
                         Select::make('trader_id')
-                            ->label('التاجر (العميل)')
-                            ->relationship('trader', 'name')
+                            ->label('التاجر (الحلقة)')
+                            ->relationship('trader', 'name', function (Builder $query, $get) {
+                                $hopId = $get('harvest_operation_id');
+
+                                if ($hopId) {
+                                    $query->whereHas('orders', function ($orderQuery) use ($hopId) {
+                                        $orderQuery->where('harvest_operation_id', $hopId);
+                                    });
+                                }
+                            })
                             ->required()
+                            ->visible(fn (Get $get): bool => filled($get('harvest_operation_id')))
                             ->searchable()
                             ->preload()
-                            ->helperText('التاجر المشتري')
-                            ->live() // Make it live to filter orders maybe?
+                            ->helperText('التاجر أو الحلقة المشتريه')
+                            ->live()
                             ->columnSpan(1),
                         Select::make('orders')
                             ->label('الطلبات')
@@ -72,6 +83,7 @@ class SalesOrderForm
                             ->multiple()
                             ->preload()
                             ->searchable()
+                            ->visible(fn (Get $get) => $get('harvest_operation_id') && $get('trader_id'))
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -115,33 +127,55 @@ class SalesOrderForm
                             ->suffix(' EGP ')
                             ->helperText('المبلغ النهائي بعد الضرائب والخصم')
                             ->columnSpan(1),
+                        Select::make('payment_status')
+                            ->label('حالة الدفع')
+                            ->options(PaymentStatus::class)
+                            ->default(PaymentStatus::Paid)
+                            ->hidden(false)
+                            ->native(false)
+                            ->helperText('حالة دفع عملية البيع')
+                            ->columnSpan(1),
                     ])
                     ->columns(2)
                     ->columnSpanFull()
                     ->collapsible(),
 
-                Section::make('الحالة والتوصيل')
-                    ->schema([
-                        Select::make('payment_status')
-                            ->label('حالة الدفع')
-                            ->options(PaymentStatus::class)
+                // Section::make('الحالة والتوصيل')
+                //     ->schema([
+                //         Select::make('payment_status')
+                //             ->label('حالة الدفع')
+                //             ->options(PaymentStatus::class)
+                //             ->default(PaymentStatus::Paid)
+                //             ->hidden()
+                //             ->native(false)
+                //             ->helperText('حالة دفع عملية البيع')
+                //             ->columnSpan(1),
+                //         // Select::make('delivery_status')
+                //         //     ->label('حالة التوصيل')
+                //         //     ->options(DeliveryStatus::class)
+                //         //     ->native(false)
+                //         //     ->helperText('حالة توصيل المنتجات')
+                //         //     ->columnSpan(1),
+                //         // DatePicker::make('delivery_date')
+                //         //     ->label('تاريخ التوصيل')
+                //         //     ->displayFormat('Y-m-d')
+                //         //     ->native(false)
+                //         //     ->helperText('تاريخ توصيل المنتجات للعميل')
+                //         //     ->columnSpan(1),
 
-                            ->required()
-                            ->native(false)
-                            ->helperText('حالة دفع عملية البيع')
-                            ->columnSpan(1),
-                        Select::make('delivery_status')
-                            ->label('حالة التوصيل')
-                            ->options(DeliveryStatus::class)
-                            ->native(false)
-                            ->helperText('حالة توصيل المنتجات')
-                            ->columnSpan(1),
-                        DatePicker::make('delivery_date')
-                            ->label('تاريخ التوصيل')
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->helperText('تاريخ توصيل المنتجات للعميل')
-                            ->columnSpan(1),
+                //     ])
+                //     ->columns(2)
+                //     ->columnSpanFull()
+                //     ->collapsible(),
+
+                Section::make('الملاحظات')
+                    ->schema([
+                        // Textarea::make('delivery_address')
+                        //     ->label('عنوان التوصيل')
+                        //     ->rows(3)
+                        //     ->maxLength(500)
+                        //     ->helperText('عنوان توصيل المنتجات')
+                        //     ->columnSpan(1),
                         Select::make('created_by')
                             ->label('أنشأ بواسطة')
                             ->relationship('createdBy', 'name')
@@ -150,29 +184,17 @@ class SalesOrderForm
                             ->preload()
                             ->helperText('المستخدم الذي أنشأ العملية')
                             ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull()
-                    ->collapsible(),
 
-                Section::make('التوصيل والملاحظات')
-                    ->schema([
-                        Textarea::make('delivery_address')
-                            ->label('عنوان التوصيل')
-                            ->rows(3)
-                            ->maxLength(500)
-                            ->helperText('عنوان توصيل المنتجات')
-                            ->columnSpan(1),
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->rows(3)
                             ->maxLength(1000)
-                            ->helperText('أي ملاحظات إضافية على العملية')
-                            ->columnSpan(1),
+                            ->helperText('أي ملاحظات إضافية على العملية'),
                     ])
-                    ->columns(2)
+                    ->columns(1)
                     ->columnSpanFull()
-                    ->collapsible(),
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 
 class BatchesStatsWidget extends BaseWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalBatches = Batch::count();
@@ -34,15 +36,15 @@ class BatchesStatsWidget extends BaseWidget
             ->sum('total_cost');
 
         return [
-            Stat::make('إجمالي الدفعات', number_format($totalBatches))
-                ->description($activeBatches.' نشطة، '.$harvestedBatches.' محصودة')
-                ->descriptionIcon('heroicon-o-rectangle-stack')
-                ->color('primary'),
-
             Stat::make('الكمية الإجمالية', number_format($totalCurrentQuantity))
                 ->description('من أصل '.number_format($totalInitialQuantity).' (نفوق: '.number_format($mortalityCount).' - '.$mortalityRate.'%)')
                 ->descriptionIcon('heroicon-o-cube')
                 ->color($mortalityRate > 10 ? 'danger' : ($mortalityRate > 5 ? 'warning' : 'success')),
+
+            Stat::make('إجمالي الدفعات', number_format($totalBatches))
+                ->description($activeBatches.' نشطة، '.$harvestedBatches.' محصودة')
+                ->descriptionIcon('heroicon-o-rectangle-stack')
+                ->color('primary'),
 
             Stat::make('إجمالي التكلفة', number_format($totalCost).' EGP ')
                 ->description('هذا الشهر: '.number_format($thisMonthBatches).' دفعة - '.number_format($thisMonthCost).' EGP ')

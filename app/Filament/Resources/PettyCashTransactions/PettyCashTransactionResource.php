@@ -9,10 +9,13 @@ use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionFor
 use App\Filament\Resources\PettyCashTransactions\Tables\PettyCashTransactionsTable;
 use App\Models\PettyCashTransaction;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class PettyCashTransactionResource extends Resource
 {
@@ -22,22 +25,40 @@ class PettyCashTransactionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'العُهدات';
     }
 
     public static function getNavigationLabel(): string
     {
-        return 'معاملات العهدة';
+        return 'معاملات العهد';
     }
 
     public static function getModelLabel(): string
     {
-        return 'معاملة عهدة';
+        return 'معاملة';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'معاملات العهدة';
+        return 'معاملات العهد';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['date'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return 'منصرف عهدة - '.$record->date->format('Y-m-d').' - '.$record->pettyCash->name;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

@@ -52,7 +52,7 @@ class HarvestUnitObserver
             // 'weight' => null, // HarvestUnit doesn't track weight
             'reason' => "Harvest #{$harvest->harvest_number}",
             'notes' => $notes,
-            'recorded_by' => $harvest->recorded_by ?? auth()->id(),
+            'recorded_by' => $harvest->recorded_by ?? auth('web')->id(),
         ];
 
         $movement = $this->findBatchMovement($harvestUnit);

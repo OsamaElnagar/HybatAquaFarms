@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 
 class BatchMovementsStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalMovements = BatchMovement::count();

@@ -9,10 +9,13 @@ use App\Filament\Resources\BatchPayments\Schemas\BatchPaymentForm;
 use App\Filament\Resources\BatchPayments\Tables\BatchPaymentsTable;
 use App\Models\BatchPayment;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class BatchPaymentResource extends Resource
 {
@@ -38,6 +41,24 @@ class BatchPaymentResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'مدفوعات الزريعة';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['date'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return 'سداد زريعة - '.$record->batch->batch_code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

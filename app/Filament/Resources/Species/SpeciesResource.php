@@ -9,10 +9,13 @@ use App\Filament\Resources\Species\Schemas\SpeciesForm;
 use App\Filament\Resources\Species\Tables\SpeciesTable;
 use App\Models\Species;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class SpeciesResource extends Resource
 {
@@ -38,6 +41,24 @@ class SpeciesResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'أنواع المزروعات';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

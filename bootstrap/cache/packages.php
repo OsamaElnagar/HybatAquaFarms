@@ -27,6 +27,20 @@
       0 => 'Caresome\\FilamentAuthDesigner\\AuthDesignerServiceProvider',
     ),
   ),
+  'charrafimed/global-search-modal' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider',
+    ),
+  ),
+  'elipzis/laravel-cacheable-model' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'ElipZis\\Cacheable\\CacheableServiceProvider',
+    ),
+  ),
   'filament/actions' => 
   array (
     'providers' => 
@@ -270,6 +284,13 @@
     'providers' => 
     array (
       0 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
+    ),
+  ),
+  'shreejan/actionable-column' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Shreejan\\ActionableColumn\\ActionableColumnServiceProvider',
     ),
   ),
   'shuvroroy/filament-spatie-laravel-backup' => 

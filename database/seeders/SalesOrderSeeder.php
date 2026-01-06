@@ -45,7 +45,7 @@ class SalesOrderSeeder extends Seeder
                     'trader_id' => $traderId,
                     'date' => $orderDate,
                     'commission_rate' => $trader->commission_rate ?? 0,
-                    'payment_status' => PaymentStatus::Pending,
+                    'payment_status' => PaymentStatus::Paid,
                     'delivery_status' => DeliveryStatus::DELIVERED,
                     'created_by' => 1,
                 ]);

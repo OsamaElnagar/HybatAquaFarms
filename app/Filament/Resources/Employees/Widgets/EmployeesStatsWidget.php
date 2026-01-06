@@ -11,6 +11,8 @@ use Illuminate\Support\Carbon;
 
 class EmployeesStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalEmployees = Employee::count();

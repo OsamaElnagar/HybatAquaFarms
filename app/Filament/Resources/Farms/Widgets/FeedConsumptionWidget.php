@@ -11,6 +11,8 @@ class FeedConsumptionWidget extends StatsOverviewWidget
 {
     public ?Farm $record = null;
 
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         if (! $this->record) {

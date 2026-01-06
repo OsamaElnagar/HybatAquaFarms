@@ -22,7 +22,7 @@ class ClearingEntryResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'المحاسبة و المالية';
     }
 
     public static function getNavigationLabel(): string

@@ -9,10 +9,13 @@ use App\Filament\Resources\ExpenseCategories\Schemas\ExpenseCategoryForm;
 use App\Filament\Resources\ExpenseCategories\Tables\ExpenseCategoriesTable;
 use App\Models\ExpenseCategory;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class ExpenseCategoryResource extends Resource
 {
@@ -22,7 +25,7 @@ class ExpenseCategoryResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'المالية';
+        return 'العُهدات';
     }
 
     public static function getNavigationLabel(): string
@@ -38,6 +41,24 @@ class ExpenseCategoryResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'فئات المصروفات';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'code'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->name.' - '.$record->code;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

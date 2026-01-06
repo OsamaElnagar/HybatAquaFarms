@@ -42,7 +42,7 @@ class FeedMovementsTable
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric(decimalPlaces: 3)
+                    ->numeric(decimalPlaces: 0)
                     ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
                     ->sortable(),
                 TextColumn::make('factory.name')

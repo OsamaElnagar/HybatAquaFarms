@@ -8,6 +8,18 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class DriversStatsWidget extends StatsOverviewWidget
 {
+    protected function getHeading(): ?string
+    {
+        return 'الإحصائيات';
+    }
+
+    protected function getDescription(): ?string
+    {
+        return 'نظرة عامة على إحصائيات السائقين.';
+    }
+
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $total = Driver::count();

@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 
 class EmployeeAdvancesStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalAmount = EmployeeAdvance::sum('amount');

@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class VouchersStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $count = Voucher::count();

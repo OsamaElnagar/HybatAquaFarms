@@ -31,7 +31,7 @@ class FarmResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return $record->name;
+        return $record->name.' - '.$record->code;
     }
 
     public static function getGlobalSearchResultActions(Model $record): array

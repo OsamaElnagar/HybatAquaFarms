@@ -56,7 +56,7 @@ class ViewBatch extends ViewRecord
                         'total_operating_expenses' => $record->allocated_expenses,
                         'total_revenue' => $record->total_revenue,
                         'net_profit' => $record->net_profit,
-                        'closed_by' => auth()->id(),
+                        'closed_by' => auth('web')->id(),
                         'closure_notes' => $data['closure_notes'] ?? null,
                     ]);
 

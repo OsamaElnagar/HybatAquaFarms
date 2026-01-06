@@ -4,12 +4,18 @@ namespace App\Observers;
 
 use App\Domain\Accounting\PostingService;
 use App\Enums\VoucherType;
-use App\Models\PettyCashTransaction;
 use App\Models\Voucher;
 
 class VoucherObserver
 {
     public function __construct(private PostingService $posting) {}
+
+    public function creating(Voucher $voucher): void
+    {
+        if (! $voucher->voucher_number) {
+            $voucher->voucher_number = static::generateVoucherNumber($voucher);
+        }
+    }
 
     public function created(Voucher $voucher): void
     {
@@ -36,17 +42,25 @@ class VoucherObserver
 
         $this->posting->post($event, $context);
 
-        // If voucher is linked to petty cash, create transaction automatically
-        if ($voucher->petty_cash_id) {
-            PettyCashTransaction::create([
-                'petty_cash_id' => $voucher->petty_cash_id,
-                'voucher_id' => $voucher->id,
-                'date' => $voucher->date ?? now(),
-                'direction' => $voucher->voucher_type === VoucherType::Payment ? 'out' : 'in',
-                'amount' => $voucher->amount,
-                'description' => $voucher->description ?? 'معاملة من سند',
-                'recorded_by' => $voucher->created_by,
-            ]);
+    }
+
+    protected static function generateVoucherNumber(Voucher $voucher): string
+    {
+        // Get the last voucher for this farm and type
+        $lastVoucher = Voucher::where('farm_id', $voucher->farm_id)
+            ->where('voucher_type', $voucher->voucher_type)
+            ->latest('id')
+            ->first();
+
+        // Extract number from last voucher (format: P-0001 or R-0001)
+        $number = 1;
+        if ($lastVoucher && preg_match('/-(\d+)$/', $lastVoucher->voucher_number, $matches)) {
+            $number = (int) $matches[1] + 1;
         }
+
+        // Prefix: P for Payment, R for Receipt
+        $prefix = $voucher->voucher_type === VoucherType::Payment ? 'P' : 'R';
+
+        return $prefix.'-'.str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 }

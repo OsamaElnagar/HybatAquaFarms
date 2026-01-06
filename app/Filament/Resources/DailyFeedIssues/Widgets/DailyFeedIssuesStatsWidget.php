@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class DailyFeedIssuesStatsWidget extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $totalIssues = DailyFeedIssue::count();

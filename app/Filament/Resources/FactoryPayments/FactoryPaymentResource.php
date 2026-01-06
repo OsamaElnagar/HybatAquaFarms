@@ -9,10 +9,13 @@ use App\Filament\Resources\FactoryPayments\Schemas\FactoryPaymentForm;
 use App\Filament\Resources\FactoryPayments\Tables\FactoryPaymentsTable;
 use App\Models\FactoryPayment;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class FactoryPaymentResource extends Resource
 {
@@ -38,6 +41,24 @@ class FactoryPaymentResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'مدفوعات مصانع الأعلاف';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['date'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return 'دفعة لمصنع - '.$record->date->format('Y-m-d').' - '.$record->factory->name;
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Schema $schema): Schema

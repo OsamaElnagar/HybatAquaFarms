@@ -1,5 +1,10 @@
 <x-filament-panels::page>
     {{ $this->form }}
+
+     <button type="submit">
+            Submit
+        </button>
+        
     <x-filament::section class="mt-6">
         <x-slot name="heading">
             💡 كيفية إدخال الأرصدة الافتتاحية
