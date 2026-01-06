@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Enums\HarvestStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Harvest extends Model
 {
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected static function booted()
     {

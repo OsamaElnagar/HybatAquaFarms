@@ -28,6 +28,8 @@ class DailyFeedImportsChart extends ApexChartWidget
 
     protected static ?int $contentHeight = 350;
 
+    protected ?string $pollingInterval = null;
+
     public function filtersSchema(Schema $schema): Schema
     {
         return $schema->components([

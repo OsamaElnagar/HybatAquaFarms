@@ -11,6 +11,7 @@ class HarvestByFarmChart extends ChartWidget
 
     protected $listeners = ['updateCharts' => '$refresh'];
 
+    protected ?string $pollingInterval = null;
     protected function getData(): array
     {
         $filters = request()->query('filters', []);

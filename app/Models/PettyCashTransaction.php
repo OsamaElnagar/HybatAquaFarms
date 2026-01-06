@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Enums\PettyTransacionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PettyCashTransaction extends Model
 {
     /** @use HasFactory<\Database\Factories\PettyCashTransactionFactory> */
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected $fillable = [
         'petty_cash_id',

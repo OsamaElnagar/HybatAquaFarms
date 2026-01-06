@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FeedStock extends Model
 {
     /** @use HasFactory<\Database\Factories\FeedStockFactory> */
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected $fillable = [
         'feed_warehouse_id',

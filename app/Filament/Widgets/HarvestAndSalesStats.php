@@ -10,6 +10,8 @@ class HarvestAndSalesStats extends BaseWidget
 {
     protected $listeners = ['updateCharts' => '$refresh'];
 
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $filters = request()->query('filters', []);

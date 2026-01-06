@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\DailyFeedIssueObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DailyFeedIssue extends Model
 {
     /** @use HasFactory<\Database\Factories\DailyFeedIssueFactory> */
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected static function booted()
     {

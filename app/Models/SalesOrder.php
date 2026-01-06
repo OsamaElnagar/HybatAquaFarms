@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Observers\SalesOrderObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[ObservedBy([SalesOrderObserver::class])]
 class SalesOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected $fillable = [
         'order_number',

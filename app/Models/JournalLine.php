@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\JournalLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class JournalLine extends Model
 {
     /** @use HasFactory<\Database\Factories\JournalLineFactory> */
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected $fillable = [
         'journal_entry_id',

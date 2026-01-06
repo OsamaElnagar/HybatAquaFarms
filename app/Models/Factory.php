@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\FactoryObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Factory extends Model
 {
     /** @use HasFactory<\Database\Factories\FactoryFactory> */
-    use HasFactory;
+    use HasFactory, Cacheable;
 
     protected $fillable = [
         'code',

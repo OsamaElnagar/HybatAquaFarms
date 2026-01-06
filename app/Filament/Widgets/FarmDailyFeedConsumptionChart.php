@@ -18,6 +18,8 @@ class FarmDailyFeedConsumptionChart extends ApexChartWidget
 
     protected $listeners = ['updateCharts' => '$refresh'];
 
+    protected ?string $pollingInterval = null;
+
     protected function getOptions(): array
     {
         $filters = request()->query('filters', []);
