@@ -2,6 +2,9 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\HarvestAndSalesStats;
+use App\Filament\Widgets\TreasuryOverview;
+use App\Filament\Widgets\TreasuryTransactions;
 use BackedEnum;
 use Filament\Pages\Page;
 
@@ -11,24 +14,25 @@ class TreasuryDashboard extends Page
 
     public static function getNavigationLabel(): string
     {
-        return 'الخزنة';
+        return 'الرئيسية';
     }
 
-    protected static ?string $title = 'لوحة تحكم الخزنة';
+    protected static ?string $title = 'الخزنة و البيانات المهمة';
 
     protected string $view = 'filament.pages.treasury-dashboard';
 
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Widgets\TreasuryOverview::class,
+            TreasuryOverview::class,
+            HarvestAndSalesStats::class,
         ];
     }
 
     protected function getFooterWidgets(): array
     {
         return [
-            \App\Filament\Widgets\TreasuryTransactions::class,
+            TreasuryTransactions::class,
         ];
     }
 }

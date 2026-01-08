@@ -4,6 +4,8 @@ namespace App\Filament\Resources\SalesOrders\Schemas;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
+use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -12,6 +14,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class SalesOrderForm
@@ -65,7 +68,7 @@ class SalesOrderForm
                             ->helperText('التاجر أو الحلقة المشتريه')
                             ->live()
                             ->columnSpan(1),
-                        Select::make('orders')
+                        CheckboxList::make('orders')
                             ->label('الطلبات')
                             ->relationship('orders', 'code', modifyQueryUsing: function (Builder $query, $get) {
                                 // Filter by trader if selected
@@ -80,9 +83,14 @@ class SalesOrderForm
                                     $query->where('harvest_operation_id', $hopId);
                                 }
                             })
-                            ->multiple()
-                            ->preload()
+                            ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->code)
+                            ->selectAllAction(
+                                fn (Action $action) => $action->label('اختيار جميع الطلبات'),
+                            )
                             ->searchable()
+                            ->noSearchResultsMessage('لا توجد نتائج للبحث')
+                            ->searchPrompt('ابحث عن كود الطلب...')
+                            ->searchDebounce(500)
                             ->visible(fn (Get $get) => $get('harvest_operation_id') && $get('trader_id'))
                             ->columnSpanFull(),
                     ])

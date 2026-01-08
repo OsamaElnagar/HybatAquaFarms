@@ -22,7 +22,7 @@ class BatchPaymentSummaryWidget extends BaseWidget
         $totalCost = (float) ($record->total_cost ?? 0);
         $totalPaid = $record->total_paid;
         $outstanding = $record->outstanding_balance;
-        $paymentCount = $record->batchPayments()->count();
+        $paymentCount = $record->batch_payments_count;
 
         if ($totalCost <= 0) {
             return [

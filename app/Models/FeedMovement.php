@@ -6,7 +6,6 @@ use App\Enums\FeedMovementType;
 use App\Observers\FeedMovementObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -14,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FeedMovement extends Model
 {
     /** @use HasFactory<\Database\Factories\FeedMovementFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'movement_type',

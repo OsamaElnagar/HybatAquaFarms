@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class BatchesRelationManager extends RelationManager
 {
@@ -30,6 +31,7 @@ class BatchesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('batch_code')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['unit', 'species']))
             ->columns([
                 TextColumn::make('batch_code')
                     ->label('كود الدفعة')

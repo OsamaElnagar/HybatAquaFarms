@@ -33,7 +33,7 @@ class ViewBatch extends ViewRecord
                     'سيتم حساب جميع التكاليف والإيرادات وإقفال الدورة. لن تتمكن من التعديل بعد الإقفال.',
                 )
                 ->modalIcon('heroicon-o-exclamation-triangle')
-                ->form([
+                ->schema([
                     DatePicker::make('closure_date')
                         ->label('تاريخ الإقفال')
                         ->default(now())

@@ -22,6 +22,20 @@ class FarmResource extends Resource
 {
     protected static ?string $model = Farm::class;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['manager'])
+            ->withCount([
+                'units',
+                'batches',
+                'batches as active_batches_count' => fn ($query) => $query->where('status', 'active'),
+            ])
+            ->withSum([
+                'batches as total_current_stock' => fn ($query) => $query->where('status', 'active'),
+            ], 'current_quantity');
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHomeModern;
 
     public static function getGloballySearchableAttributes(): array
@@ -75,6 +89,7 @@ class FarmResource extends Resource
     public static function getRelations(): array
     {
         return [
+
             RelationManagers\UnitsRelationManager::class,
             RelationManagers\BatchesRelationManager::class,
             RelationManagers\DailyFeedIssuesRelationManager::class,

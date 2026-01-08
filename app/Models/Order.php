@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Order extends Model
 {
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'code',

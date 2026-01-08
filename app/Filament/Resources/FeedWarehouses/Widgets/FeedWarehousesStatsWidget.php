@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\FeedWarehouses\Widgets;
 
+use App\Models\FeedStock;
 use App\Models\FeedWarehouse;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 
 class FeedWarehousesStatsWidget extends StatsOverviewWidget
 {
@@ -12,36 +14,35 @@ class FeedWarehousesStatsWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $totalWarehouses = FeedWarehouse::count();
-        $activeWarehouses = FeedWarehouse::where('is_active', true)->count();
+        return Cache::remember('feed_warehouses_stats', 600, function () {
+            $totalWarehouses = FeedWarehouse::count();
+            $activeWarehouses = FeedWarehouse::where('is_active', true)->count();
 
-        $totalStockItems = FeedWarehouse::withCount('stocks')->get()->sum('stocks_count');
-        $totalStockValue = FeedWarehouse::query()->get()->sum(function ($warehouse) {
-            return $warehouse->stocks->sum(function ($stock) {
-                return $stock->quantity_in_stock * ($stock->feedItem->standard_cost ?? 0);
-            });
+            // Direct query on FeedStock instead of loading all warehouses and their relations
+            $totalStockItems = FeedStock::count();
+            $totalStockValue = (float) FeedStock::sum('total_value');
+
+            return [
+                Stat::make('إجمالي المخازن', number_format($totalWarehouses))
+                    ->description($activeWarehouses.' نشط')
+                    ->descriptionIcon('heroicon-o-building-storefront')
+                    ->color('primary'),
+
+                Stat::make('أصناف المخزون', number_format($totalStockItems))
+                    ->description('عدد أصناف الأعلاف المخزنة')
+                    ->descriptionIcon('heroicon-o-archive-box')
+                    ->color('info'),
+
+                Stat::make('قيمة المخزون', number_format($totalStockValue).' EGP ')
+                    ->description('القيمة الإجمالية للأعلاف')
+                    ->descriptionIcon('heroicon-o-currency-dollar')
+                    ->color('success'),
+
+                Stat::make('متوسط قيمة المخزن', $totalWarehouses > 0 ? number_format($totalStockValue / $totalWarehouses).' EGP ' : '0.00 EGP')
+                    ->description('متوسط قيمة المخزون لكل مخزن')
+                    ->descriptionIcon('heroicon-o-chart-bar')
+                    ->color('warning'),
+            ];
         });
-
-        return [
-            Stat::make('إجمالي المخازن', number_format($totalWarehouses))
-                ->description($activeWarehouses.' نشط')
-                ->descriptionIcon('heroicon-o-building-storefront')
-                ->color('primary'),
-
-            Stat::make('أصناف المخزون', number_format($totalStockItems))
-                ->description('عدد أصناف الأعلاف المخزنة')
-                ->descriptionIcon('heroicon-o-archive-box')
-                ->color('info'),
-
-            Stat::make('قيمة المخزون', number_format($totalStockValue).' EGP ')
-                ->description('القيمة الإجمالية للأعلاف')
-                ->descriptionIcon('heroicon-o-currency-dollar')
-                ->color('success'),
-
-            Stat::make('متوسط قيمة المخزن', $totalWarehouses > 0 ? number_format($totalStockValue / $totalWarehouses).' EGP ' : '0.00 EGP')
-                ->description('متوسط قيمة المخزون لكل مخزن')
-                ->descriptionIcon('heroicon-o-chart-bar')
-                ->color('warning'),
-        ];
     }
 }

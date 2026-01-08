@@ -6,7 +6,6 @@ use App\Enums\AccountType;
 use App\Observers\AccountObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'code',

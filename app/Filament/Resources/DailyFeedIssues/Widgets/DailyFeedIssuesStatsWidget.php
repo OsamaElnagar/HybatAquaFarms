@@ -6,6 +6,7 @@ use App\Models\DailyFeedIssue;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class DailyFeedIssuesStatsWidget extends StatsOverviewWidget
 {
@@ -13,35 +14,49 @@ class DailyFeedIssuesStatsWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $totalIssues = DailyFeedIssue::count();
-        $todayIssues = DailyFeedIssue::whereDate('date', Carbon::today())->count();
-        $thisWeekIssues = DailyFeedIssue::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-        $thisMonthIssues = DailyFeedIssue::whereMonth('date', Carbon::now()->month)->count();
+        return Cache::remember('daily_feed_issues_stats', 600, function () {
+            $totalIssues = DailyFeedIssue::count();
 
-        $todayQuantity = DailyFeedIssue::whereDate('date', Carbon::today())->sum('quantity');
-        $thisWeekQuantity = DailyFeedIssue::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('quantity');
-        $thisMonthQuantity = DailyFeedIssue::whereMonth('date', Carbon::now()->month)->sum('quantity');
+            // Today's stats
+            $today = Carbon::today();
+            $todayStats = DailyFeedIssue::whereDate('date', $today)
+                ->selectRaw('count(*) as count, sum(quantity) as quantity')
+                ->first();
 
-        return [
-            Stat::make('إجمالي السجلات', number_format($totalIssues))
-                ->description('عدد سجلات الصرف')
-                ->descriptionIcon('heroicon-o-calendar-days')
-                ->color('primary'),
+            // This week's stats
+            $startOfWeek = Carbon::now()->startOfWeek();
+            $endOfWeek = Carbon::now()->endOfWeek();
+            $weekStats = DailyFeedIssue::whereBetween('date', [$startOfWeek, $endOfWeek])
+                ->selectRaw('count(*) as count, sum(quantity) as quantity')
+                ->first();
 
-            Stat::make('صرف اليوم', number_format($todayQuantity))
-                ->description($todayIssues.' سجل')
-                ->descriptionIcon('heroicon-o-sun')
-                ->color('success'),
+            // This month's stats
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $monthStats = DailyFeedIssue::where('date', '>=', $startOfMonth)
+                ->selectRaw('count(*) as count, sum(quantity) as quantity')
+                ->first();
 
-            Stat::make('صرف هذا الأسبوع', number_format($thisWeekQuantity))
-                ->description($thisWeekIssues.' سجل')
-                ->descriptionIcon('heroicon-o-calendar')
-                ->color('info'),
+            return [
+                Stat::make('إجمالي السجلات', number_format($totalIssues))
+                    ->description('عدد سجلات الصرف')
+                    ->descriptionIcon('heroicon-o-calendar-days')
+                    ->color('primary'),
 
-            Stat::make('صرف هذا الشهر', number_format($thisMonthQuantity))
-                ->description($thisMonthIssues.' سجل')
-                ->descriptionIcon('heroicon-o-chart-bar')
-                ->color('warning'),
-        ];
+                Stat::make('صرف اليوم', number_format($todayStats->quantity ?? 0))
+                    ->description(($todayStats->count ?? 0).' سجل')
+                    ->descriptionIcon('heroicon-o-sun')
+                    ->color('success'),
+
+                Stat::make('صرف هذا الأسبوع', number_format($weekStats->quantity ?? 0))
+                    ->description(($weekStats->count ?? 0).' سجل')
+                    ->descriptionIcon('heroicon-o-calendar')
+                    ->color('info'),
+
+                Stat::make('صرف هذا الشهر', number_format($monthStats->quantity ?? 0))
+                    ->description(($monthStats->count ?? 0).' سجل')
+                    ->descriptionIcon('heroicon-o-chart-bar')
+                    ->color('warning'),
+            ];
+        });
     }
 }

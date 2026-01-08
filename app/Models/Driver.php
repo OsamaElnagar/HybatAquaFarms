@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use App\Filament\Resources\Drivers\Tables\DriversTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Driver extends Model
 {
     /** @use HasFactory<\Database\Factories\DriverFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'code',

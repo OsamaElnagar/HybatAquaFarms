@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PettyCashes\Pages;
 
 use App\Filament\Resources\PettyCashes\PettyCashResource;
+use App\Filament\Resources\PettyCashes\Widgets\PettyCashStatsWidget;
 use App\Models\PettyCashTransaction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -63,7 +64,7 @@ class EditPettyCash extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Resources\PettyCashes\Widgets\PettyCashStatsWidget::class,
+            PettyCashStatsWidget::class,
         ];
     }
 }

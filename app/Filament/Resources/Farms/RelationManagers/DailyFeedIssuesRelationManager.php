@@ -33,6 +33,7 @@ class DailyFeedIssuesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('date')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['unit', 'feedItem', 'batch', 'warehouse', 'recordedBy']))
             ->columns([
                 TextColumn::make('date')
                     ->label('التاريخ')

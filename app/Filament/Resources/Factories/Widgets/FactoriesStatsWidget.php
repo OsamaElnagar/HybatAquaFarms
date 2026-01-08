@@ -2,9 +2,17 @@
 
 namespace App\Filament\Resources\Factories\Widgets;
 
+use App\Models\Batch;
+use App\Models\BatchPayment;
+use App\Models\ClearingEntry;
 use App\Models\Factory;
+use App\Models\FactoryPayment;
+use App\Models\FeedMovement;
+use App\Models\Voucher;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class FactoriesStatsWidget extends StatsOverviewWidget
 {
@@ -12,17 +20,48 @@ class FactoriesStatsWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $totalFactories = Factory::count();
-        $activeFactories = Factory::where('is_active', true)->count();
+        $data = Cache::remember('factories_stats_widget', 600, function () {
+            $totalFactories = Factory::count();
+            $activeFactories = Factory::where('is_active', true)->count();
 
-        $totalPurchases = Factory::get()->sum(function ($factory) {
-            return $factory->batches()->sum('total_cost') +
-                   $factory->feedMovements()->where('movement_type', 'in')->get()->sum(function ($movement) {
-                       return $movement->quantity * ($movement->feedItem->standard_cost ?? 0);
-                   });
+            $totalSeedPurchases = (float) Batch::whereNotNull('total_cost')->sum('total_cost');
+
+            $totalFeedPurchases = (float) FeedMovement::whereNotNull('factory_id')
+                ->where('movement_type', 'in')
+                ->join('feed_items', 'feed_movements.feed_item_id', '=', 'feed_items.id')
+                ->sum(DB::raw('feed_movements.quantity * feed_items.standard_cost'));
+
+            $totalPurchases = $totalSeedPurchases + $totalFeedPurchases;
+
+            $totalPaidVouchers = (float) Voucher::where('voucher_type', 'payment')
+                ->where('counterparty_type', Factory::class)
+                ->sum('amount');
+
+            $totalPaidFactoryPayments = (float) FactoryPayment::sum('amount');
+            $totalPaidBatchPayments = (float) BatchPayment::sum('amount');
+            $totalSettled = (float) ClearingEntry::whereNotNull('factory_id')->sum('amount');
+
+            $totalPayables = max(
+                0,
+                $totalPurchases
+                - $totalPaidVouchers
+                - $totalPaidFactoryPayments
+                - $totalPaidBatchPayments
+                - $totalSettled
+            );
+
+            return [
+                'totalFactories' => $totalFactories,
+                'activeFactories' => $activeFactories,
+                'totalPurchases' => $totalPurchases,
+                'totalPayables' => $totalPayables,
+            ];
         });
 
-        $totalPayables = Factory::get()->sum(fn ($factory) => $factory->outstanding_balance);
+        $totalFactories = $data['totalFactories'];
+        $activeFactories = $data['activeFactories'];
+        $totalPurchases = $data['totalPurchases'];
+        $totalPayables = $data['totalPayables'];
 
         return [
             Stat::make('إجمالي المصانع/المفرخات', number_format($totalFactories))

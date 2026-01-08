@@ -75,6 +75,14 @@ class BatchResource extends Resource
         return BatchesTable::configure($table);
     }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['farm', 'unit', 'species', 'factory'])
+            ->withSum('batchPayments as total_paid', 'amount')
+            ->withCount('batchPayments as batch_payments_count');
+    }
+
     public static function getRelations(): array
     {
         return [

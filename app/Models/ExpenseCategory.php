@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Observers\ExpenseCategoryObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ExpenseCategory extends Model
 {
     /** @use HasFactory<\Database\Factories\ExpenseCategoryFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'name',

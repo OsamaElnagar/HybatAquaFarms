@@ -4,14 +4,13 @@ namespace App\Models;
 
 use App\Enums\SpeciesType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Species extends Model
 {
     /** @use HasFactory<\Database\Factories\SpeciesFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'name',

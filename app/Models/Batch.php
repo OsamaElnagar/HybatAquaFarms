@@ -7,7 +7,6 @@ use App\Enums\BatchStatus;
 use App\Observers\BatchObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Batch extends Model
 {
     /** @use HasFactory<\Database\Factories\BatchFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'batch_code',
@@ -130,12 +129,34 @@ class Batch extends Model
         return $this->hasMany(PettyCashTransaction::class);
     }
 
-    /**
-     * Calculate total amount paid for this batch.
-     */
+    protected ?float $cachedTotalFeedCost = null;
+
+    protected ?float $cachedAllocatedExpenses = null;
+
+    protected ?float $cachedTotalCycleExpenses = null;
+
+    protected ?float $cachedTotalRevenue = null;
+
+    protected ?float $cachedNetProfit = null;
+
+    protected ?float $cachedProfitMargin = null;
+
     public function getTotalPaidAttribute(): float
     {
+        if (array_key_exists('total_paid', $this->attributes)) {
+            return (float) $this->attributes['total_paid'];
+        }
+
         return (float) $this->batchPayments()->sum('amount');
+    }
+
+    public function getBatchPaymentsCountAttribute(): int
+    {
+        if (array_key_exists('batch_payments_count', $this->attributes)) {
+            return (int) $this->attributes['batch_payments_count'];
+        }
+
+        return (int) $this->batchPayments()->count();
     }
 
     /**
@@ -180,18 +201,15 @@ class Batch extends Model
         return 'danger'; // Not paid or partially paid
     }
 
-    /**
-     * Calculate total feed consumed by this batch (in kg).
-     */
     public function getTotalFeedConsumedAttribute(): float
     {
+        if ($this->relationLoaded('dailyFeedIssues')) {
+            return (float) $this->dailyFeedIssues->sum('quantity');
+        }
+
         return (float) $this->dailyFeedIssues()->sum('quantity');
     }
 
-    /**
-     * Calculate total feed cost for this batch.
-     * Uses average cost from feed stocks at the time of issue.
-     */
     public function getTotalFeedCostAttribute(): float
     {
         // If cycle is closed, return saved value
@@ -202,27 +220,44 @@ class Batch extends Model
             return (float) $this->attributes['total_feed_cost'];
         }
 
-        $totalCost = 0;
-
-        foreach ($this->dailyFeedIssues as $issue) {
-            // Try to get average cost from feed stock
-            $feedStock = FeedStock::where('feed_item_id', $issue->feed_item_id)
-                ->where('feed_warehouse_id', $issue->feed_warehouse_id)
-                ->first();
-
-            $costPerUnit =
-                $feedStock?->average_cost ??
-                ($issue->feedItem?->standard_cost ?? 0);
-            $totalCost += $issue->quantity * $costPerUnit;
+        if ($this->cachedTotalFeedCost !== null) {
+            return $this->cachedTotalFeedCost;
         }
 
-        return (float) $totalCost;
+        $issues = $this->dailyFeedIssues()
+            ->with(['feedItem'])
+            ->get();
+
+        if ($issues->isEmpty()) {
+            $this->cachedTotalFeedCost = 0.0;
+
+            return 0.0;
+        }
+
+        $feedStocks = FeedStock::query()
+            ->whereIn('feed_item_id', $issues->pluck('feed_item_id')->filter()->unique())
+            ->whereIn('feed_warehouse_id', $issues->pluck('feed_warehouse_id')->filter()->unique())
+            ->get()
+            ->keyBy(function ($stock) {
+                return $stock->feed_item_id.'-'.$stock->feed_warehouse_id;
+            });
+
+        $totalCost = 0.0;
+
+        foreach ($issues as $issue) {
+            $key = ($issue->feed_item_id ?? '').'-'.($issue->feed_warehouse_id ?? '');
+            $feedStock = $feedStocks->get($key);
+
+            $costPerUnit = $feedStock?->average_cost ?? ($issue->feedItem?->standard_cost ?? 0);
+
+            $totalCost += (float) $issue->quantity * (float) $costPerUnit;
+        }
+
+        $this->cachedTotalFeedCost = (float) $totalCost;
+
+        return $this->cachedTotalFeedCost;
     }
 
-    /**
-     * Calculate allocated operating expenses for this batch.
-     * Based on batch-specific vouchers and petty cash transactions.
-     */
     public function getAllocatedExpensesAttribute(): float
     {
         // If cycle is closed, return saved value
@@ -233,33 +268,36 @@ class Batch extends Model
             return (float) $this->attributes['total_operating_expenses'];
         }
 
-        // Sum batch-specific vouchers
+        if ($this->cachedAllocatedExpenses !== null) {
+            return $this->cachedAllocatedExpenses;
+        }
+
         $voucherTotal = (float) $this->vouchers()->sum('amount');
 
-        // Sum batch-specific petty cash transactions (expenses only)
         $pettyCashTotal = (float) $this->pettyCashTransactions()
             ->where('type', 'expense')
             ->sum('amount');
 
-        return $voucherTotal + $pettyCashTotal;
+        $this->cachedAllocatedExpenses = $voucherTotal + $pettyCashTotal;
+
+        return $this->cachedAllocatedExpenses;
     }
 
-    /**
-     * Calculate total cycle expenses (hatchery cost + feed + operating expenses).
-     */
     public function getTotalCycleExpensesAttribute(): float
     {
+        if ($this->cachedTotalCycleExpenses !== null) {
+            return $this->cachedTotalCycleExpenses;
+        }
+
         $hatcheryCost = (float) ($this->total_cost ?? 0);
         $feedCost = $this->total_feed_cost;
         $operatingExpenses = $this->allocated_expenses;
 
-        return $hatcheryCost + $feedCost + $operatingExpenses;
+        $this->cachedTotalCycleExpenses = $hatcheryCost + $feedCost + $operatingExpenses;
+
+        return $this->cachedTotalCycleExpenses;
     }
 
-    /**
-     * Calculate total revenue from harvests/sales.
-     * UPDATED: Now uses order_items via orders/sales_orders
-     */
     public function getTotalRevenueAttribute(): float
     {
         // If cycle is closed, return saved value
@@ -270,8 +308,11 @@ class Batch extends Model
             return (float) $this->attributes['total_revenue'];
         }
 
-        // Sum subtotal of all OrderItems belonging to this batch that are part of a SalesOrder
-        return (float) \App\Models\OrderItem::query()
+        if ($this->cachedTotalRevenue !== null) {
+            return $this->cachedTotalRevenue;
+        }
+
+        $this->cachedTotalRevenue = (float) \App\Models\OrderItem::query()
             ->whereHas('order', function ($q) {
                 $q->has('salesOrders') // Must be sold
                     ->whereHas('harvestOperation', function ($hop) {
@@ -279,11 +320,10 @@ class Batch extends Model
                     });
             })
             ->sum('subtotal');
+
+        return $this->cachedTotalRevenue;
     }
 
-    /**
-     * Calculate net profit (revenue - total expenses).
-     */
     public function getNetProfitAttribute(): float
     {
         // If cycle is closed, return saved value
@@ -294,19 +334,30 @@ class Batch extends Model
             return (float) $this->attributes['net_profit'];
         }
 
-        return $this->total_revenue - $this->total_cycle_expenses;
-    }
-
-    /**
-     * Calculate profit margin percentage.
-     */
-    public function getProfitMarginAttribute(): float
-    {
-        if ($this->total_revenue <= 0) {
-            return 0;
+        if ($this->cachedNetProfit !== null) {
+            return $this->cachedNetProfit;
         }
 
-        return ($this->net_profit / $this->total_revenue) * 100;
+        $this->cachedNetProfit = $this->total_revenue - $this->total_cycle_expenses;
+
+        return $this->cachedNetProfit;
+    }
+
+    public function getProfitMarginAttribute(): float
+    {
+        if ($this->cachedProfitMargin !== null) {
+            return $this->cachedProfitMargin;
+        }
+
+        if ($this->total_revenue <= 0) {
+            $this->cachedProfitMargin = 0.0;
+
+            return 0.0;
+        }
+
+        $this->cachedProfitMargin = ($this->net_profit / $this->total_revenue) * 100;
+
+        return $this->cachedProfitMargin;
     }
 
     /**

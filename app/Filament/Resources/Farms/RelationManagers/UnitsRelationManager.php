@@ -16,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UnitsRelationManager extends RelationManager
 {
@@ -31,7 +32,7 @@ class UnitsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('code')
+            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('batches')->withSum('dailyFeedIssues as total_feed_consumed', 'quantity'))
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
@@ -52,14 +53,13 @@ class UnitsRelationManager extends RelationManager
                     ->badge()
                     ->sortable(),
                 TextColumn::make('batches_count')
-                    ->counts('batches')
                     ->label('الدفعات')
                     ->badge()
                     ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
                     ->sortable(),
-                TextColumn::make('feed_consumed')
+                TextColumn::make('total_feed_consumed')
                     ->label('استهلاك العلف (كجم)')
-                    ->state(fn ($record) => number_format($record->getTotalFeedConsumed()))
+                    ->numeric()
                     ->color('info')
                     ->toggleable(),
             ])

@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\DailyFeedIssue;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class FarmDailyFeedConsumptionChart extends ApexChartWidget
@@ -24,65 +25,75 @@ class FarmDailyFeedConsumptionChart extends ApexChartWidget
     {
         $filters = request()->query('filters', []);
         $farmId = $filters['farm_id'] ?? null;
-        $dateStart = Carbon::parse($filters['date_start'] ?? now()->startOfMonth());
-        $dateEnd = Carbon::parse($filters['date_end'] ?? now());
+        $dateStartStr = $filters['date_start'] ?? now()->startOfMonth()->format('Y-m-d');
+        $dateEndStr = $filters['date_end'] ?? now()->format('Y-m-d');
 
-        $query = DailyFeedIssue::query()
-            ->whereDate('date', '>=', $dateStart)
-            ->whereDate('date', '<=', $dateEnd);
+        $cacheKey = "farm_daily_consumption_chart_{$farmId}_{$dateStartStr}_{$dateEndStr}";
 
-        if ($farmId) {
-            $query->where('farm_id', $farmId);
-        }
+        return Cache::remember($cacheKey, 600, function () use ($farmId, $dateStartStr, $dateEndStr) {
+            $dateStart = Carbon::parse($dateStartStr);
+            $dateEnd = Carbon::parse($dateEndStr);
 
-        $data = $query
-            ->selectRaw('date, SUM(quantity) as total_quantity')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+            $query = DailyFeedIssue::query()
+                ->whereDate('date', '>=', $dateStart)
+                ->whereDate('date', '<=', $dateEnd);
 
-        // Map data safely
-        $dataByDate = $data->mapWithKeys(function ($item) {
-            return [$item->date->format('Y-m-d') => $item->total_quantity];
+            if ($farmId) {
+                $query->where('farm_id', $farmId);
+            }
+
+            $data = $query
+                ->selectRaw('date, SUM(quantity) as total_quantity')
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            // Map data safely
+            $dataByDate = $data->mapWithKeys(function ($item) {
+                // Handle both object and string dates
+                $dateKey = is_string($item->date) ? Carbon::parse($item->date)->format('Y-m-d') : $item->date->format('Y-m-d');
+
+                return [$dateKey => $item->total_quantity];
+            });
+
+            $categories = [];
+            $values = [];
+            $period = $dateStart->daysUntil($dateEnd);
+
+            foreach ($period as $date) {
+                $dateStr = $date->format('Y-m-d');
+                $categories[] = $date->format('m/d');
+                $values[] = (float) ($dataByDate[$dateStr] ?? 0);
+            }
+
+            return [
+                'chart' => [
+                    'type' => 'area',
+                    'height' => 300,
+                    'toolbar' => ['show' => false],
+                ],
+                'series' => [
+                    [
+                        'name' => 'الاستهلاك (كجم)',
+                        'data' => $values,
+                    ],
+                ],
+                'xaxis' => [
+                    'categories' => $categories,
+                    'labels' => ['style' => ['fontFamily' => 'inherit']],
+                ],
+                'yaxis' => [
+                    'labels' => ['style' => ['fontFamily' => 'inherit']],
+                ],
+                'colors' => ['#f59e0b'],
+                'stroke' => ['curve' => 'smooth'],
+                'dataLabels' => ['enabled' => false],
+                'tooltip' => [
+                    'y' => [
+                        'formatter' => "function (val) { return val + ' كجم'; }",
+                    ],
+                ],
+            ];
         });
-
-        $categories = [];
-        $values = [];
-        $period = $dateStart->daysUntil($dateEnd);
-
-        foreach ($period as $date) {
-            $dateStr = $date->format('Y-m-d');
-            $categories[] = $date->format('m/d');
-            $values[] = (float) ($dataByDate[$dateStr] ?? 0);
-        }
-
-        return [
-            'chart' => [
-                'type' => 'area',
-                'height' => 300,
-                'toolbar' => ['show' => false],
-            ],
-            'series' => [
-                [
-                    'name' => 'الاستهلاك (كجم)',
-                    'data' => $values,
-                ],
-            ],
-            'xaxis' => [
-                'categories' => $categories,
-                'labels' => ['style' => ['fontFamily' => 'inherit']],
-            ],
-            'yaxis' => [
-                'labels' => ['style' => ['fontFamily' => 'inherit']],
-            ],
-            'colors' => ['#f59e0b'],
-            'stroke' => ['curve' => 'smooth'],
-            'dataLabels' => ['enabled' => false],
-            'tooltip' => [
-                'y' => [
-                    'formatter' => "function (val) { return val + ' كجم'; }",
-                ],
-            ],
-        ];
     }
 }

@@ -34,13 +34,6 @@
       0 => 'CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider',
     ),
   ),
-  'elipzis/laravel-cacheable-model' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'ElipZis\\Cacheable\\CacheableServiceProvider',
-    ),
-  ),
   'filament/actions' => 
   array (
     'providers' => 

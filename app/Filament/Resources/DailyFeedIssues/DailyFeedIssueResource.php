@@ -18,6 +18,11 @@ class DailyFeedIssueResource extends Resource
 {
     protected static ?string $model = DailyFeedIssue::class;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->with(['farm', 'unit', 'feedItem', 'warehouse', 'batch', 'recordedBy']);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     public static function getNavigationGroup(): ?string

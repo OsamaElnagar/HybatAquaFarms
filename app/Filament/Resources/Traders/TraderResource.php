@@ -71,6 +71,26 @@ class TraderResource extends Resource
         return TradersTable::configure($table);
     }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->withSum(
+                [
+                    'salesOrders as pending_sales_total' => fn ($query) => $query
+                        ->whereIn('payment_status', ['pending', 'partial']),
+                ],
+                'net_amount',
+            )
+            ->withSum('clearingEntries as clearing_entries_total', 'amount')
+            ->withSum(
+                [
+                    'vouchers as receipt_vouchers_total' => fn ($query) => $query
+                        ->where('voucher_type', \App\Enums\VoucherType::Receipt),
+                ],
+                'amount',
+            );
+    }
+
     public static function getRelations(): array
     {
         return [

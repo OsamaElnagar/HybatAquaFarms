@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Observers\TraderObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Trader extends Model
 {
     /** @use HasFactory<\Database\Factories\TraderFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'code',
@@ -72,12 +71,23 @@ class Trader extends Model
      */
     public function getOutstandingBalanceAttribute(): float
     {
-        $totalCreditSales = $this->salesOrders()
-            ->whereIn('payment_status', ['pending', 'partial'])
-            ->sum('net_amount');
+        $totalCreditSales = array_key_exists('pending_sales_total', $this->attributes)
+            ? (float) $this->attributes['pending_sales_total']
+            : (float) $this->salesOrders()
+                ->whereIn('payment_status', ['pending', 'partial'])
+                ->sum('net_amount');
 
-        $totalSettled = $this->clearingEntries()->sum('amount')
-            + $this->vouchers()->where('voucher_type', \App\Enums\VoucherType::Receipt)->sum('amount');
+        $clearingTotal = array_key_exists('clearing_entries_total', $this->attributes)
+            ? (float) $this->attributes['clearing_entries_total']
+            : (float) $this->clearingEntries()->sum('amount');
+
+        $receiptVouchersTotal = array_key_exists('receipt_vouchers_total', $this->attributes)
+            ? (float) $this->attributes['receipt_vouchers_total']
+            : (float) $this->vouchers()
+                ->where('voucher_type', \App\Enums\VoucherType::Receipt)
+                ->sum('amount');
+
+        $totalSettled = $clearingTotal + $receiptVouchersTotal;
 
         return (float) max(0, $totalCreditSales - $totalSettled);
     }

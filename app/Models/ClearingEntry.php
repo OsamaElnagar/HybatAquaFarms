@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Observers\ClearingEntryObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ClearingEntry extends Model
 {
     /** @use HasFactory<\Database\Factories\ClearingEntryFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'trader_id',

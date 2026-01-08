@@ -6,6 +6,7 @@ use App\Models\DailyFeedIssue;
 use App\Models\Farm;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 
@@ -24,51 +25,52 @@ class FarmFeedConsumptionStats extends BaseWidget
         $dateStart = $filters['date_start'] ?? now()->startOfMonth()->format('Y-m-d');
         $dateEnd = $filters['date_end'] ?? now()->format('Y-m-d');
 
-        $query = DailyFeedIssue::query();
+        $cacheKey = "farm_feed_stats_{$farmId}_{$dateStart}_{$dateEnd}";
 
-        if ($farmId) {
-            $query->where('farm_id', $farmId);
-        }
+        return Cache::remember($cacheKey, 600, function () use ($farmId, $dateStart, $dateEnd) {
+            $query = DailyFeedIssue::query();
 
-        if ($dateStart) {
-            $query->whereDate('date', '>=', $dateStart);
-        }
+            if ($farmId) {
+                $query->where('farm_id', $farmId);
+            }
 
-        if ($dateEnd) {
-            $query->whereDate('date', '<=', $dateEnd);
-        }
+            if ($dateStart) {
+                $query->whereDate('date', '>=', $dateStart);
+            }
 
-        // Clone query for efficiency
-        $quantityQuery = clone $query;
-        $costQuery = clone $query;
-        $batchesQuery = clone $query;
+            if ($dateEnd) {
+                $query->whereDate('date', '<=', $dateEnd);
+            }
 
-        $totalQuantity = $quantityQuery->sum('quantity');
+            // Consolidate into a single raw query for efficiency
+            $stats = (clone $query)
+                ->selectRaw('SUM(quantity) as total_quantity')
+                ->selectRaw('COUNT(DISTINCT batch_id) as active_batches')
+                ->first();
 
-        // Calculate Cost: Join with feed_items to get standard_cost
-        $totalCost = $costQuery->join('feed_items', 'daily_feed_issues.feed_item_id', '=', 'feed_items.id')
-            ->sum(DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
+            // Calculate Cost: Join with feed_items to get standard_cost
+            $totalCost = (clone $query)
+                ->join('feed_items', 'daily_feed_issues.feed_item_id', '=', 'feed_items.id')
+                ->sum(DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
 
-        $activeBatches = $batchesQuery->distinct('batch_id')->count('batch_id');
+            $farmName = $farmId ? Farm::find($farmId)?->name : 'كل المزارع';
 
-        // Farm Name for context (optional)
-        $farmName = $farmId ? Farm::find($farmId)?->name : 'كل المزارع';
+            return [
+                Stat::make('إجمالي العلف المستهلك', Number::format($stats->total_quantity ?? 0, 2).' كجم')
+                    ->description("للفترة المحددة - {$farmName}")
+                    ->descriptionIcon('heroicon-m-scale')
+                    ->color('primary'),
 
-        return [
-            Stat::make('إجمالي العلف المستهلك', Number::format($totalQuantity, 2).' كجم')
-                ->description("للفترة المحددة - {$farmName}")
-                ->descriptionIcon('heroicon-m-scale')
-                ->color('primary'),
+                Stat::make('تكلفة العلف التقديرية', Number::currency($totalCost, 'EGP'))
+                    ->description('بناءً على التكلفة المعيارية')
+                    ->descriptionIcon('heroicon-m-currency-dollar')
+                    ->color('success'),
 
-            Stat::make('تكلفة العلف التقديرية', Number::currency($totalCost, 'EGP'))
-                ->description('بناءً على التكلفة المعيارية')
-                ->descriptionIcon('heroicon-m-currency-dollar')
-                ->color('success'),
-
-            Stat::make('عدد الدورات النشطة', $activeBatches)
-                ->description('التي تم الصرف لها')
-                ->descriptionIcon('heroicon-m-beaker')
-                ->color('info'),
-        ];
+                Stat::make('عدد الدورات النشطة', $stats->active_batches ?? 0)
+                    ->description('التي تم الصرف لها')
+                    ->descriptionIcon('heroicon-m-beaker')
+                    ->color('info'),
+            ];
+        });
     }
 }

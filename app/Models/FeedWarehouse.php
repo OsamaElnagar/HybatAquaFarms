@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Observers\FeedWarehouseObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class FeedWarehouse extends Model
 {
     /** @use HasFactory<\Database\Factories\FeedWarehouseFactory> */
-    use HasFactory, Cacheable;
+    use HasFactory;
 
     protected $fillable = [
         'farm_id',

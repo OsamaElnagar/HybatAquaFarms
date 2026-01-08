@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use ElipZis\Cacheable\Models\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PettyCash extends Model
 {
     /** @use HasFactory<\Database\Factories\PettyCashFactory> */
-    use Cacheable, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'farm_id',

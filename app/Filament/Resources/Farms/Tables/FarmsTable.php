@@ -32,30 +32,23 @@ class FarmsTable
                     ->badge()
                     ->sortable(),
                 TextColumn::make('units_count')
-                    ->counts('units')
                     ->label('الوحدات')
                     ->badge()
                     ->color('primary')
                     ->sortable(),
                 TextColumn::make('batches_count')
-                    ->counts('batches')
                     ->label('الدفعات')
                     ->badge()
                     ->color('success')
                     ->sortable(),
-                TextColumn::make('active_batches')
+                TextColumn::make('active_batches_count')
                     ->label('دفعات نشطة')
-                    ->state(fn ($record) => $record->active_batches_count)
                     ->badge()
                     ->color('info')
-                    ->sortable(query: function ($query, string $direction) {
-                        return $query->withCount([
-                            'batches as active_batches_count' => fn ($q) => $q->where('status', 'active'),
-                        ])->orderBy('active_batches_count', $direction);
-                    }),
-                TextColumn::make('current_stock')
+                    ->sortable(),
+                TextColumn::make('total_current_stock')
                     ->label('المخزون الحالي')
-                    ->state(fn ($record) => number_format($record->total_current_stock))
+                    ->numeric()
                     ->color('success')
                     ->toggleable(),
                 TextColumn::make('manager.name')
