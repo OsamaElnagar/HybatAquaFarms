@@ -13,8 +13,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationGroup;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -63,26 +61,7 @@ class AdminPanelProvider extends PanelProvider
                 TreasuryTransactions::class,
 
                 SalesTrendChart::class,
-
-                // AccountWidget::class,
-                // FilamentInfoWidget::class,
             ])
-
-            // ->navigationGroups([
-            //     NavigationGroup::make()
-            //         ->label('الأعلاف'),
-
-            //     NavigationGroup::make()
-            //         ->label('العُهد'),
-
-            //     NavigationGroup::make()
-            //         ->label('الحصاد والمبيعات')
-            //         ->collapsible(false), // Cannot be collapsed
-
-            //     NavigationGroup::make()
-            //         ->label('الموارد البشرية')
-            //         ->collapsible(true),
-            // ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -111,8 +90,8 @@ class AdminPanelProvider extends PanelProvider
                         ->mediaPosition(MediaPosition::Cover)
                         ->blur(0)
                     )
-            )
-            ->databaseNotifications()
-            ->databaseNotificationspolling('10000s');
+            );
+            // ->databaseNotifications()
+            // ->databaseNotificationspolling('10000s');
     }
 }
