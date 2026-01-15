@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class DailyFeedIssueForm
@@ -21,27 +22,17 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->relationship('farm', 'name', fn ($query) => $query->active()->latest())
+                            ->relationship('farm', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn (callable $set) => $set('unit_id', null))
+                            ->afterStateUpdated(fn(callable $set) => $set('unit_id', null))
                             ->helperText('يرجى اختيار المزرعة ذات الصلة'),
                         Select::make('unit_id')
                             ->label('الوحدة او الحوض')
-                            ->options(function (callable $get) {
-                                $farmId = $get('farm_id');
-                                if (! $farmId) {
-                                    return [];
-                                }
-
-                                return FarmUnit::query()
-                                    ->where('farm_id', $farmId)
-                                    ->get()
-                                    ->mapWithKeys(fn ($unit) => [$unit->id => $unit->code])
-                                    ->toArray();
-                            })
+                            ->relationship('unit', modifyQueryUsing: fn($query,Get $get) => $query->where('farm_id', $get('farm_id')))
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->code . ' - ' . $record->name)
                             ->searchable()
                             ->preload()
                             ->helperText('اختر وحدة تابعة للمزرعة المختارة (حوض/خزان)'),
@@ -67,7 +58,7 @@ class DailyFeedIssueForm
                             ->helperText('أدخل كمية العلف المصروف بالكيلو جرام'),
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
-                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
                             ->helperText('حدد دفعة الزريعة إذا كانت موجودة'),
                     ])
                     ->columns(2)->columnSpanFull(),
@@ -80,7 +71,7 @@ class DailyFeedIssueForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth('web')->id())
+                            ->default(fn() => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
                         Textarea::make('notes')
                             ->label('ملاحظات')

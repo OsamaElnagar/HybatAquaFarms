@@ -79,7 +79,7 @@ class OrdersRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')

@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->spa()
+            ->spa(hasPrefetching:true)
             ->id('admin')
             ->path('admin')
             ->login()

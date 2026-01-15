@@ -53,7 +53,7 @@ class TransactionsRelationManager extends RelationManager
                 TextInput::make('amount')
                     ->label('المبلغ')
                     ->required()
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    // ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->minValue(0.01)
                     ->step(0.01),
                 Textarea::make('description')

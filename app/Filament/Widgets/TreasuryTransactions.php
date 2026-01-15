@@ -27,7 +27,7 @@ class TreasuryTransactions extends TableWidget
             ->columns([
                 TextColumn::make('journalEntry.date')
                     ->label('التاريخ')
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 TextColumn::make('account.name')
                     ->label('الحساب')

@@ -26,6 +26,10 @@ class FarmUnitForm
                             ->required()
                             ->helperText('اختر المزرعة التي تنتمي إليها هذه الوحدة')
                             ->columnSpan(1),
+                        TextInput::make('name')
+                            ->label('الاسم')
+                            ->helperText('اسم الوحدة (مثال: حوض 1 - شرق)')
+                            ->columnSpan(1),
                         TextInput::make('code')
                             ->label('الكود')
                             ->disabled()

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
             $table->string('code'); // Like "حوض-1" or "POND-A1"
+            $table->string('name')->nullable();
             $table->string('unit_type'); // pond, tank, cage (stored as string, Laravel Enum in code)
             $table->integer('capacity')->nullable();
             $table->string('status')->default('active'); // active, inactive, maintenance

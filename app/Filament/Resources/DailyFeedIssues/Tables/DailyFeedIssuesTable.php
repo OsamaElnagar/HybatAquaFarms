@@ -86,7 +86,7 @@ class DailyFeedIssuesTable
                     ),
                 TextColumn::make('date')
                     ->label('التاريخ')
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 ActionableColumn::make('quantity')
                     ->badge()

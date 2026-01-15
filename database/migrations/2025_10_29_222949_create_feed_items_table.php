@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Factory;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('name');
+            $table->foreignIdFor(Factory::class);
             $table->text('description')->nullable();
             $table->string('unit_of_measure')->default('kg'); // kg, ton, bag
             $table->decimal('standard_cost', 10, 2)->nullable();

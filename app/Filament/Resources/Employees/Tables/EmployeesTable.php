@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatus;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -94,6 +95,18 @@ class EmployeesTable
                     ->label('تاريخ إنهاء الخدمة'),
             ])
             ->recordActions([
+                Action::make('call')
+                    ->label('اتصال')
+                    ->icon('heroicon-m-phone')
+                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
+                    ->hidden(fn ($record) => blank($record->phone)),
+                Action::make('whatsapp')
+                    ->label('واتساب')
+                    ->icon('heroicon-m-chat-bubble-left-right')
+                    ->color('success')
+                    ->url(fn ($record) => $record->phone ? 'https://wa.me/'.preg_replace('/\D+/', '', $record->phone) : null)
+                    ->openUrlInNewTab()
+                    ->hidden(fn ($record) => blank($record->phone)),
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
             ])

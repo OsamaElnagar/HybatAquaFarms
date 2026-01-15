@@ -33,7 +33,7 @@ class DriversTable
                     ->searchable(),
                 TextColumn::make('license_expiry')
                     ->label('انتهاء الرخصة')
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 TextColumn::make('vehicle_type')
                     ->label('نوع المركبة')

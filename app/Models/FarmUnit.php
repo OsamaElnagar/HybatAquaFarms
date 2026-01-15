@@ -19,6 +19,7 @@ class FarmUnit extends Model
     protected $fillable = [
         'farm_id',
         'code',
+        'name',
         'unit_type',
         'capacity',
         'status',

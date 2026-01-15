@@ -27,6 +27,12 @@ class FarmUnitsTable
                     ->copyable()
                     ->copyMessage('تم نسخ الكود')
                     ->label('الكود'),
+                    
+                    TextColumn::make('name')
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('تم نسخ الاسم')
+                    ->label('الاسم'),
                 TextColumn::make('unit_type')
                     ->badge()
                     ->searchable()

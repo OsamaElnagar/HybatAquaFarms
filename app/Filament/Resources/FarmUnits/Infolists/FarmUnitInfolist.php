@@ -17,7 +17,12 @@ class FarmUnitInfolist
                         TextEntry::make('farm.name')
                             ->label('المزرعة')
                             ->columnSpan(1),
-                        TextEntry::make('code')
+                        TextEntry::make('name')
+                            ->label('الاسم')
+                            ->copyable()
+                            ->copyMessage('تم نسخ الاسم')
+                            ->columnSpan(1),
+                            TextEntry::make('code')
                             ->label('الكود')
                             ->copyable()
                             ->copyMessage('تم نسخ الكود')
