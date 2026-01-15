@@ -26,7 +26,7 @@ class FactoriesStatsWidget extends StatsOverviewWidget
 
             $totalSeedPurchases = (float) Batch::whereNotNull('total_cost')->sum('total_cost');
 
-            $totalFeedPurchases = (float) FeedMovement::whereNotNull('factory_id')
+            $totalFeedPurchases = (float) FeedMovement::whereNotNull('feed_movements.factory_id')
                 ->where('movement_type', 'in')
                 ->join('feed_items', 'feed_movements.feed_item_id', '=', 'feed_items.id')
                 ->sum(DB::raw('feed_movements.quantity * feed_items.standard_cost'));

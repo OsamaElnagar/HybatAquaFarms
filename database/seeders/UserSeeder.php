@@ -19,6 +19,13 @@ class UserSeeder extends Seeder
             'user_type' => UserType::Owner,
         ]);
 
+        User::factory()->create([
+            'name' => 'معاذ النجار',
+            'email' => 'mouaz@hybataquafarm.com',
+            'password' => Hash::make('password'),
+            'user_type' => UserType::Owner,
+        ]);
+        
         // Create accountant
         User::factory()->create([
             'name' => 'المحاسب الرئيسي',
