@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -126,34 +126,41 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="aqua-bg flex items-center justify-center min-h-screen sm:pt-0" role="main">
+        <div class="aqua-bg flex items-center justify-center min-h-screen sm:pt-0" role="main" aria-labelledby="error-title">
             <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 w-full">
                 <div class="error-container text-center">
-                    <div class="error-code">
+                    <div class="error-code" aria-hidden="true">
                         @yield('code')
                     </div>
-                    <div class="error-message">
+                    <h1 id="error-title" class="error-message" role="alert">
                         @yield('message')
-                    </div>
+                    </h1>
                     @hasSection('description')
-                        <div class="error-description">
+                        <p class="error-description">
                             @yield('description')
-                        </div>
+                        </p>
                     @endif
                     @hasSection('icon')
-                        <div class="mt-4">
+                        <div class="mt-4" aria-hidden="true">
                             {!! $__env->yieldContent('icon') !!}
                         </div>
                     @endif
-                    @hasSection('action')
-                        <div class="mt-6">
-                            @yield('action')
-                        </div>
-                    @else
-                        <a href="{{ url('/') }}" class="home-link">
-                            🏠 Return to Home
-                        </a>
-                    @endif
+                    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <button type="button"
+                                onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='{{ url('/') }}'; }"
+                                class="home-link">
+                            ← عودة
+                        </button>
+                        @hasSection('action')
+                            <div>
+                                @yield('action')
+                            </div>
+                        @else
+                            <a href="{{ url('/') }}" class="home-link" aria-label="الرجوع إلى الصفحة الرئيسية لمزرعة هيبات المائية">
+                                🏠 الرجوع إلى الرئيسية
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

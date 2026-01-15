@@ -1,7 +1,10 @@
 @extends('errors::minimal')
 
-@section('title', __('Page Not Found'))
+@section('title', __('الصفحة غير موجودة'))
 @section('code', '404')
-@section('message', __('The School Swam Away'))
-@section('description', __('The page you\'re looking for has drifted away like a school of fish. Let\'s reel you back to safety!'))
-@section('icon', '<div class="fish-icon">🐟</div>')
+@section('message', __('السمكة تاهت عن مسارها'))
+@section('description', __('لم نتمكن من العثور على الصفحة التي تبحث عنها. ربما تم نقلها أو لم تعد متاحة.'))
+
+@section('icon')
+    <div class="fish-icon" aria-hidden="true">🐟</div>
+@endsection
