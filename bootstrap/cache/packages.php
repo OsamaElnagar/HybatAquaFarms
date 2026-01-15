@@ -343,4 +343,11 @@
       0 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
     ),
   ),
+  'thecodeholic/laravel-hostinger-deploy' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'TheCodeholic\\LaravelHostingerDeploy\\HostingerDeployServiceProvider',
+    ),
+  ),
 );
