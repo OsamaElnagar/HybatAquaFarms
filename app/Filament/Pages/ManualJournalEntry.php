@@ -24,30 +24,29 @@ class ManualJournalEntry extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-document-plus';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-plus';
+
+    protected string $view = 'filament.pages.manual-journal-entry';
+
+    protected static ?string $title = 'إنشاء قيد يدوي';
+
+    public ?array $data = [];
 
     public static function getNavigationLabel(): string
     {
         return 'قيد يدوي';
     }
 
-    protected static ?string $title = 'إنشاء قيد يدوي';
-
     public static function getNavigationGroup(): ?string
     {
         return 'المحاسبة و المالية';
     }
-
-    protected string $view = 'filament.pages.manual-journal-entry';
-
-    public ?array $data = [];
 
     public function mount(): void
     {
         $this->form->fill([
             'date' => now()->toDateString(),
             'lines' => [
-                ['account_id' => null, 'debit' => 0, 'credit' => 0, 'description' => ''],
                 ['account_id' => null, 'debit' => 0, 'credit' => 0, 'description' => ''],
             ],
         ]);
@@ -82,14 +81,14 @@ class ManualJournalEntry extends Page implements HasForms
                             ->numeric()
                             ->suffix('EGP')
                             ->default(0)
-                            ->reactive(),
+                            ->live(),
 
                         TextInput::make('credit')
                             ->label('دائن')
                             ->numeric()
                             ->default(0)
                             ->suffix('EGP')
-                            ->reactive(),
+                            ->live(),
 
                         TextInput::make('description')
                             ->label('البيان')
@@ -100,13 +99,31 @@ class ManualJournalEntry extends Page implements HasForms
                     ->addActionLabel('إضافة بند')
                     ->reorderable(false)
                     ->collapsible()
-                    ->itemLabel(fn (array $state): ?string => Account::find($state['account_id'])?->name ?? 'بند جديد'
+                    ->itemLabel(
+                        fn (array $state): ?string => Account::find($state['account_id'])?->name ?? 'بند جديد'
                     ),
 
-                ViewField::make('totals')
-                    ->view('filament.forms.components.journal-entry-totals'),
+                // ViewField::make('totals')
+                //     ->view('filament.forms.components.journal-entry-totals'),
             ])
             ->statePath('data');
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('create')
+                ->label('حفظ القيد')
+                ->color('primary')
+                ->icon('heroicon-o-check')
+                ->submit('create'),
+
+            Action::make('reset')
+                ->label('إعادة تعيين')
+                ->action('resetForm')
+                ->color('gray')
+                ->icon('heroicon-o-arrow-path'),
+        ];
     }
 
     public function create(): void
@@ -139,21 +156,15 @@ class ManualJournalEntry extends Page implements HasForms
 
         try {
             DB::transaction(function () use ($data) {
-                // Generate entry number
-                $lastEntry = JournalEntry::latest('id')->first();
-                $number = $lastEntry ? ((int) substr($lastEntry->entry_number, 3)) + 1 : 1;
-                $entryNumber = 'JE-'.str_pad($number, 6, '0', STR_PAD_LEFT);
-
                 // Create journal entry
                 $entry = JournalEntry::create([
-                    'entry_number' => $entryNumber,
                     'date' => $data['date'],
                     'description' => $data['description'] ?? 'قيد يدوي',
                     'is_posted' => true,
                     'posted_by' => auth('web')->id(),
                     'posted_at' => now(),
                     'source_type' => self::class,
-                    'source_id' => 0, // Manual entry
+                    'source_id' => 0,
                 ]);
 
                 // Create journal lines
@@ -177,7 +188,7 @@ class ManualJournalEntry extends Page implements HasForms
                 ->send();
 
             // Reset form
-            $this->mount();
+            $this->resetForm();
         } catch (\Exception $e) {
             Notification::make()
                 ->title('خطأ')
@@ -187,13 +198,8 @@ class ManualJournalEntry extends Page implements HasForms
         }
     }
 
-    protected function getFormActions(): array
+    public function resetForm(): void
     {
-        return [
-            Action::make('create')
-                ->label('حفظ القيد')
-                ->action('create')
-                ->color('success'),
-        ];
+        $this->mount();
     }
 }

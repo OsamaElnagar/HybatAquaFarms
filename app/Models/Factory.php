@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\FactoryType;
 use App\Observers\FactoryObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +20,7 @@ class Factory extends Model
     protected $fillable = [
         'code',
         'name',
+        'type',
         'contact_person',
         'phone',
         'phone2',
@@ -32,6 +35,7 @@ class Factory extends Model
     {
         return [
             'is_active' => 'boolean',
+            'type' => FactoryType::class,
         ];
     }
 
@@ -63,6 +67,11 @@ class Factory extends Model
     public function batchPayments(): HasMany
     {
         return $this->hasMany(BatchPayment::class);
+    }
+
+    public function feedItems(): HasMany
+    {
+        return $this->hasMany(FeedItem::class);
     }
 
     /**
@@ -103,5 +112,17 @@ class Factory extends Model
         $totalSettled = $this->clearingEntries()->sum('amount');
 
         return (float) max(0, $totalPurchases - $totalPaidVouchers - $totalPaidFactoryPayments - $totalPaidBatchPayments - $totalSettled);
+    }
+
+    #[Scope]
+    public function feedFactory($query)
+    {
+        return $query->where('type', FactoryType::FEEDS);
+    }
+
+    #[Scope]
+    public function seedFactory($query)
+    {
+        return $query->where('type', FactoryType::SEEDS);
     }
 }

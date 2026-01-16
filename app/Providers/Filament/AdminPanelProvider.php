@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->spa(hasPrefetching:true)
+            ->spa(hasPrefetching: true)
             ->id('admin')
             ->path('admin')
             ->login()
@@ -91,7 +91,7 @@ class AdminPanelProvider extends PanelProvider
                         ->blur(0)
                     )
             );
-            // ->databaseNotifications()
-            // ->databaseNotificationspolling('10000s');
+        // ->databaseNotifications()
+        // ->databaseNotificationspolling('10000s');
     }
 }

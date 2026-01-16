@@ -2,9 +2,11 @@
 
 namespace App\Enums;
 
+use BackedEnum;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Illuminate\Contracts\Support\Htmlable;
 
 enum UnitType: string implements HasColor, HasIcon, HasLabel
 {
@@ -12,7 +14,7 @@ enum UnitType: string implements HasColor, HasIcon, HasLabel
     case Tank = 'tank';
     case Cage = 'cage';
 
-    public function getLabel(): ?string
+    public function getLabel(): string|Htmlable|null
     {
         return match ($this) {
             self::Pond => 'حوض',
@@ -30,7 +32,7 @@ enum UnitType: string implements HasColor, HasIcon, HasLabel
         };
     }
 
-    public function getIcon(): ?string
+    public function getIcon(): string|BackedEnum|Htmlable|null
     {
         return match ($this) {
             self::Pond => 'heroicon-o-cube-transparent',

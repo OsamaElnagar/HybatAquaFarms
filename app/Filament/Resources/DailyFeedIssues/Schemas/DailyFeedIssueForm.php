@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\DailyFeedIssues\Schemas;
 
-use App\Models\FarmUnit;
+use App\Models\FeedStock;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -22,17 +22,18 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->relationship('farm', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
+                            ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn(callable $set) => $set('unit_id', null))
+                            ->afterStateUpdated(fn (callable $set) => $set('unit_id', null))
                             ->helperText('يرجى اختيار المزرعة ذات الصلة'),
                         Select::make('unit_id')
                             ->label('الوحدة او الحوض')
-                            ->relationship('unit', modifyQueryUsing: fn($query,Get $get) => $query->where('farm_id', $get('farm_id')))
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->code . ' - ' . $record->name)
+                            ->required()
+                            ->relationship('unit', modifyQueryUsing: fn ($query, Get $get) => $query->where('farm_id', $get('farm_id')))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->code.' - '.$record->name)
                             ->searchable()
                             ->preload()
                             ->helperText('اختر وحدة تابعة للمزرعة المختارة (حوض/خزان)'),
@@ -55,10 +56,28 @@ class DailyFeedIssueForm
                             ->label('الكمية (كجم)')
                             ->required()
                             ->numeric()
+                            ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $warehouseId = $get('feed_warehouse_id');
+                                $itemId = $get('feed_item_id');
+
+                                if (! $warehouseId || ! $itemId || $value === null || $value === '') {
+                                    return;
+                                }
+
+                                $quantity = (float) $value;
+
+                                $stock = FeedStock::where('feed_warehouse_id', $warehouseId)
+                                    ->where('feed_item_id', $itemId)
+                                    ->first();
+
+                                if (! $stock || (float) $stock->quantity_in_stock < $quantity) {
+                                    $fail('الكمية المصروفة أكبر من الرصيد المتوفر في المخزن لهذا الصنف.');
+                                }
+                            })
                             ->helperText('أدخل كمية العلف المصروف بالكيلو جرام'),
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
-                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                             ->helperText('حدد دفعة الزريعة إذا كانت موجودة'),
                     ])
                     ->columns(2)->columnSpanFull(),
@@ -71,7 +90,7 @@ class DailyFeedIssueForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn() => auth('web')->id())
+                            ->default(fn () => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
                         Textarea::make('notes')
                             ->label('ملاحظات')

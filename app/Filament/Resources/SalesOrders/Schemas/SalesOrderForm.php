@@ -42,9 +42,9 @@ class SalesOrderForm
                             ->columnSpan(1),
                         Select::make('harvest_operation_id')
                             ->label('عملية الحصاد')
-                            ->relationship('harvestOperation', 
-                            'operation_number',
-                             modifyQueryUsing: fn ($query) => $query->with('farm')->latest())
+                            ->relationship('harvestOperation',
+                                'operation_number',
+                                modifyQueryUsing: fn ($query) => $query->with('farm')->latest())
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_display_name)
                             ->required()
                             ->searchable()

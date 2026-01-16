@@ -6,6 +6,7 @@ use App\Observers\FeedItemObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ObservedBy([FeedItemObserver::class])]
@@ -17,6 +18,7 @@ class FeedItem extends Model
     protected $fillable = [
         'code',
         'name',
+        'factory_id',
         'description',
         'unit_of_measure',
         'standard_cost',
@@ -45,5 +47,10 @@ class FeedItem extends Model
     public function dailyFeedIssues(): HasMany
     {
         return $this->hasMany(DailyFeedIssue::class);
+    }
+
+    public function factory(): BelongsTo
+    {
+        return $this->belongsTo(Factory::class);
     }
 }

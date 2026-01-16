@@ -6,6 +6,7 @@ use App\Enums\FeedMovementType;
 use App\Models\DailyFeedIssue;
 use App\Models\FeedMovement;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class DailyFeedIssueObserver
 {
@@ -67,9 +68,10 @@ class DailyFeedIssueObserver
 
         $quantity = (float) $issue->quantity;
 
-        // Check if sufficient stock exists
         if (! $stock || (float) $stock->quantity_in_stock < $quantity) {
-            throw new \Exception('Insufficient stock for daily feed issue');
+            throw ValidationException::withMessages([
+                'quantity' => 'Insufficient stock for daily feed issue',
+            ]);
         }
 
         $unitCode = $issue->unit?->code ?? 'وحدة';

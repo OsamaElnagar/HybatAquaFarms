@@ -138,7 +138,7 @@ class BatchForm
                                     ->label('تكلفة الوحدة')
                                     ->numeric()
                                     ->suffix(' EGP ')
-                                    ->step(0.01)
+                                    ->step(0.001)
                                     ->minValue(0)
                                     ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
@@ -154,7 +154,7 @@ class BatchForm
                                     ->label('التكلفة الإجمالية')
                                     ->numeric()
                                     ->suffix(' EGP ')
-                                    ->step(0.01)
+                                    ->step(0.001)
                                     ->disabled()
                                     ->dehydrated()
                                     ->helperText('يتم حسابها تلقائياً (الكمية × تكلفة الوحدة)')

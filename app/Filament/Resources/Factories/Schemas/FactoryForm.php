@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Factories\Schemas;
 
+use App\Enums\FactoryType;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -22,6 +24,11 @@ class FactoryForm
                     ->label('الاسم')
                     ->required()
                     ->helperText('أدخل الاسم الكامل للمصنع'),
+                Select::make(name: 'type')
+                    ->label('نوع المصنع')
+                    ->options(FactoryType::class)
+                    ->required()
+                    ->helperText('اختر نوع المصنع (مفرخ أو اعلاف)'),
                 TextInput::make('contact_person')
                     ->label('الشخص المسؤول')
                     ->helperText('اسم الشخص المسؤول عن التواصل مع المصنع'),

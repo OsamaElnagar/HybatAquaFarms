@@ -11,19 +11,13 @@ class FactorySeeder extends Seeder
     {
         // Feed factories
         $feedFactories = [
-            ['code' => 'FAC-HUS', 'name' => 'مصنع الحسيني للأعلاف'],
-            ['code' => 'FAC-DOA', 'name' => 'مصنع الدعاء للأعلاف'],
-            ['code' => 'FAC-SAL', 'name' => 'مصنع سلامة للأعلاف'],
-            ['code' => 'FAC-BDR', 'name' => 'مصنع البدر للأعلاف'],
+            ['name' => 'مصنع الحسين للأعلاف'],
+            ['name' => 'مصنع الدعاء للأعلاف'],
         ];
 
         // Batch suppliers (hatcheries)
         $hatcheries = [
-            ['code' => 'HAT-ABD', 'name' => 'مفرخة عبدالله للزريعة'],
-            ['code' => 'HAT-NAD', 'name' => 'مفرخة النادي للزريعة'],
-            ['code' => 'HAT-ALI', 'name' => 'مفرخة علي للزريعة'],
-            ['code' => 'HAT-MOH', 'name' => 'مفرخة محمد للزريعة'],
-            ['code' => 'HAT-ELK', 'name' => 'مفرخة الكرمة للزريعة'],
+            ['name' => 'مفرخة عبدالله للزريعة'],
         ];
 
         $allFactories = array_merge($feedFactories, $hatcheries);

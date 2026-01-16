@@ -1,10 +1,14 @@
 <x-filament-panels::page>
-    {{ $this->form }}
-
-     <button type="submit">
-            Submit
-        </button>
+    <form wire:submit="create">
         
+            {{ $this->form }}
+            <div class="mt-6 flex justify-start rtl:justify-end gap-x-3">
+               <x-filament::button type="submit">
+                    حفظ
+                </x-filament::button>
+            </div>
+        </form>
+
     <x-filament::section class="mt-6">
         <x-slot name="heading">
             💡 كيفية إدخال الأرصدة الافتتاحية
@@ -18,17 +22,15 @@
                 <li>حدد تاريخ بدء التشغيل (تاريخ الأرصدة الافتتاحية)</li>
                 <li>أضف بنود القيد لكل حساب برصيده الحالي:
                     <ul class="mt-2">
-                        <li><strong>الأصول</strong> (النقدية، المخزون، الذمم المدينة) → <span
-                                class="text-success-600">مدين</span></li>
-                        <li><strong>الخصوم</strong> (الذمم الدائنة، القروض) → <span class="text-danger-600">دائن</span>
-                        </li>
+                        <li><strong>الأصول</strong> (النقدية، المخزون، الذمم المدينة) → <span class="text-success-600">مدين</span></li>
+                        <li><strong>الخصوم</strong> (الذمم الدائنة، القروض) → <span class="text-danger-600">دائن</span></li>
                     </ul>
                 </li>
                 <li>أضف بند الموازنة في حساب "أرصدة افتتاحية" (3900)</li>
                 <li>تأكد من تساوي إجمالي المدين مع إجمالي الدائن</li>
             </ol>
 
-            <div class="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <div class="mt-4 p-4 rounded-lg">
                 <p class="text-sm font-semibold mb-2">مثال:</p>
                 <table class="text-sm w-full">
                     <thead>

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FeedItems\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -21,6 +22,12 @@ class FeedItemForm
                 TextInput::make('name')
                     ->label('الاسم')
                     ->required(),
+                Select::make('factory_id')
+                    ->label('المصنع')
+                    ->relationship('factory', 'name')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
                 Textarea::make('description')
                     ->label('الوصف')
                     ->columnSpanFull(),
@@ -33,6 +40,7 @@ class FeedItemForm
                     ->numeric(),
                 Toggle::make('is_active')
                     ->label('نشط')
+                    ->default(true)
                     ->required(),
                 Textarea::make('notes')
                     ->label('ملاحظات')

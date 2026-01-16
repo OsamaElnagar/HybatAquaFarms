@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable  implements FilamentUser
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -59,7 +59,7 @@ class User extends Authenticatable  implements FilamentUser
     {
         return str_ends_with($this->email, '@hybataquafarm.com') && $this->hasVerifiedEmail();
     }
-    
+
     /**
      * Get the user's initials
      */

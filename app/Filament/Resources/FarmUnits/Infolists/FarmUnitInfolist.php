@@ -22,7 +22,7 @@ class FarmUnitInfolist
                             ->copyable()
                             ->copyMessage('تم نسخ الاسم')
                             ->columnSpan(1),
-                            TextEntry::make('code')
+                        TextEntry::make('code')
                             ->label('الكود')
                             ->copyable()
                             ->copyMessage('تم نسخ الكود')

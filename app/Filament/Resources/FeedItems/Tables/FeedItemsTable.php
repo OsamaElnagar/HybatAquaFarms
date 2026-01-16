@@ -25,6 +25,9 @@ class FeedItemsTable
                     ->label('الاسم')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('factory.name')
+                    ->label('المصنع')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('unit_of_measure')
                     ->label('وحدة القياس')
                     ->searchable()

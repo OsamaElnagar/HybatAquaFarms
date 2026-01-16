@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('date');
             $table->decimal('quantity', 12, 3);
             $table->foreignId('factory_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete();
             $table->text('description')->nullable();
             $table->foreignId('recorded_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

@@ -29,7 +29,7 @@ class FarmUnitSeeder extends Seeder
             if (rand(1, 3) === 1) {
                 FarmUnit::create([
                     'farm_id' => $farm->id,
-                    'name' =>$farm->code,
+                    'name' => $farm->code,
                     'unit_type' => UnitType::Tank,
                     'capacity' => rand(2000, 5000),
                     'status' => 'active',

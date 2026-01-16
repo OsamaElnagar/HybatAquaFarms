@@ -32,13 +32,13 @@ class ListFeedMovements extends ListRecords
     public function getTabs(): array
     {
         $tabs = [
-            'all' => Tab::make('الكل'),
+            'all' => Tab::make('الكل')->icon('heroicon-m-rectangle-stack'),
         ];
 
         foreach (FeedMovementType::cases() as $movementType) {
             $tabs[$movementType->value] = Tab::make($movementType->getLabel())->modifyQueryUsing(function (Builder $query) use ($movementType) {
                 return $query->where('movement_type', $movementType->value);
-            });
+            })->icon($movementType->getIcon());
         }
 
         return $tabs;

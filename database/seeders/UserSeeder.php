@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'user_type' => UserType::Owner,
         ]);
-        
+
         // Create accountant
         User::factory()->withoutTwoFactor()->create([
             'name' => 'المحاسب',

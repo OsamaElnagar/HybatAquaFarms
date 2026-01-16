@@ -43,6 +43,15 @@ class FeedMovementForm
                             ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::In->value)
                             ->helperText('مطلوب للحركات الواردة (In)')
                             ->columnSpan(1),
+                        Select::make('driver_id')
+                            ->label('السائق')
+                            ->relationship('driver', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In->value)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::In->value)
+                            ->helperText('السائق الذي قام بتسليم العلف للحركات الواردة (In)')
+                            ->columnSpan(1),
                         Select::make('feed_item_id')
                             ->label('صنف العلف')
                             ->relationship('feedItem', 'name')

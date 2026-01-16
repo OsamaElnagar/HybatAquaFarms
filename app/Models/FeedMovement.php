@@ -23,6 +23,7 @@ class FeedMovement extends Model
         'date',
         'quantity',
         'factory_id',
+        'driver_id',
         'description',
         'recorded_by',
     ];
@@ -59,5 +60,10 @@ class FeedMovement extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(Driver::class);
     }
 }

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AccountSeeder::class,
             SpeciesSeeder::class,
+            FactorySeeder::class,
             FeedItemSeeder::class,
             ExpenseCategorySeeder::class,
 
