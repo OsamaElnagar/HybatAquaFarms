@@ -21,40 +21,40 @@ class DatabaseSeeder extends Seeder
             ExpenseCategorySeeder::class,
 
             // Farm structure
-            FarmSeeder::class,
-            FarmUnitSeeder::class,
-            FeedWarehouseSeeder::class,
+            // FarmSeeder::class,
+            // FarmUnitSeeder::class,
+            // FeedWarehouseSeeder::class,
 
-            // Partners & People
-            EmployeeSeeder::class,
-            TraderSeeder::class,
-            FactorySeeder::class,
-            DriverSeeder::class,
+            // // Partners & People
+            // EmployeeSeeder::class,
+            // TraderSeeder::class,
+            // FactorySeeder::class,
+            // DriverSeeder::class,
 
-            // Transactions (PostingRuleSeeder must run before operations that create accounting entries)
+            // // Transactions (PostingRuleSeeder must run before operations that create accounting entries)
             PostingRuleSeeder::class,
 
-            // Operations
-            PettyCashSeeder::class,
-            BatchSeeder::class,
-            BatchMovementSeeder::class,
-            FeedStockSeeder::class,
+            // // Operations
+            // PettyCashSeeder::class,
+            // BatchSeeder::class,
+            // BatchMovementSeeder::class,
+            // FeedStockSeeder::class,
             VoucherSeeder::class,
 
-            // Harvesting (order matters!)
-            HarvestOperationSeeder::class, // Must come before HarvestSeeder
-            HarvestSeeder::class,          // Creates harvests, units, and boxes
-            BoxSeeder::class,              // Create Box Types (needed for Orders)
-            OrderSeeder::class,            // Creates orders utilizing harvests and boxes
-            SalesOrderSeeder::class,       // Assigns orders to sales receipts
+            // // Harvesting (order matters!)
+            // HarvestOperationSeeder::class, // Must come before HarvestSeeder
+            // HarvestSeeder::class,          // Creates harvests, units, and boxes
+            // BoxSeeder::class,              // Create Box Types (needed for Orders)
+            // OrderSeeder::class,            // Creates orders utilizing harvests and boxes
+            // SalesOrderSeeder::class,       // Assigns orders to sales receipts
 
-            // Other operations
-            EmployeeAdvanceSeeder::class,
-            SalaryRecordSeeder::class,
-            FeedMovementSeeder::class,
-            DailyFeedIssueSeeder::class,
-            FactoryPaymentSeeder::class,
-            BatchPaymentSeeder::class,
+            // // Other operations
+            // EmployeeAdvanceSeeder::class,
+            // SalaryRecordSeeder::class,
+            // FeedMovementSeeder::class,
+            // DailyFeedIssueSeeder::class,
+            // FactoryPaymentSeeder::class,
+            // BatchPaymentSeeder::class,
         ]);
     }
 }
