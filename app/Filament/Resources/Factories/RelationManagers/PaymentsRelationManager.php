@@ -36,8 +36,7 @@ class PaymentsRelationManager extends RelationManager
                     ->default(now()),
                 TextInput::make('amount')
                     ->label('المبلغ')
-                    ->required()
-                    ->money('EGP', locale: 'en', decimalPlaces: 0),
+                    ->required()                   ,
                 Select::make('payment_method')
                     ->label('طريقة الدفع')
                     ->options(PaymentMethod::class)
