@@ -5,7 +5,10 @@ namespace App\Filament\Resources\Vouchers\Schemas;
 use App\Enums\CounterpartyType;
 use App\Enums\PaymentMethod;
 use App\Enums\VoucherType;
+use App\Models\Account;
+use App\Models\Batch;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -27,7 +30,17 @@ class VoucherForm
                 Select::make('batch_id')
                     ->label('دفعة الزريعه')
                     ->relationship('batch', 'batch_code')
-                    ->required(),
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, ?int $state) {
+                        if ($state) {
+                            $batch = Batch::find($state);
+                            if ($batch) {
+                                $set('farm_id', $batch->farm_id);
+                            }
+                        }
+                    }),
                 Select::make('voucher_type')
                     ->label('نوع السند')
                     ->options(VoucherType::class)
@@ -45,11 +58,11 @@ class VoucherForm
                     ->options(CounterpartyType::class)
                     ->inline()
                     ->live()
-                    ->afterStateUpdated(fn (Set $set) => $set('counterparty_id', null))
+                    ->afterStateUpdated(fn(Set $set) => $set('counterparty_id', null))
                     ->required(),
                 Select::make('counterparty_id')
                     ->label(
-                        fn (Get $get) => $get('counterparty_type')
+                        fn(Get $get) => $get('counterparty_type')
                             ? $get('counterparty_type')->getLabel()
                             : 'اختر نوع الطرف الآخر أولاً'
                     )
@@ -68,21 +81,44 @@ class VoucherForm
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->visible(fn (Get $get) => filled($get('counterparty_type'))),
+                    ->visible(fn(Get $get) => filled($get('counterparty_type'))),
 
                 Select::make('treasury_account_id')
                     ->label('الخزنة / البنك')
-                    ->relationship('treasuryAccount', 'name', fn ($query, $get) => $query
+                    ->relationship('treasuryAccount', 'name', fn($query, Get $get) => $query
                         ->where('is_treasury', true)
-                        ->when($get('farm_id'), fn ($q) => $q->where('farm_id', $get('farm_id'))))
+                        ->when($get('farm_id'), fn ($q) => $q->where(function ($q2) use ($get) {
+                            $q2->where('farm_id', $get('farm_id'))
+                               ->orWhereNull('farm_id');
+                        })))
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, ?int $state) {
+                        if ($state) {
+                            $account = Account::find($state);
+                            if ($account) {
+                                $set('farm_id', $account->farm_id);
+                            }
+                        }
+                    })
                     ->required()
                     ->preload()
                     ->searchable(),
                 Select::make('account_id')
                     ->label('حساب البند (مصروف/إيراد/عميل)')
-                    ->relationship('account', 'name', fn ($query, $get) => $query
-                        ->where('is_treasury', false)
-                        ->when($get('farm_id'), fn ($q) => $q->where('farm_id', $get('farm_id'))))
+                    ->options(function (Get $get) {
+                        $query = Account::query()
+                            // ->where('is_treasury', false)
+                            ->where('is_active', true);
+                        $farmId = $get('farm_id');
+                        if ($farmId) {
+                            $query->where(function ($q) use ($farmId) {
+                                $q->where('farm_id', $farmId)
+                                  ->orWhereNull('farm_id');
+                            });
+                        }
+                        return $query->orderBy('name')->pluck('name', 'id')->toArray();
+                    })
+                    ->live()
                     ->required()
                     ->preload()
                     ->searchable(),
@@ -98,9 +134,8 @@ class VoucherForm
                     ->label('طريقة الدفع'),
                 TextInput::make('reference_number')
                     ->label('رقم المرجع'),
-                TextInput::make('created_by')
-                    ->label('أنشأ بواسطة')
-                    ->numeric(),
+                Hidden::make('created_by')
+                    ->default(auth('web')->id()),
                 Textarea::make('notes')
                     ->label('ملاحظات')
                     ->columnSpanFull(),

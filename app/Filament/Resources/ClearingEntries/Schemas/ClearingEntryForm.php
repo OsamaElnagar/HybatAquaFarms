@@ -5,10 +5,10 @@ namespace App\Filament\Resources\ClearingEntries\Schemas;
 use App\Models\Factory;
 use App\Models\Trader;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
 class ClearingEntryForm
@@ -31,9 +31,9 @@ class ClearingEntryForm
                     ->searchable()
                     ->preload()
                     ->disabled(fn ($record) => $record?->journal_entry_id !== null),
-                Placeholder::make('trader_balance')
+                TextEntry::make('trader_balance')
                     ->label('رصيد التاجر المستحق')
-                    ->content(function ($get) {
+                    ->state(function ($get) {
                         $traderId = $get('trader_id');
                         if ($traderId) {
                             $trader = Trader::find($traderId);
@@ -58,9 +58,9 @@ class ClearingEntryForm
                     ->searchable()
                     ->preload()
                     ->disabled(fn ($record) => $record?->journal_entry_id !== null),
-                Placeholder::make('factory_balance')
+                TextEntry::make('factory_balance')
                     ->label('رصيد المصنع المستحق عليه')
-                    ->content(function ($get) {
+                    ->state(function ($get) {
                         $factoryId = $get('factory_id');
                         if ($factoryId) {
                             $factory = Factory::find($factoryId);

@@ -30,17 +30,17 @@
                 <li>تأكد من تساوي إجمالي المدين مع إجمالي الدائن</li>
             </ol>
 
-            <div class="mt-4 p-4 rounded-lg">
+            <div class="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
                 <p class="text-sm font-semibold mb-2">مثال:</p>
                 <table class="text-sm w-full">
                     <thead>
-                        <tr class="border-b">
+                        <tr class="border-b border-gray-300 dark:border-gray-600">
                             <th class="text-left py-1">الحساب</th>
                             <th class="text-right py-1">مدين</th>
                             <th class="text-right py-1">دائن</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         <tr>
                             <td class="py-1">النقدية بالصندوق (1110)</td>
                             <td class="text-right">50,000</td>
@@ -59,9 +59,9 @@
                         <tr class="font-bold">
                             <td class="py-1">أرصدة افتتاحية (3900)</td>
                             <td class="text-right">-</td>
-                            <td class="text-right text-primary-600">55,000</td>
+                            <td class="text-right text-primary-600 dark:text-primary-400">55,000</td>
                         </tr>
-                        <tr class="border-t-2 font-bold">
+                        <tr class="border-t-2 border-gray-300 dark:border-gray-600 font-bold">
                             <td class="py-1">الإجمالي</td>
                             <td class="text-right">70,000</td>
                             <td class="text-right">70,000</td>

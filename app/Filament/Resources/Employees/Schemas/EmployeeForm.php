@@ -75,6 +75,7 @@ class EmployeeForm
                         TextInput::make('basic_salary')
                             ->label('المرتب الشهري')
                             ->numeric()
+                            ->required()
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')

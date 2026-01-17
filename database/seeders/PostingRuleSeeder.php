@@ -27,6 +27,7 @@ class PostingRuleSeeder extends Seeder
 
             ['event_key' => 'employee.advance', 'debit' => '1150', 'credit' => '1120', 'description' => 'سُلفة موظف من العهدة'],
             ['event_key' => 'employee.advance.repayment', 'debit' => '5210', 'credit' => '1150', 'description' => 'خصم سُلفة من المرتب'],
+            ['event_key' => 'salary.payment', 'debit' => '5210', 'credit' => '1110', 'description' => 'صرف مرتبات وأجور'],
 
             ['event_key' => 'settlement.trader_to_factory', 'debit' => '2110', 'credit' => '1140', 'description' => 'تسوية تاجر↔مصنع'],
 

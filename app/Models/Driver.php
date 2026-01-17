@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Driver extends Model
@@ -35,5 +36,10 @@ class Driver extends Model
     public function vouchers(): MorphMany
     {
         return $this->morphMany(Voucher::class, 'counterparty');
+    }
+
+    public function feedMovements(): HasMany
+    {
+        return $this->hasMany(FeedMovement::class);
     }
 }

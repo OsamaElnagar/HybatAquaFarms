@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Domain\Accounting\PostingService;
 use App\Models\FactoryPayment;
+use Illuminate\Support\Facades\Log;
 
 class FactoryPaymentObserver
 {
@@ -34,7 +35,7 @@ class FactoryPaymentObserver
             ]);
         } catch (\Exception $e) {
             // If posting rule doesn't exist, log but don't fail
-            \Log::warning('Failed to post factory payment accounting entry: '.$e->getMessage());
+            Log::warning('Failed to post factory payment accounting entry: '.$e->getMessage());
         }
     }
 

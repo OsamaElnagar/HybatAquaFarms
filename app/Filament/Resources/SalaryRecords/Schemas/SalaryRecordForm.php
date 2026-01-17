@@ -14,6 +14,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Operation;
 
 class SalaryRecordForm
 {
@@ -31,8 +32,7 @@ class SalaryRecordForm
                             ->required()
                             ->helperText('اختر الموظف الذي يتم إعداد كشف المرتب له')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
-                            ->disabled(fn (Get $get) => filled($get('employee_id')))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->columnSpan(1),
                         DatePicker::make('pay_period_start')
                             ->label('بداية الفترة')
@@ -42,7 +42,7 @@ class SalaryRecordForm
                             ->native(false)
                             ->helperText('تاريخ بداية فترة الإستحقاق')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
                                     $employeeId = (int) $get('employee_id');
@@ -53,11 +53,8 @@ class SalaryRecordForm
                                         return;
                                     }
 
-                                    $currentId = request()->route('record');
-
-                                    $overlaps = SalaryRecord::query()
+                                    $overlapCount = SalaryRecord::query()
                                         ->where('employee_id', $employeeId)
-                                        ->when($currentId, fn ($q) => $q->where('id', '!=', $currentId))
                                         ->where(function ($q) use ($start, $end) {
                                             $q->whereBetween('pay_period_start', [$start, $end])
                                                 ->orWhereBetween('pay_period_end', [$start, $end])
@@ -66,13 +63,13 @@ class SalaryRecordForm
                                                         ->where('pay_period_end', '>=', $end);
                                                 });
                                         })
-                                        ->exists();
+                                        ->count();
 
-                                    if ($overlaps) {
+                                    if ($overlapCount > 0) {
                                         $fail('يوجد سجل مرتب آخر لنفس الموظف يتداخل مع هذه الفترة.');
                                     }
                                 };
-                            })
+                            }, Operation::class === Operation::Create)
                             ->columnSpan(1),
                         DatePicker::make('pay_period_end')
                             ->label('نهاية الفترة')
@@ -83,7 +80,7 @@ class SalaryRecordForm
                             ->rule('after_or_equal:pay_period_start')
                             ->helperText('تاريخ نهاية فترة الإستحقاق')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
                                     $employeeId = (int) $get('employee_id');
@@ -94,11 +91,8 @@ class SalaryRecordForm
                                         return;
                                     }
 
-                                    $currentId = request()->route('record');
-
-                                    $overlaps = SalaryRecord::query()
+                                    $overlapCount = SalaryRecord::query()
                                         ->where('employee_id', $employeeId)
-                                        ->when($currentId, fn ($q) => $q->where('id', '!=', $currentId))
                                         ->where(function ($q) use ($start, $end) {
                                             $q->whereBetween('pay_period_start', [$start, $end])
                                                 ->orWhereBetween('pay_period_end', [$start, $end])
@@ -107,13 +101,13 @@ class SalaryRecordForm
                                                         ->where('pay_period_end', '>=', $end);
                                                 });
                                         })
-                                        ->exists();
+                                        ->count();
 
-                                    if ($overlaps) {
+                                    if ($overlapCount > 0) {
                                         $fail('يوجد سجل مرتب آخر لنفس الموظف يتداخل مع هذه الفترة.');
                                     }
                                 };
-                            })
+                            }, Operation::class === Operation::Create)
                             ->columnSpan(1),
                         TextInput::make('unpaid_days')
                             ->label('أيام غير مدفوعة')
@@ -122,7 +116,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(1)
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->helperText('أيام يتم خصمها من الحساب (غياب/إجازة غير مدفوعة)')
                             ->columnSpan(1),
                         TextInput::make('per_day_rate')
@@ -151,7 +145,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(0.01)
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('الراتب الأساسي قبل الإضافات والخصومات')
                             ->columnSpan(1),
                         TextInput::make('bonuses')
@@ -162,7 +156,7 @@ class SalaryRecordForm
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('أي مكافآت أو حوافز إضافية')
                             ->columnSpan(1),
                         TextInput::make('deductions')
@@ -173,7 +167,7 @@ class SalaryRecordForm
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('الخصومات: غياب، تأخير، جزاءات ...')
                             ->columnSpan(1),
                         TextInput::make('advances_deducted')
@@ -184,7 +178,7 @@ class SalaryRecordForm
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->reactive()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('مبالغ السُلف التي تم خصمها من مرتب هذا الشهر')
                             ->columnSpan(1),
                         TextInput::make('net_salary')
@@ -197,7 +191,7 @@ class SalaryRecordForm
                             ->dehydrated()
                             ->reactive()
                             ->helperText('يتم احتسابه تلقائياً: الأساسي + المكافآت - الخصومات - السُلف')
-                            ->afterStateHydrated(fn ($state, Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateHydrated(fn($state, Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->columnSpan(1),
                     ])
                     ->columns(2)
@@ -229,7 +223,7 @@ class SalaryRecordForm
                             ->options(SalaryStatus::class)
                             ->native(false)
                             ->required()
-                            ->default(SalaryStatus::PENDING)
+                            ->default(SalaryStatus::PAID)
                             ->helperText('الحالة الحالية لسجل المرتب')
                             ->columnSpan(1),
                         Textarea::make('notes')
