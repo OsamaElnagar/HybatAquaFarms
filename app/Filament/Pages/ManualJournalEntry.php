@@ -32,9 +32,7 @@ class ManualJournalEntry extends Page implements HasForms
 
     public ?array $data = [];
 
-    
-    public static bool  $shouldRegisterNavigation = false;
-
+    public static bool $shouldRegisterNavigation = false;
 
     public static function getNavigationLabel(): string
     {

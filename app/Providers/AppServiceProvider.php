@@ -3,14 +3,14 @@
 namespace App\Providers;
 
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Facades\Health;
 
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -40,16 +40,14 @@ class AppServiceProvider extends ServiceProvider
             // ->defaultPaginationPageOption(20);
         });
 
-        // if (config('app.debug')) {
-        //     DB::listen(function ($query) {
-        //         Log::info(
-        //             $query->sql,
-        //             [
-        //                 'bindings' => $query->bindings,
-        //                 'time' => $query->time,
-        //             ]
-        //         );
-        //     });
-        // }
+        // Override the method globally for all Create pages
+        CreateRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
+            return true;
+        });
+
+        // Override the method globally for all Edit pages
+        EditRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
+            return true;
+        });
     }
 }

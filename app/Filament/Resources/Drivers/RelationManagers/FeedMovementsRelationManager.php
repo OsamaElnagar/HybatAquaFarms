@@ -67,4 +67,3 @@ class FeedMovementsRelationManager extends RelationManager
             ->toolbarActions([]);
     }
 }
-

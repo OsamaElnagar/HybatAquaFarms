@@ -9,6 +9,7 @@ use App\Models\Farm;
 use App\Models\JournalEntry;
 use App\Models\JournalLine;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class TreasuryService
@@ -216,6 +217,36 @@ class TreasuryService
 
         return [
             'date' => $date,
+            'incoming' => $totalIncoming,
+            'outgoing' => $totalOutgoing,
+            'net' => $totalIncoming - $totalOutgoing,
+        ];
+    }
+
+    public function getMonthlySummary(?Farm $farm = null, ?string $month = null): array
+    {
+        $base = $month ? Carbon::parse($month) : now();
+        $startDate = $base->copy()->startOfMonth()->toDateString();
+        $endDate = $base->copy()->endOfMonth()->toDateString();
+
+        $query = JournalLine::query()
+            ->whereHas('account', function ($q) {
+                $q->where('is_treasury', true);
+            })
+            ->whereHas('journalEntry', function ($q) use ($startDate, $endDate) {
+                $q->whereDate('date', '>=', $startDate)
+                    ->whereDate('date', '<=', $endDate);
+            });
+
+        if ($farm) {
+            $query->where('farm_id', $farm->id);
+        }
+
+        $totalIncoming = (float) $query->sum('debit');
+        $totalOutgoing = (float) $query->sum('credit');
+
+        return [
+            'month' => $base->format('Y-m'),
             'incoming' => $totalIncoming,
             'outgoing' => $totalOutgoing,
             'net' => $totalIncoming - $totalOutgoing,

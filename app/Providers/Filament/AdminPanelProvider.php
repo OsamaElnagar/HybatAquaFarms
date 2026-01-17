@@ -28,10 +28,24 @@ use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+
+        // Override the method globally for all Create pages
+        CreateRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
+            return true;
+        });
+
+        // Override the method globally for all Edit pages
+        EditRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
+            return true;
+        });
+
         return $panel
             ->default()
             ->spa(hasPrefetching: true)
@@ -85,13 +99,27 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugin(
                 AuthDesignerPlugin::make()
-                    ->login(fn (AuthPageConfig $config) => $config
-                        ->media(asset('assets/images/pexel-waterfall.mp4'))
-                        ->mediaPosition(MediaPosition::Cover)
-                        ->blur(0)
+                    ->login(
+                        fn(AuthPageConfig $config) => $config
+                            ->media(asset('assets/images/pexel-waterfall.mp4'))
+                            ->mediaPosition(MediaPosition::Cover)
+                            ->blur(0)
                     )
             );
         // ->databaseNotifications()
         // ->databaseNotificationspolling('10000s');
+    }
+
+    public function boot(): void
+    {
+        // Override the method globally for all Create pages
+        CreateRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
+            return true;
+        });
+
+        // Override the method globally for all Edit pages
+        EditRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
+            return true;
+        });
     }
 }

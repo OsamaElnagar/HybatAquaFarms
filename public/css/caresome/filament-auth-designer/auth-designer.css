@@ -34,6 +34,8 @@
 .fi-auth-media-wrapper {
     position: absolute;
     inset: 0;
+    user-select: none;
+    pointer-events: none;
 }
 
 .fi-auth-media {
@@ -80,7 +82,11 @@
 
 .fi-auth-layout.media-left .fi-auth-media-overlay,
 .fi-auth-layout.media-right .fi-auth-media-overlay {
-    background: linear-gradient(to top, color-mix(in srgb, var(--gray-900) 50%, transparent), transparent);
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--gray-900) 50%, transparent),
+        transparent
+    );
     backdrop-filter: blur(var(--ad-blur, 0px));
 }
 
@@ -138,12 +144,20 @@
 }
 
 .fi-auth-layout.media-top .fi-auth-media-overlay {
-    background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--gray-900) 30%, transparent));
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        color-mix(in srgb, var(--gray-900) 30%, transparent)
+    );
     backdrop-filter: blur(var(--ad-blur, 0px));
 }
 
 .fi-auth-layout.media-bottom .fi-auth-media-overlay {
-    background: linear-gradient(to top, transparent, color-mix(in srgb, var(--gray-900) 30%, transparent));
+    background: linear-gradient(
+        to top,
+        transparent,
+        color-mix(in srgb, var(--gray-900) 30%, transparent)
+    );
     backdrop-filter: blur(var(--ad-blur, 0px));
 }
 
@@ -183,7 +197,7 @@
 }
 
 .fi-auth-layout.media-cover .fi-auth-media-section {
-    position: fixed;
+    position: absolute;
     inset: 0;
     z-index: 0;
 }

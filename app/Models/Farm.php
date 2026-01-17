@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 #[ObservedBy([FarmObserver::class])]
 class Farm extends Model
@@ -60,6 +61,11 @@ class Farm extends Model
     public function pettyCash(): HasMany
     {
         return $this->hasMany(PettyCash::class);
+    }
+
+    public function pettyCashTransactions(): HasManyThrough
+    {
+        return $this->hasManyThrough(PettyCashTransaction::class, PettyCash::class, 'farm_id', 'petty_cash_id');
     }
 
     public function vouchers(): HasMany

@@ -90,9 +90,10 @@ class FarmResource extends Resource
     {
         return [
 
+            RelationManagers\PettyCashTransactionsRelationManager::class,
+            RelationManagers\DailyFeedIssuesRelationManager::class,
             RelationManagers\UnitsRelationManager::class,
             RelationManagers\BatchesRelationManager::class,
-            RelationManagers\DailyFeedIssuesRelationManager::class,
         ];
     }
 

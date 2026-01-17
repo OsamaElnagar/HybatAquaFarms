@@ -25,8 +25,7 @@ class ClearingEntryResource extends Resource
         return 'المحاسبة و المالية';
     }
 
-    public static bool  $shouldRegisterNavigation = false;
-
+    public static bool $shouldRegisterNavigation = false;
 
     public static function getNavigationLabel(): string
     {
