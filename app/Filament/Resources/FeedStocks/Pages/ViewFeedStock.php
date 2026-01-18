@@ -23,4 +23,9 @@ class ViewFeedStock extends ViewRecord
     {
         return FeedStockInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

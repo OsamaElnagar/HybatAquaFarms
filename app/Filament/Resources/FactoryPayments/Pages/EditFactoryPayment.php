@@ -16,4 +16,9 @@ class EditFactoryPayment extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

@@ -23,4 +23,9 @@ class ViewBatchMovement extends ViewRecord
     {
         return BatchMovementInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

@@ -23,4 +23,9 @@ class ViewDailyFeedIssue extends ViewRecord
     {
         return DailyFeedIssueInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

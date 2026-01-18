@@ -110,4 +110,9 @@ class ViewEmployee extends ViewRecord
     {
         return EmployeeInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

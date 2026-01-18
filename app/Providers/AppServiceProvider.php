@@ -3,14 +3,12 @@
 namespace App\Providers;
 
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Facades\Health;
-
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\EditRecord;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        Model::automaticallyEagerLoadRelationships();
+
         Health::checks([
             OptimizedAppCheck::new(),
             DebugModeCheck::new(),
@@ -38,16 +39,6 @@ class AppServiceProvider extends ServiceProvider
                 ->striped();
             // ->deferLoading()
             // ->defaultPaginationPageOption(20);
-        });
-
-        // Override the method globally for all Create pages
-        CreateRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
-            return true;
-        });
-
-        // Override the method globally for all Edit pages
-        EditRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
-            return true;
         });
     }
 }

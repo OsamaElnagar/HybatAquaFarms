@@ -73,6 +73,11 @@ class Farm extends Model
         return $this->hasMany(Voucher::class);
     }
 
+    public function externalCalculations(): HasMany
+    {
+        return $this->hasMany(ExternalCalculation::class);
+    }
+
     public function salesOrders(): HasMany
     {
         return $this->hasMany(SalesOrder::class);

@@ -17,6 +17,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الأصول',
                 'type' => AccountType::Asset,
                 'is_active' => true,
+                'is_treasury' => false,
             ]
         );
 
@@ -26,6 +27,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الأصول المتداولة',
                 'type' => AccountType::Asset,
                 'parent_id' => $assets->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -57,6 +59,7 @@ class AccountSeeder extends Seeder
                 'name' => 'مخزون الأعلاف',
                 'type' => AccountType::Asset,
                 'parent_id' => $assets->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -66,6 +69,7 @@ class AccountSeeder extends Seeder
                 'name' => 'مخزون الزريعة',
                 'type' => AccountType::Asset,
                 'parent_id' => $assets->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -75,6 +79,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الذمم المدينة - التجار',
                 'type' => AccountType::Asset,
                 'parent_id' => $assets->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -84,6 +89,7 @@ class AccountSeeder extends Seeder
                 'name' => 'سلف الموظفين',
                 'type' => AccountType::Asset,
                 'parent_id' => $assets->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -94,6 +100,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الخصوم',
                 'type' => AccountType::Liability,
                 'is_active' => true,
+                'is_treasury' => false,
             ]
         );
 
@@ -103,6 +110,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الخصوم المتداولة',
                 'type' => AccountType::Liability,
                 'parent_id' => $liabilities->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -112,6 +120,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الذمم الدائنة - المصانع',
                 'type' => AccountType::Liability,
                 'parent_id' => $liabilities->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -121,6 +130,7 @@ class AccountSeeder extends Seeder
                 'name' => 'المرتبات المستحقة',
                 'type' => AccountType::Liability,
                 'parent_id' => $liabilities->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -131,6 +141,7 @@ class AccountSeeder extends Seeder
                 'name' => 'حقوق الملكية',
                 'type' => AccountType::Equity,
                 'is_active' => true,
+                'is_treasury' => false,
             ]
         );
 
@@ -140,6 +151,7 @@ class AccountSeeder extends Seeder
                 'name' => 'رأس المال',
                 'type' => AccountType::Equity,
                 'parent_id' => $equity->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -150,6 +162,7 @@ class AccountSeeder extends Seeder
                 'type' => AccountType::Equity,
                 'parent_id' => $equity->id,
                 'description' => 'حساب الأرصدة الافتتاحية - يستخدم عند بدء تشغيل النظام',
+                'is_treasury' => false,
             ]
         );
 
@@ -160,6 +173,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الإيرادات',
                 'type' => AccountType::Income,
                 'is_active' => true,
+                'is_treasury' => false,
             ]
         );
 
@@ -169,6 +183,7 @@ class AccountSeeder extends Seeder
                 'name' => 'مبيعات الأسماك',
                 'type' => AccountType::Income,
                 'parent_id' => $income->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -179,6 +194,7 @@ class AccountSeeder extends Seeder
                 'name' => 'المصروفات',
                 'type' => AccountType::Expense,
                 'is_active' => true,
+                'is_treasury' => false,
             ]
         );
 
@@ -188,6 +204,7 @@ class AccountSeeder extends Seeder
                 'name' => 'تكلفة البضاعة المباعة',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -197,6 +214,7 @@ class AccountSeeder extends Seeder
                 'name' => 'تكلفة الأعلاف',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -206,6 +224,7 @@ class AccountSeeder extends Seeder
                 'name' => 'مصروفات التشغيل',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -215,6 +234,7 @@ class AccountSeeder extends Seeder
                 'name' => 'المرتبات والأجور',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -224,6 +244,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الصيانة والإصلاحات',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -233,6 +254,7 @@ class AccountSeeder extends Seeder
                 'name' => 'الكهرباء والماء',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -242,6 +264,7 @@ class AccountSeeder extends Seeder
                 'name' => 'النقل والمواصلات',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
 
@@ -251,6 +274,7 @@ class AccountSeeder extends Seeder
                 'name' => 'مصروفات عمومية',
                 'type' => AccountType::Expense,
                 'parent_id' => $expenses->id,
+                'is_treasury' => false,
             ]
         );
     }

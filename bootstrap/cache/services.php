@@ -69,9 +69,8 @@
     65 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
     66 => 'TheCodeholic\\LaravelHostingerDeploy\\HostingerDeployServiceProvider',
     67 => 'App\\Providers\\AppServiceProvider',
-    68 => 'App\\Providers\\FilamentServiceProvider',
-    69 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    70 => 'App\\Providers\\FortifyServiceProvider',
+    68 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    69 => 'App\\Providers\\FortifyServiceProvider',
   ),
   'eager' => 
   array (
@@ -128,9 +127,8 @@
     50 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
     51 => 'TheCodeholic\\LaravelHostingerDeploy\\HostingerDeployServiceProvider',
     52 => 'App\\Providers\\AppServiceProvider',
-    53 => 'App\\Providers\\FilamentServiceProvider',
-    54 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    55 => 'App\\Providers\\FortifyServiceProvider',
+    53 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    54 => 'App\\Providers\\FortifyServiceProvider',
   ),
   'deferred' => 
   array (

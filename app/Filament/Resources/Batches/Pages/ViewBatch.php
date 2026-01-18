@@ -117,4 +117,9 @@ class ViewBatch extends ViewRecord
     {
         return BatchInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

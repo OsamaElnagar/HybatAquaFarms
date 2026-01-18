@@ -30,4 +30,9 @@ class ViewSalesOrder extends ViewRecord
     {
         return SalesOrderInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

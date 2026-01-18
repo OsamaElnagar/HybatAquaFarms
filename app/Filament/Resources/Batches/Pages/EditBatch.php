@@ -24,4 +24,9 @@ class EditBatch extends EditRecord
             BatchPaymentSummaryWidget::class,
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

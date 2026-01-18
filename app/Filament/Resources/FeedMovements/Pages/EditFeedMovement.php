@@ -38,4 +38,9 @@ class EditFeedMovement extends EditRecord
 
         return $data;
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

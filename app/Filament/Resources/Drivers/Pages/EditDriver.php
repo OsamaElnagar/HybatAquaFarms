@@ -16,4 +16,9 @@ class EditDriver extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

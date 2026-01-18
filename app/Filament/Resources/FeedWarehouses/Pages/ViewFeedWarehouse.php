@@ -16,4 +16,9 @@ class ViewFeedWarehouse extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

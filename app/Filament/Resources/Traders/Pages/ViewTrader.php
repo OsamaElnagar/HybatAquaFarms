@@ -23,4 +23,9 @@ class ViewTrader extends ViewRecord
     {
         return TraderInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

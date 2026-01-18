@@ -16,4 +16,9 @@ class EditBox extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

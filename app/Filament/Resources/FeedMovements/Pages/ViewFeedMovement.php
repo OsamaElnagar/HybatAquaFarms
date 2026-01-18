@@ -24,4 +24,9 @@ class ViewFeedMovement extends ViewRecord
     {
         return FeedMovementInfolist::configure($schema);
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

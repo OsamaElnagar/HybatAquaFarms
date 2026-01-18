@@ -31,4 +31,9 @@ class ViewFarmUnit extends ViewRecord
             FeedConsumptionWidget::class,
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }

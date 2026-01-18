@@ -20,43 +20,43 @@ class EditPettyCash extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('replenish')
-                ->label('تزويد سريع')
-                ->icon('heroicon-o-plus-circle')
-                ->color('success')
-                ->schema([
-                    DatePicker::make('date')
-                        ->label('التاريخ')
-                        ->required()
-                        ->default(now()),
-                    TextInput::make('amount')
-                        ->label('المبلغ')
-                        ->required()
-                        ->numeric()
-                        ->suffix(' EGP ')
-                        ->minValue(0.01)
-                        ->step(0.01),
-                    Textarea::make('description')
-                        ->label('الوصف')
-                        ->required()
-                        ->default('تزويد العهدة')
-                        ->maxLength(500),
-                ])
-                ->action(function (array $data): void {
-                    PettyCashTransaction::create([
-                        'petty_cash_id' => $this->record->id,
-                        'date' => $data['date'],
-                        'direction' => 'in',
-                        'amount' => $data['amount'],
-                        'description' => $data['description'],
-                        'recorded_by' => Auth::id(),
-                    ]);
+            // Action::make('replenish')
+            //     ->label('تزويد سريع')
+            //     ->icon('heroicon-o-plus-circle')
+            //     ->color('success')
+            //     ->schema([
+            //         DatePicker::make('date')
+            //             ->label('التاريخ')
+            //             ->required()
+            //             ->default(now()),
+            //         TextInput::make('amount')
+            //             ->label('المبلغ')
+            //             ->required()
+            //             ->numeric()
+            //             ->suffix(' EGP ')
+            //             ->minValue(0.01)
+            //             ->step(0.01),
+            //         Textarea::make('description')
+            //             ->label('الوصف')
+            //             ->required()
+            //             ->default('تزويد العهدة')
+            //             ->maxLength(500),
+            //     ])
+            //     ->action(function (array $data): void {
+            //         PettyCashTransaction::create([
+            //             'petty_cash_id' => $this->record->id,
+            //             'date' => $data['date'],
+            //             'direction' => 'in',
+            //             'amount' => $data['amount'],
+            //             'description' => $data['description'],
+            //             'recorded_by' => Auth::id(),
+            //         ]);
 
-                    $this->dispatch('replenishment-created');
-                })
-                ->successNotificationTitle('تم التزويد بنجاح')
-                ->modalHeading('تزويد العهدة')
-                ->modalSubmitActionLabel('تزويد'),
+            //         $this->dispatch('replenishment-created');
+            //     })
+            //     ->successNotificationTitle('تم التزويد بنجاح')
+            //     ->modalHeading('تزويد العهدة')
+            //     ->modalSubmitActionLabel('تزويد'),
             DeleteAction::make(),
         ];
     }
@@ -66,5 +66,10 @@ class EditPettyCash extends EditRecord
         return [
             PettyCashStatsWidget::class,
         ];
+    }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
     }
 }

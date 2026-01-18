@@ -28,25 +28,11 @@ use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\EditRecord;
-
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-
-        // Override the method globally for all Create pages
-        CreateRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
-            return true;
-        });
-
-        // Override the method globally for all Edit pages
-        EditRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
-            return true;
-        });
-
-        return $panel
+    return $panel
             ->default()
             ->spa(hasPrefetching: true)
             ->id('admin')
@@ -108,18 +94,5 @@ class AdminPanelProvider extends PanelProvider
             );
         // ->databaseNotifications()
         // ->databaseNotificationspolling('10000s');
-    }
-
-    public function boot(): void
-    {
-        // Override the method globally for all Create pages
-        CreateRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
-            return true;
-        });
-
-        // Override the method globally for all Edit pages
-        EditRecord::macro('hasCombinedRelationManagerTabsWithContent', function () {
-            return true;
-        });
     }
 }

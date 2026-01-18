@@ -31,4 +31,9 @@ class ViewPettyCash extends ViewRecord
             PettyCashStatsWidget::class,
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
 }
