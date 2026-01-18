@@ -21,7 +21,7 @@ class TreasuryTransactions extends TableWidget
             ->query(
                 \App\Models\JournalLine::query()
                     ->whereHas('account', fn ($q) => $q->where('is_treasury', true))
-                    ->with(['account', 'journalEntry.source'])
+                    ->with(['account', 'journalEntry'])
                     ->orderBy('created_at', 'desc')
             )
             ->columns([

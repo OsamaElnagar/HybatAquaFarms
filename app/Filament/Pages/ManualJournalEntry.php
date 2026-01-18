@@ -32,7 +32,7 @@ class ManualJournalEntry extends Page implements HasForms
 
     public ?array $data = [];
 
-    public static bool $shouldRegisterNavigation = false;
+    public static bool $shouldRegisterNavigation = true;
 
     public static function getNavigationLabel(): string
     {
@@ -136,17 +136,16 @@ class ManualJournalEntry extends Page implements HasForms
         $totalDebit = collect($data['lines'])->sum('debit');
         $totalCredit = collect($data['lines'])->sum('credit');
 
-        if (abs($totalDebit - $totalCredit) > 0.01) {
-            Notification::make()
-                ->title('خطأ في التوازن')
-                ->body("إجمالي المدين ({$totalDebit}) لا يساوي إجمالي الدائن ({$totalCredit})")
-                ->danger()
-                ->send();
+        // if (abs($totalDebit - $totalCredit) > 0.01) {
+        //     Notification::make()
+        //         ->title('خطأ في التوازن')
+        //         ->body("إجمالي المدين ({$totalDebit}) لا يساوي إجمالي الدائن ({$totalCredit})")
+        //         ->danger()
+        //         ->send();
+        //     return;
+        // }
 
-            return;
-        }
-
-        if ($totalDebit == 0 || $totalCredit == 0) {
+        if ($totalDebit == 0 && $totalCredit == 0) {
             Notification::make()
                 ->title('خطأ')
                 ->body('يجب إدخال مبالغ في القيد')
