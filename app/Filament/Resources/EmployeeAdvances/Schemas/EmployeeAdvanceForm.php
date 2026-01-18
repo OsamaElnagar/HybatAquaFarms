@@ -9,6 +9,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class EmployeeAdvanceForm
@@ -48,6 +50,8 @@ class EmployeeAdvanceForm
                             ->minValue(0.01)
                             ->step(0.01)
                             ->suffix(' EGP ')
+                            ->afterStateUpdated(fn (Set $set, Get $get) => $set('balance_remaining', $get('amount')))
+                            ->live(true)
                             ->helperText('قيمة السلفة الإجمالية')
                             ->columnSpan(1),
                         Textarea::make('reason')
@@ -66,25 +70,28 @@ class EmployeeAdvanceForm
                             ->options(AdvanceApprovalStatus::class)
                             ->native(false)
                             ->required()
+                            ->default(AdvanceApprovalStatus::APPROVED)
                             ->helperText('حالة طلب السلفة الحالية')
                             ->columnSpan(1),
-                        Select::make('approved_by')
-                            ->label('وافق بواسطة')
-                            ->relationship('approvedBy', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->helperText('المستخدم الذي وافق على السلفة (إن وُجد)')
-                            ->columnSpan(1),
+                        // Select::make('approved_by')
+                        //     ->label('وافق بواسطة')
+                        //     ->relationship('approvedBy', 'name')
+                        //     ->searchable()
+                        //     ->preload()
+                        //     ->helperText('المستخدم الذي وافق على السلفة (إن وُجد)')
+                        //     ->columnSpan(1),
                         DatePicker::make('approved_date')
                             ->label('تاريخ الموافقة')
                             ->displayFormat('Y-m-d')
                             ->native(false)
                             ->helperText('يُملأ بعد الموافقة على السلفة')
+                             ->default(now())
                             ->columnSpan(1),
                         DatePicker::make('disbursement_date')
                             ->label('تاريخ الصرف')
                             ->displayFormat('Y-m-d')
                             ->native(false)
+                             ->default(now())
                             ->helperText('التاريخ الذي تم فيه صرف السلفة فعلياً')
                             ->columnSpan(1),
                     ])

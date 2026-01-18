@@ -39,7 +39,7 @@ class AdvancesRelationManager extends RelationManager
                     ->label('تاريخ الطلب')
                     ->date('Y-m-d')
                     ->sortable(),
-                TextColumn::make('amount_paid')
+                TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable(),

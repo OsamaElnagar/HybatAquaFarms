@@ -28,6 +28,7 @@ class EmployeeAdvancesTable
                 TextColumn::make('advance_number')
                     ->label('رقم السلفة')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('employee.name')
                     ->label('الموظف')

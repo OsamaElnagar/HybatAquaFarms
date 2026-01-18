@@ -31,7 +31,7 @@ class SalaryRecordForm
                             ->preload()
                             ->required()
                             ->helperText('اختر الموظف الذي يتم إعداد كشف المرتب له')
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->columnSpan(1),
                         DatePicker::make('pay_period_start')
@@ -41,7 +41,7 @@ class SalaryRecordForm
                             ->displayFormat('Y-m-d')
                             ->native(false)
                             ->helperText('تاريخ بداية فترة الإستحقاق')
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
@@ -79,7 +79,7 @@ class SalaryRecordForm
                             ->native(false)
                             ->rule('after_or_equal:pay_period_start')
                             ->helperText('تاريخ نهاية فترة الإستحقاق')
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
@@ -115,7 +115,7 @@ class SalaryRecordForm
                             ->default(0)
                             ->minValue(0)
                             ->step(1)
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->helperText('أيام يتم خصمها من الحساب (غياب/إجازة غير مدفوعة)')
                             ->columnSpan(1),
@@ -156,7 +156,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('أي مكافآت أو حوافز إضافية')
                             ->columnSpan(1),
@@ -167,7 +167,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('الخصومات: غياب، تأخير، جزاءات ...')
                             ->columnSpan(1),
@@ -178,7 +178,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
-                            ->reactive()
+                            ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('مبالغ السُلف التي تم خصمها من مرتب هذا الشهر')
                             ->columnSpan(1),
@@ -190,7 +190,7 @@ class SalaryRecordForm
                             ->suffix(' EGP ')
                             ->disabled()
                             ->dehydrated()
-                            ->reactive()
+                            ->live(true)
                             ->helperText('يتم احتسابه تلقائياً: الأساسي + المكافآت - الخصومات - السُلف')
                             ->afterStateHydrated(fn ($state, Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->columnSpan(1),
