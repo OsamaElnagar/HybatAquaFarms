@@ -27,12 +27,13 @@ use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-    return $panel
+        return $panel
             ->default()
             ->spa(hasPrefetching: true)
             ->id('admin')
@@ -82,6 +83,13 @@ class AdminPanelProvider extends PanelProvider
                 FilamentAbyssThemePlugin::make(),
                 FilamentApexChartsPlugin::make(),
                 GlobalSearchModalPlugin::make(),
+                FilamentLogViewer::make()->authorize(fn() => auth('web')->check())
+                    ->navigationGroup('اعدادات النظام')
+                    ->navigationIcon('heroicon-o-document-text')
+                    ->navigationLabel('Log Viewer')
+                    ->navigationSort(10)
+                    ->navigationUrl('/logs')
+                    ->pollingTime(null),
             ])
             ->plugin(
                 AuthDesignerPlugin::make()
