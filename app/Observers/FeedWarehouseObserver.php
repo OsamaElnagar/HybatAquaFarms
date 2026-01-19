@@ -20,9 +20,16 @@ class FeedWarehouseObserver
             ->latest('id')
             ->first();
 
-        $number = $lastUnit ? ((int) substr($lastUnit->code, 5)) + 1 : 1;
+        if ($lastUnit && preg_match('/(\d+)$/', $lastUnit->code, $matches)) {
+            $number = (int) $matches[1] + 1;
+        } else {
+            $number = 1;
+        }
 
-        return 'WAREHOUSE-'.str_pad($number, 3, '0', STR_PAD_LEFT);
+        // Ensure farm is loaded to get the code
+        $farmCode = $unit->farm ? $unit->farm->code : 'FARM';
+
+        return $farmCode . '-WH-' . str_pad($number, 3, '0', STR_PAD_LEFT);
     }
 
     /**
