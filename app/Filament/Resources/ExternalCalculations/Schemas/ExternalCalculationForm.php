@@ -4,14 +4,12 @@ namespace App\Filament\Resources\ExternalCalculations\Schemas;
 
 use App\Enums\AccountType;
 use App\Enums\ExternalCalculationType;
-use App\Models\Account;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class ExternalCalculationForm
@@ -22,8 +20,7 @@ class ExternalCalculationForm
             ->components([
                 Select::make('farm_id')
                     ->label('المزرعة')
-                    ->relationship('farm', 'name')
-                    ,
+                    ->relationship('farm', 'name'),
                 DatePicker::make('date')
                     ->label('التاريخ')
                     ->required(),
@@ -37,7 +34,7 @@ class ExternalCalculationForm
                     ->relationship('treasuryAccount', 'name', fn ($query, Get $get) => $query
                         ->where('is_treasury', true)
                         // ->when($get('farm_id'), fn ($q) => $q->where('farm_id', $get('farm_id')))
-                        )
+                    )
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -52,6 +49,7 @@ class ExternalCalculationForm
                         } else {
                             $query->whereNull('id');
                         }
+
                         return $query;
                     })
                     ->searchable()

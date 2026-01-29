@@ -28,6 +28,7 @@ class BatchMovementSeeder extends Seeder
         }
 
         foreach ($batches as $batch) {
+            $batchUnitId = $batch->units->first()?->id;
             $entryDate = $batch->entry_date ?? now()->subDays(rand(30, 180));
             $currentQuantity = $batch->initial_quantity;
             $daysSinceEntry = now()->diffInDays($entryDate);
@@ -37,7 +38,7 @@ class BatchMovementSeeder extends Seeder
                 'batch_id' => $batch->id,
                 'movement_type' => MovementType::Entry,
                 'to_farm_id' => $batch->farm_id,
-                'to_unit_id' => $batch->unit_id,
+                'to_unit_id' => $batchUnitId,
                 'quantity' => $batch->initial_quantity,
                 'weight' => $batch->initial_quantity * ($batch->initial_weight_avg ?? 0) / 1000, // Convert to kg
                 'date' => $entryDate,
@@ -68,7 +69,7 @@ class BatchMovementSeeder extends Seeder
                     'batch_id' => $batch->id,
                     'movement_type' => MovementType::Mortality,
                     'from_farm_id' => $batch->farm_id,
-                    'from_unit_id' => $batch->unit_id,
+                    'from_unit_id' => $batchUnitId,
                     'quantity' => $mortalityQuantity,
                     'weight' => $mortalityQuantity * ($batch->current_weight_avg ?? 0) / 1000,
                     'date' => $mortalityDate,
@@ -112,7 +113,7 @@ class BatchMovementSeeder extends Seeder
                         'batch_id' => $batch->id,
                         'movement_type' => MovementType::Transfer,
                         'from_farm_id' => $batch->farm_id,
-                        'from_unit_id' => $batch->unit_id,
+                        'from_unit_id' => $batchUnitId,
                         'to_farm_id' => $toFarm->id,
                         'to_unit_id' => $toUnit->id,
                         'quantity' => $transferQuantity,
@@ -143,7 +144,7 @@ class BatchMovementSeeder extends Seeder
                         'batch_id' => $batch->id,
                         'movement_type' => MovementType::Harvest,
                         'from_farm_id' => $batch->farm_id,
-                        'from_unit_id' => $batch->unit_id,
+                        'from_unit_id' => $batchUnitId,
                         'quantity' => $harvestQuantity,
                         'weight' => $harvestQuantity * ($batch->current_weight_avg ?? 0) / 1000,
                         'date' => $harvestDate,

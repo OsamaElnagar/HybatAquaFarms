@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BatchPayments\Schemas;
 
+use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class BatchPaymentForm
 {
@@ -30,7 +32,9 @@ class BatchPaymentForm
                             ->columnSpan(1),
                         Select::make('factory_id')
                             ->label('المورد (مصنع التفريخ)')
-                            ->relationship('factory', 'name')
+                            ->relationship('factory', 'name', function (Builder $query) {
+                                return $query->where('type', FactoryType::SEEDS);
+                            })
                             ->required()
                             ->searchable()
                             ->preload()

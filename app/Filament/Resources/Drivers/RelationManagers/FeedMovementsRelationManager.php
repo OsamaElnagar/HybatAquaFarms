@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources\Drivers\RelationManagers;
 
+use App\Enums\FactoryType;
 use App\Enums\FeedMovementType;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class FeedMovementsRelationManager extends RelationManager
 {
@@ -52,7 +54,9 @@ class FeedMovementsRelationManager extends RelationManager
             ->filters([
                 SelectFilter::make('factory_id')
                     ->label('المصنع')
-                    ->relationship('factory', 'name')
+                    ->relationship('factory', 'name', function (Builder $query) {
+                        return $query->where('type', FactoryType::FEEDS);
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('to_warehouse_id')

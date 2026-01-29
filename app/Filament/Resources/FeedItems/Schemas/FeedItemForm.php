@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources\FeedItems\Schemas;
 
+use App\Enums\FactoryType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class FeedItemForm
 {
@@ -24,7 +26,9 @@ class FeedItemForm
                     ->required(),
                 Select::make('factory_id')
                     ->label('المصنع')
-                    ->relationship('factory', 'name')
+                    ->relationship('factory', 'name', function (Builder $query) {
+                        return $query->where('type', FactoryType::FEEDS);
+                    })
                     ->required()
                     ->searchable()
                     ->preload(),

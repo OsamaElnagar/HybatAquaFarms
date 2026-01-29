@@ -31,14 +31,15 @@ class BatchesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('batch_code')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['unit', 'species']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['units', 'species']))
             ->columns([
                 TextColumn::make('batch_code')
                     ->label('كود الدفعة')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit.code')
-                    ->label('الوحدة')
+                TextColumn::make('units.code')
+                    ->label('الوحدات')
+                    ->badge()
                     ->sortable(),
                 TextColumn::make('species.name')
                     ->label('النوع')
@@ -71,9 +72,9 @@ class BatchesRelationManager extends RelationManager
                     ->label('الحالة')
                     ->options(BatchStatus::class)
                     ->native(false),
-                SelectFilter::make('unit_id')
+                SelectFilter::make('units')
                     ->label('الوحدة')
-                    ->relationship('unit', 'code'),
+                    ->relationship('units', 'code'),
             ])
             ->headerActions([
                 CreateAction::make()->label('إضافة دفعة زريعه')

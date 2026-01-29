@@ -25,14 +25,14 @@ class AdvanceRepaymentForm
                     ->schema([
                         Select::make('employee_advance_id')
                             ->label('السلفة')
-                            ->relationship('employeeAdvance', 'advance_number', fn($query) => $query->where('balance_remaining', '>', 0))
+                            ->relationship('employeeAdvance', 'advance_number', fn ($query) => $query->where('balance_remaining', '>', 0))
                             ->searchable()
                             ->preload()
                             ->required()
                             ->helperText('اختر السلفة التي سيتم سداد جزء منها')
-                            ->getOptionLabelFromRecordUsing(fn(EmployeeAdvance $record) => "{$record->advance_number} - {$record->employee->name} (متبقي: " . number_format($record->balance_remaining) . ' EGP)')
+                            ->getOptionLabelFromRecordUsing(fn (EmployeeAdvance $record) => "{$record->advance_number} - {$record->employee->name} (متبقي: ".number_format($record->balance_remaining).' EGP)')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, $state) => self::syncRemainingFromAdvance($set, $state)),
+                            ->afterStateUpdated(fn (Set $set, $state) => self::syncRemainingFromAdvance($set, $state)),
                         DatePicker::make('payment_date')
                             ->label('تاريخ السداد')
                             ->required()
@@ -42,8 +42,8 @@ class AdvanceRepaymentForm
                             ->helperText('تاريخ دفع هذا القسط'),
                         TextEntry::make('advance_overview')
                             ->label('بيانات السلفة')
-                            ->state(fn(Get $get) => self::advanceSummary($get('employee_advance_id')))
-                            ->hidden(fn(Get $get) => blank($get('employee_advance_id')))
+                            ->state(fn (Get $get) => self::advanceSummary($get('employee_advance_id')))
+                            ->hidden(fn (Get $get) => blank($get('employee_advance_id')))
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -58,7 +58,7 @@ class AdvanceRepaymentForm
                             ->minValue(0.01)
                             ->step(0.01)
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateRemaining($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateRemaining($set, $get))
                             ->helperText('قيمة القسط المدفوع حالياً'),
                         Select::make('payment_method')
                             ->label('طريقة السداد')
@@ -68,12 +68,12 @@ class AdvanceRepaymentForm
                             ->live(true),
                         Select::make('salary_record_id')
                             ->label('سجل المرتب المرتبط')
-                            ->relationship('salaryRecord', 'id', fn($query, Get $get) => $query->where('status', 'paid')->where('employee_id', $get('employee_id')))
-                            ->getOptionLabelFromRecordUsing(fn(SalaryRecord $record) => $record->employee->name .' - '. $record->net_salary)
+                            ->relationship('salaryRecord', 'id', fn ($query, Get $get) => $query->where('status', 'paid')->where('employee_id', $get('employee_id')))
+                            ->getOptionLabelFromRecordUsing(fn (SalaryRecord $record) => $record->employee->name.' - '.$record->net_salary)
                             // ->preload()
                             // ->searchable()
                             ->helperText('اختر سجل المرتب الذي تم خصم السلفة منه (إن وجد)')
-                            ->visible(fn(Get $get) => $get('payment_method') === PaymentMethod::SALARY_DEDUCTION),
+                            ->visible(fn (Get $get) => $get('payment_method') === PaymentMethod::SALARY_DEDUCTION),
                         TextInput::make('balance_remaining')
                             ->label('الرصيد المتبقي بعد السداد')
                             ->numeric()

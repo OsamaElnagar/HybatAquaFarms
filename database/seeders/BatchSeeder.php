@@ -41,10 +41,9 @@ class BatchSeeder extends Seeder
                 $unitCost = $hasFactory ? rand(2, 8) : null; // Cost per unit in EGP
                 $totalCost = $hasFactory && $unitCost ? $initialQuantity * $unitCost : null;
 
-                Batch::create([
+                $batch = Batch::create([
                     'batch_code' => "{$farm->code}-B-".now()->format('Ymd').'-'.rand(1000, 9999),
                     'farm_id' => $farm->id,
-                    'unit_id' => $unit->id,
                     'species_id' => $species->random()->id,
                     'factory_id' => $factory?->id,
                     'entry_date' => now()->subDays(rand(30, 180)),
@@ -57,6 +56,8 @@ class BatchSeeder extends Seeder
                     'source' => $hasFactory ? BatchSource::Hatchery : [BatchSource::Purchase, BatchSource::Transfer][rand(0, 1)],
                     'status' => BatchStatus::Active,
                 ]);
+
+                $batch->units()->attach($unit->id);
             }
         });
     }

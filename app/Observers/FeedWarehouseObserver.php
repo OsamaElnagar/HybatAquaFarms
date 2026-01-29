@@ -29,7 +29,7 @@ class FeedWarehouseObserver
         // Ensure farm is loaded to get the code
         $farmCode = $unit->farm ? $unit->farm->code : 'FARM';
 
-        return $farmCode . '-WH-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        return $farmCode.'-WH-'.str_pad($number, 3, '0', STR_PAD_LEFT);
     }
 
     /**

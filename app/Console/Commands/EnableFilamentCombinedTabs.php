@@ -77,4 +77,3 @@ PHP;
         return static::SUCCESS;
     }
 }
-

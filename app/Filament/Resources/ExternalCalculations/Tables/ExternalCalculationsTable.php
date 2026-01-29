@@ -16,9 +16,10 @@ class ExternalCalculationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('رقم')
+                TextColumn::make('description')
+                    ->label('بيان')
                     ->sortable()
+                    ->searchable()
                     ->toggleable(),
                 TextColumn::make('type')
                     ->label('النوع')
@@ -28,7 +29,7 @@ class ExternalCalculationsTable
                     ->color(fn ($state) => $state?->getColor()),
                 TextColumn::make('date')
                     ->label('التاريخ')
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
@@ -36,10 +37,12 @@ class ExternalCalculationsTable
                     ->toggleable(),
                 TextColumn::make('treasuryAccount.name')
                     ->label('الخزينة')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('account.name')
                     ->label('الحساب المقابل')
                     ->sortable()
+                    ->searchable()
                     ->toggleable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')

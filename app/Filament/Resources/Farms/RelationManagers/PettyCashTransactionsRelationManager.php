@@ -4,19 +4,13 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 
 use App\Enums\PettyTransacionType;
 use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionForm;
-use App\Models\PettyCash;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -30,11 +24,12 @@ class PettyCashTransactionsRelationManager extends RelationManager
 
     protected static ?string $title = 'معاملات العهدة';
 
-    public function form(Schema $schema): Schema {
+    public function form(Schema $schema): Schema
+    {
         return PettyCashTransactionForm::configure($schema);
     }
 
-   public function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('date')

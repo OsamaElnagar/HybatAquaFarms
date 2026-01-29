@@ -85,13 +85,13 @@ class EmployeeAdvanceForm
                             ->displayFormat('Y-m-d')
                             ->native(false)
                             ->helperText('يُملأ بعد الموافقة على السلفة')
-                             ->default(now())
+                            ->default(now())
                             ->columnSpan(1),
                         DatePicker::make('disbursement_date')
                             ->label('تاريخ الصرف')
                             ->displayFormat('Y-m-d')
                             ->native(false)
-                             ->default(now())
+                            ->default(now())
                             ->helperText('التاريخ الذي تم فيه صرف السلفة فعلياً')
                             ->columnSpan(1),
                     ])

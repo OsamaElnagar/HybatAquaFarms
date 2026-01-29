@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FeedMovements\Schemas;
 
+use App\Enums\FactoryType;
 use App\Enums\FeedMovementType;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class FeedMovementForm
@@ -36,7 +38,9 @@ class FeedMovementForm
                             ->columnSpan(1),
                         Select::make('factory_id')
                             ->label('المصنع')
-                            ->relationship('factory', 'name')
+                            ->relationship('factory', 'name', function (Builder $query) {
+                                return $query->where('type', FactoryType::FEEDS);
+                            })
                             ->searchable()
                             ->preload()
                             ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In->value)

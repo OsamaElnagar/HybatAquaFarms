@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BatchPayments\Tables;
 
+use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -9,6 +10,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class BatchPaymentsTable
 {
@@ -63,7 +65,9 @@ class BatchPaymentsTable
                     ->preload(),
                 SelectFilter::make('factory_id')
                     ->label('المورد')
-                    ->relationship('factory', 'name')
+                    ->relationship('factory', 'name', function (Builder  $query) {
+                        return $query->where('type', FactoryType::SEEDS);
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('payment_method')

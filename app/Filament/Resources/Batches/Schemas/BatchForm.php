@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Batches\Schemas;
 
 use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
-use App\Models\FarmUnit;
+use App\Enums\FactoryType;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid as SchemaGrid;
 use Filament\Schemas\Components\Section as SchemaSection;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class BatchForm
 {
@@ -51,27 +52,25 @@ class BatchForm
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(fn (callable $set) => $set('unit_id', null))
+                                    ->afterStateUpdated(fn(callable $set) => $set('units', []))
                                     ->helperText('اختر المزرعة التي سيتم إدخال الزريعة فيها')
                                     ->columnSpan(1),
 
-                                Select::make('unit_id')
-                                    ->label('الوحدة')
-                                    ->options(function (callable $get) {
+                                Select::make('units')
+                                    ->label('الوحدات')
+                                    ->relationship('units', 'code', function (Builder $query, callable $get) {
                                         $farmId = $get('farm_id');
                                         if (! $farmId) {
-                                            return [];
+                                            return $query->whereRaw('1=0');
                                         }
 
-                                        return FarmUnit::query()
-                                            ->where('farm_id', $farmId)
-                                            ->get()
-                                            ->mapWithKeys(fn ($unit) => [$unit->id => $unit->code])
-                                            ->toArray();
+                                        return $query->where('farm_id', $farmId);
                                     })
+                                    ->multiple()
                                     ->searchable()
                                     ->preload()
-                                    ->helperText('اختر الوحدة (الحوض/الخزان) - سيتم عرض وحدات المزرعة المختارة فقط')
+                                    ->live()
+                                    ->helperText('اختر الوحدات (الأحواض/الخزانات) - سيتم عرض وحدات المزرعة المختارة فقط')
                                     ->columnSpan(1),
                             ]),
 
@@ -104,7 +103,9 @@ class BatchForm
                             ->schema([
                                 Select::make('factory_id')
                                     ->label('المفرخ')
-                                    ->relationship('factory', 'name')
+                                    ->relationship('factory', 'name', function (Builder $query) {
+                                        return $query->where('type', FactoryType::SEEDS);
+                                    })
                                     ->searchable()
                                     ->preload()
                                     ->helperText('المورد الذي تم شراء الزريعة منه (اختياري - فقط إذا كانت من مفرخة)')
@@ -172,7 +173,7 @@ class BatchForm
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
-                                    ->default(fn ($get) => $get('initial_quantity'))
+                                    ->default(fn($get) => $get('initial_quantity'))
                                     ->helperText('عدد الأسماك/الزريعة الحالي (يبدأ بنفس الكمية الأولية)')
                                     ->columnSpan(1),
 

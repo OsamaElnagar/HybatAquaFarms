@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ObservedBy([FarmUnitObserver::class])]
@@ -38,9 +39,9 @@ class FarmUnit extends Model
         return $this->belongsTo(Farm::class);
     }
 
-    public function batches(): HasMany
+    public function batches(): BelongsToMany
     {
-        return $this->hasMany(Batch::class, 'unit_id');
+        return $this->belongsToMany(Batch::class, 'batch_farm_unit', 'farm_unit_id', 'batch_id')->withTimestamps();
     }
 
     public function dailyFeedIssues(): HasMany

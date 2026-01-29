@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -22,7 +23,6 @@ class Batch extends Model
     protected $fillable = [
         'batch_code',
         'farm_id',
-        'unit_id',
         'species_id',
         'factory_id',
         'entry_date',
@@ -69,9 +69,9 @@ class Batch extends Model
         return $this->belongsTo(Farm::class);
     }
 
-    public function unit(): BelongsTo
+    public function units(): BelongsToMany
     {
-        return $this->belongsTo(FarmUnit::class, 'unit_id');
+        return $this->belongsToMany(FarmUnit::class, 'batch_farm_unit', 'batch_id', 'farm_unit_id')->withTimestamps();
     }
 
     public function species(): BelongsTo

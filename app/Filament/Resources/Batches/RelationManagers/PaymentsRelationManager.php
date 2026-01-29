@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
+use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -15,6 +16,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -34,7 +36,9 @@ class PaymentsRelationManager extends RelationManager
                     ->schema([
                         Select::make('factory_id')
                             ->label('المورد')
-                            ->relationship('factory', 'name')
+                            ->relationship('factory', 'name', function (Builder $query) {
+                                return $query->where('type', FactoryType::SEEDS);
+                            }) 
                             ->required()
                             ->searchable()
                             ->preload()

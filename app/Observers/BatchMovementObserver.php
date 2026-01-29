@@ -26,10 +26,8 @@ class BatchMovementObserver
 
         // Update batch location if it's a transfer
         if ($movement->movement_type === MovementType::Transfer && $movement->to_farm_id && $movement->to_unit_id) {
-            $batch->update([
-                'farm_id' => $movement->to_farm_id,
-                'unit_id' => $movement->to_unit_id,
-            ]);
+            $batch->update(['farm_id' => $movement->to_farm_id]);
+            $batch->units()->sync([$movement->to_unit_id]);
         }
 
         // Update batch status if needed

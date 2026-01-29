@@ -28,7 +28,7 @@ class DailyFeedIssueSeeder extends Seeder
 
             // Create daily feed issues for last 7-14 days for each active unit
             foreach ($units->take(rand(3, 5)) as $unit) {
-                $batch = Batch::where('unit_id', $unit->id)->first();
+                $batch = Batch::whereHas('units', fn ($q) => $q->where('farm_units.id', $unit->id))->first();
 
                 // Get available stocks for this warehouse
                 $availableStocks = \App\Models\FeedStock::where('feed_warehouse_id', $warehouse->id)

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FactoryPayments\Tables;
 
+use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -9,6 +10,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class FactoryPaymentsTable
 {
@@ -61,7 +63,9 @@ class FactoryPaymentsTable
             ->filters([
                 SelectFilter::make('factory_id')
                     ->label('المصنع')
-                    ->relationship('factory', 'name')
+                    ->relationship('factory', 'name', function (Builder $query) {
+                        return $query->where('type', FactoryType::FEEDS);
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('payment_method')

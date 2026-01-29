@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
 use App\Filament\Widgets\SalesTrendChart;
 use App\Filament\Widgets\TreasuryOverview;
 use App\Filament\Widgets\TreasuryTransactions;
@@ -27,7 +28,6 @@ use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
-use AchyutN\FilamentLogViewer\FilamentLogViewer;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -35,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->spa(hasPrefetching: true)
+            ->spa()
             ->id('admin')
             ->path('admin')
             ->login()
@@ -49,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             // ->sidebarCollapsibleOnDesktop()
             ->topNavigation()
+            ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -83,7 +84,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentAbyssThemePlugin::make(),
                 FilamentApexChartsPlugin::make(),
                 GlobalSearchModalPlugin::make(),
-                FilamentLogViewer::make()->authorize(fn() => auth('web')->check())
+                FilamentLogViewer::make()->authorize(fn () => auth('web')->check())
                     ->navigationGroup('اعدادات النظام')
                     ->navigationIcon('heroicon-o-document-text')
                     ->navigationLabel('Log Viewer')
@@ -94,7 +95,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->login(
-                        fn(AuthPageConfig $config) => $config
+                        fn (AuthPageConfig $config) => $config
                             ->media(asset('assets/images/pexel-waterfall.mp4'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(0)

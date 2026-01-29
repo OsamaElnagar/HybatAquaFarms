@@ -13,7 +13,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-function createTreasuryAccount(): Account {
+function createTreasuryAccount(): Account
+{
     return Account::factory()->create([
         'code' => '1110',
         'name' => 'النقدية بالصندوق',
@@ -23,7 +24,8 @@ function createTreasuryAccount(): Account {
     ]);
 }
 
-function createExpenseAccount(): Account {
+function createExpenseAccount(): Account
+{
     return Account::factory()->create([
         'code' => '5280',
         'name' => 'مصروفات متنوعة',
@@ -32,7 +34,8 @@ function createExpenseAccount(): Account {
     ]);
 }
 
-function createIncomeAccount(): Account {
+function createIncomeAccount(): Account
+{
     return Account::factory()->create([
         'code' => '4800',
         'name' => 'إيرادات متنوعة',

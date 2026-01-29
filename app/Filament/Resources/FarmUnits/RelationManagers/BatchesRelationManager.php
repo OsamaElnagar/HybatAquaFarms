@@ -74,7 +74,6 @@ class BatchesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()->label('إضافة دفعة زريعه')
                     ->mutateDataUsing(function (array $data): array {
-                        $data['unit_id'] = $this->getOwnerRecord()->id;
                         $data['farm_id'] = $this->getOwnerRecord()->farm_id;
 
                         return $data;

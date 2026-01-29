@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FactoryPayments\Schemas;
 
+use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -9,6 +10,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class FactoryPaymentForm
 {
@@ -21,7 +23,9 @@ class FactoryPaymentForm
                     ->schema([
                         Select::make('factory_id')
                             ->label('المصنع')
-                            ->relationship('factory', 'name')
+                            ->relationship('factory', 'name', function (Builder $query) {
+                                return $query->where('type', FactoryType::FEEDS);
+                            })
                             ->required()
                             ->searchable()
                             ->preload()

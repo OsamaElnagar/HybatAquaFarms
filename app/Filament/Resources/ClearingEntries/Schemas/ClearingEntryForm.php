@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ClearingEntries\Schemas;
 
+use App\Enums\FactoryType;
 use App\Models\Factory;
 use App\Models\Trader;
 use Filament\Forms\Components\DatePicker;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class ClearingEntryForm
 {
@@ -46,7 +48,9 @@ class ClearingEntryForm
                     ->visible(fn ($get) => filled($get('trader_id'))),
                 Select::make('factory_id')
                     ->label('المصنع')
-                    ->relationship('factory', 'name')
+                    ->relationship('factory', 'name', function (Builder $query) {
+                        return $query->where('type', FactoryType::FEEDS);
+                    })
                     ->required()
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set, $get) {

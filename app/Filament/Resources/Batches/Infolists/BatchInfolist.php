@@ -19,8 +19,9 @@ class BatchInfolist
                     TextEntry::make('farm.name')
                         ->label('المزرعة')
                         ->columnSpan(1),
-                    TextEntry::make('unit.code')
-                        ->label('الوحدة')
+                    TextEntry::make('units.code')
+                        ->label('الوحدات')
+                        ->badge()
                         ->placeholder('غير محدد')
                         ->columnSpan(1),
                     TextEntry::make('species.name')

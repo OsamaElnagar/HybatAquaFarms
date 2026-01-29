@@ -77,7 +77,14 @@ class DailyFeedIssueForm
                             ->helperText('أدخل كمية العلف المصروف بالكيلو جرام'),
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
-                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: function ($query, Get $get) {
+                                $unitId = $get('unit_id');
+                                if ($unitId) {
+                                    return $query->whereHas('units', fn ($q) => $q->where('farm_units.id', $unitId));
+                                }
+
+                                return $query->latest();
+                            })
                             ->helperText('حدد دفعة الزريعة إذا كانت موجودة'),
                     ])
                     ->columns(2)->columnSpanFull(),

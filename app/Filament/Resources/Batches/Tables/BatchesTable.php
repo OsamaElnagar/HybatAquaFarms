@@ -26,8 +26,9 @@ class BatchesTable
                     ->label('المزرعة')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit.code')
-                    ->label('الوحدة')
+                TextColumn::make('units.code')
+                    ->label('الوحدات')
+                    ->badge()
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
