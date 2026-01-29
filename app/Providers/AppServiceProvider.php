@@ -37,9 +37,9 @@ class AppServiceProvider extends ServiceProvider
         // add striped to all tables
         Table::configureUsing(function (Table $table) {
             return $table
-                ->striped();
+                ->striped()
             // ->deferLoading()
-            // ->defaultPaginationPageOption(20);
+            ->defaultPaginationPageOption(25);
         });
     }
 }
