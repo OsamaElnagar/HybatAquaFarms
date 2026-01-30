@@ -12,8 +12,10 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -26,6 +28,8 @@ class DailyFeedIssuesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('date')
+            //         ->modifyQueryUsing(fn (Builder $query) => $query->with(['unit', 'feedItem', 'batch', 'warehouse', 'recordedBy']))
             ->columns([
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
@@ -93,6 +97,7 @@ class DailyFeedIssuesTable
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0)
                     ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
+                    ->summarize(Sum::make()->label('إجمالي الكمية'))
                     ->sortable()
                     ->actionIcon(Heroicon::PencilSquare)
                     ->actionIconColor('primary')
@@ -136,6 +141,7 @@ class DailyFeedIssuesTable
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->relationship('farm', 'name')
                             ->searchable()
                             ->preload()

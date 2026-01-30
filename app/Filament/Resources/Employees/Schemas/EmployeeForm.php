@@ -7,6 +7,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -50,6 +51,8 @@ class EmployeeForm
                         Select::make('farm_id')
                             ->label('المزرعة')
                             ->relationship('farm', 'name')
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->disabled(fn ($livewire) => $livewire instanceof RelationManager)
                             ->searchable()
                             ->preload()
                             ->helperText('المزرعة التي يعمل بها الموظف')

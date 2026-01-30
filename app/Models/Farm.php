@@ -29,6 +29,11 @@ class Farm extends Model
         'notes',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'code';
+    }
+
     protected function casts(): array
     {
         return [
@@ -41,6 +46,11 @@ class Farm extends Model
     public function manager(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class);
     }
 
     public function units(): HasMany

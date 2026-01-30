@@ -95,6 +95,7 @@ class FarmResource extends Resource
             RelationManagers\DailyFeedIssuesRelationManager::class,
             RelationManagers\UnitsRelationManager::class,
             RelationManagers\BatchesRelationManager::class,
+            RelationManagers\EmployeesRelationManager::class,
         ];
     }
 
