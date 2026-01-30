@@ -19,6 +19,21 @@ class ViewEmployee extends ViewRecord
 {
     protected static string $resource = EmployeeResource::class;
 
+    public function getTitle(): string
+    {
+        return 'بيانات الموظف: '.$this->getRecord()->name;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        return [
+            $resource::getUrl('index') => $resource::getBreadcrumb(),
+            '#' => $this->getRecord()->name,
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

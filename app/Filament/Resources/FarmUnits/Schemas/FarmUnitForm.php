@@ -7,6 +7,7 @@ use App\Enums\UnitType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -20,6 +21,8 @@ class FarmUnitForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->disabled(fn ($livewire) => $livewire instanceof RelationManager)
                             ->relationship('farm', 'name')
                             ->searchable()
                             ->preload()

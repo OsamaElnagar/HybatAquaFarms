@@ -16,6 +16,21 @@ class ViewBatch extends ViewRecord
 {
     protected static string $resource = BatchResource::class;
 
+    public function getTitle(): string
+    {
+        return 'تفاصيل دورة: '.$this->getRecord()->batch_code;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        return [
+            $resource::getUrl('index') => $resource::getBreadcrumb(),
+            '#' => $this->getRecord()->batch_code,
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

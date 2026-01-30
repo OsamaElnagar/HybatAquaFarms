@@ -17,6 +17,22 @@ class EditPettyCash extends EditRecord
 {
     protected static string $resource = PettyCashResource::class;
 
+    public function getTitle(): string
+    {
+        return 'تعديل العهدة: '.$this->getRecord()->name;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        return [
+            $resource::getUrl('index') => $resource::getBreadcrumb(),
+            $resource::getUrl('view', ['record' => $this->getRecord()]) => $this->getRecord()->name,
+            '#' => 'تعديل',
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -31,29 +31,59 @@ class EmployeesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+            // ->modifyQueryUsing(fn($query) => $query->with(['']))
             ->columns([
                 TextColumn::make('employee_number')
-                    ->searchable(),
+                    ->label('رقم الموظف')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('الاسم')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('phone2')
-                    ->searchable(),
+                    ->label('الهاتف')
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('national_id')
-                    ->searchable(),
+                    ->label('الرقم القومي')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('hire_date')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('termination_date')
-                    ->date()
-                    ->sortable(),
+                    ->label('تاريخ التوظيف')
+                    ->date('Y-m-d')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('basic_salary')
-                    ->numeric()
+                    ->label('المرتب')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable(),
-                TextColumn::make('status')
+                TextColumn::make('advances_count')
+                    ->counts('advances')
+                    ->label('السلف')
                     ->badge()
-                    ->searchable(),
+                    ->color('primary')
+                    ->sortable(),
+                TextColumn::make('outstanding_advances')
+                    ->label('سلف مستحقة')
+                    ->state(fn ($record) => number_format($record->total_outstanding_advances))
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->toggleable(),
+                TextColumn::make('status')
+                    ->label('الحالة')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
+                // ->toggleable(),
+                TextColumn::make('termination_date')
+                    ->label('تاريخ إنهاء الخدمة')
+                    ->date('Y-m-d')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

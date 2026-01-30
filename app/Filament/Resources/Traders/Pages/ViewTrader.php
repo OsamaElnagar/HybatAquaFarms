@@ -12,6 +12,21 @@ class ViewTrader extends ViewRecord
 {
     protected static string $resource = TraderResource::class;
 
+    public function getTitle(): string
+    {
+        return 'عرض: '.$this->getRecord()->name;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        return [
+            $resource::getUrl('index') => $resource::getBreadcrumb(),
+            '#' => $this->getRecord()->name,
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -11,6 +11,22 @@ class EditBatch extends EditRecord
 {
     protected static string $resource = BatchResource::class;
 
+    public function getTitle(): string
+    {
+        return 'تعديل دورة: '.$this->getRecord()->batch_code;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        return [
+            $resource::getUrl('index') => $resource::getBreadcrumb(),
+            $resource::getUrl('view', ['record' => $this->getRecord()]) => $this->getRecord()->batch_code,
+            '#' => 'تعديل',
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

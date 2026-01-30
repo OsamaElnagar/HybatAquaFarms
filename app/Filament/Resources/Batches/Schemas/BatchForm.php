@@ -9,6 +9,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Grid as SchemaGrid;
 use Filament\Schemas\Components\Section as SchemaSection;
 use Filament\Schemas\Schema;
@@ -47,12 +48,14 @@ class BatchForm
                             ->schema([
                                 Select::make('farm_id')
                                     ->label('المزرعة')
+                                    ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                                    ->disabled(fn ($livewire) => $livewire instanceof RelationManager)
                                     ->relationship('farm', 'name')
                                     ->required()
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(fn(callable $set) => $set('units', []))
+                                    ->afterStateUpdated(fn (callable $set) => $set('units', []))
                                     ->helperText('اختر المزرعة التي سيتم إدخال الزريعة فيها')
                                     ->columnSpan(1),
 
@@ -173,7 +176,7 @@ class BatchForm
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
-                                    ->default(fn($get) => $get('initial_quantity'))
+                                    ->default(fn ($get) => $get('initial_quantity'))
                                     ->helperText('عدد الأسماك/الزريعة الحالي (يبدأ بنفس الكمية الأولية)')
                                     ->columnSpan(1),
 
