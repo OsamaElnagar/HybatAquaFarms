@@ -66,9 +66,9 @@ class DailyFeedIssueResource extends Resource
     {
         return [
             'index' => ListDailyFeedIssues::route('/'),
-            'create' => CreateDailyFeedIssue::route('/create'),
+            // 'create' => CreateDailyFeedIssue::route('/create'),
             'view' => Pages\ViewDailyFeedIssue::route('/{record}'),
-            'edit' => EditDailyFeedIssue::route('/{record}/edit'),
+            // 'edit' => EditDailyFeedIssue::route('/{record}/edit'),
         ];
     }
 }

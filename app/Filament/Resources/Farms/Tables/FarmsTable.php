@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\Farms\Tables;
 
 use App\Enums\FarmStatus;
+use App\Filament\Exports\FarmExporter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -91,6 +94,12 @@ class FarmsTable
                     ->label('المدير')
                     ->relationship('manager', 'name'),
             ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(FarmExporter::class)
+                    ->label('تصدير المزارع')
+                    ->icon('heroicon-o-arrow-down-tray'),
+            ])
             ->recordActions([
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
@@ -98,6 +107,9 @@ class FarmsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()->label('حذف المحدد'),
+                    ExportBulkAction::make()
+                        ->exporter(FarmExporter::class)
+                        ->label('تصدير المحدد'),
                 ]),
             ])
             ->defaultSort('name');

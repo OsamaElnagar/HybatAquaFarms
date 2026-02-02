@@ -82,8 +82,8 @@ class PettyCashTransactionResource extends Resource
     {
         return [
             'index' => ListPettyCashTransactions::route('/'),
-            'create' => CreatePettyCashTransaction::route('/create'),
-            'edit' => EditPettyCashTransaction::route('/{record}/edit'),
+            // 'create' => CreatePettyCashTransaction::route('/create'),
+            // 'edit' => EditPettyCashTransaction::route('/{record}/edit'),
         ];
     }
 }
