@@ -32,6 +32,8 @@ class PaymentsRelationManager extends RelationManager
             ->components([
                 DatePicker::make('date')
                     ->label('تاريخ الدفعة')
+                    ->displayFormat('Y-m-d')
+                    ->native(false)
                     ->required()
                     ->default(now()),
                 TextInput::make('amount')

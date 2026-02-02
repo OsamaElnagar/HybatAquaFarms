@@ -41,13 +41,15 @@ class TransactionsRelationManager extends RelationManager
                     ->default('out'),
                 Select::make('expense_category_id')
                     ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                    ->visible(fn ($get) => $get('direction') === 'out')
-                    ->required(fn ($get) => $get('direction') === 'out')
+                    ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
+                    ->visible(fn($get) => $get('direction') === 'out')
+                    ->required(fn($get) => $get('direction') === 'out')
                     ->searchable()
                     ->preload(),
                 DatePicker::make('date')
                     ->label('التاريخ')
+                    ->displayFormat('Y-m-d')
+                    ->native(false)
                     ->required()
                     ->default(now()),
                 TextInput::make('amount')
@@ -85,7 +87,7 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->direction === 'out' ? 'danger' : 'success')
+                    ->color(fn($record) => $record->direction === 'out' ? 'danger' : 'success')
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('الوصف')
@@ -138,12 +140,14 @@ class TransactionsRelationManager extends RelationManager
                                     ->default('out'),
                                 Select::make('expense_category_id')
                                     ->label('نوع المصروف')
-                                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                                    ->visible(fn ($get) => $get('direction') === 'out')
-                                    ->required(fn ($get) => $get('direction') === 'out')
+                                    ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
+                                    ->visible(fn($get) => $get('direction') === 'out')
+                                    ->required(fn($get) => $get('direction') === 'out')
                                     ->searchable()
                                     ->preload(),
                                 DatePicker::make('date')
+                                    ->displayFormat('Y-m-d')
+                                    ->native(false)
                                     ->label('التاريخ')
                                     ->required()
                                     ->default(now()),

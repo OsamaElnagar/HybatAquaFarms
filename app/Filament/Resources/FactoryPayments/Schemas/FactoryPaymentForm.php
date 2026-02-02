@@ -32,6 +32,8 @@ class FactoryPaymentForm
                             ->helperText('اختر مصنع الأعلاف الذي تم الدفع له'),
                         DatePicker::make('date')
                             ->label('تاريخ الدفعة')
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
                             ->required()
                             ->default(now())
                             ->helperText('تاريخ عملية الدفع'),
@@ -66,7 +68,7 @@ class FactoryPaymentForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth('web')->id())
+                            ->default(fn() => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل الدفعة'),
                         Textarea::make('notes')
                             ->label('ملاحظات')

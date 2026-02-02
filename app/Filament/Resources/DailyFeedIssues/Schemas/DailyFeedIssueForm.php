@@ -51,6 +51,8 @@ class DailyFeedIssueForm
                             ->helperText('حدد المخزن الذي تم صرف العلف منه'),
                         DatePicker::make('date')
                             ->label('التاريخ')
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
                             ->required()
                             ->maxDate(now()->tomorrow())
                             ->helperText('تاريخ عملية الصرف'),

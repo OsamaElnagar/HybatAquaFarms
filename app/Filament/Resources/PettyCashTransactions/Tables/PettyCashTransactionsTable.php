@@ -55,7 +55,7 @@ class PettyCashTransactionsTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn ($record) => [
+                            ->fillForm(fn($record) => [
                                 'expense_category_id' => $record->expense_category_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -79,7 +79,7 @@ class PettyCashTransactionsTable
                                     ->numeric()
                                     ->required(),
                             ])
-                            ->fillForm(fn ($record) => [
+                            ->fillForm(fn($record) => [
                                 'amount' => $record->amount,
                             ])
                             ->action(function ($record, array $data) {
@@ -122,19 +122,23 @@ class PettyCashTransactionsTable
                 Filter::make('date')
                     ->schema([
                         DatePicker::make('date_from')
-                            ->label('من تاريخ'),
+                            ->label('من تاريخ')
+                            ->displayFormat('Y-m-d')
+                            ->native(false),
                         DatePicker::make('date_to')
-                            ->label('إلى تاريخ'),
+                            ->label('إلى تاريخ')
+                            ->displayFormat('Y-m-d')
+                            ->native(false),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
                             );
                     }),
             ])

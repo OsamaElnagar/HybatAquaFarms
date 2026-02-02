@@ -22,6 +22,8 @@ class ExternalCalculationForm
                     ->label('المزرعة')
                     ->relationship('farm', 'name'),
                 DatePicker::make('date')
+                    ->displayFormat('Y-m-d')
+                    ->native(false)
                     ->label('التاريخ')
                     ->required(),
                 Select::make('type')
@@ -31,8 +33,11 @@ class ExternalCalculationForm
                     ->live(),
                 Select::make('treasury_account_id')
                     ->label('الخزنة / البنك')
-                    ->relationship('treasuryAccount', 'name', fn ($query, Get $get) => $query
-                        ->where('is_treasury', true)
+                    ->relationship(
+                        'treasuryAccount',
+                        'name',
+                        fn($query, Get $get) => $query
+                            ->where('is_treasury', true)
                         // ->when($get('farm_id'), fn ($q) => $q->where('farm_id', $get('farm_id')))
                     )
                     ->searchable()

@@ -33,7 +33,7 @@ class PettyCashTransactionsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('date')
-            ->modifyQueryUsing(fn ($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
+            ->modifyQueryUsing(fn($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
             ->columns([
                 TextColumn::make('pettyCash.name')
                     ->label('العهدة')
@@ -72,14 +72,18 @@ class PettyCashTransactionsRelationManager extends RelationManager
                 Filter::make('date')
                     ->schema([
                         DatePicker::make('date_from')
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
                             ->label('من تاريخ'),
                         DatePicker::make('date_to')
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
                             ->label('إلى تاريخ'),
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', $date))
-                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', $date));
+                            ->when($data['date_from'] ?? null, fn($q, $date) => $q->where('date', '>=', $date))
+                            ->when($data['date_to'] ?? null, fn($q, $date) => $q->where('date', '<=', $date));
                     }),
             ])
             ->headerActions([

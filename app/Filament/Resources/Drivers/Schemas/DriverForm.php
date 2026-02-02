@@ -30,6 +30,8 @@ class DriverForm
                 TextInput::make('license_number')
                     ->label('رقم الرخصة'),
                 DatePicker::make('license_expiry')
+                    ->displayFormat('Y-m-d')
+                    ->native(false)
                     ->label('تاريخ انتهاء الرخصة'),
                 TextInput::make('vehicle_type')
                     ->label('نوع المركبة'),

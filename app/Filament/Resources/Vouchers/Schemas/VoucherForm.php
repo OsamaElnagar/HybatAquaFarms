@@ -52,17 +52,19 @@ class VoucherForm
                     ->hint('يتم توليده تلقائياً'),
                 DatePicker::make('date')
                     ->label('التاريخ')
-                    ->required(),
+                    ->required()
+                    ->displayFormat('Y-m-d')
+                    ->native(false),
                 Radio::make('counterparty_type')
                     ->label('نوع الطرف الآخر')
                     ->options(CounterpartyType::class)
                     ->inline()
                     ->live()
-                    ->afterStateUpdated(fn (Set $set) => $set('counterparty_id', null))
+                    ->afterStateUpdated(fn(Set $set) => $set('counterparty_id', null))
                     ->required(),
                 Select::make('counterparty_id')
                     ->label(
-                        fn (Get $get) => $get('counterparty_type')
+                        fn(Get $get) => $get('counterparty_type')
                             ? $get('counterparty_type')->getLabel()
                             : 'اختر نوع الطرف الآخر أولاً'
                     )
@@ -81,13 +83,13 @@ class VoucherForm
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->visible(fn (Get $get) => filled($get('counterparty_type'))),
+                    ->visible(fn(Get $get) => filled($get('counterparty_type'))),
 
                 Select::make('treasury_account_id')
                     ->label('الخزنة / البنك')
-                    ->relationship('treasuryAccount', 'name', fn ($query, Get $get) => $query
+                    ->relationship('treasuryAccount', 'name', fn($query, Get $get) => $query
                         ->where('is_treasury', true)
-                        ->when($get('farm_id'), fn ($q) => $q->where(function ($q2) use ($get) {
+                        ->when($get('farm_id'), fn($q) => $q->where(function ($q2) use ($get) {
                             $q2->where('farm_id', $get('farm_id'))
                                 ->orWhereNull('farm_id');
                         })))

@@ -55,6 +55,8 @@ class PettyCashTransactionForm
                             ->preload(),
                         DatePicker::make('date')
                             ->label('التاريخ')
+                            ->displayFormat('Y-m-d')
+                            ->native(false)
                             ->required()
                             ->default(now()),
                     ])

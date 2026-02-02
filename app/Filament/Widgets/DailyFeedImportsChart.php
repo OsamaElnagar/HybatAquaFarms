@@ -35,10 +35,14 @@ class DailyFeedImportsChart extends ApexChartWidget
         return $schema->components([
             DatePicker::make('date_start')
                 ->label('من تاريخ')
+                ->displayFormat('Y-m-d')
+                ->native(false)
                 ->default(now()->subDays(30))
                 ->live(),
             DatePicker::make('date_end')
                 ->label('إلى تاريخ')
+                ->displayFormat('Y-m-d')
+                ->native(false)
                 ->default(now())
                 ->live(),
             Select::make('factory_id')

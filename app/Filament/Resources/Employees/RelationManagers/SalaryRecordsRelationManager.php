@@ -82,14 +82,16 @@ class SalaryRecordsRelationManager extends RelationManager
                 Filter::make('date_range')
                     ->schema([
                         DatePicker::make('from')
-                            ->label('من تاريخ'),
+                            ->label('من تاريخ')->displayFormat('Y-m-d')
+                            ->native(false),
                         DatePicker::make('to')
-                            ->label('إلى تاريخ'),
+                            ->label('إلى تاريخ')->displayFormat('Y-m-d')
+                            ->native(false),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn (Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
-                            ->when($data['to'], fn (Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
+                            ->when($data['from'], fn(Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
+                            ->when($data['to'], fn(Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
                     }),
                 SelectFilter::make('status')
                     ->label('الحالة')

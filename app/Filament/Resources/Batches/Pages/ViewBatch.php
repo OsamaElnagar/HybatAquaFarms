@@ -18,7 +18,7 @@ class ViewBatch extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'تفاصيل دورة: '.$this->getRecord()->batch_code;
+        return 'تفاصيل دورة: ' . $this->getRecord()->batch_code;
     }
 
     public function getBreadcrumbs(): array
@@ -39,7 +39,7 @@ class ViewBatch extends ViewRecord
                 ->icon('heroicon-o-lock-closed')
                 ->color('warning')
                 ->visible(
-                    fn ($record) => ! $record->is_cycle_closed &&
+                    fn($record) => ! $record->is_cycle_closed &&
                         $record->status->value === 'harvested',
                 )
                 ->requiresConfirmation()
@@ -53,6 +53,7 @@ class ViewBatch extends ViewRecord
                         ->label('تاريخ الإقفال')
                         ->default(now())
                         ->required()
+                        ->displayFormat('Y-m-d')
                         ->native(false)
                         ->maxDate(now()),
 
@@ -79,8 +80,8 @@ class ViewBatch extends ViewRecord
                         ->title('تم إقفال الدورة بنجاح')
                         ->success()
                         ->body(
-                            "تم إقفال دورة {$record->batch_code} بصافي ربح: ".
-                                number_format($record->net_profit).
+                            "تم إقفال دورة {$record->batch_code} بصافي ربح: " .
+                                number_format($record->net_profit) .
                                 ' EGP',
                         )
                         ->send();
@@ -90,7 +91,7 @@ class ViewBatch extends ViewRecord
                 ->label('إعادة فتح الدورة')
                 ->icon('heroicon-o-lock-open')
                 ->color('danger')
-                ->visible(fn ($record) => $record->is_cycle_closed)
+                ->visible(fn($record) => $record->is_cycle_closed)
                 ->requiresConfirmation()
                 ->modalHeading('إعادة فتح دورة الإنتاج')
                 ->modalDescription(
@@ -119,9 +120,9 @@ class ViewBatch extends ViewRecord
                 }),
 
             EditAction::make()
-                ->disabled(fn ($record) => $record->is_cycle_closed)
+                ->disabled(fn($record) => $record->is_cycle_closed)
                 ->tooltip(
-                    fn ($record) => $record->is_cycle_closed
+                    fn($record) => $record->is_cycle_closed
                         ? 'لا يمكن تعديل دورة مقفلة'
                         : null,
                 ),
