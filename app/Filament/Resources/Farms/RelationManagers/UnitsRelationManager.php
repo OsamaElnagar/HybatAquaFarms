@@ -40,6 +40,12 @@ class UnitsRelationManager extends RelationManager
                     ->copyMessage('تم نسخ الكود')
                     ->searchable()
                     ->sortable(),
+                     TextColumn::make('name')
+                    ->label('الاسم')
+                    ->copyable()
+                    ->copyMessage('تم نسخ الاسم')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('unit_type')
                     ->label('النوع')
                     ->badge()
