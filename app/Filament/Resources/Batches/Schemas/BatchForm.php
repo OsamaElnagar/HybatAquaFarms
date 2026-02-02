@@ -61,7 +61,7 @@ class BatchForm
 
                                 Select::make('units')
                                     ->label('الوحدات')
-                                    ->relationship('units', 'code', function (Builder $query, callable $get) {
+                                    ->relationship('units', 'name', function (Builder $query, callable $get) {
                                         $farmId = $get('farm_id');
                                         if (! $farmId) {
                                             return $query->whereRaw('1=0');
