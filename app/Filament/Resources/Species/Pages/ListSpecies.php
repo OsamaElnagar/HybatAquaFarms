@@ -21,7 +21,7 @@ class ListSpecies extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            SpeciesStatsWidget::class,
+            // SpeciesStatsWidget::class,
         ];
     }
 }

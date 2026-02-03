@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
@@ -38,8 +41,15 @@ class AppServiceProvider extends ServiceProvider
         Table::configureUsing(function (Table $table) {
             return $table
                 ->striped()
-            // ->deferLoading()
-            ->defaultPaginationPageOption(25);
+                // ->deferLoading()
+                ->defaultPaginationPageOption(25);
+        });
+
+        CreateAction::configureUsing(function (CreateAction $action) {
+            return $action->slideOver()->modalWidth(Width::SixExtraLarge);
+        });
+        EditAction::configureUsing(function (EditAction $action) {
+            return $action->slideOver()->modalWidth(Width::SixExtraLarge);
         });
     }
 }
