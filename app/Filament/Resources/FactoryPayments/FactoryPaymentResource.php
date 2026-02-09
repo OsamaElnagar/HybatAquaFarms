@@ -30,17 +30,17 @@ class FactoryPaymentResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'مدفوعات مصانع الأعلاف';
+        return 'مدفوعات المصانع والموردين';
     }
 
     public static function getModelLabel(): string
     {
-        return 'دفعة لمصنع';
+        return 'دفعة';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'مدفوعات مصانع الأعلاف';
+        return 'مدفوعات المصانع والموردين';
     }
 
     public static function getGloballySearchableAttributes(): array

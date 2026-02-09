@@ -87,7 +87,7 @@ class AdvanceRepaymentResource extends Resource
     {
         return [
             'index' => ListAdvanceRepayments::route('/'),
-            'create' => CreateAdvanceRepayment::route('/create'),
+            // 'create' => CreateAdvanceRepayment::route('/create'),
             'edit' => EditAdvanceRepayment::route('/{record}/edit'),
         ];
     }

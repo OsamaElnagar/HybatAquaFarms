@@ -20,7 +20,7 @@ class FactoryPaymentsStatsWidget extends StatsOverviewWidget
             ->sum('amount');
 
         return [
-            Stat::make('إجمالي مدفوعات المصانع', number_format($total).' EGP ')
+            Stat::make('إجمالي مدفوعات المصانع والموردين', number_format($total).' EGP ')
                 ->description('عدد العمليات: '.number_format($count))
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('primary'),

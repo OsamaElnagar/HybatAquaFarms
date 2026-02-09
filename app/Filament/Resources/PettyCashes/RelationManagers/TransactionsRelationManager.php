@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PettyCashes\RelationManagers;
 
 use App\Enums\PettyTransacionType;
+use App\Models\ExpenseCategory;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -45,7 +46,37 @@ class TransactionsRelationManager extends RelationManager
                     ->visible(fn($get) => $get('direction') === 'out')
                     ->required(fn($get) => $get('direction') === 'out')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->live(),
+                Select::make('employee_id')
+                    ->label('الموظف')
+                    ->relationship('employee', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->visible(function ($get) {
+                        if ($get('direction') !== 'out') {
+                            return false;
+                        }
+                        $categoryId = $get('expense_category_id');
+                        if (! $categoryId) {
+                            return false;
+                        }
+                        $category = ExpenseCategory::find($categoryId);
+
+                        return $category && $category->code === 'WORKER_SALARY';
+                    })
+                    ->required(function ($get) {
+                        if ($get('direction') !== 'out') {
+                            return false;
+                        }
+                        $categoryId = $get('expense_category_id');
+                        if (! $categoryId) {
+                            return false;
+                        }
+                        $category = ExpenseCategory::find($categoryId);
+
+                        return $category && $category->code === 'WORKER_SALARY';
+                    }),
                 DatePicker::make('date')
                     ->label('التاريخ')
                     ->displayFormat('Y-m-d')

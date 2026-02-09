@@ -20,6 +20,7 @@ class ExpenseCategoryForm
                 TextInput::make('code')
                     ->label('الكود')
                     ->disabled()
+                    ->copyable()
                     ->dehydrated(false)
                     ->helperText('يتم توليده تلقائياً'),
                 Textarea::make('description')

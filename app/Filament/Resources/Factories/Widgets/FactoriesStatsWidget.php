@@ -64,23 +64,23 @@ class FactoriesStatsWidget extends StatsOverviewWidget
         $totalPayables = $data['totalPayables'];
 
         return [
-            Stat::make('إجمالي المصانع/المفرخات', number_format($totalFactories))
+            Stat::make('إجمالي المصانع والموردين', number_format($totalFactories))
                 ->description($activeFactories.' نشط')
                 ->descriptionIcon('heroicon-o-building-office')
                 ->color('primary'),
 
             Stat::make('إجمالي المشتريات', number_format($totalPurchases).' EGP ')
-                ->description('زريعة وأعلاف')
+                ->description('زريعة، أعلاف، وتوريدات')
                 ->descriptionIcon('heroicon-o-shopping-bag')
                 ->color('success'),
 
-            Stat::make('المستحقات للمصانع', number_format($totalPayables).' EGP ')
+            Stat::make('المستحقات للمصانع والموردين', number_format($totalPayables).' EGP ')
                 ->description('المبالغ المستحقة للدفع')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalPayables > 0 ? 'warning' : 'success'),
 
             Stat::make('متوسط قيمة الطلب', $totalFactories > 0 ? number_format($totalPurchases / $totalFactories).' EGP ' : '0.00 EGP')
-                ->description('متوسط المشتريات لكل مصنع')
+                ->description('متوسط المشتريات لكل مصنع/مورد')
                 ->descriptionIcon('heroicon-o-calculator')
                 ->color('info'),
         ];

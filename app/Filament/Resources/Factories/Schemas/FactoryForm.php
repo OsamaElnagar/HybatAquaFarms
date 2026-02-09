@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class FactoryForm
@@ -28,7 +29,23 @@ class FactoryForm
                     ->label('نوع المصنع')
                     ->options(FactoryType::class)
                     ->required()
+                    ->live()
                     ->helperText('اختر نوع المصنع (مفرخ أو اعلاف)'),
+                Select::make('supplier_activity_id')
+                    ->label('نشاط المورد')
+                    ->relationship('supplierActivity', 'name')
+                    ->preload()
+                    ->searchable()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label('النشاط')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique('supplier_activities', 'name'),
+                    ])
+                    ->required(fn (Get $get) => $get('type') === FactoryType::SUPPLIER)
+                    ->visible(fn (Get $get) => $get('type') === FactoryType::SUPPLIER)
+                    ->helperText('اختر نشاط المورد'),
                 TextInput::make('contact_person')
                     ->label('الشخص المسؤول')
                     ->helperText('اسم الشخص المسؤول عن التواصل مع المصنع'),

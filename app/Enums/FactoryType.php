@@ -13,12 +13,14 @@ enum FactoryType: string implements HasColor, HasIcon, HasLabel
 {
     case FEEDS = 'feeds';
     case SEEDS = 'batches';
+    case SUPPLIER = 'supplier';
 
     public function getLabel(): string|Htmlable|null
     {
         return match ($this) {
             self::FEEDS => 'مصنع اعلاف',
             self::SEEDS => 'مفرخ زريعة',
+            self::SUPPLIER => 'مورد',
         };
     }
 
@@ -27,6 +29,7 @@ enum FactoryType: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::FEEDS => Heroicon::FolderOpen,
             self::SEEDS => Heroicon::Ticket,
+            self::SUPPLIER => Heroicon::UserGroup,
         };
     }
 
@@ -35,6 +38,7 @@ enum FactoryType: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::FEEDS => 'primary',
             self::SEEDS => 'info',
+            self::SUPPLIER => 'success',
         };
     }
 }

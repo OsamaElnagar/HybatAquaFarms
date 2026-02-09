@@ -17,6 +17,7 @@ class FactoryPayment extends Model
 
     protected $fillable = [
         'factory_id',
+        'farm_id',
         'date',
         'amount',
         'payment_method',
@@ -38,6 +39,11 @@ class FactoryPayment extends Model
     public function factory(): BelongsTo
     {
         return $this->belongsTo(Factory::class);
+    }
+
+    public function farm(): BelongsTo
+    {
+        return $this->belongsTo(Farm::class);
     }
 
     public function recordedBy(): BelongsTo

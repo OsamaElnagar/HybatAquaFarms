@@ -30,17 +30,17 @@ class FactoryResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'المصانع | المفرخات';
+        return 'المصانع والموردين';
     }
 
     public static function getModelLabel(): string
     {
-        return 'مصنع أعلاف أو مفرخ';
+        return 'مصنع أو مورد';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'مصانع و مفرخات';
+        return 'المصانع والموردين';
     }
 
     public static function getGloballySearchableAttributes(): array

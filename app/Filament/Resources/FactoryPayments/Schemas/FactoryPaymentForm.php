@@ -4,11 +4,13 @@ namespace App\Filament\Resources\FactoryPayments\Schemas;
 
 use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
+use App\Models\Factory;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -19,17 +21,24 @@ class FactoryPaymentForm
         return $schema
             ->components([
                 Section::make('معلومات الدفعة')
-                    ->description('يرجى إدخال بيانات الدفعة لمصنع الأعلاف')
+                    ->description('يرجى إدخال بيانات الدفعة')
                     ->schema([
                         Select::make('factory_id')
-                            ->label('المصنع')
-                            ->relationship('factory', 'name', function (Builder $query) {
-                                return $query->where('type', FactoryType::FEEDS);
-                            })
+                            ->label('المصنع / المورد')
+                            ->relationship('factory', 'name')
                             ->required()
+                            ->live()
                             ->searchable()
                             ->preload()
-                            ->helperText('اختر مصنع الأعلاف الذي تم الدفع له'),
+                            ->helperText('اختر المصنع أو المورد الذي تم الدفع له'),
+                        Select::make('farm_id')
+                            ->label('المزرعة')
+                            ->relationship('farm', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required(fn (Get $get) => $get('factory_id') && Factory::find($get('factory_id'))?->type === FactoryType::SUPPLIER)
+                            ->visible(fn (Get $get) => $get('factory_id') && Factory::find($get('factory_id'))?->type === FactoryType::SUPPLIER)
+                            ->helperText('المزرعة المرتبطة بهذه الدفعة'),
                         DatePicker::make('date')
                             ->label('تاريخ الدفعة')
                             ->displayFormat('Y-m-d')

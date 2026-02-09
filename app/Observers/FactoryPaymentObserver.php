@@ -14,14 +14,19 @@ class FactoryPaymentObserver
     {
         $factory = $payment->factory;
 
-        // Get farm_id from the most recent feed movement for this factory
-        // Since a factory can supply multiple farms, we try to get a farm context
-        $latestFeedMovement = $factory->feedMovements()
-            ->where('movement_type', 'in')
-            ->latest('date')
-            ->first();
+        // Use farm_id from payment if available, otherwise try to infer from feed movements
+        $farmId = $payment->farm_id;
 
-        $farmId = $latestFeedMovement?->toWarehouse?->farm_id ?? null;
+        if (! $farmId) {
+            // Get farm_id from the most recent feed movement for this factory
+            // Since a factory can supply multiple farms, we try to get a farm context
+            $latestFeedMovement = $factory->feedMovements()
+                ->where('movement_type', 'in')
+                ->latest('date')
+                ->first();
+
+            $farmId = $latestFeedMovement?->toWarehouse?->farm_id ?? null;
+        }
 
         // Post accounting entry: Debit Accounts Payable (2110), Credit Cash/Bank (1110)
         try {

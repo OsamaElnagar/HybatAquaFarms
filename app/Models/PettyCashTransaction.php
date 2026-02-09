@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enums\PettyTransacionType;
+use App\Observers\PettyCashTransactionObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy([PettyCashTransactionObserver::class])]
 class PettyCashTransaction extends Model
 {
     /** @use HasFactory<\Database\Factories\PettyCashTransactionFactory> */
@@ -17,6 +20,7 @@ class PettyCashTransaction extends Model
         'batch_id',
         'voucher_id',
         'expense_category_id',
+        'employee_id',
         'date',
         'direction',
         'amount',
@@ -56,5 +60,10 @@ class PettyCashTransaction extends Model
     public function expenseCategory(): BelongsTo
     {
         return $this->belongsTo(ExpenseCategory::class);
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
     }
 }

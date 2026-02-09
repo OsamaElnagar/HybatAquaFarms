@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[ObservedBy([FactoryObserver::class])]
 class Factory extends Model
@@ -21,6 +22,7 @@ class Factory extends Model
         'code',
         'name',
         'type',
+        'supplier_activity_id',
         'contact_person',
         'phone',
         'phone2',
@@ -72,6 +74,11 @@ class Factory extends Model
     public function feedItems(): HasMany
     {
         return $this->hasMany(FeedItem::class);
+    }
+
+    public function supplierActivity(): BelongsTo
+    {
+        return $this->belongsTo(SupplierActivity::class);
     }
 
     /**
