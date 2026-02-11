@@ -12,7 +12,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
 
 class FactoryPaymentForm
 {
@@ -77,7 +76,7 @@ class FactoryPaymentForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn() => auth('web')->id())
+                            ->default(fn () => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل الدفعة'),
                         Textarea::make('notes')
                             ->label('ملاحظات')

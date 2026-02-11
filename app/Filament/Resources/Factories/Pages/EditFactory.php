@@ -25,6 +25,7 @@ class EditFactory extends EditRecord
             '#' => 'تعديل',
         ];
     }
+
     protected function getHeaderActions(): array
     {
         return [

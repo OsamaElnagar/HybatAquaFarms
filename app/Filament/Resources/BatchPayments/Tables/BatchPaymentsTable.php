@@ -65,7 +65,7 @@ class BatchPaymentsTable
                     ->preload(),
                 SelectFilter::make('factory_id')
                     ->label('المورد')
-                    ->relationship('factory', 'name', function (Builder  $query) {
+                    ->relationship('factory', 'name', function (Builder $query) {
                         return $query->where('type', FactoryType::SEEDS);
                     })
                     ->searchable()

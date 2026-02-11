@@ -38,7 +38,7 @@ class PaymentsRelationManager extends RelationManager
                             ->label('المورد')
                             ->relationship('factory', 'name', function (Builder $query) {
                                 return $query->where('type', FactoryType::SEEDS);
-                            }) 
+                            })
                             ->required()
                             ->searchable()
                             ->preload()

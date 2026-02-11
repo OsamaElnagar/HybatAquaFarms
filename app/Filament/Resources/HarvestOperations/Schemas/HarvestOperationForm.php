@@ -24,7 +24,7 @@ class HarvestOperationForm
                     ->schema([
                         TextInput::make('operation_number')
                             ->label('رقم العملية')
-                            ->default(fn() => 'HOP-' . str_pad(((\App\Models\HarvestOperation::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
+                            ->default(fn () => 'HOP-'.str_pad(((\App\Models\HarvestOperation::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
                             ->disabled()
                             ->dehydrated()
                             ->required()
@@ -33,7 +33,7 @@ class HarvestOperationForm
 
                         Select::make('batch_id')
                             ->label('الدفعة')
-                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest()->with('species'))
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest()->with('species'))
                             ->searchable()
                             ->preload()
                             ->required()
@@ -46,7 +46,7 @@ class HarvestOperationForm
                                     }
                                 }
                             })
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->batch_code} - {$record->species->name}")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->batch_code} - {$record->species->name}")
                             ->columnSpan(1),
 
                         Select::make('farm_id')

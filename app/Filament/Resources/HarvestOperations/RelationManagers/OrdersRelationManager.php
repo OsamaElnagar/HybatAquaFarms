@@ -40,9 +40,9 @@ class OrdersRelationManager extends RelationManager
                     ->relationship(
                         'harvest',
                         'harvest_number',
-                        modifyQueryUsing: fn(Builder $query) => $query->where('harvest_operation_id', $this->getOwnerRecord()->id),
+                        modifyQueryUsing: fn (Builder $query) => $query->where('harvest_operation_id', $this->getOwnerRecord()->id),
                     )
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->harvest_number . ' - ' . $record->harvest_date->format('Y-m-d'))
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->harvest_number.' - '.$record->harvest_date->format('Y-m-d'))
                     ->required(),
                 Select::make('trader_id')
                     ->label('التاجر')

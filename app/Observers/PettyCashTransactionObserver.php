@@ -24,7 +24,7 @@ class PettyCashTransactionObserver
                 'employee_id' => $pettyCashTransaction->employee_id,
                 'amount' => $pettyCashTransaction->amount,
                 'request_date' => $pettyCashTransaction->date,
-                'reason' => 'سلفة من عهدة (تلقائي) - معاملة رقم #' . $pettyCashTransaction->id,
+                'reason' => 'سلفة من عهدة (تلقائي) - معاملة رقم #'.$pettyCashTransaction->id,
                 'approval_status' => AdvanceApprovalStatus::APPROVED,
                 'approved_by' => $pettyCashTransaction->recorded_by,
                 'approved_date' => $pettyCashTransaction->date,
@@ -36,7 +36,7 @@ class PettyCashTransactionObserver
 
             Notification::make()
                 ->title('تم إنشاء سلفة تلقائياً')
-                ->body("تم تسجيل سلفة للموظف {$pettyCashTransaction->employee->name} بقيمة " . number_format($advance->amount) . " EGP")
+                ->body("تم تسجيل سلفة للموظف {$pettyCashTransaction->employee->name} بقيمة ".number_format($advance->amount).' EGP')
                 ->success()
                 ->actions([
                     Action::make('view')

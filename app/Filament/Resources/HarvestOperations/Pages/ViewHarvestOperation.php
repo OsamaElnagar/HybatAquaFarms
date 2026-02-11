@@ -24,12 +24,12 @@ class ViewHarvestOperation extends ViewRecord
                 ->label('إصدار فاتورة بيع')
                 ->icon('heroicon-o-currency-dollar')
                 ->color('success')
-                ->visible(fn(HarvestOperation $record) => $record->orders()->whereDoesntHave('salesOrders')->exists())
+                ->visible(fn (HarvestOperation $record) => $record->orders()->whereDoesntHave('salesOrders')->exists())
                 ->form([
                     Select::make('trader_id')
                         ->label('التاجر')
                         ->options(
-                            fn(HarvestOperation $record) => Trader::whereIn('id', $record->orders()->whereDoesntHave('salesOrders')->pluck('trader_id'))
+                            fn (HarvestOperation $record) => Trader::whereIn('id', $record->orders()->whereDoesntHave('salesOrders')->pluck('trader_id'))
                                 ->pluck('name', 'id')
                         )
                         ->searchable()

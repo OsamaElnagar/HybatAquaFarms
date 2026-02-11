@@ -23,19 +23,19 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
-                            ->relationship('farm', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn(callable $set) => $set('unit_id', null))
+                            ->afterStateUpdated(fn (callable $set) => $set('unit_id', null))
                             ->helperText('يرجى اختيار المزرعة ذات الصلة'),
                         Select::make('unit_id')
                             ->label('الوحدة او الحوض')
                             ->required()
-                            ->relationship('unit', modifyQueryUsing: fn($query, Get $get) => $query->where('farm_id', $get('farm_id')))
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->code . ' - ' . $record->name)
+                            ->relationship('unit', modifyQueryUsing: fn ($query, Get $get) => $query->where('farm_id', $get('farm_id')))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->code.' - '.$record->name)
                             ->searchable()
                             ->preload()
                             ->helperText('اختر وحدة تابعة للمزرعة المختارة (حوض/خزان)'),
@@ -60,7 +60,7 @@ class DailyFeedIssueForm
                             ->label('الكمية (كجم)')
                             ->required()
                             ->numeric()
-                            ->rule(fn(Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                            ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
                                 $warehouseId = $get('feed_warehouse_id');
                                 $itemId = $get('feed_item_id');
 
@@ -84,7 +84,7 @@ class DailyFeedIssueForm
                             ->relationship('batch', 'batch_code', modifyQueryUsing: function ($query, Get $get) {
                                 $unitId = $get('unit_id');
                                 if ($unitId) {
-                                    return $query->whereHas('units', fn($q) => $q->where('farm_units.id', $unitId));
+                                    return $query->whereHas('units', fn ($q) => $q->where('farm_units.id', $unitId));
                                 }
 
                                 return $query->latest();
@@ -98,7 +98,7 @@ class DailyFeedIssueForm
                                     ->relationship('recordedBy', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn() => auth('web')->id())
+                                    ->default(fn () => auth('web')->id())
                                     ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
                                 Textarea::make('notes')
                                     ->label('ملاحظات')
@@ -109,7 +109,6 @@ class DailyFeedIssueForm
                             ->columns(1)->columnSpanFull()->collapsed(),
                     ])
                     ->columns(2)->columnSpanFull(),
-
 
             ]);
     }

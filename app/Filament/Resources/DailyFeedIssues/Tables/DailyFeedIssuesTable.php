@@ -57,7 +57,7 @@ class DailyFeedIssuesTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'feed_item_id' => $record->feed_item_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -81,7 +81,7 @@ class DailyFeedIssuesTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'feed_warehouse_id' => $record->feed_warehouse_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -96,7 +96,7 @@ class DailyFeedIssuesTable
                     ->badge()
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0)
-                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
+                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
                     ->summarize(Sum::make()->label('إجمالي الكمية'))
                     ->sortable()
                     ->actionIcon(Heroicon::PencilSquare)
@@ -111,7 +111,7 @@ class DailyFeedIssuesTable
                                     ->numeric()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'quantity' => $record->quantity,
                             ])
                             ->action(function ($record, array $data) {
@@ -141,7 +141,7 @@ class DailyFeedIssuesTable
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->relationship('farm', 'name')
                             ->searchable()
                             ->preload()
@@ -159,20 +159,20 @@ class DailyFeedIssuesTable
                                 return $query
                                     ->orderBy('code')
                                     ->get()
-                                    ->mapWithKeys(fn($unit) => [
-                                        $unit->id => ($farmId ? $unit->code : (($unit->farm?->name ?? '-') . ' - ' . $unit->code)),
+                                    ->mapWithKeys(fn ($unit) => [
+                                        $unit->id => ($farmId ? $unit->code : (($unit->farm?->name ?? '-').' - '.$unit->code)),
                                     ])
                                     ->toArray();
                             })
                             ->searchable()
                             ->preload()
                             ->native(false)
-                            ->disabled(fn(Get $get): bool => blank($get('farm_id'))),
+                            ->disabled(fn (Get $get): bool => blank($get('farm_id'))),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['farm_id'] ?? null, fn(Builder $q, $farmId) => $q->where('farm_id', $farmId))
-                            ->when($data['unit_id'] ?? null, fn(Builder $q, $unitId) => $q->where('unit_id', $unitId));
+                            ->when($data['farm_id'] ?? null, fn (Builder $q, $farmId) => $q->where('farm_id', $farmId))
+                            ->when($data['unit_id'] ?? null, fn (Builder $q, $unitId) => $q->where('unit_id', $unitId));
                     }),
 
                 // Additional helpful filters
@@ -188,7 +188,7 @@ class DailyFeedIssuesTable
                     ->preload(),
                 SelectFilter::make('batch_id')
                     ->label('دفعة الزريعة')
-                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('recorded_by')
@@ -210,8 +210,8 @@ class DailyFeedIssuesTable
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'] ?? null, fn(Builder $q, $from) => $q->whereDate('date', '>=', $from))
-                            ->when($data['to'] ?? null, fn(Builder $q, $to) => $q->whereDate('date', '<=', $to));
+                            ->when($data['from'] ?? null, fn (Builder $q, $from) => $q->whereDate('date', '>=', $from))
+                            ->when($data['to'] ?? null, fn (Builder $q, $to) => $q->whereDate('date', '<=', $to));
                     }),
             ])
             ->recordActions([
@@ -228,7 +228,7 @@ class DailyFeedIssuesTable
 
                         return $data;
                     })
-                    ->successRedirectUrl(fn() => route('filament.admin.resources.daily-feed-issues.index'))
+                    ->successRedirectUrl(fn () => route('filament.admin.resources.daily-feed-issues.index'))
                     ->successNotificationTitle('تم نسخ صرف العلف بنجاح'),
             ])
             ->defaultSort('date', 'desc')

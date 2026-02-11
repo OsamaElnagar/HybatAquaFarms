@@ -15,7 +15,7 @@ test('it can create a payment for a supplier with farm_id', function () {
         'type' => FactoryType::SUPPLIER,
         'name' => 'Test Supplier',
     ]);
-    
+
     $farm = Farm::factory()->create(['name' => 'Test Farm']);
 
     $payment = FactoryPayment::create([
@@ -33,14 +33,14 @@ test('it can create a payment for a supplier with farm_id', function () {
 });
 
 test('it uses farm_id from payment in observer', function () {
-    // Mocking PostingService would be ideal here to verify the call, 
+    // Mocking PostingService would be ideal here to verify the call,
     // but for now we verify the data integrity.
     // Assuming the observer runs without error (checked via successful creation)
-    
+
     $supplier = Factory::factory()->create([
         'type' => FactoryType::SUPPLIER,
     ]);
-    
+
     $farm = Farm::factory()->create();
 
     $payment = FactoryPayment::create([

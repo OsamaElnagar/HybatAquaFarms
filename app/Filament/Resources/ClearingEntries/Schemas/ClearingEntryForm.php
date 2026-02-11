@@ -32,7 +32,7 @@ class ClearingEntryForm
                     })
                     ->searchable()
                     ->preload()
-                    ->disabled(fn($record) => $record?->journal_entry_id !== null),
+                    ->disabled(fn ($record) => $record?->journal_entry_id !== null),
                 TextEntry::make('trader_balance')
                     ->label('رصيد التاجر المستحق')
                     ->state(function ($get) {
@@ -40,12 +40,12 @@ class ClearingEntryForm
                         if ($traderId) {
                             $trader = Trader::find($traderId);
 
-                            return number_format($trader->outstanding_balance ?? 0) . '  EGP ';
+                            return number_format($trader->outstanding_balance ?? 0).'  EGP ';
                         }
 
                         return '0.00  EGP ';
                     })
-                    ->visible(fn($get) => filled($get('trader_id'))),
+                    ->visible(fn ($get) => filled($get('trader_id'))),
                 Select::make('factory_id')
                     ->label('المصنع')
                     ->relationship('factory', 'name', function (Builder $query) {
@@ -61,7 +61,7 @@ class ClearingEntryForm
                     })
                     ->searchable()
                     ->preload()
-                    ->disabled(fn($record) => $record?->journal_entry_id !== null),
+                    ->disabled(fn ($record) => $record?->journal_entry_id !== null),
                 TextEntry::make('factory_balance')
                     ->label('رصيد المصنع المستحق عليه')
                     ->state(function ($get) {
@@ -69,12 +69,12 @@ class ClearingEntryForm
                         if ($factoryId) {
                             $factory = Factory::find($factoryId);
 
-                            return number_format($factory->outstanding_balance ?? 0) . '  EGP ';
+                            return number_format($factory->outstanding_balance ?? 0).'  EGP ';
                         }
 
                         return '0.00  EGP ';
                     })
-                    ->visible(fn($get) => filled($get('factory_id'))),
+                    ->visible(fn ($get) => filled($get('factory_id'))),
                 DatePicker::make('date')
                     ->label('التاريخ')
                     ->displayFormat('Y-m-d')
@@ -89,7 +89,7 @@ class ClearingEntryForm
                     // ->suffix('')
                     ->minValue(0.01)
                     ->step(0.01)
-                    ->disabled(fn($record) => $record?->journal_entry_id !== null),
+                    ->disabled(fn ($record) => $record?->journal_entry_id !== null),
                 Textarea::make('description')
                     ->label('الوصف')
                     ->columnSpanFull()

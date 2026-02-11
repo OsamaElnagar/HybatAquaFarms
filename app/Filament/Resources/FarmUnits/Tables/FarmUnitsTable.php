@@ -38,7 +38,7 @@ class FarmUnitsTable
                     ->badge()
                     ->searchable()
                     ->label('نوع الوحدة'),
-                TextColumn::make('capacity')    
+                TextColumn::make('capacity')
                     ->numeric()
                     ->sortable()
                     ->label('السعة'),
@@ -50,7 +50,7 @@ class FarmUnitsTable
                     ->counts('batches')
                     ->label('عدد دفعات الزريعة')
                     ->badge()
-                    ->color(fn($state) => $state > 0 ? 'success' : 'warning')
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'warning')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

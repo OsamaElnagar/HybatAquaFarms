@@ -33,7 +33,7 @@ class PettyCashTransactionsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('date')
-            ->modifyQueryUsing(fn($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
             ->columns([
                 TextColumn::make('pettyCash.name')
                     ->label('العهدة')
@@ -82,8 +82,8 @@ class PettyCashTransactionsRelationManager extends RelationManager
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['date_from'] ?? null, fn($q, $date) => $q->where('date', '>=', $date))
-                            ->when($data['date_to'] ?? null, fn($q, $date) => $q->where('date', '<=', $date));
+                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', $date))
+                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', $date));
                     }),
             ])
             ->headerActions([

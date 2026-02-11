@@ -42,9 +42,9 @@ class TransactionsRelationManager extends RelationManager
                     ->default('out'),
                 Select::make('expense_category_id')
                     ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
-                    ->visible(fn($get) => $get('direction') === 'out')
-                    ->required(fn($get) => $get('direction') === 'out')
+                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
+                    ->visible(fn ($get) => $get('direction') === 'out')
+                    ->required(fn ($get) => $get('direction') === 'out')
                     ->searchable()
                     ->preload()
                     ->live(),
@@ -118,7 +118,7 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->direction === 'out' ? 'danger' : 'success')
+                    ->color(fn ($record) => $record->direction === 'out' ? 'danger' : 'success')
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('الوصف')
@@ -171,9 +171,9 @@ class TransactionsRelationManager extends RelationManager
                                     ->default('out'),
                                 Select::make('expense_category_id')
                                     ->label('نوع المصروف')
-                                    ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
-                                    ->visible(fn($get) => $get('direction') === 'out')
-                                    ->required(fn($get) => $get('direction') === 'out')
+                                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
+                                    ->visible(fn ($get) => $get('direction') === 'out')
+                                    ->required(fn ($get) => $get('direction') === 'out')
                                     ->searchable()
                                     ->preload(),
                                 DatePicker::make('date')

@@ -36,7 +36,7 @@ class ExternalCalculationForm
                     ->relationship(
                         'treasuryAccount',
                         'name',
-                        fn($query, Get $get) => $query
+                        fn ($query, Get $get) => $query
                             ->where('is_treasury', true)
                         // ->when($get('farm_id'), fn ($q) => $q->where('farm_id', $get('farm_id')))
                     )

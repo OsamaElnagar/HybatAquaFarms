@@ -84,7 +84,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentAbyssThemePlugin::make(),
                 FilamentApexChartsPlugin::make(),
                 GlobalSearchModalPlugin::make(),
-                FilamentLogViewer::make()->authorize(fn() => auth('web')->check())
+                FilamentLogViewer::make()->authorize(fn () => auth('web')->check())
                     ->navigationGroup('اعدادات النظام')
                     ->navigationIcon('heroicon-o-document-text')
                     ->navigationLabel('Log Viewer')
@@ -95,14 +95,13 @@ class AdminPanelProvider extends PanelProvider
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->login(
-                        fn(AuthPageConfig $config) => $config
+                        fn (AuthPageConfig $config) => $config
                             ->media(asset('assets/images/pexel-waterfall.mp4'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(0)
                     )
             )
             ->databaseNotifications()
-            ->databaseNotificationspolling('10s')
-        ;
+            ->databaseNotificationspolling('10s');
     }
 }

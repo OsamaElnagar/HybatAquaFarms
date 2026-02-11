@@ -55,7 +55,7 @@ class PettyCashTransactionsTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'expense_category_id' => $record->expense_category_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -79,7 +79,7 @@ class PettyCashTransactionsTable
                                     ->numeric()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'amount' => $record->amount,
                             ])
                             ->action(function ($record, array $data) {
@@ -134,11 +134,11 @@ class PettyCashTransactionsTable
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
                             );
                     }),
             ])
