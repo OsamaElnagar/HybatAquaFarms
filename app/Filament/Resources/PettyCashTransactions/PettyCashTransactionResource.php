@@ -56,8 +56,8 @@ class PettyCashTransactionResource extends Resource
     public static function getGlobalSearchResultActions(Model $record): array
     {
         return [
-            // Action::make('edit')
-            //     ->url(static::getUrl('edit', ['record' => $record])),
+            Action::make('edit')
+                ->url(static::getUrl('edit', ['record' => $record])),
         ];
     }
 
@@ -82,8 +82,8 @@ class PettyCashTransactionResource extends Resource
     {
         return [
             'index' => ListPettyCashTransactions::route('/'),
-            // 'create' => CreatePettyCashTransaction::route('/create'),
-            // 'edit' => EditPettyCashTransaction::route('/{record}/edit'),
+            'create' => CreatePettyCashTransaction::route('/create'),
+            'edit' => EditPettyCashTransaction::route('/{record}/edit'),
         ];
     }
 }
