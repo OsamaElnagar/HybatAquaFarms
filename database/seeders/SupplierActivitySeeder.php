@@ -16,7 +16,6 @@ class SupplierActivitySeeder extends Seeder
         $activities = [
             'تبن',
             'قش',
-            'سباخ',
             'سابله',
             'مواشي',
             'أدوية',

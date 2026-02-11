@@ -56,8 +56,8 @@ class PettyCashTransactionResource extends Resource
     public static function getGlobalSearchResultActions(Model $record): array
     {
         return [
-            Action::make('edit')
-                ->url(static::getUrl('edit', ['record' => $record])),
+            // Action::make('edit')
+            //     ->url(static::getUrl('edit', ['record' => $record])),
         ];
     }
 
