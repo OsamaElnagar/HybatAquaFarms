@@ -31,6 +31,18 @@ class TransactionsRelationManager extends RelationManager
     {
         return $schema
             ->components([
+                Select::make('farm_id')
+                    ->label('المزرعة')
+                    ->options(function () {
+                        return $this->getOwnerRecord()->farms->pluck('name', 'id');
+                    })
+                    ->default(function () {
+                        $farms = $this->getOwnerRecord()->farms;
+                        return $farms->count() === 1 ? $farms->first()->id : null;
+                    })
+                    // ->required()
+                    ->searchable()
+                    ->preload(),
                 Select::make('direction')
                     ->label('النوع')
                     ->options([
@@ -102,6 +114,10 @@ class TransactionsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->columns([
+                TextColumn::make('farm.name')
+                    ->label('المزرعة')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
                     ->date('Y-m-d')
@@ -160,6 +176,18 @@ class TransactionsRelationManager extends RelationManager
                         Repeater::make('transactions')
                             ->label('المعاملات')
                             ->schema([
+                                Select::make('farm_id')
+                                    ->label('المزرعة')
+                                    ->options(function () {
+                                        return $this->getOwnerRecord()->farms->pluck('name', 'id');
+                                    })
+                                    ->default(function () {
+                                        $farms = $this->getOwnerRecord()->farms;
+                                        return $farms->count() === 1 ? $farms->first()->id : null;
+                                    })
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
                                 Select::make('direction')
                                     ->label('النوع')
                                     ->options([
@@ -204,6 +232,7 @@ class TransactionsRelationManager extends RelationManager
 
                         foreach ($data['transactions'] ?? [] as $transactionData) {
                             $pettyCash->transactions()->create([
+                                'farm_id' => $transactionData['farm_id'],
                                 'direction' => $transactionData['direction'],
                                 'expense_category_id' => $transactionData['expense_category_id'] ?? null,
                                 'date' => $transactionData['date'],

@@ -75,7 +75,7 @@ class PettyCashResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return parent::getEloquentQuery()
-            ->with(['farm', 'custodian'])
+            ->with(['custodian'])
             ->withSum(['transactions as total_in' => fn ($query) => $query->where('direction', 'in')], 'amount')
             ->withSum(['transactions as total_out' => fn ($query) => $query->where('direction', 'out')], 'amount');
     }

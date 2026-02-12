@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PettyCash extends Model
@@ -13,7 +14,6 @@ class PettyCash extends Model
     use HasFactory;
 
     protected $fillable = [
-        'farm_id',
         'name',
         'custodian_employee_id',
         'opening_balance',
@@ -31,9 +31,9 @@ class PettyCash extends Model
         ];
     }
 
-    public function farm(): BelongsTo
+    public function farms(): BelongsToMany
     {
-        return $this->belongsTo(Farm::class);
+        return $this->belongsToMany(Farm::class, 'farm_petty_cash');
     }
 
     public function custodian(): BelongsTo

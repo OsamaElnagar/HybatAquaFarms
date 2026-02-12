@@ -28,8 +28,18 @@ class PettyCashTransactionForm
                             ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
-                                    $pettyCash = PettyCash::find($state);
-                                    $set('current_balance', number_format($pettyCash->current_balance, 0));
+                                    $pettyCash = PettyCash::with('farms')->find($state);
+                                    if ($pettyCash) {
+                                        $set('current_balance', number_format($pettyCash->current_balance, 0));
+                                        
+                                        if ($pettyCash->farms->count() === 1) {
+                                            $set('farm_id', $pettyCash->farms->first()->id);
+                                        } else {
+                                            $set('farm_id', null);
+                                        }
+                                    }
+                                } else {
+                                    $set('farm_id', null);
                                 }
                             })
                             ->searchable()
@@ -38,6 +48,28 @@ class PettyCashTransactionForm
                             ->label('رصيد العهده الحالي')
                             ->placeholder('حدد عهده للبدأ'),
                         // ->visible(fn ($get) => filled($get('petty_cash_id'))),
+
+                        Select::make('farm_id')
+                            ->label('المزرعة')
+                            ->relationship('farm', 'name', modifyQueryUsing: function ($query, callable $get) {
+                                $pettyCashId = $get('petty_cash_id');
+                                if ($pettyCashId) {
+                                    $query->whereHas('pettyCashes', function ($q) use ($pettyCashId) {
+                                        $q->where('petty_cashes.id', $pettyCashId);
+                                    });
+                                } else {
+                                    // If no petty cash selected, maybe show nothing or all?
+                                    // Better to show nothing until petty cash is selected.
+                                    $query->whereRaw('1 = 0');
+                                }
+                                return $query;
+                            })
+                            // ->required()
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (callable $get) => filled($get('petty_cash_id')))
+                            ->helperText('المزرعة التي تخصها المعاملة'),
+
                         Select::make('direction')
                             ->label('النوع')
                             ->options([
@@ -49,9 +81,9 @@ class PettyCashTransactionForm
                             ->default('out'),
                         Select::make('expense_category_id')
                             ->label('نوع المصروف')
-                            ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                            ->visible(fn ($get) => $get('direction') === 'out')
-                            ->required(fn ($get) => $get('direction') === 'out')
+                            ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
+                            ->visible(fn($get) => $get('direction') === 'out')
+                            ->required(fn($get) => $get('direction') === 'out')
                             ->searchable()
                             ->preload()
                             ->live(),

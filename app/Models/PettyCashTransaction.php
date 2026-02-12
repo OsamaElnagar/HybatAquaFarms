@@ -17,6 +17,7 @@ class PettyCashTransaction extends Model
 
     protected $fillable = [
         'petty_cash_id',
+        'farm_id',
         'batch_id',
         'voucher_id',
         'expense_category_id',
@@ -40,6 +41,11 @@ class PettyCashTransaction extends Model
     public function pettyCash(): BelongsTo
     {
         return $this->belongsTo(PettyCash::class);
+    }
+
+    public function farm(): BelongsTo
+    {
+        return $this->belongsTo(Farm::class);
     }
 
     public function batch(): BelongsTo

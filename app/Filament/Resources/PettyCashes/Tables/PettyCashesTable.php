@@ -20,19 +20,14 @@ class PettyCashesTable
                     ->label('اسم العهدة')
                     ->searchable(),
 
-                TextColumn::make('farm.name')
-                    ->label('المزرعة')
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('custodian.name')
+                    TextColumn::make('custodian.name')
                     ->label('المستأمن')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('current_balance')
                     ->label('الرصيد الحالي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->current_balance > 0 ? 'success' : 'danger')
+                    ->color(fn($record) => $record->current_balance > 0 ? 'success' : 'danger')
                     ->sortable(),
                 TextColumn::make('opening_balance')
                     ->label('الرصيد الافتتاحي')

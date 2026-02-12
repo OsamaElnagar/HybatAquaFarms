@@ -18,19 +18,21 @@ class PettyCashForm
             ->components([
                 Section::make('معلومات أساسية')
                     ->schema([
-                        Select::make('farm_id')
-                            ->label('المزرعة')
-                            ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->helperText('المزرعة التي تنتمي إليها العهدة')
-                            ->columnSpan(1),
+
                         TextInput::make('name')
                             ->label('اسم العهدة')
                             ->required()
                             ->maxLength(255)
                             ->helperText('اسم العهدة (مثل: عهدة المزرعة الرئيسية)')
+                            ->columnSpan(1),
+                        Select::make('farms')
+                            ->label('المزارع')
+                            ->relationship('farms', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
+                            ->required()
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('المزارع التي تغطيها هذه العهدة')
                             ->columnSpan(1),
                         Select::make('custodian_employee_id')
                             ->label('المستأمن')

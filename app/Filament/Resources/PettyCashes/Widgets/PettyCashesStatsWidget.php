@@ -17,8 +17,8 @@ class PettyCashesStatsWidget extends StatsOverviewWidget
     protected function getStats(): array
     {
         return Cache::remember('petty_cashes_stats', 600, function () {
-            $totalPettyCashes = PettyCash::count();
-            $activePettyCashes = PettyCash::where('is_active', true)->count();
+            // $totalPettyCashes = PettyCash::count();
+            // $activePettyCashes = PettyCash::where('is_active', true)->count();
 
             // Total Balance Optimization: avoid looping through PC models
             $sumOpeningBalance = PettyCash::sum('opening_balance');
@@ -32,11 +32,7 @@ class PettyCashesStatsWidget extends StatsOverviewWidget
                 ->sum('amount');
 
             return [
-                Stat::make('إجمالي العُهد', number_format($totalPettyCashes))
-                    ->description($activePettyCashes.' نشط')
-                    ->descriptionIcon('heroicon-o-wallet')
-                    ->color('primary'),
-
+             
                 Stat::make('إجمالي الأرصدة', number_format($totalBalance).' EGP ')
                     ->description('الرصيد الإجمالي لجميع العُهد')
                     ->descriptionIcon('heroicon-o-banknotes')
@@ -47,10 +43,6 @@ class PettyCashesStatsWidget extends StatsOverviewWidget
                     ->descriptionIcon('heroicon-o-arrow-trending-down')
                     ->color('warning'),
 
-                Stat::make('متوسط الرصيد', $totalPettyCashes > 0 ? number_format($totalBalance / $totalPettyCashes).' EGP ' : '0.00 EGP')
-                    ->description('متوسط الرصيد لكل عدة')
-                    ->descriptionIcon('heroicon-o-calculator')
-                    ->color('info'),
             ];
         });
     }

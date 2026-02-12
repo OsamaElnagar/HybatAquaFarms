@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -68,14 +69,14 @@ class Farm extends Model
         return $this->hasMany(Account::class);
     }
 
-    public function pettyCash(): HasMany
+    public function pettyCashes(): BelongsToMany
     {
-        return $this->hasMany(PettyCash::class);
+        return $this->belongsToMany(PettyCash::class, 'farm_petty_cash');
     }
 
-    public function pettyCashTransactions(): HasManyThrough
+    public function pettyCashTransactions(): HasMany
     {
-        return $this->hasManyThrough(PettyCashTransaction::class, PettyCash::class, 'farm_id', 'petty_cash_id');
+        return $this->hasMany(PettyCashTransaction::class);
     }
 
     public function vouchers(): HasMany
