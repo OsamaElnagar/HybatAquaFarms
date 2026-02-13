@@ -31,7 +31,7 @@ class PettyCashTransactionForm
                                     $pettyCash = PettyCash::with('farms')->find($state);
                                     if ($pettyCash) {
                                         $set('current_balance', number_format($pettyCash->current_balance, 0));
-                                        
+
                                         if ($pettyCash->farms->count() === 1) {
                                             $set('farm_id', $pettyCash->farms->first()->id);
                                         } else {
@@ -62,9 +62,9 @@ class PettyCashTransactionForm
                                     // Better to show nothing until petty cash is selected.
                                     $query->whereRaw('1 = 0');
                                 }
+
                                 return $query;
                             })
-                            // ->required()
                             ->searchable()
                             ->preload()
                             ->visible(fn (callable $get) => filled($get('petty_cash_id')))
@@ -81,9 +81,9 @@ class PettyCashTransactionForm
                             ->default('out'),
                         Select::make('expense_category_id')
                             ->label('نوع المصروف')
-                            ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
-                            ->visible(fn($get) => $get('direction') === 'out')
-                            ->required(fn($get) => $get('direction') === 'out')
+                            ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
+                            ->visible(fn ($get) => $get('direction') === 'out')
+                            ->required(fn ($get) => $get('direction') === 'out')
                             ->searchable()
                             ->preload()
                             ->live(),

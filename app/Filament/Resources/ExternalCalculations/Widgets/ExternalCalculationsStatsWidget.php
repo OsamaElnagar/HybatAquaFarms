@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ExternalCalculations\Widgets;
 
 use App\Enums\ExternalCalculationType;
-use App\Models\ExternalCalculation;
+use App\Models\ExternalCalculationEntry;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -14,14 +14,14 @@ class ExternalCalculationsStatsWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $receipts = ExternalCalculation::where('type', ExternalCalculationType::Receipt)->sum('amount');
-        $payments = ExternalCalculation::where('type', ExternalCalculationType::Payment)->sum('amount');
+        $receipts = ExternalCalculationEntry::where('type', ExternalCalculationType::Receipt)->sum('amount');
+        $payments = ExternalCalculationEntry::where('type', ExternalCalculationType::Payment)->sum('amount');
         $net = $receipts - $payments;
-        $monthReceipts = ExternalCalculation::where('type', ExternalCalculationType::Receipt)
+        $monthReceipts = ExternalCalculationEntry::where('type', ExternalCalculationType::Receipt)
             ->whereMonth('date', Carbon::now()->month)
             ->whereYear('date', Carbon::now()->year)
             ->sum('amount');
-        $monthPayments = ExternalCalculation::where('type', ExternalCalculationType::Payment)
+        $monthPayments = ExternalCalculationEntry::where('type', ExternalCalculationType::Payment)
             ->whereMonth('date', Carbon::now()->month)
             ->whereYear('date', Carbon::now()->year)
             ->sum('amount');

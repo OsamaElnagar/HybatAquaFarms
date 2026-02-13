@@ -83,10 +83,10 @@ return new class extends Migration
                     ->update(['farm_id' => $farmLinks->first()->farm_id]);
             }
         }
-        
+
         // Restore unique constraint
         Schema::table('petty_cashes', function (Blueprint $table) {
-             $table->unique(['farm_id', 'name']);
+            $table->unique(['farm_id', 'name']);
         });
 
         // 3. Drop farm_id from petty_cash_transactions

@@ -32,7 +32,7 @@ class PettyCashesStatsWidget extends StatsOverviewWidget
                 ->sum('amount');
 
             return [
-             
+
                 Stat::make('إجمالي الأرصدة', number_format($totalBalance).' EGP ')
                     ->description('الرصيد الإجمالي لجميع العُهد')
                     ->descriptionIcon('heroicon-o-banknotes')

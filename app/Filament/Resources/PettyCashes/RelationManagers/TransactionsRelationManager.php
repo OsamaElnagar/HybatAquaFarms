@@ -38,6 +38,7 @@ class TransactionsRelationManager extends RelationManager
                     })
                     ->default(function () {
                         $farms = $this->getOwnerRecord()->farms;
+
                         return $farms->count() === 1 ? $farms->first()->id : null;
                     })
                     // ->required()
@@ -183,9 +184,10 @@ class TransactionsRelationManager extends RelationManager
                                     })
                                     ->default(function () {
                                         $farms = $this->getOwnerRecord()->farms;
+
                                         return $farms->count() === 1 ? $farms->first()->id : null;
                                     })
-                                    ->required()
+
                                     ->searchable()
                                     ->preload(),
                                 Select::make('direction')

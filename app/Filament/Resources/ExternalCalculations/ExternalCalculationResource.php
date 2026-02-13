@@ -5,13 +5,20 @@ namespace App\Filament\Resources\ExternalCalculations;
 use App\Filament\Resources\ExternalCalculations\Pages\CreateExternalCalculation;
 use App\Filament\Resources\ExternalCalculations\Pages\EditExternalCalculation;
 use App\Filament\Resources\ExternalCalculations\Pages\ListExternalCalculations;
-use App\Filament\Resources\ExternalCalculations\Schemas\ExternalCalculationForm;
-use App\Filament\Resources\ExternalCalculations\Tables\ExternalCalculationsTable;
+use App\Filament\Resources\ExternalCalculations\Pages\ViewExternalCalculation;
+use App\Filament\Resources\ExternalCalculations\RelationManagers\EntriesRelationManager;
 use App\Models\ExternalCalculation;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,22 +50,59 @@ class ExternalCalculationResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return ExternalCalculationForm::configure($schema);
+        return $schema
+            ->components([
+                TextInput::make('name')
+                    ->label('الاسم')
+                    ->required()
+                    ->maxLength(255),
+                Textarea::make('description')
+                    ->label('الوصف')
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
-        return ExternalCalculationsTable::configure($table);
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->label('الاسم')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('description')
+                    ->label('الوصف')
+                    ->limit(50),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                EditAction::make(),
+                DeleteAction::make(),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            EntriesRelationManager::class,
+        ];
     }
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['reference_number', 'description'];
+        return ['name', 'description'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string
     {
-        return (string) ($record->reference_number ?: ('EC-'.$record->id)).' - '.$record->date->format('y-m-d');
+        return $record->name;
     }
 
     public static function getPages(): array
@@ -67,7 +111,7 @@ class ExternalCalculationResource extends Resource
             'index' => ListExternalCalculations::route('/'),
             'create' => CreateExternalCalculation::route('/create'),
             'edit' => EditExternalCalculation::route('/{record}/edit'),
-            'view' => \App\Filament\Resources\ExternalCalculations\Pages\ViewExternalCalculation::route('/{record}'),
+            'view' => ViewExternalCalculation::route('/{record}'),
         ];
     }
 }

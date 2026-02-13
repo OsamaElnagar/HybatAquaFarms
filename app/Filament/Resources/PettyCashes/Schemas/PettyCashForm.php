@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PettyCashes\Schemas;
 
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -25,13 +26,12 @@ class PettyCashForm
                             ->maxLength(255)
                             ->helperText('اسم العهدة (مثل: عهدة المزرعة الرئيسية)')
                             ->columnSpan(1),
-                        Select::make('farms')
+                        CheckboxList::make('farms')
                             ->label('المزارع')
-                            ->relationship('farms', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
+                            ->relationship('farms', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
-                            ->multiple()
                             ->searchable()
-                            ->preload()
+                            ->columns(2)
                             ->helperText('المزارع التي تغطيها هذه العهدة')
                             ->columnSpan(1),
                         Select::make('custodian_employee_id')
