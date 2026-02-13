@@ -15,7 +15,7 @@ return new class extends Migration
         // 2. Create new external_calculations table (Parent)
         Schema::create('external_calculations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
+            // Removed farm_id as it's no longer required on the parent account
             $table->string('name');
             $table->text('description')->nullable();
             $table->timestamps();
@@ -28,21 +28,16 @@ return new class extends Migration
 
         // 4. Data Migration: Create a default parent and link existing entries
         if (DB::table('external_calculation_entries')->count() > 0) {
-            $farmIds = DB::table('external_calculation_entries')->select('farm_id')->distinct()->pluck('farm_id');
+            // Create ONE global parent account for all existing entries
+            $parentId = DB::table('external_calculations')->insertGetId([
+                'name' => 'General External Account',
+                'description' => 'Automatically created during migration',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-            foreach ($farmIds as $farmId) {
-                $parentId = DB::table('external_calculations')->insertGetId([
-                    'farm_id' => $farmId,
-                    'name' => 'General External Account',
-                    'description' => 'Automatically created during migration',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                DB::table('external_calculation_entries')
-                    ->where('farm_id', $farmId)
-                    ->update(['external_calculation_id' => $parentId]);
-            }
+            // Assign this parent to ALL entries
+            DB::table('external_calculation_entries')->update(['external_calculation_id' => $parentId]);
         }
 
         // 5. Make external_calculation_id required
