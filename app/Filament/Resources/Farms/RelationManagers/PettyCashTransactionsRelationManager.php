@@ -54,7 +54,23 @@ class PettyCashTransactionsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize([
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المقبوضات (قبض)')
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المدفوعات (صرف)')
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('صافي الرصيد')
+                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                    ]),
                 TextColumn::make('recordedBy.name')
                     ->label('سجل بواسطة')
                     ->toggleable(),
