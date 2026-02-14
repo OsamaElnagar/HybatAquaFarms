@@ -135,8 +135,24 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->direction === 'out' ? 'danger' : 'success')
-                    ->sortable(),
+                    ->color(fn ($record) => $record->direction === PettyTransacionType::OUT ? 'danger' : 'success')
+                    ->sortable()
+                    ->summarize([
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المقبوضات (قبض)')
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المدفوعات (صرف)')
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('صافي الرصيد')
+                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                    ]),
                 TextColumn::make('description')
                     ->label('الوصف')
                     ->limit(50)

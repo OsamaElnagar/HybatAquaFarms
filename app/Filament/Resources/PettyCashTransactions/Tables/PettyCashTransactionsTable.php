@@ -63,29 +63,26 @@ class PettyCashTransactionsTable
                             })
                     ),
 
-                ActionableColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
-                    ->actionIcon(Heroicon::PencilSquare)
-                    ->actionIconColor('primary')
-                    ->clickableColumn()
-                    ->tapAction(
-                        Action::make('changeAmount')
-                            ->label('Change Amount')
-                            ->schema([
-                                TextInput::make('amount')
-                                    ->label('Amount')
-                                    ->numeric()
-                                    ->required(),
-                            ])
-                            ->fillForm(fn ($record) => [
-                                'amount' => $record->amount,
-                            ])
-                            ->action(function ($record, array $data) {
-                                $record->update($data);
-                            })
-                    ),
+                    ->summarize([
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المقبوضات (قبض)')
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('المدفوعات (صرف)')
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('صافي الرصيد')
+                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                    ]),
                 TextColumn::make('description')
                     ->label('الوصف')
                     ->limit(50)
