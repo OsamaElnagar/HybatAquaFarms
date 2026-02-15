@@ -12,7 +12,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\RawJs;
 
 class PettyCashTransactionForm
 {
@@ -121,8 +120,6 @@ class PettyCashTransactionForm
                             ->label('المبلغ')
                             ->required()
                             ->numeric()
-                            ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
-                            ->stripCharacters(',')
                             ->suffix(' EGP '),
                         Textarea::make('description')
                             ->label('الوصف التفصيلي')

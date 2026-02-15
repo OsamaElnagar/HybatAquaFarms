@@ -12,7 +12,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Grid as SchemaGrid;
 use Filament\Schemas\Components\Section as SchemaSection;
 use Filament\Schemas\Schema;
-use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
 
 class BatchForm
@@ -121,8 +120,6 @@ class BatchForm
                                     ->label('الكمية الأولية')
                                     ->required()
                                     ->numeric()
-                                    ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
-                                    ->stripCharacters(',')
                                     ->minValue(1)
                                     ->live(true)
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
