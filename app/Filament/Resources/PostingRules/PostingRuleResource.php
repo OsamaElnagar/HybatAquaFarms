@@ -18,6 +18,8 @@ class PostingRuleResource extends Resource
 {
     protected static ?string $model = PostingRule::class;
 
+    protected static bool $shouldRegisterRoute = false;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     public static function getNavigationGroup(): ?string
