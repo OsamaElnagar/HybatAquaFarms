@@ -85,7 +85,7 @@ class Farm extends Model
 
     public function externalCalculations(): HasMany
     {
-        return $this->hasMany(ExternalCalculation::class);
+        return $this->hasMany(ExternalCalculationEntry::class);
     }
 
     public function salesOrders(): HasMany
