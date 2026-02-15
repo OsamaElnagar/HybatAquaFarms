@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Batches\Schemas;
 
-use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
 use App\Enums\FactoryType;
 use Filament\Forms\Components\DatePicker;
@@ -13,6 +12,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Grid as SchemaGrid;
 use Filament\Schemas\Components\Section as SchemaSection;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
 
 class BatchForm
@@ -113,13 +113,6 @@ class BatchForm
                                     ->preload()
                                     ->helperText('المورد الذي تم شراء الزريعة منه (اختياري - فقط إذا كانت من مفرخة)')
                                     ->columnSpan(1),
-
-                                // Select::make('source')
-                                //     ->label('المصدر')
-                                //     ->options(BatchSource::class)
-                                //     ->native(false)
-                                //     ->helperText('مصدر الزريعة: مفرخة، نقل، أو شراء')
-                                //     ->columnSpan(1),
                             ]),
 
                         SchemaGrid::make(3)
@@ -128,6 +121,8 @@ class BatchForm
                                     ->label('الكمية الأولية')
                                     ->required()
                                     ->numeric()
+                                    ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
+                                    ->stripCharacters(',')
                                     ->minValue(1)
                                     ->live(true)
                                     ->afterStateUpdated(function ($state, callable $set, $get) {

@@ -5,13 +5,14 @@ namespace App\Filament\Resources\PettyCashTransactions\Schemas;
 use App\Models\ExpenseCategory;
 use App\Models\PettyCash;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
 
 class PettyCashTransactionForm
 {
@@ -24,6 +25,7 @@ class PettyCashTransactionForm
                         Select::make('petty_cash_id')
                             ->label('العهدة')
                             ->relationship('pettyCash', 'name')
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->required()
                             ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
@@ -103,18 +105,6 @@ class PettyCashTransactionForm
                                 $category = ExpenseCategory::find($categoryId);
 
                                 return $category && $category->code === 'WORKER_SALARY';
-                            })
-                            ->required(function ($get) {
-                                if ($get('direction') !== 'out') {
-                                    return false;
-                                }
-                                $categoryId = $get('expense_category_id');
-                                if (! $categoryId) {
-                                    return false;
-                                }
-                                $category = ExpenseCategory::find($categoryId);
-
-                                return $category && $category->code === 'WORKER_SALARY';
                             }),
                         DatePicker::make('date')
                             ->label('التاريخ')
@@ -131,32 +121,14 @@ class PettyCashTransactionForm
                             ->label('المبلغ')
                             ->required()
                             ->numeric()
+                            ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
+                            ->stripCharacters(',')
                             ->suffix(' EGP '),
                         Textarea::make('description')
                             ->label('الوصف التفصيلي')
                             ->columnSpanFull()
                             ->maxLength(1000)
                             ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
-                        // Placeholder::make('balance_after')
-                        //     ->label('الرصيد بعد المعاملة')
-                        //     ->content(function ($get, $record) {
-                        //         $amount = (float) ($get('amount') ?? $record?->amount ?? 0);
-                        //         $direction = $get('direction') ?? $record?->direction ?? 'out';
-                        //         $pettyCashId = $get('petty_cash_id') ?? $record?->petty_cash_id;
-
-                        //         if ($pettyCashId) {
-                        //             $pettyCash = PettyCash::find($pettyCashId);
-                        //             $currentBalance = $pettyCash->current_balance;
-                        //             $balanceAfter = $direction === 'in'
-                        //                 ? $currentBalance + $amount
-                        //                 : $currentBalance - $amount;
-
-                        //             return number_format($balanceAfter).'  EGP ';
-                        //         }
-
-                        //         return '-';
-                        //     })
-                        //     ->visible(fn ($get) => filled($get('petty_cash_id')) && filled($get('amount'))),
                     ])
                     ->columnSpanFull(),
             ]);

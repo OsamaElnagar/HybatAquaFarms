@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PettyCashes\RelationManagers;
 
 use App\Enums\PettyTransacionType;
-use App\Models\ExpenseCategory;
+use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionForm;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -29,85 +29,7 @@ class TransactionsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Select::make('farm_id')
-                    ->label('المزرعة')
-                    ->options(function () {
-                        return $this->getOwnerRecord()->farms->pluck('name', 'id');
-                    })
-                    ->default(function () {
-                        $farms = $this->getOwnerRecord()->farms;
-
-                        return $farms->count() === 1 ? $farms->first()->id : null;
-                    })
-                    // ->required()
-                    ->searchable()
-                    ->preload(),
-                Select::make('direction')
-                    ->label('النوع')
-                    ->options([
-                        'out' => 'صرف (مصروف)',
-                        'in' => 'قبض (تزويد)',
-                    ])
-                    ->required()
-                    ->live()
-                    ->default('out'),
-                Select::make('expense_category_id')
-                    ->label('نوع المصروف')
-                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                    ->visible(fn ($get) => $get('direction') === 'out')
-                    ->required(fn ($get) => $get('direction') === 'out')
-                    ->searchable()
-                    ->preload()
-                    ->live(),
-                Select::make('employee_id')
-                    ->label('الموظف')
-                    ->relationship('employee', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->visible(function ($get) {
-                        if ($get('direction') !== 'out') {
-                            return false;
-                        }
-                        $categoryId = $get('expense_category_id');
-                        if (! $categoryId) {
-                            return false;
-                        }
-                        $category = ExpenseCategory::find($categoryId);
-
-                        return $category && $category->code === 'WORKER_SALARY';
-                    })
-                    ->required(function ($get) {
-                        if ($get('direction') !== 'out') {
-                            return false;
-                        }
-                        $categoryId = $get('expense_category_id');
-                        if (! $categoryId) {
-                            return false;
-                        }
-                        $category = ExpenseCategory::find($categoryId);
-
-                        return $category && $category->code === 'WORKER_SALARY';
-                    }),
-                DatePicker::make('date')
-                    ->label('التاريخ')
-                    ->displayFormat('Y-m-d')
-                    ->native(false)
-                    ->required()
-                    ->default(now()),
-                TextInput::make('amount')
-                    ->label('المبلغ')
-                    ->required()
-                    // ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->minValue(0.01)
-                    ->step(0.01),
-                Textarea::make('description')
-                    ->label('الوصف التفصيلي')
-                    ->columnSpanFull()
-                    ->maxLength(1000)
-                    ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
-            ]);
+        return PettyCashTransactionForm::configure($schema);
     }
 
     public function table(Table $table): Table

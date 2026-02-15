@@ -20,7 +20,7 @@ class FarmForm
                     ->schema([
                         TextInput::make('code')
                             ->label('الكود')
-                            ->disabled()
+                            ->disabledOn('create')
                             ->dehydrated(false)
                             ->helperText('يتم توليده تلقائياً')
                             ->columnSpan(1),
