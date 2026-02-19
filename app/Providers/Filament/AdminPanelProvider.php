@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->profile()
+            ->unsavedChangesAlerts()
             ->favicon(asset('favicon.ico'))
             ->brandName(config('app.name'))
             ->brandLogoHeight('50px')

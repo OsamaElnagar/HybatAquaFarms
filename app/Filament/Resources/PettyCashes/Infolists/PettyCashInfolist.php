@@ -17,8 +17,9 @@ class PettyCashInfolist
                         TextEntry::make('name')
                             ->label('اسم العهدة')
                             ->columnSpan(1),
-                        TextEntry::make('farm.name')
-                            ->label('المزرعة')
+                        TextEntry::make('farms.name')
+                            ->label('المزارع')
+                            ->badge()
                             ->columnSpan(1),
                         TextEntry::make('custodian.name')
                             ->label('المستأمن')

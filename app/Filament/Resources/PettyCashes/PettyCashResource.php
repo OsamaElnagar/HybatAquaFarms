@@ -46,7 +46,7 @@ class PettyCashResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'farm.name', 'custodian.name'];
+        return ['name', 'farms.name', 'custodian.name'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
@@ -76,8 +76,8 @@ class PettyCashResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with(['custodian'])
-            ->withSum(['transactions as total_in' => fn ($query) => $query->where('direction', 'in')], 'amount')
-            ->withSum(['transactions as total_out' => fn ($query) => $query->where('direction', 'out')], 'amount');
+            ->withSum(['transactions as total_in' => fn($query) => $query->where('direction', 'in')], 'amount')
+            ->withSum(['transactions as total_out' => fn($query) => $query->where('direction', 'out')], 'amount');
     }
 
     public static function getRelations(): array
