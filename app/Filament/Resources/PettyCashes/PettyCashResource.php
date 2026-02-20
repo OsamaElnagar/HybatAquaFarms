@@ -26,7 +26,7 @@ class PettyCashResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'العُهدات';
+        return 'العُهد والمصروفات';
     }
 
     public static function getNavigationLabel(): string

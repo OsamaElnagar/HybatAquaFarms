@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 #[ObservedBy([FarmObserver::class])]
 class Farm extends Model
@@ -135,6 +136,11 @@ class Farm extends Model
     public function getTotalCurrentStockAttribute(): int
     {
         return (int) ($this->attributes['total_current_stock'] ?? $this->batches()->where('status', 'active')->sum('current_quantity'));
+    }
+
+    public function feedStocks(): HasManyThrough
+    {
+        return $this->hasManyThrough(FeedStock::class, FeedWarehouse::class);
     }
 
     #[Scope]

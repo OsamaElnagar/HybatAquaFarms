@@ -35,23 +35,23 @@ class StocksRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('quantity_in_stock')
                     ->label('الكمية المتاحة')
-                    ->numeric(decimalPlaces: 3)
+                    ->numeric()
                     ->suffix(' كجم')
-                    ->color(fn ($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
+                    ->color(fn($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
                     ->sortable(),
                 TextColumn::make('minimum_level')
                     ->label('الحد الأدنى')
-                    ->numeric(decimalPlaces: 3)
+                    ->numeric()
                     ->suffix(' كجم')
                     ->toggleable(),
                 TextColumn::make('maximum_level')
                     ->label('الحد الأقصى')
-                    ->numeric(decimalPlaces: 3)
+                    ->numeric()
                     ->suffix(' كجم')
                     ->toggleable(),
                 TextColumn::make('stock_value')
                     ->label('القيمة')
-                    ->state(fn ($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
+                    ->state(fn($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->toggleable(),

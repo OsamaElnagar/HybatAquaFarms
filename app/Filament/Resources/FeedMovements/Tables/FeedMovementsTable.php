@@ -43,7 +43,7 @@ class FeedMovementsTable
                 TextColumn::make('quantity')
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0)
-                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
+                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
                     ->sortable(),
                 TextColumn::make('factory.name')
                     ->label('المصنع')
@@ -58,8 +58,7 @@ class FeedMovementsTable
                 TextColumn::make('description')
                     ->label('الوصف')
                     ->searchable()
-                    ->wrap()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()
@@ -97,8 +96,8 @@ class FeedMovementsTable
                 ViewAction::make()->label('عرض'),
                 EditAction::make()
                     ->label('تعديل')
-                    ->visible(fn ($record) => $record->movement_type !== \App\Enums\FeedMovementType::Out)
-                    ->tooltip(fn ($record) => $record->movement_type === \App\Enums\FeedMovementType::Out
+                    ->visible(fn($record) => $record->movement_type !== \App\Enums\FeedMovementType::Out)
+                    ->tooltip(fn($record) => $record->movement_type === \App\Enums\FeedMovementType::Out
                         ? 'لا يمكن تعديل حركات الصرف - يتم إنشاؤها تلقائياً من الصرف اليومي'
                         : null),
             ])

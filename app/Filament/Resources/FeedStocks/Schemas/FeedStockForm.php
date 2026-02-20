@@ -4,6 +4,7 @@ namespace App\Filament\Resources\FeedStocks\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -18,6 +19,8 @@ class FeedStockForm
                         Select::make('feed_warehouse_id')
                             ->label('المستودع')
                             ->relationship('warehouse', 'name')
+                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->disabled(fn($livewire) => $livewire instanceof RelationManager)
                             ->required()
                             ->searchable()
                             ->preload()

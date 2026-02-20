@@ -16,8 +16,6 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class DailyFeedImportsChart extends ApexChartWidget
 {
-    use HasFiltersSchema;
-
     protected static ?string $chartId = 'dailyFeedImportsChart';
 
     protected static ?string $heading = 'واردات الأعلاف اليومية';
@@ -30,51 +28,17 @@ class DailyFeedImportsChart extends ApexChartWidget
 
     protected ?string $pollingInterval = null;
 
-    public function filtersSchema(Schema $schema): Schema
-    {
-        return $schema->components([
-            DatePicker::make('date_start')
-                ->label('من تاريخ')
-                ->displayFormat('Y-m-d')
-                ->native(false)
-                ->default(now()->subDays(30))
-                ->live(),
-            DatePicker::make('date_end')
-                ->label('إلى تاريخ')
-                ->displayFormat('Y-m-d')
-                ->native(false)
-                ->default(now())
-                ->live(),
-            Select::make('factory_id')
-                ->label('المصنع')
-                ->options(Factory::where('is_active', true)->pluck('name', 'id'))
-                ->placeholder('جميع المصانع')
-                ->live(),
-            Select::make('feed_item_id')
-                ->label('صنف العلف')
-                ->options(FeedItem::where('is_active', true)->pluck('name', 'id'))
-                ->placeholder('جميع الأصناف')
-                ->live(),
-            Select::make('warehouse_id')
-                ->label('المخزن')
-                ->options(FeedWarehouse::where('is_active', true)->pluck('name', 'id'))
-                ->placeholder('جميع المخازن')
-                ->live(),
-        ]);
-    }
-
-    public function updatedInteractsWithSchemas(string $statePath): void
-    {
-        $this->updateOptions();
-    }
+    protected $listeners = ['updateCharts' => '$refresh'];
 
     protected function getOptions(): array
     {
-        $dateStart = Carbon::parse($this->filters['date_start'] ?? now()->subDays(30));
-        $dateEnd = Carbon::parse($this->filters['date_end'] ?? now());
-        $factoryId = $this->filters['factory_id'] ?? null;
-        $feedItemId = $this->filters['feed_item_id'] ?? null;
-        $warehouseId = $this->filters['warehouse_id'] ?? null;
+        $filters = request()->query('filters', []);
+
+        $dateStart = Carbon::parse($filters['date_start'] ?? now()->subDays(30));
+        $dateEnd = Carbon::parse($filters['date_end'] ?? now());
+        $factoryId = $filters['factory_id'] ?? null;
+        $feedItemId = $filters['feed_item_id'] ?? null;
+        $warehouseId = $filters['warehouse_id'] ?? null;
 
         $query = FeedMovement::query()
             ->where('movement_type', FeedMovementType::In)
@@ -172,3 +136,4 @@ class DailyFeedImportsChart extends ApexChartWidget
         ];
     }
 }
+

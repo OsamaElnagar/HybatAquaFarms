@@ -18,9 +18,20 @@ use Filament\Schemas\Schema;
 use Livewire\Attributes\Url;
 use UnitEnum;
 
-class HarvestAndSalesAnalysisReport extends Page implements HasForms
+use App\Models\SalesOrder;
+use Filament\Actions\Action as PageAction;
+use Filament\Actions\Action;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+
+class HarvestAndSalesAnalysisReport extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
+    use InteractsWithTable;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-presentation-chart-bar';
 
@@ -83,7 +94,7 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms
                             ->label('الدورة (اختياري)')
                             ->options(function (callable $get) {
                                 $farmId = $get('filters.farm_id');
-                                if (! $farmId) {
+                                if (!$farmId) {
                                     return [];
                                 }
 
@@ -93,7 +104,7 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->placeholder('كل الدورات')
-                            ->visible(fn (callable $get) => filled($get('filters.farm_id')))
+                            ->visible(fn(callable $get) => filled($get('filters.farm_id')))
                             ->live(),
                         DatePicker::make('filters.date_start')
                             ->label('من تاريخ')
@@ -108,8 +119,81 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms
             ]);
     }
 
+    public function table(Table $table): Table
+    {
+        return $table
+            ->query(function () {
+                $query = SalesOrder::query();
+
+                if (!empty($this->filters['farm_id'])) {
+                    $query->whereHas('harvestOperation.batch.farm', function ($q) {
+                        $q->where('id', $this->filters['farm_id']);
+                    });
+                }
+
+                if (!empty($this->filters['batch_id'])) {
+                    $query->whereHas('harvestOperation', function ($q) {
+                        $q->where('batch_id', $this->filters['batch_id']);
+                    });
+                }
+
+                if (!empty($this->filters['date_start'])) {
+                    $query->whereDate('date', '>=', $this->filters['date_start']);
+                }
+
+                if (!empty($this->filters['date_end'])) {
+                    $query->whereDate('date', '<=', $this->filters['date_end']);
+                }
+
+                return $query->with(['trader', 'harvestOperation.batch.farm']);
+            })
+            ->columns([
+                TextColumn::make('date')
+                    ->label('التاريخ')
+                    ->date('Y-m-d')
+                    ->sortable(),
+                TextColumn::make('order_number')
+                    ->label('رقم الطلب')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('trader.name')
+                    ->label('التاجر')
+                    ->sortable()
+                    ->default('-'),
+                TextColumn::make('harvestOperation.batch.farm.name')
+                    ->label('المزرعة')
+                    ->sortable()
+                    ->default('-'),
+                TextColumn::make('net_amount')
+                    ->label('صافي المبلغ')
+                    ->money('EGP')
+                    ->sortable()
+                    ->summarize(Sum::make()->label('الإجمالي')->money('EGP')),
+            ])
+            ->defaultSort('date', 'desc')
+            ->headerActions([
+                Action::make('export_pdf')
+                    ->label('PDF تصدير')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function (Table $table) {
+                        return app(\App\Services\PdfService::class)->generateReportPdf(
+                            'تقرير المبيعات',
+                            ['التاريخ', 'رقم الطلب', 'التاجر', 'المزرعة', 'صافي المبلغ'],
+                            $table->getQuery()->get()->map(fn($record) => [
+                                $record->date->format('Y-m-d'),
+                                $record->order_number,
+                                $record->trader?->name ?? '-',
+                                $record->harvestOperation?->batch?->farm?->name ?? '-',
+                                number_format($record->net_amount, 2),
+                            ])->toArray()
+                        )->stream('sales-report.pdf');
+                    }),
+            ]);
+    }
+
     public function updatedFilters(): void
     {
         $this->dispatch('updateCharts');
+        // Table refreshes automatically via Livewire property binding
     }
 }

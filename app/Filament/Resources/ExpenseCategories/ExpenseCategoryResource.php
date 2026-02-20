@@ -25,7 +25,7 @@ class ExpenseCategoryResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'العُهدات';
+        return 'العُهد والمصروفات';
     }
 
     public static function getNavigationLabel(): string
@@ -50,7 +50,7 @@ class ExpenseCategoryResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return $record->name.' - '.$record->code;
+        return $record->name . ' - ' . $record->code;
     }
 
     public static function getGlobalSearchResultActions(Model $record): array

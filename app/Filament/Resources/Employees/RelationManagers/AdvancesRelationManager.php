@@ -11,6 +11,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -42,12 +43,22 @@ class AdvancesRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(
+                        Sum::make()
+                            ->label('الإجمالي')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ),
                 TextColumn::make('balance_remaining')
                     ->label('المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(
+                        Sum::make()
+                            ->label('إجمالي المتبقي')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ),
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()

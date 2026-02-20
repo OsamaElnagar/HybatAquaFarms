@@ -17,10 +17,19 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Livewire\Attributes\Url;
 use UnitEnum;
+use App\Models\DailyFeedIssue;
+use Filament\Actions\Action;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
-class FarmFeedConsumptionReport extends Page implements HasForms
+class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
+    use InteractsWithTable;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-presentation-chart-line';
 
@@ -31,22 +40,6 @@ class FarmFeedConsumptionReport extends Page implements HasForms
     protected static ?string $title = 'تقرير استهلاك الأعلاف للمزرعة';
 
     protected string $view = 'filament.pages.farm-feed-consumption-report';
-
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            FarmFeedConsumptionStats::class,
-        ];
-    }
-
-    public function getFooterWidgets(): array
-    {
-        return [
-            FarmDailyFeedConsumptionChart::class,
-            FarmFeedTypeConsumptionChart::class,
-            FarmUnitConsumptionChart::class,
-        ];
-    }
 
     #[Url]
     public ?array $filters = [
@@ -65,6 +58,22 @@ class FarmFeedConsumptionReport extends Page implements HasForms
         }
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FarmFeedConsumptionStats::class,
+        ];
+    }
+
+    public function getFooterWidgets(): array
+    {
+        return [
+            FarmDailyFeedConsumptionChart::class,
+            FarmFeedTypeConsumptionChart::class,
+            FarmUnitConsumptionChart::class,
+        ];
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -73,7 +82,7 @@ class FarmFeedConsumptionReport extends Page implements HasForms
                     ->schema([
                         Select::make('filters.farm_id')
                             ->label('المزرعة')
-                            ->options(Farm::where('status', 'active')->pluck('name', 'id')) // Assuming active farms
+                            ->options(Farm::where('status', 'active')->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
                             ->placeholder('اختر المزرعة')
@@ -91,8 +100,72 @@ class FarmFeedConsumptionReport extends Page implements HasForms
             ]);
     }
 
+    public function table(Table $table): Table
+    {
+        return $table
+            ->query(function () {
+                $query = DailyFeedIssue::query();
+
+                if (!empty($this->filters['farm_id'])) {
+                    $query->where('farm_id', $this->filters['farm_id']);
+                }
+
+                if (!empty($this->filters['date_start'])) {
+                    $query->whereDate('date', '>=', $this->filters['date_start']);
+                }
+
+                if (!empty($this->filters['date_end'])) {
+                    $query->whereDate('date', '<=', $this->filters['date_end']);
+                }
+
+                return $query;
+            })
+            ->columns([
+                TextColumn::make('date')
+                    ->label('التاريخ')
+                    ->date('Y-m-d')
+                    ->sortable(),
+                TextColumn::make('farm.name')
+                    ->label('المزرعة')
+                    ->sortable(),
+                TextColumn::make('batch.batch_code')
+                    ->label('الدورة')
+                    ->sortable()
+                    ->default('-'),
+                TextColumn::make('feedItem.name')
+                    ->label('نوع العلف')
+                    ->sortable(),
+                TextColumn::make('quantity')
+                    ->label('الكمية (كجم)')
+                    ->numeric()
+                    ->sortable()
+                    ->summarize(Sum::make()->label('الإجمالي')),
+            ])
+            ->defaultSort('date', 'desc')
+            ->headerActions([
+                Action::make('export_pdf')
+                    ->label('PDF تصدير')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function (Table $table) {
+                        return app(\App\Services\PdfService::class)->generateReportPdf(
+                            'تقرير استهلاك الأعلاف',
+                            ['التاريخ', 'المزرعة', 'الدورة', 'نوع العلف', 'الكمية (كجم)'],
+                            $table->getQuery()->get()->map(fn($record) => [
+                                $record->date->format('Y-m-d H:i A'),
+                                $record->farm?->name ?? '-',
+                                $record->batch?->batch_code ?? '-',
+                                $record->feedItem?->name ?? '-',
+                                number_format($record->quantity),
+                            ])->toArray()
+                        )->stream('feed-consumption-report.pdf');
+                    }),
+            ]);
+    }
+
     public function updatedFilters(): void
     {
         $this->dispatch('updateCharts');
+        // Refresh table if needed, usually automatic due to livewire property binding
     }
 }
+

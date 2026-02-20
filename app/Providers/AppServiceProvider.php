@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -51,5 +52,7 @@ class AppServiceProvider extends ServiceProvider
         EditAction::configureUsing(function (EditAction $action) {
             return $action->slideOver()->modalWidth(Width::SixExtraLarge);
         });
+
+        DatePicker::configureUsing(fn(DatePicker $picker) => $picker->displayFormat('Y-m-d')->native(false));
     }
 }
