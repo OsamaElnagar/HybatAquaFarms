@@ -11,6 +11,8 @@ class SalesTrendChart extends ChartWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected ?string $maxHeight = '450px';
+
     protected $listeners = ['updateCharts' => '$refresh'];
 
     protected ?string $pollingInterval = null;

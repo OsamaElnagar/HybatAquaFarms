@@ -28,7 +28,7 @@ class FeedStocksRelationManager extends RelationManager
     {
         return FeedStocksTable::configure($table)
             ->headerActions([
-                CreateAction::make()->label('إضافة رصيد جديد')->icon('heroicon-o-plus')
+                CreateAction::make()->label('إضافة رصيد جديد')->icon('heroicon-o-plus'),
             ]);
     }
 }

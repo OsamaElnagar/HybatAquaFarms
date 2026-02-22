@@ -42,6 +42,16 @@ return [
             'synchronous' => null,
         ],
 
+        'stagging-2026-02-22' => [
+            'driver' => 'sqlite',
+            'url' => env('DB_URL'),
+            'database' => database_path('stagging-2026-02-22.sqlite'),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'busy_timeout' => null,
+            'journal_mode' => null,
+            'synchronous' => null,
+        ],
 
         'mysql' => [
             'driver' => 'mysql',
@@ -148,7 +158,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 

@@ -2,23 +2,21 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\DailyFeedImportsChart;
-use BackedEnum;
-use Filament\Pages\Page;
-
 use App\Enums\FeedMovementType;
+use App\Filament\Widgets\DailyFeedImportsChart;
 use App\Models\Factory;
 use App\Models\FeedItem;
 use App\Models\FeedMovement;
 use App\Models\FeedWarehouse;
-use Filament\Actions\Action as PageAction;
+use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Actions\Action;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -120,23 +118,23 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
                 $query = FeedMovement::query()
                     ->where('movement_type', FeedMovementType::In);
 
-                if (!empty($this->filters['date_start'])) {
+                if (! empty($this->filters['date_start'])) {
                     $query->whereDate('date', '>=', $this->filters['date_start']);
                 }
 
-                if (!empty($this->filters['date_end'])) {
+                if (! empty($this->filters['date_end'])) {
                     $query->whereDate('date', '<=', $this->filters['date_end']);
                 }
 
-                if (!empty($this->filters['factory_id'])) {
+                if (! empty($this->filters['factory_id'])) {
                     $query->where('factory_id', $this->filters['factory_id']);
                 }
 
-                if (!empty($this->filters['feed_item_id'])) {
+                if (! empty($this->filters['feed_item_id'])) {
                     $query->where('feed_item_id', $this->filters['feed_item_id']);
                 }
 
-                if (!empty($this->filters['warehouse_id'])) {
+                if (! empty($this->filters['warehouse_id'])) {
                     $query->where('to_warehouse_id', $this->filters['warehouse_id']);
                 }
 
@@ -173,12 +171,12 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
                         return app(\App\Services\PdfService::class)->generateReportPdf(
                             'تقرير واردات الأعلاف',
                             ['التاريخ', 'المصنع', 'الصنف', 'المخزن', 'الكمية (كجم)'],
-                            $table->getQuery()->get()->map(fn($record) => [
+                            $table->getQuery()->get()->map(fn ($record) => [
                                 $record->date instanceof \Carbon\Carbon ? $record->date->format('Y-m-d') : substr($record->date, 0, 10),
                                 $record->factory?->name ?? '-',
                                 $record->feedItem?->name ?? '-',
                                 $record->toWarehouse?->name ?? '-',
-                                number_format($record->quantity, 2),
+                                number_format($record->quantity),
                             ])->toArray()
                         )->stream('feed-imports-report.pdf');
                     }),
@@ -190,4 +188,3 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
         $this->dispatch('updateCharts');
     }
 }
-

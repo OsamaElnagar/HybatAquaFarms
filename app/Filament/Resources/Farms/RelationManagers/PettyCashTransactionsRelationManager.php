@@ -24,6 +24,10 @@ class PettyCashTransactionsRelationManager extends RelationManager
 
     protected static ?string $title = 'معاملات العهدة';
 
+    protected static ?string $pluralModelLabel = 'معاملات العهدة';
+
+    protected static ?string $modelLabel = 'معاملة عهدة';
+
     public function form(Schema $schema): Schema
     {
         return PettyCashTransactionForm::configure($schema);

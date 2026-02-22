@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\DailyFeedIssues\Tables;
 
-use App\Models\FarmUnit;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -10,7 +9,6 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -32,7 +30,7 @@ class DailyFeedIssuesTable
                     ->label('المزرعة')
                     ->sortable(),
                 TextColumn::make('batch.batch_code')
-                    ->label("الدورة أو الدفعة")
+                    ->label('الدورة أو الدفعة')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -54,7 +52,7 @@ class DailyFeedIssuesTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'feed_item_id' => $record->feed_item_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -78,7 +76,7 @@ class DailyFeedIssuesTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'feed_warehouse_id' => $record->feed_warehouse_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -115,7 +113,7 @@ class DailyFeedIssuesTable
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->relationship('farm', 'name')
                             ->searchable()
                             ->preload()
@@ -123,7 +121,7 @@ class DailyFeedIssuesTable
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['farm_id'] ?? null, fn(Builder $q, $farmId) => $q->where('farm_id', $farmId));
+                            ->when($data['farm_id'] ?? null, fn (Builder $q, $farmId) => $q->where('farm_id', $farmId));
                     }),
 
                 // Additional helpful filters
@@ -139,7 +137,7 @@ class DailyFeedIssuesTable
                     ->preload(),
                 SelectFilter::make('batch_id')
                     ->label('دفعة الزريعة')
-                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('recorded_by')
@@ -161,8 +159,8 @@ class DailyFeedIssuesTable
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'] ?? null, fn(Builder $q, $from) => $q->whereDate('date', '>=', $from))
-                            ->when($data['to'] ?? null, fn(Builder $q, $to) => $q->whereDate('date', '<=', $to));
+                            ->when($data['from'] ?? null, fn (Builder $q, $from) => $q->whereDate('date', '>=', $from))
+                            ->when($data['to'] ?? null, fn (Builder $q, $to) => $q->whereDate('date', '<=', $to));
                     }),
             ])
             ->recordActions([

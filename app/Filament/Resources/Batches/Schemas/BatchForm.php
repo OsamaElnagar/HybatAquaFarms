@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Batches\Schemas;
 
 use App\Enums\BatchStatus;
-use App\Enums\FactoryType;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -55,14 +54,14 @@ class BatchForm
                             ->schema([
                                 Select::make('farm_id')
                                     ->label('المزرعة')
-                                    ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
-                                    ->disabled(fn($livewire) => $livewire instanceof RelationManager)
+                                    ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                                    ->disabled(fn ($livewire) => $livewire instanceof RelationManager)
                                     ->relationship('farm', 'name')
                                     ->required()
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(fn(callable $set) => $set('units', []))
+                                    ->afterStateUpdated(fn (callable $set) => $set('units', []))
                                     ->helperText('اختر المزرعة التي سيتم إدخال الزريعة فيها')
                                     ->columnSpan(1),
 
@@ -70,7 +69,7 @@ class BatchForm
                                     ->label('الوحدات')
                                     ->relationship('units', 'name', function (Builder $query, callable $get) {
                                         $farmId = $get('farm_id');
-                                        if (!$farmId) {
+                                        if (! $farmId) {
                                             return $query->whereRaw('1=0');
                                         }
 

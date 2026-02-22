@@ -189,7 +189,7 @@ class Batch extends Model
      */
     public function getPaymentStatusAttribute(): string
     {
-        if (!$this->total_cost || $this->total_cost <= 0) {
+        if (! $this->total_cost || $this->total_cost <= 0) {
             return 'gray'; // No cost to pay
         }
 
@@ -252,6 +252,7 @@ class Batch extends Model
             ->groupBy('feed_item_id')
             ->map(function ($movements) {
                 $movement = $movements->first();
+
                 return $movement->total_cost / $movement->quantity;
             });
 
@@ -386,7 +387,7 @@ class Batch extends Model
      */
     public function getDaysSinceEntryAttribute(): int
     {
-        if (!$this->entry_date) {
+        if (! $this->entry_date) {
             return 0;
         }
 

@@ -11,6 +11,10 @@ class SalesByCustomerChart extends ChartWidget
 {
     protected ?string $heading = 'توزيع المبيعات حسب العميل';
 
+    protected int|string|array $columnSpan = 'full';
+
+    protected ?string $maxHeight = '450px';
+
     protected $listeners = ['updateCharts' => '$refresh'];
 
     protected ?string $pollingInterval = null;
@@ -29,10 +33,10 @@ class SalesByCustomerChart extends ChartWidget
             $query = SalesOrder::query()
                 ->select('sales_orders.trader_id', DB::raw('sum(sales_orders.net_amount) as total'))
                 // To filter by batch, we need to join through Orders -> HarvestOperation
-                 // This is complex for a simple chart if we want partial split, assuming usually 1 SO = 1 Batch often enough.
-                 // Alternatively, sum the total OF THE ITEMS in the sales order that match the batch.
-                 // But SalesOrder::net_amount includes taxes/discounts on the whole order.
-                 // Let's sum the subtotal of items belonging to the batch as a proxy for "Sales Value" for that batch.
+                // This is complex for a simple chart if we want partial split, assuming usually 1 SO = 1 Batch often enough.
+                // Alternatively, sum the total OF THE ITEMS in the sales order that match the batch.
+                // But SalesOrder::net_amount includes taxes/discounts on the whole order.
+                // Let's sum the subtotal of items belonging to the batch as a proxy for "Sales Value" for that batch.
                 ->join('order_sales_order', 'sales_orders.id', '=', 'order_sales_order.sales_order_id')
                 ->join('orders', 'order_sales_order.order_id', '=', 'orders.id')
                 ->join('harvest_operations', 'orders.harvest_operation_id', '=', 'harvest_operations.id');
@@ -92,7 +96,11 @@ class SalesByCustomerChart extends ChartWidget
                     'label' => 'المبيعات',
                     'data' => $results->pluck('total')->toArray(),
                     'backgroundColor' => [
-                        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+                        '#3b82f6',
+                        '#10b981',
+                        '#f59e0b',
+                        '#ef4444',
+                        '#8b5cf6',
                     ],
                 ],
             ],

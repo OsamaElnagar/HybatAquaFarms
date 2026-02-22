@@ -23,7 +23,7 @@ class FeedStocksStatsWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-archive-box')
                 ->color('primary'),
 
-            Stat::make('إجمالي الكمية', number_format($totalQuantity, 3))
+            Stat::make('إجمالي الكمية', number_format($totalQuantity))
                 ->description('الكمية الإجمالية في جميع المستودعات')
                 ->descriptionIcon('heroicon-o-cube')
                 ->color('info'),

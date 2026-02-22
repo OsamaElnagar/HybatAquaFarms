@@ -23,8 +23,8 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
-                            ->relationship('farm', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
                             ->preload()
@@ -47,6 +47,7 @@ class DailyFeedIssueForm
                                 if ($farmId) {
                                     return $query->where('farm_id', $farmId)->where('is_cycle_closed', false);
                                 }
+
                                 return $query->where('is_cycle_closed', false)->latest();
                             })
                             ->required()
@@ -64,7 +65,7 @@ class DailyFeedIssueForm
 
                         Select::make('feed_warehouse_id')
                             ->label('مخزن العلف')
-                            ->relationship('warehouse', 'name', modifyQueryUsing: fn($query, Get $get) => $query->where('farm_id', $get('farm_id')))
+                            ->relationship('warehouse', 'name', modifyQueryUsing: fn ($query, Get $get) => $query->where('farm_id', $get('farm_id')))
                             ->required()
                             ->searchable()
                             ->preload()
@@ -83,11 +84,11 @@ class DailyFeedIssueForm
                             ->label('الكمية (كجم)')
                             ->required()
                             ->numeric()
-                            ->rule(fn(Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                            ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
                                 $warehouseId = $get('feed_warehouse_id');
                                 $itemId = $get('feed_item_id');
 
-                                if (!$warehouseId || !$itemId || $value === null || $value === '') {
+                                if (! $warehouseId || ! $itemId || $value === null || $value === '') {
                                     return;
                                 }
 
@@ -97,7 +98,7 @@ class DailyFeedIssueForm
                                     ->where('feed_item_id', $itemId)
                                     ->first();
 
-                                if (!$stock || (float) $stock->quantity_in_stock < $quantity) {
+                                if (! $stock || (float) $stock->quantity_in_stock < $quantity) {
                                     $fail('الكمية المصروفة أكبر من الرصيد المتوفر في المخزن لهذا الصنف.');
                                 }
                             })
@@ -111,7 +112,7 @@ class DailyFeedIssueForm
                                     ->relationship('recordedBy', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn() => auth('web')->id())
+                                    ->default(fn () => auth('web')->id())
                                     ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
                                 Textarea::make('notes')
                                     ->label('ملاحظات')

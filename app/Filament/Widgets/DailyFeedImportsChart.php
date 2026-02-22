@@ -3,15 +3,8 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\FeedMovementType;
-use App\Models\Factory;
-use App\Models\FeedItem;
 use App\Models\FeedMovement;
-use App\Models\FeedWarehouse;
 use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Schema;
-use Filament\Widgets\ChartWidget\Concerns\HasFiltersSchema;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class DailyFeedImportsChart extends ApexChartWidget
@@ -136,4 +129,3 @@ class DailyFeedImportsChart extends ApexChartWidget
         ];
     }
 }
-

@@ -74,9 +74,9 @@ class FarmsStatsWidget extends StatsOverviewWidget
         $percentage = abs(($change / $previous) * 100);
 
         if ($change > 0) {
-            return 'زيادة '.number_format($percentage, 1).'% عن الشهر السابق';
+            return 'زيادة '.number_format($percentage).'% عن الشهر السابق';
         } elseif ($change < 0) {
-            return 'انخفاض '.number_format($percentage, 1).'% عن الشهر السابق';
+            return 'انخفاض '.number_format($percentage).'% عن الشهر السابق';
         }
 
         return 'نفس استهلاك الشهر السابق';

@@ -29,10 +29,10 @@ class FarmResource extends Resource
             ->withCount([
                 'units',
                 'batches',
-                'batches as active_batches_count' => fn($query) => $query->where('status', 'active'),
+                'batches as active_batches_count' => fn ($query) => $query->where('status', 'active'),
             ])
             ->withSum([
-                'batches as total_current_stock' => fn($query) => $query->where('status', 'active'),
+                'batches as total_current_stock' => fn ($query) => $query->where('status', 'active'),
             ], 'current_quantity');
     }
 
@@ -45,7 +45,7 @@ class FarmResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return $record->name . ' - ' . $record->code;
+        return $record->name.' - '.$record->code;
     }
 
     public static function getGlobalSearchResultActions(Model $record): array

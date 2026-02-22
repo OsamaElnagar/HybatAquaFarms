@@ -5,9 +5,10 @@ namespace App\Filament\Pages;
 use App\Filament\Widgets\FarmDailyFeedConsumptionChart;
 use App\Filament\Widgets\FarmFeedConsumptionStats;
 use App\Filament\Widgets\FarmFeedTypeConsumptionChart;
-use App\Filament\Widgets\FarmUnitConsumptionChart;
+use App\Models\DailyFeedIssue;
 use App\Models\Farm;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -15,16 +16,13 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Livewire\Attributes\Url;
-use UnitEnum;
-use App\Models\DailyFeedIssue;
-use Filament\Actions\Action;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\Url;
+use UnitEnum;
 
 class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
 {
@@ -62,15 +60,8 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
     {
         return [
             FarmFeedConsumptionStats::class,
-        ];
-    }
-
-    public function getFooterWidgets(): array
-    {
-        return [
             FarmDailyFeedConsumptionChart::class,
             FarmFeedTypeConsumptionChart::class,
-            FarmUnitConsumptionChart::class,
         ];
     }
 
@@ -106,15 +97,15 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
             ->query(function () {
                 $query = DailyFeedIssue::query();
 
-                if (!empty($this->filters['farm_id'])) {
+                if (! empty($this->filters['farm_id'])) {
                     $query->where('farm_id', $this->filters['farm_id']);
                 }
 
-                if (!empty($this->filters['date_start'])) {
+                if (! empty($this->filters['date_start'])) {
                     $query->whereDate('date', '>=', $this->filters['date_start']);
                 }
 
-                if (!empty($this->filters['date_end'])) {
+                if (! empty($this->filters['date_end'])) {
                     $query->whereDate('date', '<=', $this->filters['date_end']);
                 }
 
@@ -150,7 +141,7 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
                         return app(\App\Services\PdfService::class)->generateReportPdf(
                             'تقرير استهلاك الأعلاف',
                             ['التاريخ', 'المزرعة', 'الدورة', 'نوع العلف', 'الكمية (كجم)'],
-                            $table->getQuery()->get()->map(fn($record) => [
+                            $table->getQuery()->get()->map(fn ($record) => [
                                 $record->date->format('Y-m-d H:i A'),
                                 $record->farm?->name ?? '-',
                                 $record->batch?->batch_code ?? '-',
@@ -168,4 +159,3 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
         // Refresh table if needed, usually automatic due to livewire property binding
     }
 }
-

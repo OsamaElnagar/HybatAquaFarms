@@ -76,8 +76,8 @@ class PettyCashResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with(['custodian'])
-            ->withSum(['transactions as total_in' => fn($query) => $query->where('direction', 'in')], 'amount')
-            ->withSum(['transactions as total_out' => fn($query) => $query->where('direction', 'out')], 'amount');
+            ->withSum(['transactions as total_in' => fn ($query) => $query->where('direction', 'in')], 'amount')
+            ->withSum(['transactions as total_out' => fn ($query) => $query->where('direction', 'out')], 'amount');
     }
 
     public static function getRelations(): array

@@ -13,5 +13,4 @@ class CreateBatch extends CreateRecord
     {
         return $this->getResource()::getUrl('edit', ['record' => $this->record]);
     }
-
 }

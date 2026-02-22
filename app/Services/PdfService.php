@@ -2,10 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Customer;
-use App\Models\Purchase;
-use App\Models\Sale;
-use App\Models\Supplier;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 
 class PdfService
@@ -17,7 +13,7 @@ class PdfService
             'headers' => $headers,
             'rows' => $rows,
             'storeName' => config('app.name'),
-            'date' => now()->format('Y-m-d H:i A'),
+            'date' => now()->format('Y-m-d h:i A'),
         ], [], [
             'title' => $title,
         ]);

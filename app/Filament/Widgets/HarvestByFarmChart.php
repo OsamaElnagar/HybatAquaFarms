@@ -9,6 +9,10 @@ class HarvestByFarmChart extends ChartWidget
 {
     protected ?string $heading = 'إجمالي الحصاد لكل مزرعة (طن)';
 
+    protected int|string|array $columnSpan = 'full';
+
+    protected ?string $maxHeight = '450px';
+
     protected $listeners = ['updateCharts' => '$refresh'];
 
     protected ?string $pollingInterval = null;

@@ -79,10 +79,13 @@ class FeedMovementObserver
 
         $quantity = (float) $movement->quantity;
 
-        // Use standard_cost from FeedItem for incoming movements
-        $feedItem = $movement->feedItem;
-        $unitCost = (float) ($feedItem?->standard_cost ?? 0);
-        $totalCost = $quantity * $unitCost;
+        // Use movement's total_cost if available, otherwise fallback to standard_cost
+        $totalCost = (float) $movement->total_cost;
+        if ($totalCost <= 0) {
+            $feedItem = $movement->feedItem;
+            $unitCost = (float) ($feedItem?->standard_cost ?? 0);
+            $totalCost = $quantity * $unitCost;
+        }
 
         // Calculate weighted average cost
         $currentQuantity = (float) $stock->quantity_in_stock;
@@ -231,10 +234,13 @@ class FeedMovementObserver
         $totalCost = 0;
 
         if ($movement->movement_type === FeedMovementType::In) {
-            // For incoming movements, use standard_cost from FeedItem
-            $feedItem = $movement->feedItem;
-            $unitCost = (float) ($feedItem?->standard_cost ?? 0);
-            $totalCost = $quantity * $unitCost;
+            // Use movement's total_cost if available, otherwise fallback to standard_cost
+            $totalCost = (float) $movement->total_cost;
+            if ($totalCost <= 0) {
+                $feedItem = $movement->feedItem;
+                $unitCost = (float) ($feedItem?->standard_cost ?? 0);
+                $totalCost = $quantity * $unitCost;
+            }
         } elseif ($movement->movement_type === FeedMovementType::Out) {
             // For outgoing movements, use average_cost from stock
             $stock = FeedStock::where('feed_warehouse_id', $movement->from_warehouse_id)

@@ -17,7 +17,7 @@ class BatchFactory extends Factory
     public function definition(): array
     {
         return [
-            'batch_code' => 'BATCH-' . fake()->unique()->numerify('#####'),
+            'batch_code' => 'BATCH-'.fake()->unique()->numerify('#####'),
             'farm_id' => \App\Models\Farm::factory(),
             'species_id' => null,
             'entry_date' => fake()->date(),

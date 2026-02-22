@@ -1,10 +1,8 @@
 <?php
 
 use App\Models\Batch;
-use App\Models\BatchFish;
-use App\Models\Species;
 use App\Models\Farm;
-use function Pest\Laravel\{actingAs, assertDatabaseHas};
+use App\Models\Species;
 
 it('can aggregate multi-species fish data in batch', function () {
     $farm = Farm::factory()->create();
@@ -30,7 +28,7 @@ it('can aggregate multi-species fish data in batch', function () {
             'quantity' => 2000,
             'unit_cost' => 3.00,
             'total_cost' => 6000,
-        ]
+        ],
     ]);
 
     $batch->refresh();

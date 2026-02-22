@@ -57,7 +57,7 @@ class BatchResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return 'دورة زريعة -  ' . $record->batch_code;
+        return 'دورة زريعة -  '.$record->batch_code;
     }
 
     public static function getGlobalSearchResultActions(Model $record): array

@@ -26,7 +26,7 @@ class BatchFishObserver
 
     protected function syncBatch($batch): void
     {
-        if (!$batch) {
+        if (! $batch) {
             return;
         }
 
