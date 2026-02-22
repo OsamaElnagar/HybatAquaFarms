@@ -15,7 +15,6 @@ class DailyFeedIssuesStatsWidget extends StatsOverviewWidget
     protected function getStats(): array
     {
         return Cache::remember('daily_feed_issues_stats', 600, function () {
-            $totalIssues = DailyFeedIssue::count();
 
             // Today's stats
             $today = Carbon::today();
@@ -37,11 +36,6 @@ class DailyFeedIssuesStatsWidget extends StatsOverviewWidget
                 ->first();
 
             return [
-                Stat::make('إجمالي السجلات', number_format($totalIssues))
-                    ->description('عدد سجلات الصرف')
-                    ->descriptionIcon('heroicon-o-calendar-days')
-                    ->color('primary'),
-
                 Stat::make('صرف اليوم', number_format($todayStats->quantity ?? 0))
                     ->description(($todayStats->count ?? 0).' سجل')
                     ->descriptionIcon('heroicon-o-sun')

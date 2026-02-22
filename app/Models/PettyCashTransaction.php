@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PettyCashTransaction extends Model
 {
     /** @use HasFactory<\Database\Factories\PettyCashTransactionFactory> */
-    use HasFactory;
+    use \App\Traits\ProtectsClosedBatch, HasFactory;
 
     protected $fillable = [
         'petty_cash_id',

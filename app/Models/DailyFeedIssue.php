@@ -12,28 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DailyFeedIssue extends Model
 {
     /** @use HasFactory<\Database\Factories\DailyFeedIssueFactory> */
-    use HasFactory;
-
-    protected static function booted()
-    {
-        static::creating(function ($model) {
-            if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception('لا يمكن إضافة صرف علف لدورة مقفلة');
-            }
-        });
-
-        static::updating(function ($model) {
-            if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception('لا يمكن تعديل صرف علف لدورة مقفلة');
-            }
-        });
-
-        static::deleting(function ($model) {
-            if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception('لا يمكن حذف صرف علف لدورة مقفلة');
-            }
-        });
-    }
+    use \App\Traits\ProtectsClosedBatch, HasFactory;
 
     protected $fillable = [
         'farm_id',

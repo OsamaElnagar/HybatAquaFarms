@@ -26,10 +26,19 @@ class VoucherForm
                 Select::make('farm_id')
                     ->label('المزرعة')
                     ->relationship('farm', 'name')
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set) => $set('batch_id', null)),
                 Select::make('batch_id')
                     ->label('دفعة الزريعه')
-                    ->relationship('batch', 'batch_code')
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: function ($query, Get $get) {
+                        $farmId = $get('farm_id');
+                        if ($farmId) {
+                            $query->where('farm_id', $farmId)->where('is_cycle_closed', false);
+                        } else {
+                            $query->whereRaw('1 = 0');
+                        }
+                    })
                     ->searchable()
                     ->preload()
                     ->live()
@@ -65,8 +74,8 @@ class VoucherForm
                 Select::make('counterparty_id')
                     ->label(
                         fn (Get $get) => $get('counterparty_type')
-                            ? $get('counterparty_type')->getLabel()
-                            : 'اختر نوع الطرف الآخر أولاً'
+                        ? $get('counterparty_type')->getLabel()
+                        : 'اختر نوع الطرف الآخر أولاً'
                     )
                     ->options(function (Get $get) {
                         $type = $get('counterparty_type');

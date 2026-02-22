@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,6 +16,7 @@ return new class extends Migration
                 ->foreignId('petty_cash_id')
                 ->constrained()
                 ->cascadeOnDelete();
+            $table->foreignId('farm_id')->nullable()->constrained()->nullOnDelete();
             $table
                 ->foreignId('batch_id')
                 ->nullable()
@@ -33,6 +33,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('expense_categories')
                 ->nullOnDelete();
+            $table->foreignId('employee_id')->nullable()->constrained()->nullOnDelete();
             $table->date('date');
             $table->string('direction'); // in, out
             $table->decimal('amount', 12, 2);

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class HarvestOperation extends Model
 {
-    use HasFactory;
+    use \App\Traits\ProtectsClosedBatch, HasFactory;
 
     protected $fillable = [
         'operation_number',

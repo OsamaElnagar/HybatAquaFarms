@@ -119,6 +119,11 @@ class Batch extends Model
         return $this->belongsTo(User::class, 'closed_by');
     }
 
+    public function fish(): HasMany
+    {
+        return $this->hasMany(BatchFish::class);
+    }
+
     public function vouchers(): HasMany
     {
         return $this->hasMany(Voucher::class);
@@ -184,7 +189,7 @@ class Batch extends Model
      */
     public function getPaymentStatusAttribute(): string
     {
-        if (! $this->total_cost || $this->total_cost <= 0) {
+        if (!$this->total_cost || $this->total_cost <= 0) {
             return 'gray'; // No cost to pay
         }
 
@@ -234,21 +239,29 @@ class Batch extends Model
             return 0.0;
         }
 
-        $feedStocks = FeedStock::query()
-            ->whereIn('feed_item_id', $issues->pluck('feed_item_id')->filter()->unique())
-            ->whereIn('feed_warehouse_id', $issues->pluck('feed_warehouse_id')->filter()->unique())
+        // Fetch the latest "IN" movement unit costs for the consumed feed items
+        $feedItemIds = $issues->pluck('feed_item_id')->filter()->unique();
+
+        $latestInMovements = \App\Models\FeedMovement::query()
+            ->whereIn('feed_item_id', $feedItemIds)
+            ->where('movement_type', \App\Enums\FeedMovementType::In)
+            ->whereNotNull('total_cost')
+            ->where('quantity', '>', 0)
+            ->latest('date')
             ->get()
-            ->keyBy(function ($stock) {
-                return $stock->feed_item_id.'-'.$stock->feed_warehouse_id;
+            ->groupBy('feed_item_id')
+            ->map(function ($movements) {
+                $movement = $movements->first();
+                return $movement->total_cost / $movement->quantity;
             });
 
         $totalCost = 0.0;
 
         foreach ($issues as $issue) {
-            $key = ($issue->feed_item_id ?? '').'-'.($issue->feed_warehouse_id ?? '');
-            $feedStock = $feedStocks->get($key);
+            $feedItemId = $issue->feed_item_id;
 
-            $costPerUnit = $feedStock?->average_cost ?? ($issue->feedItem?->standard_cost ?? 0);
+            // Try to get dynamic cost from last incoming movement, fallback to standard_cost
+            $costPerUnit = $latestInMovements->get($feedItemId) ?? ($issue->feedItem?->standard_cost ?? 0);
 
             $totalCost += (float) $issue->quantity * (float) $costPerUnit;
         }
@@ -373,7 +386,7 @@ class Batch extends Model
      */
     public function getDaysSinceEntryAttribute(): int
     {
-        if (! $this->entry_date) {
+        if (!$this->entry_date) {
             return 0;
         }
 

@@ -29,18 +29,18 @@ class PettyCashesTable
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($record) => $record->current_balance > 0 ? 'success' : 'danger')
                     ->sortable(),
-                TextColumn::make('opening_balance')
-                    ->label('الرصيد الافتتاحي')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->toggleable(),
-                TextColumn::make('opening_date')
-                    ->label('تاريخ الافتتاح')
-                    ->date('Y-m-d')
-                    ->sortable()
-                    ->toggleable(),
-                IconColumn::make('is_active')
-                    ->label('نشط')
-                    ->boolean(),
+                // TextColumn::make('opening_balance')
+                //     ->label('الرصيد الافتتاحي')
+                //     ->money('EGP', locale: 'en', decimalPlaces: 0)
+                //     ->toggleable(),
+                // TextColumn::make('opening_date')
+                //     ->label('تاريخ الافتتاح')
+                //     ->date('Y-m-d')
+                //     ->sortable()
+                //     ->toggleable(),
+                // IconColumn::make('is_active')
+                //     ->label('نشط')
+                //     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

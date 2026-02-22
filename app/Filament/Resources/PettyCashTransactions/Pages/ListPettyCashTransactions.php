@@ -21,7 +21,7 @@ class ListPettyCashTransactions extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            PettyCashTransactionsStatsWidget::class,
+            // PettyCashTransactionsStatsWidget::class,
         ];
     }
 }

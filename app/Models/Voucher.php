@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Voucher extends Model
 {
     /** @use HasFactory<\Database\Factories\VoucherFactory> */
-    use HasFactory;
+    use \App\Traits\ProtectsClosedBatch, HasFactory;
 
     protected $fillable = [
         'farm_id',

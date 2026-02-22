@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,7 +19,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('farm_units')
                 ->nullOnDelete();
-            $table->foreignId('species_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('species_id')->nullable()->constrained()->cascadeOnDelete();
             $table
                 ->foreignId('factory_id')
                 ->nullable()
@@ -28,8 +27,8 @@ return new class extends Migration
                 ->nullOnDelete()
                 ->comment('مصنع التفريخ/المفرخة');
             $table->date('entry_date');
-            $table->integer('initial_quantity');
-            $table->integer('current_quantity');
+            $table->integer('initial_quantity')->nullable();
+            $table->integer('current_quantity')->nullable();
             $table->decimal('initial_weight_avg', 10, 3)->nullable();
             $table->decimal('current_weight_avg', 10, 3)->nullable();
             $table

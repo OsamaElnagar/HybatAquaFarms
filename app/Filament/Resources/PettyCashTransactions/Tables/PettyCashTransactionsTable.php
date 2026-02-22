@@ -141,7 +141,7 @@ class PettyCashTransactionsTable
             ->defaultSort('date', 'desc')
             ->recordActions([
                 EditAction::make(),
-                ReplicateAction::make()->label('استنساخ ')->requiresConfirmation(false),
+                // ReplicateAction::make()->label('استنساخ ')->requiresConfirmation(false),
 
             ])
             ->toolbarActions([

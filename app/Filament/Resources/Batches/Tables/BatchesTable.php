@@ -26,21 +26,6 @@ class BatchesTable
                     ->label('المزرعة')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('units.code')
-                    ->label('الوحدات')
-                    ->badge()
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('species.name')
-                    ->label('النوع')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('factory.name')
-                    ->label('مصنع التفريخ')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
                 TextColumn::make('entry_date')
                     ->label('تاريخ الإدخال')
                     ->date('Y-m-d')
@@ -48,61 +33,6 @@ class BatchesTable
                 TextColumn::make('initial_quantity')
                     ->label('الكمية الأولية')
                     ->numeric()
-                    ->sortable(),
-                TextColumn::make('current_quantity')
-                    ->label('الكمية الحالية')
-                    ->numeric()
-                    ->sortable(),
-                // TextColumn::make('mortality_rate')
-                //     ->label('معدل النفوق')
-                //     ->formatStateUsing(function ($record) {
-                //         if (! $record->initial_quantity || $record->initial_quantity == 0) {
-                //             return '0%';
-                //         }
-                //         $mortality = $record->initial_quantity - $record->current_quantity;
-                //         $rate = ($mortality / $record->initial_quantity) * 100;
-
-                //         return number_format($rate).'%';
-                //     })
-                //     ->badge()
-                //     ->color(function ($record) {
-                //         if (! $record->initial_quantity || $record->initial_quantity == 0) {
-                //             return 'gray';
-                //         }
-                //         $mortality = $record->initial_quantity - $record->current_quantity;
-                //         $rate = ($mortality / $record->initial_quantity) * 100;
-
-                //         return $rate > 10 ? 'danger' : ($rate > 5 ? 'warning' : 'success');
-                //     })
-                //     ->sortable(query: function ($query, string $direction) {
-                //         return $query->orderByRaw("((initial_quantity - current_quantity) / NULLIF(initial_quantity, 0) * 100) {$direction}");
-                //     })
-                //     ->toggleable(),
-                // TextColumn::make('days_since_entry')
-                //     ->label('عدد الأيام')
-                //     ->formatStateUsing(function ($record) {
-                //         if (! $record->entry_date) {
-                //             return '-';
-                //         }
-                //         $days = now()->diffInDays($record->entry_date);
-
-                //         return $days.' يوم';
-                //     })
-                //     ->sortable(query: function ($query, string $direction) {
-                //         return $query->orderBy('entry_date', $direction === 'asc' ? 'desc' : 'asc');
-                //     })
-                //     ->toggleable(),
-
-                TextColumn::make('initial_weight_avg')
-                    ->label('متوسط الوزن الأولي (جم)')
-                    ->numeric()
-                    ->suffix(' جم')
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('current_weight_avg')
-                    ->label('متوسط الوزن الحالي (جم)')
-                    ->numeric()
-                    ->suffix(' جم')
                     ->sortable(),
                 TextColumn::make('unit_cost')
                     ->label('تكلفة الوحدة')
@@ -121,31 +51,31 @@ class BatchesTable
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record &&
-                            ($record->total_cost ?? 0) > 0,
+                        fn($record) => $record &&
+                        ($record->total_cost ?? 0) > 0,
                     ),
                 TextColumn::make('outstanding_balance')
                     ->label('المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(
-                        fn ($record) => $record &&
+                        fn($record) => $record &&
                         ($record->outstanding_balance ?? 0) > 0
-                            ? 'danger'
-                            : 'success',
+                        ? 'danger'
+                        : 'success',
                     )
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record &&
-                            ($record->total_cost ?? 0) > 0,
+                        fn($record) => $record &&
+                        ($record->total_cost ?? 0) > 0,
                     ),
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->badge()
                     ->formatStateUsing(function ($record) {
                         if (
-                            ! $record ||
-                            ! $record->total_cost ||
+                            !$record ||
+                            !$record->total_cost ||
                             $record->total_cost <= 0
                         ) {
                             return 'لا يوجد تكلفة';
@@ -156,25 +86,20 @@ class BatchesTable
                         $paidPercentage =
                             ($record->total_paid / $record->total_cost) * 100;
 
-                        return number_format($paidPercentage, 1).'% مدفوع';
+                        return number_format($paidPercentage, 1) . '% مدفوع';
                     })
                     ->color(
-                        fn ($record) => $record
-                            ? $record->payment_status
-                            : 'gray',
+                        fn($record) => $record
+                        ? $record->payment_status
+                        : 'gray',
                     )
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record &&
-                            ($record->total_cost ?? 0) > 0,
+                        fn($record) => $record &&
+                        ($record->total_cost ?? 0) > 0,
                     ),
-                TextColumn::make('source')
-                    ->label('المصدر')
-                    ->badge()
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
@@ -185,43 +110,43 @@ class BatchesTable
                     ->label('حالة الدورة')
                     ->badge()
                     ->formatStateUsing(
-                        fn ($state) => $state ? 'مقفلة' : 'مفتوحة',
+                        fn($state) => $state ? 'مقفلة' : 'مفتوحة',
                     )
-                    ->color(fn ($state) => $state ? 'success' : 'warning')
+                    ->color(fn($state) => $state ? 'success' : 'warning')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('net_profit')
                     ->label('صافي الربح')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(
-                        fn ($record) => $record && $record->net_profit >= 0
-                            ? 'success'
-                            : 'danger',
+                        fn($record) => $record && $record->net_profit >= 0
+                        ? 'success'
+                        : 'danger',
                     )
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record && $record->is_cycle_closed,
+                        fn($record) => $record && $record->is_cycle_closed,
                     ),
                 TextColumn::make('profit_margin')
                     ->label('هامش الربح')
                     ->formatStateUsing(
-                        fn ($record) => $record
-                            ? number_format($record->profit_margin, 1).'%'
-                            : '0%',
+                        fn($record) => $record
+                        ? number_format($record->profit_margin, 1) . '%'
+                        : '0%',
                     )
                     ->badge()
                     ->color(
-                        fn ($record) => $record && $record->profit_margin >= 20
-                            ? 'success'
-                            : ($record && $record->profit_margin >= 0
-                                ? 'warning'
-                                : 'danger'),
+                        fn($record) => $record && $record->profit_margin >= 20
+                        ? 'success'
+                        : ($record && $record->profit_margin >= 0
+                            ? 'warning'
+                            : 'danger'),
                     )
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record && $record->is_cycle_closed,
+                        fn($record) => $record && $record->is_cycle_closed,
                     ),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
@@ -267,7 +192,7 @@ class BatchesTable
                         'no_cost' => 'لا يوجد تكلفة',
                     ])
                     ->query(function ($query, array $data) {
-                        if (! isset($data['value']) || $data['value'] === null) {
+                        if (!isset($data['value']) || $data['value'] === null) {
                             return;
                         }
 
@@ -291,12 +216,12 @@ class BatchesTable
                                     '(SELECT COALESCE(SUM(amount), 0) FROM batch_payments WHERE batch_payments.batch_id = batches.id) = 0',
                                 ),
                             'no_cost' => $query->where(function ($q) {
-                                $q->whereNull('total_cost')->orWhere(
+                                    $q->whereNull('total_cost')->orWhere(
                                     'total_cost',
                                     '<=',
                                     0,
-                                );
-                            }),
+                                    );
+                                }),
                             default => $query,
                         };
                     })

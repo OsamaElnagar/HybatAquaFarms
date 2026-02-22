@@ -10,11 +10,16 @@ use App\Models\SalesOrder;
 test('sales order can retrieve harvests via pivot table', function () {
     // 1. Setup Data
     $farm = Farm::factory()->create();
-    $batch = Batch::factory()->create(['farm_id' => $farm->id]);
-
+    // Create Batch
+    $batch = Batch::create([
+        'batch_code' => 'BATCH-TEST-' . rand(1000, 9999),
+        'farm_id' => $farm->id,
+        'entry_date' => now(),
+        'status' => 'active',
+    ]);
     // Create HarvestOperation manually (since factory might be missing)
     $harvestOperation = HarvestOperation::create([
-        'operation_number' => 'OP-TEST-'.rand(1000, 9999),
+        'operation_number' => 'OP-TEST-' . rand(1000, 9999),
         'batch_id' => $batch->id,
         'farm_id' => $farm->id,
         'start_date' => now(),

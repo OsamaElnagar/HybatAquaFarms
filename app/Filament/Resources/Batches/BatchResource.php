@@ -5,7 +5,10 @@ namespace App\Filament\Resources\Batches;
 use App\Filament\Resources\Batches\Pages\CreateBatch;
 use App\Filament\Resources\Batches\Pages\EditBatch;
 use App\Filament\Resources\Batches\Pages\ListBatches;
+use App\Filament\Resources\Batches\RelationManagers\FishRelationManager;
+use App\Filament\Resources\Batches\RelationManagers\HarvestOperationsRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\MovementsRelationManager;
+use App\Filament\Resources\Batches\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\Batches\Schemas\BatchForm;
 use App\Filament\Resources\Batches\Tables\BatchesTable;
 use App\Models\Batch;
@@ -54,7 +57,7 @@ class BatchResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return 'دورة زريعة -  '.$record->batch_code;
+        return 'دورة زريعة -  ' . $record->batch_code;
     }
 
     public static function getGlobalSearchResultActions(Model $record): array
@@ -86,9 +89,10 @@ class BatchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PaymentsRelationManager::class,
+            FishRelationManager::class,
+            PaymentsRelationManager::class,
             MovementsRelationManager::class,
-            RelationManagers\HarvestOperationsRelationManager::class,
+            HarvestOperationsRelationManager::class,
         ];
     }
 

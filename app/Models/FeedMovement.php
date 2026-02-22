@@ -22,6 +22,7 @@ class FeedMovement extends Model
         'to_warehouse_id',
         'date',
         'quantity',
+        'total_cost',
         'factory_id',
         'driver_id',
         'description',
@@ -33,6 +34,7 @@ class FeedMovement extends Model
         return [
             'date' => 'date',
             'quantity' => 'decimal:3',
+            'total_cost' => 'decimal:2',
             'movement_type' => FeedMovementType::class,
         ];
     }

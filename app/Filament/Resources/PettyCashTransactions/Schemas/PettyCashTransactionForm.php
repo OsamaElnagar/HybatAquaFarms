@@ -59,8 +59,6 @@ class PettyCashTransactionForm
                                         $q->where('petty_cashes.id', $pettyCashId);
                                     });
                                 } else {
-                                    // If no petty cash selected, maybe show nothing or all?
-                                    // Better to show nothing until petty cash is selected.
                                     $query->whereRaw('1 = 0');
                                 }
 
@@ -68,8 +66,27 @@ class PettyCashTransactionForm
                             })
                             ->searchable()
                             ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn (callable $set) => $set('batch_id', null))
                             ->visible(fn (callable $get) => filled($get('petty_cash_id')))
                             ->helperText('المزرعة التي تخصها المعاملة'),
+
+                        Select::make('batch_id')
+                            ->label('دفعة الزريعة')
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: function ($query, callable $get) {
+                                $farmId = $get('farm_id');
+                                if ($farmId) {
+                                    $query->where('farm_id', $farmId)->where('is_cycle_closed', false);
+                                } else {
+                                    $query->whereRaw('1 = 0');
+                                }
+
+                                return $query;
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (callable $get) => filled($get('farm_id')) && $get('direction') === 'out')
+                            ->helperText('اختر دفعة الزريعة المفتوحة (اختياري)'),
 
                         Select::make('direction')
                             ->label('النوع')

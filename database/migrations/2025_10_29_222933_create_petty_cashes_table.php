@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,6 @@ return new class extends Migration
     {
         Schema::create('petty_cashes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->foreignId('custodian_employee_id')->nullable()->constrained('employees')->nullOnDelete();
             $table->decimal('opening_balance', 12, 2)->default(0);
@@ -22,8 +20,16 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->unique(['farm_id', 'name']);
             $table->index('is_active');
+        });
+
+        Schema::create('farm_petty_cash', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('petty_cash_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
+
+            $table->unique(['farm_id', 'petty_cash_id']);
         });
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Resources\DailyFeedIssues\Tables;
 
 use App\Models\FarmUnit;
@@ -6,11 +7,8 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ReplicateAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
@@ -33,8 +31,8 @@ class DailyFeedIssuesTable
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->sortable(),
-                TextColumn::make('unit.name')
-                    ->label('الحوض | الوحدة')
+                TextColumn::make('batch.batch_code')
+                    ->label("الدورة أو الدفعة")
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -93,12 +91,10 @@ class DailyFeedIssuesTable
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric(locale:'en')
+                    ->numeric(locale: 'en')
                     ->summarize(Sum::make()->label('إجمالي الكمية')->numeric(0))
                     ->sortable(),
-                TextColumn::make('batch.batch_code')
-                    ->label('دفعة الزريعة')
-                    ->sortable(),
+
                 TextColumn::make('recordedBy.name')
                     ->label('سجل بواسطة')
                     ->sortable()
@@ -123,34 +119,11 @@ class DailyFeedIssuesTable
                             ->relationship('farm', 'name')
                             ->searchable()
                             ->preload()
-                            ->native(false)
-                            ->reactive(),
-                        Select::make('unit_id')
-                            ->label('الحوض | الوحدة')
-                            ->options(function (Get $get): array {
-                                $farmId = $get('farm_id');
-                                $query = FarmUnit::query()->with('farm');
-                                if ($farmId) {
-                                    $query->where('farm_id', $farmId);
-                                }
-
-                                return $query
-                                    ->orderBy('code')
-                                    ->get()
-                                    ->mapWithKeys(fn($unit) => [
-                                        $unit->id => ($farmId ? $unit->code : (($unit->farm?->name ?? '-') . ' - ' . $unit->code)),
-                                    ])
-                                    ->toArray();
-                            })
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->disabled(fn(Get $get): bool => blank($get('farm_id'))),
+                            ->native(false),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['farm_id'] ?? null, fn(Builder $q, $farmId) => $q->where('farm_id', $farmId))
-                            ->when($data['unit_id'] ?? null, fn(Builder $q, $unitId) => $q->where('unit_id', $unitId));
+                            ->when($data['farm_id'] ?? null, fn(Builder $q, $farmId) => $q->where('farm_id', $farmId));
                     }),
 
                 // Additional helpful filters
@@ -193,21 +166,21 @@ class DailyFeedIssuesTable
                     }),
             ])
             ->recordActions([
-                ViewAction::make()->label('عرض'),
+                // ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
-                ReplicateAction::make()
-                    ->label('نسخ')
-                    ->excludeAttributes(['recorded_by', 'created_at', 'updated_at'])
-                    ->mutateRecordDataUsing(function (array $data): array {
-                        // Set current user as recorded_by
-                        $data['recorded_by'] = auth('web')->id();
-                        // Set date to today by default, can be changed in form
-                        $data['date'] = now()->format('Y-m-d');
+                // ReplicateAction::make()
+                //     ->label('نسخ')
+                //     ->excludeAttributes(['recorded_by', 'created_at', 'updated_at'])
+                //     ->mutateRecordDataUsing(function (array $data): array {
+                //         // Set current user as recorded_by
+                //         $data['recorded_by'] = auth('web')->id();
+                //         // Set date to today by default, can be changed in form
+                //         $data['date'] = now()->format('Y-m-d');
 
-                        return $data;
-                    })
-                    ->successRedirectUrl(fn() => route('filament.admin.resources.daily-feed-issues.index'))
-                    ->successNotificationTitle('تم نسخ صرف العلف بنجاح'),
+                //         return $data;
+                //     })
+                //     ->successRedirectUrl(fn() => route('filament.admin.resources.daily-feed-issues.index'))
+                //     ->successNotificationTitle('تم نسخ صرف العلف بنجاح'),
             ])
             ->defaultSort('date', 'desc')
             ->toolbarActions([

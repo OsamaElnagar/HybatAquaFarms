@@ -13,28 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BatchMovement extends Model
 {
     /** @use HasFactory<\Database\Factories\BatchMovementFactory> */
-    use HasFactory;
-
-    protected static function booted()
-    {
-        static::creating(function ($model) {
-            if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception('لا يمكن إضافة حركات لدورة مقفلة');
-            }
-        });
-
-        static::updating(function ($model) {
-            if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception('لا يمكن تعديل حركات دورة مقفلة');
-            }
-        });
-
-        static::deleting(function ($model) {
-            if ($model->batch && $model->batch->is_cycle_closed) {
-                throw new \Exception('لا يمكن حذف حركات دورة مقفلة');
-            }
-        });
-    }
+    use \App\Traits\ProtectsClosedBatch, HasFactory;
 
     protected $fillable = [
         'batch_id',
