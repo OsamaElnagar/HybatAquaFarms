@@ -18,4 +18,14 @@ class PdfService
             'title' => $title,
         ]);
     }
+
+    public function generateDailyFarmReportPdf(array $data): \Mccarlosen\LaravelMpdf\LaravelMpdf
+    {
+        return PDF::loadView('pdf.daily-farm-report', [
+            'data' => $data,
+            'reportDate' => $data['date'] ?? now()->format('Y-m-d'),
+        ], [], [
+            'title' => 'التقرير اليومي للمزرعة - '.($data['date'] ?? now()->format('Y-m-d')),
+        ]);
+    }
 }

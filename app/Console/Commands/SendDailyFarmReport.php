@@ -17,22 +17,67 @@ class SendDailyFarmReport extends Command
 
     public function handle(\App\Services\PdfService $pdfService)
     {
-        // 1. Generate Report Data
-        // For demonstration purposes, we are creating a summary.
-        // In a real scenario, we would query the Database for today's specific metrics.
-        $headers = ['Metric', 'Value'];
-        $rows = [
-            ['Today\'s Sales', '$'.number_format(rand(1000, 5000), 2)],
-            ['Total Harvested', rand(100, 500).' kg'],
-            ['New Customers', rand(1, 10)],
-            ['Pending Orders', rand(0, 5)],
-        ];
+        $this->info('Fetching real-time data...');
 
-        $reportTitle = 'Daily Summary - '.now()->format('Y-m-d');
+        // 1. Treasury
+        $treasuryService = app(\App\Services\TreasuryService::class);
+        $dailyTreasury = $treasuryService->getDailySummary();
+        $totalBalance = $treasuryService->getTreasuryBalance();
+
+        // 2. Sales
+        $salesQuery = \App\Models\SalesOrder::query()->whereDate('order_date', now());
+        $salesRevenue = (clone $salesQuery)->sum('total_after_discount');
+        $salesOrdersCount = (clone $salesQuery)->count();
+        // Assume selling weight from order items
+        $soldWeight = \App\Models\OrderItem::query()
+            ->whereHas('order.salesOrders', function ($q) {
+                $q->whereDate('order_date', now());
+            })->sum('total_weight');
+
+        // 3. Harvest
+        $harvestWeight = \App\Models\OrderItem::query()
+            ->whereHas('order', function ($q) {
+                $q->whereDate('date', now());
+            })->sum('total_weight');
+        $harvestCount = \App\Models\Harvest::query()->whereDate('harvest_date', now())->count();
+
+        // 4. Feed & Batches
+        $feedQuery = \App\Models\DailyFeedIssue::query()->whereDate('date', now());
+        $feedStats = (clone $feedQuery)
+            ->selectRaw('SUM(quantity) as total_quantity')
+            ->selectRaw('COUNT(DISTINCT batch_id) as active_batches')
+            ->first();
+
+        $feedCost = (clone $feedQuery)
+            ->join('feed_items', 'daily_feed_issues.feed_item_id', '=', 'feed_items.id')
+            ->sum(\Illuminate\Support\Facades\DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
+
+        $data = [
+            'date' => now()->format('Y-m-d'),
+            'treasury' => [
+                'balance' => $totalBalance,
+                'incoming' => $dailyTreasury['incoming'] ?? 0,
+                'outgoing' => $dailyTreasury['outgoing'] ?? 0,
+            ],
+            'sales' => [
+                'revenue' => $salesRevenue,
+                'orders_count' => $salesOrdersCount,
+                'weight' => $soldWeight,
+            ],
+            'harvest' => [
+                'weight' => $harvestWeight,
+                'operations_count' => $harvestCount,
+            ],
+            'feed' => [
+                'consumption' => $feedStats->total_quantity ?? 0,
+                'cost' => $feedCost,
+                'active_batches' => $feedStats->active_batches ?? 0,
+            ],
+        ];
 
         $this->info('Generating PDF Report...');
 
-        $pdf = $pdfService->generateReportPdf($reportTitle, $headers, $rows);
+        $pdf = $pdfService->generateDailyFarmReportPdf($data);
 
         // Save PDF temporarily to storage
         $pdfPath = storage_path('app/temp-daily-report.pdf');
@@ -50,10 +95,10 @@ class SendDailyFarmReport extends Command
         }
 
         foreach ($chats as $chat) {
-            $chat->document($pdfPath, 'daily-report-'.now()->format('Y-m-d').'.pdf')
-                ->html("🌿 <b><u>DAILY FARM REPORT</u></b> 🌿\n\n".
-                    '📅 <b>Date:</b> <code>'.now()->format('Y-m-d')."</code>\n".
-                    "━━━━━━━━━━━━━━━━━━\n".
+            $chat->document($pdfPath, 'daily-report-' . now()->format('Y-m-d') . '.pdf')
+                ->html("🌿 <b><u>DAILY FARM REPORT</u></b> 🌿\n\n" .
+                    '📅 <b>Date:</b> <code>' . now()->format('Y-m-d') . "</code>\n" .
+                    "━━━━━━━━━━━━━━━━━━\n" .
                     '📊 <i>Here is your requested daily summary.</i>')
                 ->send();
 
