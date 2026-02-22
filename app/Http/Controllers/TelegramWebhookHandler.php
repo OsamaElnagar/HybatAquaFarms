@@ -10,14 +10,10 @@ use Illuminate\Support\Stringable;
 
 class TelegramWebhookHandler extends WebhookHandler
 {
-    public function sales()
+    public function sales(\App\Services\Telegram\SalesReportService $service)
     {
-        $monthly = \App\Models\SalesOrder::whereMonth('order_date', now()->month)->sum('total_after_discount');
-
-        $this->chat->html(
-            "💰 <b><u>Sales Report</u></b> 💰\n\n".
-            'This Month: <code>'.number_format((float) $monthly, 2).'</code> <b>EGP</b>'
-        )->send();
+        $this->chat->html('<i>Fetching sales data...</i> ⏳')->send();
+        $this->chat->html($service->generateReport())->send();
     }
 
     public function report()
@@ -26,60 +22,40 @@ class TelegramWebhookHandler extends WebhookHandler
         Artisan::call('reports:daily-sales');
     }
 
-    public function harvest()
+    public function harvest(\App\Services\Telegram\HarvestReportService $service)
     {
-        $count = \App\Models\Harvest::whereMonth('harvest_date', now()->month)->count();
-        $this->chat->html("🌾 <b><u>Harvest Report</u></b> 🌾\n\nTotal harvests recorded this month: <b>{$count}</b> operations")->send();
+        $this->chat->html('<i>Fetching harvest data...</i> ⏳')->send();
+        $this->chat->html($service->generateReport())->send();
     }
 
-    public function feedStock()
+    public function feedStock(\App\Services\Telegram\FeedStockReportService $service)
     {
-        $lowStocks = \App\Models\FeedStock::where('current_balance', '<=', 500)
-            ->with(['feedItem', 'warehouse'])
-            ->take(10)
-            ->get();
-
-        if ($lowStocks->isEmpty()) {
-            $this->chat->html("✅ <b><u>Feed Stock Report</u></b>\n\n<i>All feed stocks are at healthy levels!</i>")->send();
-
-            return;
-        }
-
-        $message = "⚠️ <b><u>Low Feed Stock Alerts</u></b> ⚠️\n\n";
-        foreach ($lowStocks as $stock) {
-            $itemName = $stock->feedItem->name ?? 'Unknown Feed';
-            $warehouseName = $stock->warehouse->name ?? 'Unknown Warehouse';
-            $message .= "• {$itemName} ({$warehouseName}): <code>".number_format($stock->current_balance ?? 0)." kg</code>\n";
-        }
-
-        $this->chat->html($message)->send();
+        $this->chat->html('<i>Fetching feed stock alerts...</i> ⏳')->send();
+        $this->chat->html($service->generateReport())->send();
     }
 
     public function batches(\App\Services\Telegram\BatchReportService $batchReportService)
     {
         $this->chat->html('<i>Fetching active batches data...</i> ⏳')->send();
-
-        $reportHtml = $batchReportService->generateActiveBatchesReport();
-
-        $this->chat->html($reportHtml)->send();
+        $this->chat->html($batchReportService->generateActiveBatchesReport())->send();
     }
 
-    public function expenses()
+    public function expenses(\App\Services\Telegram\ExpenseReportService $service)
     {
-        $total = \App\Models\Voucher::whereMonth('date', now()->month)->sum('amount');
-        $this->chat->html("💸 <b><u>Voucher Expenses</u></b> 💸\n\nThis Month: <code>".number_format((float) $total, 2).'</code> <b>EGP</b>')->send();
+        $this->chat->html('<i>Fetching expenses data...</i> ⏳')->send();
+        $this->chat->html($service->generateReport())->send();
     }
 
-    public function cashflow()
+    public function cashflow(\App\Services\Telegram\CashflowReportService $service)
     {
-        $entries = \App\Models\JournalEntry::whereMonth('date', now()->month)->count();
-        $this->chat->html("🧾 <b>Journal Entries (Month):</b> <code>{$entries}</code> operations recorded")->send();
+        $this->chat->html('<i>Fetching cashflow data...</i> ⏳')->send();
+        $this->chat->html($service->generateReport())->send();
     }
 
-    public function advances()
+    public function advances(\App\Services\Telegram\AdvanceReportService $service)
     {
-        $advances = \App\Models\EmployeeAdvance::count();
-        $this->chat->html("💵 <b>Total Advances on Record:</b> <code>{$advances}</code>")->send();
+        $this->chat->html('<i>Fetching advances data...</i> ⏳')->send();
+        $this->chat->html($service->generateReport())->send();
     }
 
     public function menu()
