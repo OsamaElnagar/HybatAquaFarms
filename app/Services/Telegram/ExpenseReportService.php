@@ -14,21 +14,21 @@ class ExpenseReportService
         $total = $vouchers->sum('amount');
         $count = $vouchers->count();
 
-        $html = "💸 <b><u>VOUCHER EXPENSES</u></b> 💸\n";
-        $html .= "<i>Financial outflow this month</i>\n";
+        $html = "💸 <b><u>مصروفات السندات</u></b> 💸\n";
+        $html .= "<i>التدفقات الخارجة هذا الشهر</i>\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
-        $html .= '💵 <b>Total Expenses:</b> <code>'.number_format((float) $total, 2)." EGP</code>\n";
-        $html .= "🧾 <b>Total Vouchers:</b> {$count}\n\n";
+        $html .= '💵 <b>إجمالي المصروفات:</b> <code>'.number_format((float) $total, 2)." ج.م</code>\n";
+        $html .= "🧾 <b>إجمالي السندات:</b> {$count}\n\n";
 
         if ($vouchers->isNotEmpty()) {
-            $html .= "📋 <b><u>Latest Vouchers:</u></b>\n";
+            $html .= "📋 <b><u>أحدث السندات:</u></b>\n";
             $latest = $vouchers->sortByDesc('date')->take(5);
             foreach ($latest as $v) {
                 $date = Carbon::parse($v->date)->format('Y-m-d');
                 $amt = number_format((float) $v->amount, 2);
-                $desc = \Illuminate\Support\Str::limit($v->description ?? 'No description', 25);
-                $html .= "🔹 <code>{$amt} EGP</code> | {$date}\n";
+                $desc = \Illuminate\Support\Str::limit($v->description ?? 'بدون وصف', 25);
+                $html .= "🔹 <code>{$amt} ج.م</code> | {$date}\n";
                 $html .= "     <i>{$desc}</i>\n";
             }
         }

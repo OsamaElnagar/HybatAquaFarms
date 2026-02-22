@@ -13,69 +13,70 @@ class TelegramWebhookHandler extends WebhookHandler
     public function sales()
     {
         $service = app(\App\Services\Telegram\SalesReportService::class);
-        $this->chat->html('<i>Fetching sales data...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب بيانات المبيعات...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function report()
     {
-        $this->chat->html('<i>Generating your PDF report. Please wait...</i> ⏳')->send();
+        $this->chat->html('<i>جاري إنشاء تقرير PDF الخاص بك. يرجى الانتظار...</i> ⏳')->send();
         Artisan::call('reports:daily-sales');
     }
 
     public function harvest()
     {
         $service = app(\App\Services\Telegram\HarvestReportService::class);
-        $this->chat->html('<i>Fetching harvest data...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب بيانات الحصاد...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function feedStock()
     {
         $service = app(\App\Services\Telegram\FeedStockReportService::class);
-        $this->chat->html('<i>Fetching feed stock alerts...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب تنبيهات المخزون...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function batches()
     {
         $batchReportService = app(\App\Services\Telegram\BatchReportService::class);
-        $this->chat->html('<i>Fetching active batches data...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب بيانات الدورات النشطة...</i> ⏳')->send();
         $this->chat->html($batchReportService->generateActiveBatchesReport())->send();
     }
 
     public function expenses()
     {
         $service = app(\App\Services\Telegram\ExpenseReportService::class);
-        $this->chat->html('<i>Fetching expenses data...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب بيانات المصروفات...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function cashflow()
     {
         $service = app(\App\Services\Telegram\CashflowReportService::class);
-        $this->chat->html('<i>Fetching cashflow data...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب بيانات التدفقات النقدية...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function advances()
     {
         $service = app(\App\Services\Telegram\AdvanceReportService::class);
-        $this->chat->html('<i>Fetching advances data...</i> ⏳')->send();
+        $this->chat->html('<i>جاري جلب بيانات السلف...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function menu()
     {
-        $this->chat->html("📊 <b><u>System Reports Menu</u></b>\n\n<i>Select a report to generate:</i>")
+        $this->chat->html('<b>مرحباً بك في نظام إدارة المزرعة 🐟</b>'."\n\n".'يرجى تحديد التقرير الذي ترغب في عرضه من القائمة أدناه:')
             ->keyboard(Keyboard::make()->buttons([
-                Button::make('💰 Sales')->action('sales'),
-                Button::make('💸 Expenses')->action('expenses'),
-                Button::make('🐟 Batches')->action('batches'),
-                Button::make('🌾 Harvests')->action('harvest'),
-                Button::make('⚠️ Feed Alerts')->action('feedStock'),
-                Button::make('💵 Advances')->action('advances'),
-                Button::make('📑 PDF Auth-Report')->action('report'),
+                Button::make('💰 المبيعات')->action('sales'),
+                Button::make('🌾 الحصاد')->action('harvest'),
+                Button::make('⚠️ مخزون الأعلاف')->action('feedStock'),
+                Button::make('🐟 الدورات النشطة')->action('batches'),
+                Button::make('💸 المصروفات')->action('expenses'),
+                Button::make('🧾 الخزينة والقيود')->action('cashflow'),
+                Button::make('💵 السلف')->action('advances'),
+                Button::make('📄 تقرير اليوم بأكمله (PDF)')->action('report'),
             ]))->send();
     }
 

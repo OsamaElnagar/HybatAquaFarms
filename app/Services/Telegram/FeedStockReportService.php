@@ -12,27 +12,27 @@ class FeedStockReportService
 
         $lowStocks = $allStocks->where('current_balance', '<=', 500)->sortBy('current_balance');
 
-        $html = "⚠️ <b><u>FEED STOCK REPORT</u></b> ⚠️\n";
-        $html .= "<i>Inventory status & alerts</i>\n";
+        $html = "⚠️ <b><u>تقرير مخزون الأعلاف</u></b> ⚠️\n";
+        $html .= "<i>حالة المخزون والتنبيهات</i>\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         if ($lowStocks->isEmpty()) {
-            $html .= "✅ <i>All feed stocks are at healthy levels (Above 500kg).</i>\n";
+            $html .= "✅ <i>جميع مخزونات الأعلاف في مستويات آمنة (أعلى من 500 كجم).</i>\n";
 
             return $html;
         }
 
-        $html .= "🚨 <b><u>CRITICAL INVENTORY</u></b>\n\n";
+        $html .= "🚨 <b><u>مخزون حرج</u></b>\n\n";
 
         foreach ($lowStocks->take(10) as $stock) {
-            $itemName = $stock->feedItem->name ?? 'Unknown Feed';
-            $warehouseName = $stock->warehouse->name ?? 'Unknown Warehouse';
+            $itemName = $stock->feedItem->name ?? 'علف غير معروف';
+            $warehouseName = $stock->warehouse->name ?? 'مستودع غير معروف';
             $balance = number_format($stock->current_balance ?? 0);
 
             $icon = $stock->current_balance <= 100 ? '🔴' : '🟠';
 
             $html .= "{$icon} <b>{$itemName}</b>\n";
-            $html .= "     📍 {$warehouseName} | ⚖️ <code>{$balance} kg</code>\n";
+            $html .= "     📍 {$warehouseName} | ⚖️ <code>{$balance} كجم</code>\n";
         }
 
         return $html;

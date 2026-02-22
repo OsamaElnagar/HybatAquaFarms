@@ -16,13 +16,13 @@ class SalesReportService
         $todayOrdersCount = SalesOrder::whereDate('order_date', Carbon::today())->count();
         $monthOrdersCount = SalesOrder::whereMonth('order_date', Carbon::now()->month)->count();
 
-        $html = "💰 <b><u>SALES REPORT</u></b> 💰\n";
-        $html .= "<i>Summary of latest transactions</i>\n";
+        $html = "💰 <b><u>تقرير المبيعات</u></b> 💰\n";
+        $html .= "<i>ملخص آخر المعاملات</i>\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
-        $html .= '📅 <b>Today:</b> <code>'.number_format((float) $today, 2)." EGP</code> <i>({$todayOrdersCount} orders)</i>\n";
-        $html .= '📅 <b>This Week:</b> <code>'.number_format((float) $thisWeek, 2)." EGP</code>\n";
-        $html .= '📅 <b>This Month:</b> <code>'.number_format((float) $thisMonth, 2)." EGP</code> <i>({$monthOrdersCount} orders)</i>\n";
+        $html .= '📅 <b>اليوم:</b> <code>'.number_format((float) $today, 2)." ج.م</code> <i>({$todayOrdersCount} طلب)</i>\n";
+        $html .= '📅 <b>هذا الأسبوع:</b> <code>'.number_format((float) $thisWeek, 2)." ج.م</code>\n";
+        $html .= '📅 <b>هذا الشهر:</b> <code>'.number_format((float) $thisMonth, 2)." ج.م</code> <i>({$monthOrdersCount} طلب)</i>\n";
 
         return $html;
     }
