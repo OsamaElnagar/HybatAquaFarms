@@ -51,7 +51,10 @@ class SendDailyFarmReport extends Command
 
         foreach ($chats as $chat) {
             $chat->document($pdfPath, 'daily-report-'.now()->format('Y-m-d').'.pdf')
-                ->message("📊 *Daily Report Summary*\nHere is your requested daily report for ".now()->format('Y-m-d'))
+                ->html("🌿 <b><u>DAILY FARM REPORT</u></b> 🌿\n\n".
+                    '📅 <b>Date:</b> <code>'.now()->format('Y-m-d')."</code>\n".
+                    "━━━━━━━━━━━━━━━━━━\n".
+                    '📊 <i>Here is your requested daily summary.</i>')
                 ->send();
 
             $this->info("Sent to chat ID: {$chat->chat_id}");
