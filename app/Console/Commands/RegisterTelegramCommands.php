@@ -25,14 +25,14 @@ class RegisterTelegramCommands extends Command
 
         $bot->registerCommands([
             'menu' => 'عرض القائمة التفاعلية الرئيسية للتقارير',
+            'report' => 'إنشاء وتحميل تقرير اليوم الكامل (PDF)',
             'sales' => 'الحصول على ملخص سريع لمبيعات هذا الشهر',
             'batches' => 'التحقق من الدورات النشطة حالياً',
             'harvest' => 'عرض إجمالي عمليات الحصاد لهذا الشهر',
-            'feedStock' => 'تنبيهات نقص المخزون في مستودعات الأعلاف',
             'expenses' => 'عرض إجمالي مصروفات السندات لهذا الشهر',
             'cashflow' => 'عرض التدفقات النقدية والقيود',
             'advances' => 'التحقق من سلف الموظفين المتبقية',
-            'report' => 'إنشاء وتحميل تقرير اليوم الكامل (PDF)',
+            'feedStock' => 'تنبيهات نقص المخزون في مستودعات الأعلاف',
         ])->send();
 
         $this->info('Commands registered successfully! Open your Telegram app and type "/" to see the menu.');
