@@ -10,8 +10,9 @@ use Illuminate\Support\Stringable;
 
 class TelegramWebhookHandler extends WebhookHandler
 {
-    public function sales(\App\Services\Telegram\SalesReportService $service)
+    public function sales()
     {
+        $service = app(\App\Services\Telegram\SalesReportService::class);
         $this->chat->html('<i>Fetching sales data...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
@@ -22,38 +23,44 @@ class TelegramWebhookHandler extends WebhookHandler
         Artisan::call('reports:daily-sales');
     }
 
-    public function harvest(\App\Services\Telegram\HarvestReportService $service)
+    public function harvest()
     {
+        $service = app(\App\Services\Telegram\HarvestReportService::class);
         $this->chat->html('<i>Fetching harvest data...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
-    public function feedStock(\App\Services\Telegram\FeedStockReportService $service)
+    public function feedStock()
     {
+        $service = app(\App\Services\Telegram\FeedStockReportService::class);
         $this->chat->html('<i>Fetching feed stock alerts...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
-    public function batches(\App\Services\Telegram\BatchReportService $batchReportService)
+    public function batches()
     {
+        $batchReportService = app(\App\Services\Telegram\BatchReportService::class);
         $this->chat->html('<i>Fetching active batches data...</i> ⏳')->send();
         $this->chat->html($batchReportService->generateActiveBatchesReport())->send();
     }
 
-    public function expenses(\App\Services\Telegram\ExpenseReportService $service)
+    public function expenses()
     {
+        $service = app(\App\Services\Telegram\ExpenseReportService::class);
         $this->chat->html('<i>Fetching expenses data...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
-    public function cashflow(\App\Services\Telegram\CashflowReportService $service)
+    public function cashflow()
     {
+        $service = app(\App\Services\Telegram\CashflowReportService::class);
         $this->chat->html('<i>Fetching cashflow data...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
-    public function advances(\App\Services\Telegram\AdvanceReportService $service)
+    public function advances()
     {
+        $service = app(\App\Services\Telegram\AdvanceReportService::class);
         $this->chat->html('<i>Fetching advances data...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
