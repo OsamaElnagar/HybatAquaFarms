@@ -55,10 +55,13 @@ class TelegramWebhookHandler extends WebhookHandler
         $this->chat->html($message)->send();
     }
 
-    public function batches()
+    public function batches(\App\Services\Telegram\BatchReportService $batchReportService)
     {
-        $activeBatches = \App\Models\Batch::where('is_cycle_closed', false)->count();
-        $this->chat->html("🐟 <b>Active Batches:</b> <code>{$activeBatches}</code>")->send();
+        $this->chat->html('<i>Fetching active batches data...</i> ⏳')->send();
+
+        $reportHtml = $batchReportService->generateActiveBatchesReport();
+
+        $this->chat->html($reportHtml)->send();
     }
 
     public function expenses()
