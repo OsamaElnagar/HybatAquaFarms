@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\DailyFeedIssues\Schemas;
 
 use App\Models\FeedStock;
+use Cache;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -23,7 +24,7 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : Cache::get('user_'.auth('web')->id().'_last_farm_id'))
                             ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
@@ -38,7 +39,7 @@ class DailyFeedIssueForm
                                     }
                                 }
                             })
-                            ->helperText('يرجى اختيار المزرعة ذات الصلة'),
+                            ->helperText('يرجى اختيار المزرعة ذات الصلة. (يتم تحديد آخر مزرعة تم استخدامها تلقائياً)'),
 
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
@@ -50,26 +51,43 @@ class DailyFeedIssueForm
 
                                 return $query->where('is_cycle_closed', false)->latest();
                             })
+                            ->default(function ($livewire, Get $get) {
+                                $farmId = $get('farm_id') ?: ($livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null);
+                                if ($farmId) {
+                                    return \App\Models\Batch::where('farm_id', $farmId)->where('is_cycle_closed', false)->latest()->value('id');
+                                }
+
+                                return Cache::get('user_'.auth('web')->id().'_last_batch_id');
+                            })
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('حدد دفعة الزريعة المفتوحة'),
+                            ->helperText('حدد دفعة الزريعة المفتوحة. (يتم تحديد آخر دفعة تم استخدامها تلقائياً)'),
 
                         Select::make('feed_item_id')
                             ->label('صنف العلف')
                             ->relationship('feedItem', 'name')
+                            ->default(fn () => Cache::get('user_'.auth('web')->id().'_last_feed_item'))
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('اختر صنف العلف المصروف'),
+                            ->helperText('اختر صنف العلف المصروف. (يتم تحديد آخر صنف تم استخدامه تلقائياً)'),
 
                         Select::make('feed_warehouse_id')
                             ->label('مخزن العلف')
                             ->relationship('warehouse', 'name', modifyQueryUsing: fn ($query, Get $get) => $query->where('farm_id', $get('farm_id')))
+                            ->default(function ($livewire, Get $get) {
+                                $farmId = $get('farm_id') ?: ($livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null);
+                                if ($farmId) {
+                                    return \App\Models\FeedWarehouse::where('farm_id', $farmId)->where('is_active', true)->first()?->id;
+                                }
+
+                                return Cache::get('user_'.auth('web')->id().'_last_warehouse_id');
+                            })
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('حدد المخزن الذي تم صرف العلف منه'),
+                            ->helperText('حدد المخزن الذي تم صرف العلف منه. (يتم تحديد آخر مخزن تم استخدامه تلقائياً)'),
 
                         DatePicker::make('date')
                             ->label('التاريخ')
@@ -82,6 +100,7 @@ class DailyFeedIssueForm
 
                         TextInput::make('quantity')
                             ->label('الكمية (كجم)')
+                            ->default(fn () => Cache::get('user_'.auth('web')->id().'_last_feed_qty'))
                             ->required()
                             ->numeric()
                             ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
@@ -102,7 +121,7 @@ class DailyFeedIssueForm
                                     $fail('الكمية المصروفة أكبر من الرصيد المتوفر في المخزن لهذا الصنف.');
                                 }
                             })
-                            ->helperText('أدخل كمية العلف المصروف بالكيلو جرام'),
+                            ->helperText('أدخل كمية العلف المصروف بالكيلو جرام. (يتم إدخال آخر كمية تم استخدامها تلقائياً)'),
 
                         Section::make('إضافات وملاحظات')
                             ->description('معلومات المستخدم والملاحظات الإضافية')
@@ -118,9 +137,10 @@ class DailyFeedIssueForm
                                     ->label('ملاحظات')
                                     ->columnSpanFull()
                                     ->maxLength(1000)
+                                    ->default(fn () => Cache::get('user_'.auth('web')->id().'_last_notes'))
                                     ->helperText('أضف أية ملاحظات إضافية متعلقة بالصرف'),
                             ])
-                            ->columns(1)->columnSpanFull()->collapsed(),
+                            ->columns(1)->columnSpanFull(),
                     ])
                     ->columns(2)->columnSpanFull(),
 

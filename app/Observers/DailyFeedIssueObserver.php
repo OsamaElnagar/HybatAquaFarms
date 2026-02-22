@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Enums\FeedMovementType;
 use App\Models\DailyFeedIssue;
 use App\Models\FeedMovement;
+use Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -14,6 +15,14 @@ class DailyFeedIssueObserver
     {
         DB::transaction(function () use ($issue) {
             $this->createFeedMovement($issue);
+
+            // Cache the last used values for this user
+            Cache::put('user_'.auth('web')->id().'_last_feed_item', $issue->feed_item_id);
+            Cache::put('user_'.auth('web')->id().'_last_feed_qty', $issue->quantity);
+            Cache::put('user_'.auth('web')->id().'_last_farm_id', $issue->farm_id);
+            Cache::put('user_'.auth('web')->id().'_last_batch_id', $issue->batch_id);
+            Cache::put('user_'.auth('web')->id().'_last_warehouse_id', $issue->feed_warehouse_id);
+            Cache::put('user_'.auth('web')->id().'_last_notes', $issue->notes);
         });
     }
 
