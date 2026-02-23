@@ -34,7 +34,27 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         $service = app(\App\Services\Telegram\FeedStockReportService::class);
         $this->chat->html('<i>جاري جلب تنبيهات المخزون...</i> ⏳')->send();
-        $this->chat->html($service->generateReport())->send();
+
+        $data = $service->generateSummaryReport();
+
+        $keyboard = Keyboard::make();
+        foreach ($data['warehouses'] as $warehouse) {
+            $name = $warehouse->name;
+            if ($warehouse->farm) {
+                $name .= ' ('.$warehouse->farm->name.')';
+            }
+            $keyboard->button($name)->action('warehouseStock')->param('id', $warehouse->id);
+        }
+
+        $this->chat->html($data['html'])->keyboard($keyboard)->send();
+    }
+
+    public function warehouseStock(int $id)
+    {
+        $service = app(\App\Services\Telegram\FeedStockReportService::class);
+        $html = $service->generateWarehouseReport($id);
+
+        $this->reply($html);
     }
 
     public function batches()

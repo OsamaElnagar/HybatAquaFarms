@@ -25,6 +25,7 @@ class TestTelegramReportCommand extends Command
 
         $this->info("Generating {$reportType} Report...");
         $html = '';
+        $keyboard = null;
 
         switch ($reportType) {
             case 'sales':
@@ -34,7 +35,17 @@ class TestTelegramReportCommand extends Command
                 $html = app(\App\Services\Telegram\HarvestReportService::class)->generateReport();
                 break;
             case 'feed':
-                $html = app(\App\Services\Telegram\FeedStockReportService::class)->generateReport();
+                $data = app(\App\Services\Telegram\FeedStockReportService::class)->generateSummaryReport();
+                $html = $data['html'];
+
+                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                foreach ($data['warehouses'] as $warehouse) {
+                    $name = $warehouse->name;
+                    if ($warehouse->farm) {
+                        $name .= ' ('.$warehouse->farm->name.')';
+                    }
+                    $keyboard->button($name)->action('warehouseStock')->param('id', $warehouse->id);
+                }
                 break;
             case 'batches':
                 $html = app(\App\Services\Telegram\BatchReportService::class)->generateActiveBatchesReport();
@@ -65,7 +76,13 @@ class TestTelegramReportCommand extends Command
         $this->info('Sending to Telegram...');
 
         foreach ($chats as $chat) {
-            $chat->html($html)->send();
+            $message = $chat->html($html);
+
+            if ($keyboard) {
+                $message->keyboard($keyboard);
+            }
+
+            $message->send();
             $this->info("Sent to chat ID: {$chat->chat_id}");
         }
 

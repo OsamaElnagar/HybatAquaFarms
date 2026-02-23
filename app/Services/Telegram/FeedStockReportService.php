@@ -6,7 +6,7 @@ use App\Models\FeedStock;
 
 class FeedStockReportService
 {
-    public function generateReport(): string
+    public function generateSummaryReport(): array
     {
         $allStocks = FeedStock::with(['feedItem', 'warehouse.farm'])->get();
 
@@ -20,46 +20,74 @@ class FeedStockReportService
 
         $html .= "📊 <b><u>إجمالي عام</u>:</b>\n";
         $html .= "📦 الأصناف المتوفرة: <b>{$totalItemsCount} صنف</b>\n";
-        $html .= '⚖️ إجمالي الوزن: <b>'.number_format($totalWeight).' كجم ('.number_format($totalWeightTons, 2)." طن)</b>\n";
-        $html .= '💰 القيمة الإجمالية: <b>'.number_format($totalValue)." ج.م</b>\n\n";
-
-        $html .= "🏪 <b><u>المخزون حسب المستودع</u>:</b>\n";
-
-        $stocksByWarehouse = $allStocks->groupBy('feed_warehouse_id');
-
-        foreach ($stocksByWarehouse as $warehouseId => $stocks) {
-            $warehouse = $stocks->first()->warehouse;
-            $warehouseName = $warehouse ? $warehouse->name : 'مستودع غير معروف';
-            if ($warehouse && $warehouse->farm) {
-                $warehouseName .= ' ('.$warehouse->farm->name.')';
-            }
-            $wWeight = $stocks->sum('quantity_in_stock');
-            $wItemsCount = $stocks->unique('feed_item_id')->count();
-
-            $html .= " - <b>{$warehouseName}:</b> ".number_format($wWeight).' كجم ('.number_format($wItemsCount)." صنف)\n";
-        }
-        $html .= "\n";
+        $html .= '⚖️ إجمالي الوزن: <b>' . number_format($totalWeight) . ' كجم (' . number_format($totalWeightTons, 2) . " طن)</b>\n";
+        $html .= '💰 القيمة الإجمالية: <b>' . number_format($totalValue) . " ج.م</b>\n\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         $lowStocks = $allStocks->where('quantity_in_stock', '<=', 500)->sortBy('quantity_in_stock');
 
-        if ($lowStocks->isEmpty()) {
-            $html .= "✅ <i>جميع مخزونات الأعلاف في مستويات آمنة (أعلى من 500 كجم).</i>\n";
+        if ($lowStocks->isNotEmpty()) {
+            $html .= "🚨 <b><u>تنبيهات انخفاض المخزون</u></b>\n\n";
 
-            return $html;
+            foreach ($lowStocks->take(5) as $stock) {
+                $itemName = $stock->feedItem->name ?? 'علف غير معروف';
+                $warehouseName = $stock->warehouse->name ?? 'مستودع غير معروف';
+                $balance = number_format($stock->quantity_in_stock ?? 0);
+
+                $icon = $stock->quantity_in_stock <= 100 ? '🔴' : '🟠';
+
+                $html .= "{$icon} <b>{$itemName}</b>\n";
+                $html .= "     📍 {$warehouseName} | ⚖️ <code>{$balance} كجم</code>\n\n";
+            }
         }
 
-        $html .= "🚨 <b><u>تنبيهات انخفاض المخزون</u></b>\n\n";
+        $html .= "👆 <i>اختر مستودعاً من القائمة أدناه لعرض تفاصيله:</i>\n";
 
-        foreach ($lowStocks->take(10) as $stock) {
+        // Get unique warehouses that have stock
+        $warehouses = $allStocks->map->warehouse->filter()->unique('id')->values();
+
+        return [
+            'html' => $html,
+            'warehouses' => $warehouses
+        ];
+    }
+
+    public function generateWarehouseReport(int $warehouseId): string
+    {
+        $stocks = FeedStock::with(['feedItem', 'warehouse.farm'])
+            ->where('feed_warehouse_id', $warehouseId)
+            ->get();
+
+        if ($stocks->isEmpty()) {
+            return "<i>لا توجد أصناف في هذا المستودع.</i>";
+        }
+
+        $warehouse = $stocks->first()->warehouse;
+        $warehouseName = $warehouse ? $warehouse->name : 'مستودع غير معروف';
+        if ($warehouse && $warehouse->farm) {
+            $warehouseName .= ' (' . $warehouse->farm->name . ')';
+        }
+
+        $totalWeight = $stocks->sum('quantity_in_stock');
+        $totalItemsCount = $stocks->unique('feed_item_id')->count();
+
+        $html = "🏪 <b><u>مستودع: {$warehouseName}</u></b>\n";
+        $html .= "📦 الأصناف: <b>{$totalItemsCount}</b> | ⚖️ الوزن: <b>" . number_format($totalWeight) . " كجم</b>\n";
+        $html .= "━━━━━━━━━━━━━━━━━━\n\n";
+
+        foreach ($stocks as $stock) {
             $itemName = $stock->feedItem->name ?? 'علف غير معروف';
-            $warehouseName = $stock->warehouse->name ?? 'مستودع غير معروف';
             $balance = number_format($stock->quantity_in_stock ?? 0);
 
-            $icon = $stock->quantity_in_stock <= 100 ? '🔴' : '🟠';
+            $icon = '✅';
+            if ($stock->quantity_in_stock <= 100) {
+                $icon = '🔴';
+            } elseif ($stock->quantity_in_stock <= 500) {
+                $icon = '🟠';
+            }
 
             $html .= "{$icon} <b>{$itemName}</b>\n";
-            $html .= "     📍 {$warehouseName} | ⚖️ <code>{$balance} كجم</code>\n\n";
+            $html .= "    ⚖️ <code>{$balance} كجم</code>\n\n";
         }
 
         return $html;
