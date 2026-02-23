@@ -236,6 +236,12 @@ class BatchesTable
             ])
             ->defaultSort('entry_date', 'desc')
             ->recordActions([
+                \Filament\Actions\Action::make('close_batch')
+                    ->label('إقفال الدورة')
+                    ->color('danger')
+                    ->icon('heroicon-o-lock-closed')
+                    ->url(fn ($record) => \App\Filament\Resources\Batches\BatchResource::getUrl('close', ['record' => $record]))
+                    ->visible(fn ($record) => ! $record->is_cycle_closed),
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
             ])

@@ -43,6 +43,7 @@ class Batch extends Model
         'net_profit',
         'closed_by',
         'closure_notes',
+        'misc_transactions',
     ];
 
     protected function casts(): array
@@ -61,6 +62,7 @@ class Batch extends Model
             'total_operating_expenses' => 'decimal:2',
             'total_revenue' => 'decimal:2',
             'net_profit' => 'decimal:2',
+            'misc_transactions' => 'array',
         ];
     }
 
@@ -289,10 +291,30 @@ class Batch extends Model
         $voucherTotal = (float) $this->vouchers()->sum('amount');
 
         $pettyCashTotal = (float) $this->pettyCashTransactions()
-            ->where('type', 'expense')
+            ->where('direction', \App\Enums\PettyTransacionType::OUT)
             ->sum('amount');
 
-        $this->cachedAllocatedExpenses = $voucherTotal + $pettyCashTotal;
+        $farmUnitsCount = (int) $this->farm->units()->count();
+        $batchUnitsCount = (int) $this->units()->count();
+
+        $proratedFarmExpenses = 0.0;
+        if ($farmUnitsCount > 0 && $batchUnitsCount > 0) {
+            $ratio = $batchUnitsCount / $farmUnitsCount;
+
+            $endDate = $this->is_cycle_closed && $this->closure_date ? $this->closure_date : now();
+
+            $farmExpensesSum = (float) PettyCashTransaction::query()
+                ->where('farm_id', $this->farm_id)
+                ->whereNull('batch_id')
+                ->where('direction', \App\Enums\PettyTransacionType::OUT)
+                ->where('date', '>=', $this->entry_date)
+                ->where('date', '<=', $endDate)
+                ->sum('amount');
+
+            $proratedFarmExpenses = $farmExpensesSum * $ratio;
+        }
+
+        $this->cachedAllocatedExpenses = $voucherTotal + $pettyCashTotal + $proratedFarmExpenses;
 
         return $this->cachedAllocatedExpenses;
     }
@@ -307,7 +329,11 @@ class Batch extends Model
         $feedCost = $this->total_feed_cost;
         $operatingExpenses = $this->allocated_expenses;
 
-        $this->cachedTotalCycleExpenses = $hatcheryCost + $feedCost + $operatingExpenses;
+        $miscExpenses = collect($this->misc_transactions ?? [])
+            ->where('type', 'expense')
+            ->sum('amount');
+
+        $this->cachedTotalCycleExpenses = $hatcheryCost + $feedCost + $operatingExpenses + $miscExpenses;
 
         return $this->cachedTotalCycleExpenses;
     }
@@ -326,14 +352,17 @@ class Batch extends Model
             return $this->cachedTotalRevenue;
         }
 
-        $this->cachedTotalRevenue = (float) \App\Models\OrderItem::query()
-            ->whereHas('order', function ($q) {
-                $q->has('salesOrders') // Must be sold
-                    ->whereHas('harvestOperation', function ($hop) {
-                        $hop->where('batch_id', $this->id);
-                    });
+        $this->cachedTotalRevenue = (float) \App\Models\SalesOrder::query()
+            ->whereHas('harvestOperation', function ($q) {
+                $q->where('batch_id', $this->id);
             })
-            ->sum('subtotal');
+            ->sum('net_amount');
+
+        $miscRevenue = collect($this->misc_transactions ?? [])
+            ->where('type', 'revenue')
+            ->sum('amount');
+
+        $this->cachedTotalRevenue = $this->cachedTotalRevenue + $miscRevenue;
 
         return $this->cachedTotalRevenue;
     }

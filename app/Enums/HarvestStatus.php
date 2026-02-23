@@ -10,14 +10,14 @@ enum HarvestStatus: string implements HasColor, HasIcon, HasLabel
 {
     case Pending = 'pending';
     case Completed = 'completed';
-    case Sold = 'sold';
+    // case Sold = 'sold';
 
     public function getLabel(): ?string
     {
         return match ($this) {
             self::Pending => 'قيد الانتظار',
             self::Completed => 'مكتمل',
-            self::Sold => 'تم البيع',
+            // self::Sold => 'تم البيع',
         };
     }
 
@@ -26,7 +26,7 @@ enum HarvestStatus: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Pending => 'warning',
             self::Completed => 'success',
-            self::Sold => 'info',
+            // self::Sold => 'info',
         };
     }
 
@@ -35,7 +35,7 @@ enum HarvestStatus: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Pending => 'heroicon-o-clock',
             self::Completed => 'heroicon-o-check-circle',
-            self::Sold => 'heroicon-o-banknotes',
+            // self::Sold => 'heroicon-o-banknotes',
         };
     }
 }

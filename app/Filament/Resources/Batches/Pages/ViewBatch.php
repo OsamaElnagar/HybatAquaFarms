@@ -6,8 +6,6 @@ use App\Filament\Resources\Batches\BatchResource;
 use App\Filament\Resources\Batches\Infolists\BatchInfolist;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
@@ -40,52 +38,9 @@ class ViewBatch extends ViewRecord
                 ->color('warning')
                 ->visible(
                     fn ($record) => ! $record->is_cycle_closed &&
-                        $record->status->value === 'harvested',
+                    $record->status->value === 'harvested',
                 )
-                ->requiresConfirmation()
-                ->modalHeading('إقفال دورة الإنتاج')
-                ->modalDescription(
-                    'سيتم حساب جميع التكاليف والإيرادات وإقفال الدورة. لن تتمكن من التعديل بعد الإقفال.',
-                )
-                ->modalIcon('heroicon-o-exclamation-triangle')
-                ->schema([
-                    DatePicker::make('closure_date')
-                        ->label('تاريخ الإقفال')
-                        ->default(now())
-                        ->required()
-                        ->displayFormat('Y-m-d')
-                        ->native(false)
-                        ->maxDate(now()),
-
-                    Textarea::make('closure_notes')
-                        ->label('ملاحظات الإقفال')
-                        ->rows(3)
-                        ->placeholder('أضف أي ملاحظات حول إقفال هذه الدورة...')
-                        ->columnSpanFull(),
-                ])
-                ->action(function ($record, array $data) {
-                    // Calculate and freeze all financials
-                    $record->update([
-                        'is_cycle_closed' => true,
-                        'closure_date' => $data['closure_date'],
-                        'total_feed_cost' => $record->total_feed_cost,
-                        'total_operating_expenses' => $record->allocated_expenses,
-                        'total_revenue' => $record->total_revenue,
-                        'net_profit' => $record->net_profit,
-                        'closed_by' => auth('web')->id(),
-                        'closure_notes' => $data['closure_notes'] ?? null,
-                    ]);
-
-                    Notification::make()
-                        ->title('تم إقفال الدورة بنجاح')
-                        ->success()
-                        ->body(
-                            "تم إقفال دورة {$record->batch_code} بصافي ربح: ".
-                                number_format($record->net_profit).
-                                ' EGP',
-                        )
-                        ->send();
-                }),
+                ->url(fn ($record) => BatchResource::getUrl('close', ['record' => $record])),
 
             Action::make('reopen_cycle')
                 ->label('إعادة فتح الدورة')
@@ -123,8 +78,8 @@ class ViewBatch extends ViewRecord
                 ->disabled(fn ($record) => $record->is_cycle_closed)
                 ->tooltip(
                     fn ($record) => $record->is_cycle_closed
-                        ? 'لا يمكن تعديل دورة مقفلة'
-                        : null,
+                    ? 'لا يمكن تعديل دورة مقفلة'
+                    : null,
                 ),
         ];
     }

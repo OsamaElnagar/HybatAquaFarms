@@ -104,7 +104,19 @@ class EmployeesTable
                     ->label('واتساب')
                     ->icon('heroicon-m-chat-bubble-left-right')
                     ->color('success')
-                    ->url(fn ($record) => $record->phone ? 'https://wa.me/'.preg_replace('/\D+/', '', $record->phone) : null)
+                    ->url(function ($record) {
+                        if (blank($record->phone)) {
+                            return null;
+                        }
+
+                        $phone = preg_replace('/\D+/', '', $record->phone);
+
+                        if (! str_starts_with($phone, '2')) {
+                            $phone = '2'.$phone;
+                        }
+
+                        return 'https://wa.me/'.$phone;
+                    })
                     ->openUrlInNewTab()
                     ->hidden(fn ($record) => blank($record->phone)),
                 ViewAction::make()->label('عرض'),

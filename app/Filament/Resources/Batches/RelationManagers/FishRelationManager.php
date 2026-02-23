@@ -19,17 +19,17 @@ class FishRelationManager extends RelationManager
 
     public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
     {
-        return 'أنواع الأسماك في الدفعة';
+        return 'أنواع المزروعات في الدفعة';
     }
 
     public static function getModelLabel(): string
     {
-        return 'نوع سمك';
+        return 'نوع مزروعات';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'أنواع الأسماك';
+        return 'أنواع مزروعات';
     }
 
     public function form(Schema $schema): Schema
@@ -39,7 +39,7 @@ class FishRelationManager extends RelationManager
                 \Filament\Schemas\Components\Grid::make(2)
                     ->schema([
                         \Filament\Forms\Components\Select::make('species_id')
-                            ->label('نوع الأسماك/الزريعة')
+                            ->label('نوع المزروعات')
                             ->relationship('species', 'name')
                             ->required()
                             ->searchable()
@@ -49,7 +49,7 @@ class FishRelationManager extends RelationManager
                         \Filament\Forms\Components\Select::make('factory_id')
                             ->label('المورد/المفرخ')
                             ->relationship('factory', 'name', function (\Illuminate\Database\Eloquent\Builder $query) {
-                                return $query->where('type', \App\Enums\FactoryType::SEEDS);
+                                return $query->where('type', '!=', \App\Enums\FactoryType::FEEDS);
                             })
                             ->searchable()
                             ->preload()

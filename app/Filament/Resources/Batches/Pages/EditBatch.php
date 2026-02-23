@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Batches\Pages;
 
 use App\Filament\Resources\Batches\BatchResource;
 use App\Filament\Resources\Batches\Widgets\BatchPaymentSummaryWidget;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -30,6 +31,12 @@ class EditBatch extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('close_batch')
+                ->label('إقفال الدورة')
+                ->color('danger')
+                ->icon('heroicon-o-lock-closed')
+                ->url(fn () => BatchResource::getUrl('close', ['record' => $this->getRecord()]))
+                ->visible(fn () => ! $this->getRecord()->is_cycle_closed),
             DeleteAction::make(),
         ];
     }

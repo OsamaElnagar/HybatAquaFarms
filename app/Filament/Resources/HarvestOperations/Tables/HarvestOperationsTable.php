@@ -55,7 +55,7 @@ class HarvestOperationsTable
 
                 TextColumn::make('total_weight')
                     ->label('إجمالي الوزن')
-                    ->numeric(2)
+                    ->numeric()
                     ->suffix(' كجم')
                     ->sortable(),
 

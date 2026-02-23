@@ -46,7 +46,7 @@ class HarvestOperationForm
                                     }
                                 }
                             })
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->batch_code} - {$record->species->name}")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->batch_code.($record->species ? " - {$record->species->name}" : ''))
                             ->columnSpan(1),
 
                         Select::make('farm_id')

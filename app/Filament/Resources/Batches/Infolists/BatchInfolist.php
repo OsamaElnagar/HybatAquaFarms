@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\Infolists;
 
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -52,15 +53,15 @@ class BatchInfolist
                         ->color(
                             fn ($record) => $record->current_quantity <
                             $record->initial_quantity
-                                ? 'warning'
-                                : 'success',
+                            ? 'warning'
+                            : 'success',
                         )
                         ->columnSpan(1),
                     TextEntry::make('mortality_count')
                         ->label('عدد النفوق')
                         ->state(
                             fn ($record) => $record->initial_quantity -
-                                $record->current_quantity,
+                            $record->current_quantity,
                         )
                         ->badge()
                         ->color('danger')
@@ -107,16 +108,16 @@ class BatchInfolist
                         ->label('متوسط الوزن الأولي')
                         ->formatStateUsing(
                             fn ($state) => $state
-                                ? number_format($state).' جم'
-                                : 'غير محدد',
+                            ? number_format($state).' جم'
+                            : 'غير محدد',
                         )
                         ->columnSpan(1),
                     TextEntry::make('current_weight_avg')
                         ->label('متوسط الوزن الحالي')
                         ->formatStateUsing(
                             fn ($state) => $state
-                                ? number_format($state).' جم'
-                                : 'غير محدد',
+                            ? number_format($state).' جم'
+                            : 'غير محدد',
                         )
                         ->columnSpan(1),
                 ])
@@ -143,16 +144,16 @@ class BatchInfolist
                         ->label('تكلفة الوحدة')
                         ->formatStateUsing(
                             fn ($state) => $state
-                                ? number_format($state).' EGP '
-                                : 'غير محدد',
+                            ? number_format($state).' EGP '
+                            : 'غير محدد',
                         )
                         ->columnSpan(1),
                     TextEntry::make('total_cost')
                         ->label('التكلفة الإجمالية')
                         ->formatStateUsing(
                             fn ($state) => $state
-                                ? number_format($state).' EGP '
-                                : 'غير محدد',
+                            ? number_format($state).' EGP '
+                            : 'غير محدد',
                         )
                         ->badge()
                         ->color('success')
@@ -161,8 +162,8 @@ class BatchInfolist
                         ->label('المدفوع')
                         ->formatStateUsing(
                             fn ($record) => $record->total_paid
-                                ? number_format($record->total_paid).' EGP '
-                                : '0.00 EGP',
+                            ? number_format($record->total_paid).' EGP '
+                            : '0.00 EGP',
                         )
                         ->badge()
                         ->color('info')
@@ -171,17 +172,17 @@ class BatchInfolist
                         ->label('المتبقي')
                         ->formatStateUsing(
                             fn ($record) => $record->outstanding_balance
-                                ? number_format(
-                                    $record->outstanding_balance,
-                                    2,
-                                ).' EGP '
-                                : '0.00 EGP',
+                            ? number_format(
+                                $record->outstanding_balance,
+                                2,
+                            ).' EGP '
+                            : '0.00 EGP',
                         )
                         ->badge()
                         ->color(
                             fn ($record) => $record->outstanding_balance > 0
-                                ? 'warning'
-                                : 'success',
+                            ? 'warning'
+                            : 'success',
                         )
                         ->columnSpan(1),
                 ])
@@ -289,8 +290,8 @@ class BatchInfolist
                         ->badge()
                         ->color(
                             fn ($record) => $record->net_profit >= 0
-                                ? 'success'
-                                : 'danger',
+                            ? 'success'
+                            : 'danger',
                         )
                         ->columnSpan(1),
                     TextEntry::make('profit_margin')
@@ -303,10 +304,10 @@ class BatchInfolist
                         ->badge()
                         ->color(
                             fn ($record) => $record->profit_margin >= 20
-                                ? 'success'
-                                : ($record->profit_margin >= 0
-                                    ? 'warning'
-                                    : 'danger'),
+                            ? 'success'
+                            : ($record->profit_margin >= 0
+                                ? 'warning'
+                                : 'danger'),
                         )
                         ->columnSpan(1),
                     TextEntry::make('days_since_entry')
@@ -322,7 +323,7 @@ class BatchInfolist
                 ->columnSpanFull()
                 ->visible(
                     fn ($record) => $record->status->value === 'harvested' ||
-                        $record->is_cycle_closed,
+                    $record->is_cycle_closed,
                 ),
 
             Section::make('إقفال الدورة')
@@ -348,6 +349,24 @@ class BatchInfolist
                         ->label('ملاحظات الإقفال')
                         ->placeholder('لا توجد ملاحظات')
                         ->columnSpanFull(),
+
+                    RepeatableEntry::make('misc_transactions')
+                        ->label('التسويات المالية الإضافية')
+                        ->schema([
+                            TextEntry::make('type')
+                                ->label('النوع')
+                                ->formatStateUsing(fn ($state) => $state === 'revenue' ? 'إيراد' : 'مصروف')
+                                ->badge()
+                                ->color(fn ($state) => $state === 'revenue' ? 'success' : 'danger'),
+                            TextEntry::make('description')
+                                ->label('البيان'),
+                            TextEntry::make('amount')
+                                ->label('المبلغ')
+                                ->formatStateUsing(fn ($state) => number_format((float) $state).' EGP'),
+                        ])
+                        ->columns(3)
+                        ->columnSpanFull()
+                        ->visible(fn ($record) => ! empty($record->misc_transactions)),
                 ])
                 ->columns(2)
                 ->columnSpanFull()
