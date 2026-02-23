@@ -9,27 +9,67 @@ class ExpenseReportService
 {
     public function generateReport(): string
     {
-        $vouchers = Voucher::whereMonth('date', Carbon::now()->month)->get();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
 
-        $total = $vouchers->sum('amount');
-        $count = $vouchers->count();
+        // 1. Outgoing Vouchers (Payment)
+        $outVouchers = Voucher::where('voucher_type', \App\Enums\VoucherType::Payment)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->get();
 
-        $html = "💸 <b><u>مصروفات السندات</u></b> 💸\n";
-        $html .= "<i>التدفقات الخارجة هذا الشهر</i>\n";
-        $html .= "━━━━━━━━━━━━━━━━━━\n\n";
+        // 2. Outgoing Petty Cash
+        $outPettyCash = \App\Models\PettyCashTransaction::where('direction', \App\Enums\PettyTransacionType::OUT)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->get();
 
-        $html .= '💵 <b>إجمالي المصروفات:</b> <code>'.number_format((float) $total, 2)." ج.م</code>\n";
-        $html .= "🧾 <b>إجمالي السندات:</b> {$count}\n\n";
+        $totalVouchers = $outVouchers->sum('amount');
+        $totalPettyCash = $outPettyCash->sum('amount');
 
-        if ($vouchers->isNotEmpty()) {
-            $html .= "📋 <b><u>أحدث السندات:</u></b>\n";
-            $latest = $vouchers->sortByDesc('date')->take(5);
-            foreach ($latest as $v) {
-                $date = Carbon::parse($v->date)->format('Y-m-d');
-                $amt = number_format((float) $v->amount, 2);
-                $desc = \Illuminate\Support\Str::limit($v->description ?? 'بدون وصف', 25);
-                $html .= "🔹 <code>{$amt} ج.م</code> | {$date}\n";
-                $html .= "     <i>{$desc}</i>\n";
+        $grandTotal = $totalVouchers + $totalPettyCash;
+        $totalTransactionsCount = $outVouchers->count() + $outPettyCash->count();
+
+        $html = "<b><u>مصروفات الشهر الحالي</u></b>\n\n";
+
+        $html .= 'إجمالي السندات: <b>' . number_format((float) $totalVouchers) . " ج.م</b>\n";
+        $html .= 'إجمالي العهد: <b>' . number_format((float) $totalPettyCash) . " ج.م</b>\n\n";
+
+        $html .= '<b><u>الإجمالي العام</u>: ' . number_format((float) $grandTotal) . " ج.م</b>\n";
+        $html .= "عدد الحركات: {$totalTransactionsCount}\n\n";
+        $html .= "━━━━━━━━━━━━━━━━━━\n\n\n";
+
+        if ($totalTransactionsCount > 0) {
+            $html .= "<b><u>أحدث حركات الصرف:</u></b>\n\n";
+
+            // Combine and sort to get latest
+            $combined = collect();
+
+            foreach ($outVouchers as $v) {
+                $combined->push([
+                    'date' => Carbon::parse($v->date),
+                    'amount' => $v->amount,
+                    'desc' => $v->description ?? 'سند صرف (بدون وصف)',
+                    'type' => 'سند',
+                ]);
+            }
+
+            foreach ($outPettyCash as $p) {
+                $combined->push([
+                    'date' => Carbon::parse($p->date),
+                    'amount' => $p->amount,
+                    'desc' => $p->description ?? 'عهدة نقدية (بدون وصف)',
+                    'type' => 'عهدة',
+                ]);
+            }
+
+            $latest = $combined->sortByDesc('date')->take(10);
+
+            foreach ($latest as $transaction) {
+                $dateStr = $transaction['date']->format('Y-m-d');
+                $amt = number_format((float) $transaction['amount']);
+                $desc = \Illuminate\Support\Str::limit($transaction['desc'], 40);
+
+                $html .= "<b>[{$transaction['type']}]</b> <code>{$amt} ج.م</code> | {$dateStr}\n";
+                $html .= "<i>{$desc}</i>\n\n";
             }
         }
 

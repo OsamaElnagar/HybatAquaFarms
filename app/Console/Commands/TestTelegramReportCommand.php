@@ -48,7 +48,19 @@ class TestTelegramReportCommand extends Command
                 }
                 break;
             case 'batches':
-                $html = app(\App\Services\Telegram\BatchReportService::class)->generateActiveBatchesReport();
+                $data = app(\App\Services\Telegram\BatchReportService::class)->generateActiveBatchesReport();
+                $html = $data['html'];
+
+                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                if (isset($data['batches']) && $data['batches']->isNotEmpty()) {
+                    foreach ($data['batches'] as $batch) {
+                        $name = $batch->batch_code;
+                        if ($batch->farm) {
+                            $name .= ' ('.$batch->farm->name.')';
+                        }
+                        $keyboard->button($name)->action('batchReport')->param('id', $batch->id);
+                    }
+                }
                 break;
             case 'expenses':
                 $html = app(\App\Services\Telegram\ExpenseReportService::class)->generateReport();

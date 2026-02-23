@@ -6,46 +6,81 @@ use App\Models\Batch;
 
 class BatchReportService
 {
-    public function generateActiveBatchesReport(): string
+    public function generateActiveBatchesReport(): array
     {
         $activeBatches = Batch::with(['farm', 'species', 'dailyFeedIssues'])
             ->where('is_cycle_closed', false)
             ->get();
 
         if ($activeBatches->isEmpty()) {
-            return '✅ <i>لا توجد دورات نشطة في الوقت الحالي.</i>';
+            return [
+                'html' => 'لا توجد دورات نشطة في الوقت الحالي.',
+                'batches' => collect(),
+            ];
         }
 
-        $html = "🐟 <b><u>تقرير الدورات النشطة</u></b> 🐟\n";
-        $html .= "<i>تم العثور على {$activeBatches->count()} دورات نشطة</i>\n";
+        // Global Summaries
+        $totalLivingFish = $activeBatches->sum('current_quantity');
+        $totalFeedConsumed = $activeBatches->sum('total_feed_consumed');
+        $totalExpenses = $activeBatches->sum('total_cycle_expenses');
+
+        $html = "<b><u>تقرير الدورات النشطة</u></b>\n\n";
+
+        $html .= "<b><u>إجمالي عام</u>:</b>\n";
+        $html .= "▪️ إجمالي الدورات النشطة: <b>{$activeBatches->count()}</b>\n";
+        $html .= '▪️ إجمالي الأسماك الحية: <b>'.number_format($totalLivingFish)."</b>\n";
+        $html .= '▪️ إجمالي العلف المستهلك: <b>'.number_format($totalFeedConsumed)." كجم</b>\n";
+        $html .= '▪️ إجمالي التكاليف المُنْفَقَة: <b>'.number_format($totalExpenses)." ج.م</b>\n\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
-        foreach ($activeBatches as $batch) {
-            $farmName = $batch->farm->name ?? 'مزرعة غير معروفة';
-            $speciesName = $batch->species->name ?? 'مختلط/غير معروف';
-            $daysActive = $batch->days_since_entry;
+        $html .= '<i>اختر الدورة من القائمة أدناه لعرض تفاصيلها:</i>';
 
-            // Mortality logic
-            $mortality = $batch->initial_quantity - $batch->current_quantity;
-            $mortalityRate = $batch->initial_quantity > 0
-                ? round(($mortality / $batch->initial_quantity) * 100, 2)
-                : 0;
+        return [
+            'html' => $html,
+            'batches' => $activeBatches,
+        ];
+    }
 
-            // Financials
-            $feedConsumed = number_format($batch->total_feed_consumed);
-            $totalExpenses = number_format($batch->total_cycle_expenses, 2);
-            $totalPaid = number_format($batch->total_paid, 2);
-            $balance = number_format($batch->outstanding_balance, 2);
+    public function generateBatchReport(int $batchId): string
+    {
+        $batch = Batch::with(['farm', 'species', 'dailyFeedIssues'])->find($batchId);
 
-            $html .= "🟦 <b>الدورة:</b> <code>{$batch->batch_code}</code>\n";
-            $html .= "📍 <b>المزرعة:</b> {$farmName} | 🐟 {$speciesName}\n";
-            $html .= "⏱️ <b>مدة النشاط:</b> {$daysActive} يوم\n";
-            $html .= '📉 <b>النافق:</b> '.number_format($mortality)." (<code>{$mortalityRate}%</code>)\n";
-            $html .= "🌾 <b>العلف المستهلك:</b> <code>{$feedConsumed} كجم</code>\n";
-            $html .= "💸 <b>التكلفة الإجمالية:</b> <code>{$totalExpenses} ج.م</code>\n";
-            $html .= "💳 <b>المتبقي دفعه:</b> <code>{$balance} ج.م</code>\n";
-            $html .= "\n";
+        if (! $batch) {
+            return 'الدورة غير موجودة.';
         }
+
+        $farmName = $batch->farm->name ?? 'مزرعة غير معروفة';
+        $speciesName = $batch->species->name ?? 'مختلط/غير معروف';
+        $daysActive = $batch->days_since_entry;
+
+        // Mortality logic
+        $mortality = $batch->initial_quantity - $batch->current_quantity;
+        $mortalityRate = $batch->initial_quantity > 0
+            ? round(($mortality / $batch->initial_quantity) * 100)
+            : 0;
+
+        // Weights
+        $initialWeight = number_format($batch->initial_weight_avg);
+        $currentWeight = number_format($batch->current_weight_avg);
+
+        // Financials
+        $feedConsumed = number_format($batch->total_feed_consumed);
+        $totalBatchExpenses = number_format($batch->total_cycle_expenses);
+        $balance = number_format($batch->outstanding_balance);
+
+        $html = "<b>مزرعة: {$farmName}</b>\n\n";
+
+        $html .= "<b>الدورة:</b> <code>{$batch->batch_code}</code> ({$speciesName})\n";
+        $html .= "مدة النشاط: {$daysActive} يوم\n";
+        $html .= 'الكمية: '.number_format($batch->current_quantity).' / '.number_format($batch->initial_quantity)." (نافق: {$mortalityRate}%)\n";
+
+        if ($batch->current_weight_avg > 0) {
+            $html .= "متوسط الوزن: {$currentWeight} جرام (دخول: {$initialWeight})\n";
+        }
+
+        $html .= "الاستهلاك: <code>{$feedConsumed} كجم</code> علف\n";
+        $html .= "التكلفة: <code>{$totalBatchExpenses} ج.م</code>\n";
+        $html .= "المتبقي: <code>{$balance} ج.م</code>\n\n";
 
         $html .= '<i>تم إنشاء البيانات في الوقت الفعلي.</i>';
 

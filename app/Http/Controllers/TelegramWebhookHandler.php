@@ -41,7 +41,7 @@ class TelegramWebhookHandler extends WebhookHandler
         foreach ($data['warehouses'] as $warehouse) {
             $name = $warehouse->name;
             if ($warehouse->farm) {
-                $name .= ' (' . $warehouse->farm->name . ')';
+                $name .= ' ('.$warehouse->farm->name.')';
             }
             $keyboard->button($name)->action('warehouseStock')->param('id', $warehouse->id);
         }
@@ -62,7 +62,33 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         $batchReportService = app(\App\Services\Telegram\BatchReportService::class);
         $this->chat->html('<i>جاري جلب بيانات الدورات النشطة...</i> ⏳')->send();
-        $this->chat->html($batchReportService->generateActiveBatchesReport())->send();
+
+        $data = $batchReportService->generateActiveBatchesReport();
+
+        $keyboard = Keyboard::make();
+        if (isset($data['batches']) && $data['batches']->isNotEmpty()) {
+            foreach ($data['batches'] as $batch) {
+                $name = $batch->batch_code;
+                if ($batch->farm) {
+                    $name .= ' ('.$batch->farm->name.')';
+                }
+                $keyboard->button($name)->action('batchReport')->param('id', $batch->id);
+            }
+        }
+
+        if ($keyboard->isEmpty()) {
+            $this->chat->html($data['html'] ?? $data)->send();
+        } else {
+            $this->chat->html($data['html'])->keyboard($keyboard)->send();
+        }
+    }
+
+    public function batchReport(int $id)
+    {
+        $service = app(\App\Services\Telegram\BatchReportService::class);
+        $html = $service->generateBatchReport($id);
+
+        $this->chat->html($html)->send();
     }
 
     public function expenses()
@@ -88,7 +114,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function menu()
     {
-        $this->chat->html('<b>مرحباً بك في نظام إدارة المزرعة 🐟</b>' . "\n\n" . 'يرجى تحديد التقرير الذي ترغب في عرضه من القائمة أدناه:')
+        $this->chat->html('<b>مرحباً بك في نظام إدارة المزرعة 🐟</b>'."\n\n".'يرجى تحديد التقرير الذي ترغب في عرضه من القائمة أدناه:')
             ->keyboard(Keyboard::make()->buttons([
                 Button::make('💰 المبيعات')->action('sales'),
                 Button::make('🌾 الحصاد')->action('harvest'),
