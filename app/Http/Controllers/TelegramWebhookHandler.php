@@ -41,7 +41,7 @@ class TelegramWebhookHandler extends WebhookHandler
         foreach ($data['warehouses'] as $warehouse) {
             $name = $warehouse->name;
             if ($warehouse->farm) {
-                $name .= ' ('.$warehouse->farm->name.')';
+                $name .= ' (' . $warehouse->farm->name . ')';
             }
             $keyboard->button($name)->action('warehouseStock')->param('id', $warehouse->id);
         }
@@ -54,7 +54,8 @@ class TelegramWebhookHandler extends WebhookHandler
         $service = app(\App\Services\Telegram\FeedStockReportService::class);
         $html = $service->generateWarehouseReport($id);
 
-        $this->reply($html);
+        // Send as a new HTML message to the chat
+        $this->chat->html($html)->send();
     }
 
     public function batches()
@@ -87,7 +88,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function menu()
     {
-        $this->chat->html('<b>مرحباً بك في نظام إدارة المزرعة 🐟</b>'."\n\n".'يرجى تحديد التقرير الذي ترغب في عرضه من القائمة أدناه:')
+        $this->chat->html('<b>مرحباً بك في نظام إدارة المزرعة 🐟</b>' . "\n\n" . 'يرجى تحديد التقرير الذي ترغب في عرضه من القائمة أدناه:')
             ->keyboard(Keyboard::make()->buttons([
                 Button::make('💰 المبيعات')->action('sales'),
                 Button::make('🌾 الحصاد')->action('harvest'),
