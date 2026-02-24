@@ -90,29 +90,15 @@ class SalaryRecordsRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn (Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
-                            ->when($data['to'], fn (Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
+                            ->when($data['from'], fn(Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
+                            ->when($data['to'], fn(Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
                     }),
                 SelectFilter::make('status')
                     ->label('الحالة')
                     ->options(['pending' => 'معلق', 'paid' => 'مدفوع']),
             ])
             ->headerActions([
-                CreateAction::make()->label('إضافة سجل مرتب')
-                    ->mountUsing(function ($form): void {
-                        $form->fill([
-                            'employee_id' => $this->getOwnerRecord()->id,
-                        ]);
-                    })
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['employee_id'] = $this->getOwnerRecord()->id;
-
-                        foreach (['bonuses', 'deductions', 'advances_deducted'] as $field) {
-                            $data[$field] = (float) ($data[$field] ?? 0);
-                        }
-
-                        return $data;
-                    }),
+                CreateAction::make()->label('إضافة سجل مرتب'),
             ])
             ->recordActions([
                 EditAction::make(),

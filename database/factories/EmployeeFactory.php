@@ -20,7 +20,6 @@ class EmployeeFactory extends Factory
             'employee_number' => $this->faker->unique()->numerify('EMP-####'),
             'name' => $this->faker->name,
             'phone' => $this->faker->phoneNumber,
-            'national_id' => $this->faker->numerify('##############'),
             'hire_date' => $this->faker->date(),
             'basic_salary' => $this->faker->randomFloat(2, 3000, 10000),
             'status' => 'active',

@@ -33,10 +33,6 @@ class EmployeesTable
                     ->label('الهاتف')
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('national_id')
-                    ->label('الرقم القومي')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->searchable()
@@ -58,9 +54,9 @@ class EmployeesTable
                     ->sortable(),
                 TextColumn::make('outstanding_advances')
                     ->label('سلف مستحقة')
-                    ->state(fn ($record) => number_format($record->total_outstanding_advances))
+                    ->state(fn($record) => number_format($record->total_outstanding_advances))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->color(fn($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                     ->toggleable(),
                 TextColumn::make('status')
                     ->label('الحالة')
@@ -98,8 +94,8 @@ class EmployeesTable
                 Action::make('call')
                     ->label('اتصال')
                     ->icon('heroicon-m-phone')
-                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
-                    ->hidden(fn ($record) => blank($record->phone)),
+                    ->url(fn($record) => $record->phone ? 'tel:' . $record->phone : null)
+                    ->hidden(fn($record) => blank($record->phone)),
                 Action::make('whatsapp')
                     ->label('واتساب')
                     ->icon('heroicon-m-chat-bubble-left-right')
@@ -111,14 +107,14 @@ class EmployeesTable
 
                         $phone = preg_replace('/\D+/', '', $record->phone);
 
-                        if (! str_starts_with($phone, '2')) {
-                            $phone = '2'.$phone;
+                        if (!str_starts_with($phone, '2')) {
+                            $phone = '2' . $phone;
                         }
 
-                        return 'https://wa.me/'.$phone;
+                        return 'https://wa.me/' . $phone;
                     })
                     ->openUrlInNewTab()
-                    ->hidden(fn ($record) => blank($record->phone)),
+                    ->hidden(fn($record) => blank($record->phone)),
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
             ])

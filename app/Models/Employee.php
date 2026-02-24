@@ -21,9 +21,6 @@ class Employee extends Model
         'employee_number',
         'name',
         'phone',
-        'phone2',
-        'national_id',
-        'address',
         'hire_date',
         'termination_date',
         'farm_id',
@@ -73,7 +70,8 @@ class Employee extends Model
     public function getTotalOutstandingAdvancesAttribute(): float
     {
         return (float) $this->advances()
-            ->whereIn('status', ['approved', 'partially_paid'])
+            ->where('status', \App\Enums\AdvanceStatus::Active)
+            ->where('approval_status', \App\Enums\AdvanceApprovalStatus::APPROVED)
             ->sum('balance_remaining');
     }
 

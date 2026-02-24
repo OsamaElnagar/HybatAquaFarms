@@ -53,6 +53,6 @@ class AppServiceProvider extends ServiceProvider
             return $action->slideOver()->modalWidth(Width::SixExtraLarge);
         });
 
-        DatePicker::configureUsing(fn (DatePicker $picker) => $picker->displayFormat('Y-m-d')->native(false));
+        DatePicker::configureUsing(fn(DatePicker $picker) => $picker->displayFormat('Y-m-d')->native(false));
     }
 }

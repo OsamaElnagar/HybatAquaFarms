@@ -50,7 +50,7 @@ class EmployeeAdvanceForm
                             ->minValue(0.01)
                             ->step(0.01)
                             ->suffix(' EGP ')
-                            ->afterStateUpdated(fn (Set $set, Get $get) => $set('balance_remaining', $get('amount')))
+                            ->afterStateUpdated(fn(Set $set, Get $get) => $set('balance_remaining', $get('amount')))
                             ->live(true)
                             ->helperText('قيمة السلفة الإجمالية')
                             ->columnSpan(1),
@@ -100,20 +100,6 @@ class EmployeeAdvanceForm
                     ->collapsible(),
                 Section::make('خطة السداد والمتابعة')
                     ->schema([
-                        TextInput::make('installments_count')
-                            ->label('عدد الأقساط')
-                            ->numeric()
-                            ->minValue(1)
-                            ->helperText('عدد الأقساط المتفق عليها')
-                            ->columnSpan(1),
-                        TextInput::make('installment_amount')
-                            ->label('مبلغ القسط')
-                            ->numeric()
-                            ->minValue(0.01)
-                            ->step(0.01)
-                            ->suffix(' EGP ')
-                            ->helperText('قيمة كل قسط (يُملأ تلقائياً إذا وُجد نظام أقساط)')
-                            ->columnSpan(1),
                         TextInput::make('balance_remaining')
                             ->label('الرصيد المتبقي')
                             ->numeric()

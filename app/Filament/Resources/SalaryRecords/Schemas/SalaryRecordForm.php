@@ -10,7 +10,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -28,17 +28,43 @@ class SalaryRecordForm
                         Select::make('employee_id')
                             ->label('الموظف')
                             ->relationship('employee', 'name')
+                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->searchable()
                             ->preload()
                             ->required()
                             ->helperText('اختر الموظف الذي يتم إعداد كشف المرتب له')
-                            ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->live()
+                            ->afterStateHydrated(function (Set $set, Get $get, string $operation) {
+                                if (!$get('employee_id')) {
+                                    return;
+                                }
+
+                                if ($operation === 'create') {
+                                    self::updateBasicFromPeriod($set, $get);
+                                } elseif ($operation === 'edit') {
+                                    $emp = Employee::find($get('employee_id'));
+                                    if ($emp) {
+                                        $set('em_basic_salary', number_format((float) $emp->basic_salary) . ' EGP');
+                                        $perDay = (float) $emp->basic_salary / 26;
+                                        $set('per_day_rate', round($perDay));
+                                    }
+                                }
+                            })
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old) {
+                                if ($state !== $old && $state) {
+                                    $employee = Employee::find($state);
+                                    if ($employee) {
+                                        $set('advances_deducted', $employee->total_outstanding_advances);
+                                    }
+                                }
+                                self::updateBasicFromPeriod($set, $get);
+                            })
                             ->columnSpan(1),
 
-                        TextEntry::make('em_basic_salary')
+                        TextInput::make('em_basic_salary')
                             ->label('الراتب الأساسي')
-                            ->money('EGP', locale: 'en', decimalPlaces: 0)
+                            ->disabled()
+                            ->dehydrated(false)
                             ->placeholder('حدد موظف أولاً')
                             ->columnSpan(1),
                         DatePicker::make('pay_period_start')
@@ -181,7 +207,15 @@ class SalaryRecordForm
                         TextInput::make('advances_deducted')
                             ->label('السُلف المخصومة')
                             ->numeric()
-                            ->default(0)
+                            ->default(function ($livewire) {
+                                if ($livewire instanceof RelationManager) {
+                                    $owner = $livewire->getOwnerRecord();
+                                    if ($owner instanceof Employee) {
+                                        return $owner->total_outstanding_advances;
+                                    }
+                                }
+                                return 0;
+                            })
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
@@ -250,28 +284,30 @@ class SalaryRecordForm
     protected static function updateBasicFromPeriod(Set $set, Get $get): void
     {
         $employeeId = (int) $get('employee_id');
-        $start = $get('pay_period_start');
-        $end = $get('pay_period_end');
-        $unpaid = (int) ($get('unpaid_days') ?? 0);
 
-        if (!$employeeId || !$start || !$end) {
-            // If employee is selected but dates are incomplete, default basic to fixed monthly salary
-            if ($employeeId) {
-                $employee = Employee::find($employeeId);
-                if ($employee) {
-                    $perDay = (float) $employee->basic_salary / 26;
-                    $set('per_day_rate', round($perDay));
-                    $set('working_days', null);
-                    $set('basic_salary', (float) $employee->basic_salary);
-                    self::updateNetSalary($set, $get);
-                }
-            }
-
+        if (!$employeeId) {
             return;
         }
 
         $employee = Employee::find($employeeId);
         if (!$employee) {
+            return;
+        }
+
+        $set('em_basic_salary', number_format((float) $employee->basic_salary, 2) . ' EGP');
+
+        $start = $get('pay_period_start');
+        $end = $get('pay_period_end');
+        $unpaid = (int) ($get('unpaid_days') ?? 0);
+
+        if (!$start || !$end) {
+            // If employee is selected but dates are incomplete, default basic to fixed monthly salary
+            $perDay = (float) $employee->basic_salary / 26;
+            $set('per_day_rate', round($perDay));
+            $set('working_days', null);
+            $set('basic_salary', (float) $employee->basic_salary);
+
+            self::updateNetSalary($set, $get);
             return;
         }
 
@@ -316,7 +352,15 @@ class SalaryRecordForm
         $deductions = (float) $get('deductions');
         $advances = (float) $get('advances_deducted');
 
-        $net = $basic + $bonuses - $deductions - $advances;
+        $netBeforeAdvances = $basic + $bonuses - $deductions;
+
+        // Cap advances to the available net salary so we don't go negative
+        if ($advances > $netBeforeAdvances && $netBeforeAdvances > 0) {
+            $advances = $netBeforeAdvances;
+            $set('advances_deducted', $advances);
+        }
+
+        $net = $netBeforeAdvances - $advances;
 
         $set('net_salary', max(round($net), 0));
     }

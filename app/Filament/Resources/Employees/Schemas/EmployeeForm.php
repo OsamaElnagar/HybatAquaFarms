@@ -37,22 +37,11 @@ class EmployeeForm
                             ->maxLength(255)
                             ->helperText('رقم الهاتف الأساسي')
                             ->columnSpan(1),
-                        TextInput::make('phone2')
-                            ->label('هاتف بديل')
-                            ->tel()
-                            ->maxLength(255)
-                            ->helperText('رقم هاتف احتياطي (اختياري)')
-                            ->columnSpan(1),
-                        TextInput::make('national_id')
-                            ->label('الرقم القومي')
-                            ->maxLength(255)
-                            ->helperText('الرقم القومي أو رقم البطاقة')
-                            ->columnSpan(1),
                         Select::make('farm_id')
                             ->label('المزرعة')
                             ->relationship('farm', 'name')
-                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
-                            ->disabled(fn ($livewire) => $livewire instanceof RelationManager)
+                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->disabled(fn($livewire) => $livewire instanceof RelationManager)
                             ->searchable()
                             ->preload()
                             ->helperText('المزرعة التي يعمل بها الموظف')
@@ -97,14 +86,8 @@ class EmployeeForm
                     ->columnSpanFull()
                     ->collapsible(),
 
-                Section::make('العنوان والملاحظات')
+                Section::make('الملاحظات')
                     ->schema([
-                        Textarea::make('address')
-                            ->label('العنوان')
-                            ->rows(3)
-                            ->maxLength(500)
-                            ->helperText('عنوان إقامة الموظف')
-                            ->columnSpan(1),
                         Textarea::make('notes')
                             ->label('ملاحظات')
                             ->rows(3)
@@ -112,7 +95,7 @@ class EmployeeForm
                             ->helperText('أي ملاحظات إضافية')
                             ->columnSpan(1),
                     ])
-                    ->columns(2)
+                    ->columns(1)
                     ->columnSpanFull()
                     ->collapsible(),
             ]);

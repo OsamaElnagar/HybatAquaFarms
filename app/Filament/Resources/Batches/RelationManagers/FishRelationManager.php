@@ -74,7 +74,7 @@ class FishRelationManager extends RelationManager
 
                         TextInput::make('unit_cost')
                             ->label('تكلفة الوحدة')
-                            ->numeric()
+                            ->numeric(2)
                             ->suffix(' EGP ')
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
