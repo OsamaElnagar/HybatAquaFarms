@@ -34,11 +34,16 @@ class BatchesTable
                     ->label('الكمية الأولية')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('unit_cost')
-                    ->label('تكلفة الوحدة')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->sortable()
-                    ->toggleable(),
+                TextColumn::make('fish.species.name')
+                    ->label('الأنواع')
+                    ->listWithLineBreaks()
+                    ->badge()
+                    ->searchable(),
+                TextColumn::make('fish.factory.name')
+                    ->label('مصانع التفريخ')
+                    ->listWithLineBreaks()
+                    ->badge()
+                    ->searchable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة الإجمالية')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -51,14 +56,14 @@ class BatchesTable
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record &&
+                        fn($record) => $record &&
                         ($record->total_cost ?? 0) > 0,
                     ),
                 TextColumn::make('outstanding_balance')
                     ->label('المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(
-                        fn ($record) => $record &&
+                        fn($record) => $record &&
                         ($record->outstanding_balance ?? 0) > 0
                         ? 'danger'
                         : 'success',
@@ -66,7 +71,7 @@ class BatchesTable
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record &&
+                        fn($record) => $record &&
                         ($record->total_cost ?? 0) > 0,
                     ),
                 TextColumn::make('payment_status')
@@ -74,8 +79,8 @@ class BatchesTable
                     ->badge()
                     ->formatStateUsing(function ($record) {
                         if (
-                            ! $record ||
-                            ! $record->total_cost ||
+                            !$record ||
+                            !$record->total_cost ||
                             $record->total_cost <= 0
                         ) {
                             return 'لا يوجد تكلفة';
@@ -86,17 +91,17 @@ class BatchesTable
                         $paidPercentage =
                             ($record->total_paid / $record->total_cost) * 100;
 
-                        return number_format($paidPercentage, 1).'% مدفوع';
+                        return number_format($paidPercentage, 1) . '% مدفوع';
                     })
                     ->color(
-                        fn ($record) => $record
+                        fn($record) => $record
                         ? $record->payment_status
                         : 'gray',
                     )
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record &&
+                        fn($record) => $record &&
                         ($record->total_cost ?? 0) > 0,
                     ),
 
@@ -110,34 +115,34 @@ class BatchesTable
                     ->label('حالة الدورة')
                     ->badge()
                     ->formatStateUsing(
-                        fn ($state) => $state ? 'مقفلة' : 'مفتوحة',
+                        fn($state) => $state ? 'مقفلة' : 'مفتوحة',
                     )
-                    ->color(fn ($state) => $state ? 'success' : 'warning')
+                    ->color(fn($state) => $state ? 'success' : 'warning')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('net_profit')
                     ->label('صافي الربح')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(
-                        fn ($record) => $record && $record->net_profit >= 0
+                        fn($record) => $record && $record->net_profit >= 0
                         ? 'success'
                         : 'danger',
                     )
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record && $record->is_cycle_closed,
+                        fn($record) => $record && $record->is_cycle_closed,
                     ),
                 TextColumn::make('profit_margin')
                     ->label('هامش الربح')
                     ->formatStateUsing(
-                        fn ($record) => $record
-                        ? number_format($record->profit_margin, 1).'%'
+                        fn($record) => $record
+                        ? number_format($record->profit_margin, 1) . '%'
                         : '0%',
                     )
                     ->badge()
                     ->color(
-                        fn ($record) => $record && $record->profit_margin >= 20
+                        fn($record) => $record && $record->profit_margin >= 20
                         ? 'success'
                         : ($record && $record->profit_margin >= 0
                             ? 'warning'
@@ -146,7 +151,7 @@ class BatchesTable
                     ->sortable()
                     ->toggleable()
                     ->visible(
-                        fn ($record) => $record && $record->is_cycle_closed,
+                        fn($record) => $record && $record->is_cycle_closed,
                     ),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
@@ -171,12 +176,24 @@ class BatchesTable
                     ->preload(),
                 SelectFilter::make('species_id')
                     ->label('النوع')
-                    ->relationship('species', 'name')
+                    ->options(fn() => \App\Models\Species::pluck('name', 'id'))
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+                        return $query->whereHas('fish', fn($q) => $q->where('species_id', $data['value']));
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('factory_id')
                     ->label('مصنع التفريخ')
-                    ->relationship('factory', 'name')
+                    ->options(fn() => \App\Models\Factory::pluck('name', 'id'))
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+                        return $query->whereHas('fish', fn($q) => $q->where('factory_id', $data['value']));
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('source')
@@ -192,7 +209,7 @@ class BatchesTable
                         'no_cost' => 'لا يوجد تكلفة',
                     ])
                     ->query(function ($query, array $data) {
-                        if (! isset($data['value']) || $data['value'] === null) {
+                        if (!isset($data['value']) || $data['value'] === null) {
                             return;
                         }
 
@@ -216,12 +233,12 @@ class BatchesTable
                                     '(SELECT COALESCE(SUM(amount), 0) FROM batch_payments WHERE batch_payments.batch_id = batches.id) = 0',
                                 ),
                             'no_cost' => $query->where(function ($q) {
-                                $q->whereNull('total_cost')->orWhere(
+                                    $q->whereNull('total_cost')->orWhere(
                                     'total_cost',
                                     '<=',
                                     0,
-                                );
-                            }),
+                                    );
+                                }),
                             default => $query,
                         };
                     })
@@ -240,8 +257,8 @@ class BatchesTable
                     ->label('إقفال الدورة')
                     ->color('danger')
                     ->icon('heroicon-o-lock-closed')
-                    ->url(fn ($record) => \App\Filament\Resources\Batches\BatchResource::getUrl('close', ['record' => $record]))
-                    ->visible(fn ($record) => ! $record->is_cycle_closed),
+                    ->url(fn($record) => \App\Filament\Resources\Batches\BatchResource::getUrl('close', ['record' => $record]))
+                    ->visible(fn($record) => !$record->is_cycle_closed),
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
             ])
