@@ -32,7 +32,7 @@ class UnitsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('batches')->withSum('dailyFeedIssues as total_feed_consumed', 'quantity'))
+            ->modifyQueryUsing(fn(Builder $query) => $query->withCount('batches')->withSum('dailyFeedIssues as total_feed_consumed', 'quantity'))
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
@@ -53,6 +53,7 @@ class UnitsRelationManager extends RelationManager
                 TextColumn::make('capacity')
                     ->label('السعة')
                     ->numeric()
+                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make())
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('الحالة')
@@ -61,7 +62,7 @@ class UnitsRelationManager extends RelationManager
                 TextColumn::make('batches_count')
                     ->label('الدفعات')
                     ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
+                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
                     ->sortable(),
                 TextColumn::make('total_feed_consumed')
                     ->label('استهلاك العلف (كجم)')
