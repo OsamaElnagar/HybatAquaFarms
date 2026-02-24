@@ -11,12 +11,21 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class FarmUnitsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->addSelect([
+                'total_feed_consumed' => \App\Models\DailyFeedIssue::selectRaw('COALESCE(SUM(quantity), 0)')
+                    ->whereIn('batch_id', function (\Illuminate\Database\Query\Builder $subQuery) {
+                        $subQuery->select('batch_id')
+                            ->from('batch_farm_unit')
+                            ->whereColumn('farm_unit_id', 'farm_units.id');
+                    }),
+            ]))
             ->columns([
                 TextColumn::make('farm.name')
                     ->searchable()
@@ -52,6 +61,11 @@ class FarmUnitsTable
                     ->badge()
                     ->color(fn ($state) => $state > 0 ? 'success' : 'warning')
                     ->sortable(),
+                TextColumn::make('total_feed_consumed')
+                    ->label('استهلاك العلف (كجم)')
+                    ->numeric()
+                    ->color('info')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

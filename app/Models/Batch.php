@@ -294,12 +294,12 @@ class Batch extends Model
             ->where('direction', \App\Enums\PettyTransacionType::OUT)
             ->sum('amount');
 
-        $farmUnitsCount = (int) $this->farm->units()->count();
-        $batchUnitsCount = (int) $this->units()->count();
+        $farmUnitsCapacity = (float) $this->farm->units()->sum('capacity');
+        $batchUnitsCapacity = (float) $this->units()->sum('capacity');
 
         $proratedFarmExpenses = 0.0;
-        if ($farmUnitsCount > 0 && $batchUnitsCount > 0) {
-            $ratio = $batchUnitsCount / $farmUnitsCount;
+        if ($farmUnitsCapacity > 0 && $batchUnitsCapacity > 0) {
+            $ratio = $batchUnitsCapacity / $farmUnitsCapacity;
 
             $endDate = $this->is_cycle_closed && $this->closure_date ? $this->closure_date : now();
 

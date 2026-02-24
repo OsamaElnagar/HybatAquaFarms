@@ -54,17 +54,19 @@ class FarmUnit extends Model
      */
     public function getTotalFeedConsumed(?string $startDate = null, ?string $endDate = null): float
     {
-        $query = $this->dailyFeedIssues();
+        $query = DailyFeedIssue::query()
+            ->join('batch_farm_unit', 'batch_farm_unit.batch_id', '=', 'daily_feed_issues.batch_id')
+            ->where('batch_farm_unit.farm_unit_id', $this->id);
 
         if ($startDate) {
-            $query->where('date', '>=', $startDate);
+            $query->where('daily_feed_issues.date', '>=', $startDate);
         }
 
         if ($endDate) {
-            $query->where('date', '<=', $endDate);
+            $query->where('daily_feed_issues.date', '<=', $endDate);
         }
 
-        return (float) $query->sum('quantity');
+        return (float) $query->sum('daily_feed_issues.quantity');
     }
 
     /**
