@@ -20,14 +20,16 @@ class FactoriesStatsWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $data = Cache::remember('factories_stats_widget', 600, function () {
-            $totalFactories = Factory::count();
-            $activeFactories = Factory::where('is_active', true)->count();
+        $data = Cache::remember('factories_stats_widget_cy', 600, function () {
+            $startOfYear = now()->startOfYear();
 
-            $totalSeedPurchases = (float) Batch::whereNotNull('total_cost')->sum('total_cost');
+            $totalSeedPurchases = (float) Batch::whereNotNull('total_cost')
+                ->where('entry_date', '>=', $startOfYear)
+                ->sum('total_cost');
 
             $totalFeedPurchases = (float) FeedMovement::whereNotNull('feed_movements.factory_id')
                 ->where('movement_type', 'in')
+                ->where('date', '>=', $startOfYear)
                 ->join('feed_items', 'feed_movements.feed_item_id', '=', 'feed_items.id')
                 ->sum(DB::raw('feed_movements.quantity * feed_items.standard_cost'));
 
@@ -35,11 +37,14 @@ class FactoriesStatsWidget extends StatsOverviewWidget
 
             $totalPaidVouchers = (float) Voucher::where('voucher_type', 'payment')
                 ->where('counterparty_type', Factory::class)
+                ->where('date', '>=', $startOfYear)
                 ->sum('amount');
 
-            $totalPaidFactoryPayments = (float) FactoryPayment::sum('amount');
-            $totalPaidBatchPayments = (float) BatchPayment::sum('amount');
-            $totalSettled = (float) ClearingEntry::whereNotNull('factory_id')->sum('amount');
+            $totalPaidFactoryPayments = (float) FactoryPayment::where('date', '>=', $startOfYear)->sum('amount');
+            $totalPaidBatchPayments = (float) BatchPayment::where('date', '>=', $startOfYear)->sum('amount');
+            $totalSettled = (float) ClearingEntry::whereNotNull('factory_id')
+                ->where('date', '>=', $startOfYear)
+                ->sum('amount');
 
             $totalPayables = max(
                 0,
@@ -51,38 +56,24 @@ class FactoriesStatsWidget extends StatsOverviewWidget
             );
 
             return [
-                'totalFactories' => $totalFactories,
-                'activeFactories' => $activeFactories,
                 'totalPurchases' => $totalPurchases,
                 'totalPayables' => $totalPayables,
             ];
         });
 
-        $totalFactories = $data['totalFactories'];
-        $activeFactories = $data['activeFactories'];
         $totalPurchases = $data['totalPurchases'];
         $totalPayables = $data['totalPayables'];
 
         return [
-            Stat::make('إجمالي المصانع والموردين', number_format($totalFactories))
-                ->description($activeFactories.' نشط')
-                ->descriptionIcon('heroicon-o-building-office')
-                ->color('primary'),
-
-            Stat::make('إجمالي المشتريات', number_format($totalPurchases).' EGP ')
-                ->description('زريعة، أعلاف، وتوريدات')
+            Stat::make('مشتريات العام الحالي', number_format($totalPurchases).' EGP')
+                ->description('زريعة وأعلاف ('.now()->year.')')
                 ->descriptionIcon('heroicon-o-shopping-bag')
                 ->color('success'),
 
-            Stat::make('المستحقات للمصانع والموردين', number_format($totalPayables).' EGP ')
-                ->description('المبالغ المستحقة للدفع')
+            Stat::make('مستحقات العام الحالي', number_format($totalPayables).' EGP')
+                ->description('الرصيد المتبقي عن مشتريات العام الحالي')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalPayables > 0 ? 'warning' : 'success'),
-
-            Stat::make('متوسط قيمة الطلب', $totalFactories > 0 ? number_format($totalPurchases / $totalFactories).' EGP ' : '0.00 EGP')
-                ->description('متوسط المشتريات لكل مصنع/مورد')
-                ->descriptionIcon('heroicon-o-calculator')
-                ->color('info'),
         ];
     }
 }

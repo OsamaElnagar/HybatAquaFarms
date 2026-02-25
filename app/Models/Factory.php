@@ -132,4 +132,50 @@ class Factory extends Model
     {
         return $query->where('type', FactoryType::SEEDS);
     }
+
+    /**
+     * Calculate purchases and payments for the current year.
+     */
+    public function getCurrentYearActivityAttribute(): array
+    {
+        $startOfYear = now()->startOfYear();
+        $purchases = 0.0;
+        $payments = 0.0;
+
+        if ($this->type === FactoryType::FEEDS) {
+            $purchases = $this->feedMovements()
+                ->where('movement_type', 'in')
+                ->where('date', '>=', $startOfYear)
+                ->get()
+                ->sum(function ($movement) {
+                    $unitCost = $movement->feedItem?->standard_cost ?? 0;
+
+                    return (float) ($movement->total_cost ?? ($movement->quantity * $unitCost));
+                });
+
+            $payments = $this->factoryPayments()
+                ->where('date', '>=', $startOfYear)
+                ->sum('amount');
+
+            $voucherPayments = $this->vouchers()
+                ->where('voucher_type', 'payment')
+                ->where('date', '>=', $startOfYear)
+                ->sum('amount');
+
+            $payments += $voucherPayments;
+        } elseif ($this->type === FactoryType::SEEDS) {
+            $purchases = $this->batches()
+                ->where('entry_date', '>=', $startOfYear)
+                ->sum('total_cost');
+
+            $payments = $this->batchPayments()
+                ->where('date', '>=', $startOfYear)
+                ->sum('amount');
+        }
+
+        return [
+            'purchases' => (float) $purchases,
+            'payments' => (float) $payments,
+        ];
+    }
 }

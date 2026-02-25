@@ -63,9 +63,18 @@ class FarmUnitInfolist
                             ->badge()
                             ->color('success')
                             ->columnSpan(1),
+                        TextEntry::make('total_feed_consumed')
+                            ->label('إجمالي استهلاك العلف')
+                            ->state(fn ($record) => number_format($record->getTotalFeedConsumed(), 2).' كجم')
+                            ->badge()
+                            ->color('info')
+                            ->columnSpan(1),
                         TextEntry::make('daily_feed_issues_count')
                             ->label('سجلات صرف الأعلاف')
-                            ->state(fn ($record) => $record->dailyFeedIssues()->count())
+                            ->state(fn ($record) => \App\Models\DailyFeedIssue::query()
+                                ->join('batch_farm_unit', 'batch_farm_unit.batch_id', '=', 'daily_feed_issues.batch_id')
+                                ->where('batch_farm_unit.farm_unit_id', $record->id)
+                                ->count())
                             ->badge()
                             ->color('primary')
                             ->columnSpan(1),

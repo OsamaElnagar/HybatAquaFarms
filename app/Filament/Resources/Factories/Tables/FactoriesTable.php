@@ -37,10 +37,6 @@ class FactoriesTable
                     ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                TextColumn::make('email')
-                    ->label('البريد الإلكتروني')
-                    ->copyable()
-                    ->searchable(),
                 TextColumn::make('contact_person')
                     ->label('اسم جهة الاتصال')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -50,6 +46,24 @@ class FactoriesTable
                     ->numeric()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
+                TextColumn::make('current_year_activity')
+                    ->label('نشاط العام الحالي')
+                    ->state(function (\App\Models\Factory $record): string {
+                        if ($record->type === FactoryType::SUPPLIER) {
+                            return '-';
+                        }
+
+                        $activity = $record->current_year_activity;
+                        $purchases = number_format($activity['purchases']);
+                        $payments = number_format($activity['payments']);
+
+                        return "<div class='text-sm space-y-1'>
+                                    <div><span class='font-medium text-gray-500'>مشتريات:</span> <span class='text-danger-600 font-semibold'>{$purchases} EGP</span></div>
+                                    <div><span class='font-medium text-gray-500'>مدفوعات:</span> <span class='text-success-600 font-semibold'>{$payments} EGP</span></div>
+                                </div>";
+                    })
+                    ->html()
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('نشط')
                     ->boolean(),
@@ -73,8 +87,8 @@ class FactoriesTable
                 Action::make('call')
                     ->label('اتصال')
                     ->icon('heroicon-m-phone')
-                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
-                    ->hidden(fn ($record) => blank($record->phone)),
+                    ->url(fn($record) => $record->phone ? 'tel:' . $record->phone : null)
+                    ->hidden(fn($record) => blank($record->phone)),
                 Action::make('whatsapp')
                     ->label('واتساب')
                     ->icon('heroicon-m-chat-bubble-left-right')
@@ -86,14 +100,14 @@ class FactoriesTable
 
                         $phone = preg_replace('/\D+/', '', $record->phone);
 
-                        if (! str_starts_with($phone, '2')) {
-                            $phone = '2'.$phone;
+                        if (!str_starts_with($phone, '2')) {
+                            $phone = '2' . $phone;
                         }
 
-                        return 'https://wa.me/'.$phone;
+                        return 'https://wa.me/' . $phone;
                     })
                     ->openUrlInNewTab()
-                    ->hidden(fn ($record) => blank($record->phone)),
+                    ->hidden(fn($record) => blank($record->phone)),
                 EditAction::make(),
             ])
             ->toolbarActions([
