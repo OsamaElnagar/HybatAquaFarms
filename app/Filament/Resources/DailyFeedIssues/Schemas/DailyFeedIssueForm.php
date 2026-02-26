@@ -24,7 +24,7 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : Cache::get('user_'.auth('web')->id().'_last_farm_id'))
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
@@ -39,7 +39,7 @@ class DailyFeedIssueForm
                                     }
                                 }
                             })
-                            ->helperText('يرجى اختيار المزرعة ذات الصلة. (يتم تحديد آخر مزرعة تم استخدامها تلقائياً)'),
+                            ->helperText('يرجى اختيار المزرعة ذات الصلة.'),
 
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
@@ -61,17 +61,15 @@ class DailyFeedIssueForm
                             })
                             ->required()
                             ->searchable()
-                            ->preload()
-                            ->helperText('حدد دفعة الزريعة المفتوحة. (يتم تحديد آخر دفعة تم استخدامها تلقائياً)'),
+                            ->preload(),
 
                         Select::make('feed_item_id')
                             ->label('صنف العلف')
                             ->relationship('feedItem', 'name')
-                            ->default(fn () => Cache::get('user_'.auth('web')->id().'_last_feed_item'))
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('اختر صنف العلف المصروف. (يتم تحديد آخر صنف تم استخدامه تلقائياً)'),
+                            ->helperText('اختر صنف العلف المصروف.'),
 
                         Select::make('feed_warehouse_id')
                             ->label('مخزن العلف')
@@ -87,7 +85,7 @@ class DailyFeedIssueForm
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->helperText('حدد المخزن الذي تم صرف العلف منه. (يتم تحديد آخر مخزن تم استخدامه تلقائياً)'),
+                            ->helperText('حدد المخزن الذي تم صرف العلف منه.'),
 
                         DatePicker::make('date')
                             ->label('التاريخ')
@@ -100,7 +98,6 @@ class DailyFeedIssueForm
 
                         TextInput::make('quantity')
                             ->label('الكمية (كجم)')
-                            ->default(fn () => Cache::get('user_'.auth('web')->id().'_last_feed_qty'))
                             ->required()
                             ->numeric()
                             ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
@@ -121,7 +118,7 @@ class DailyFeedIssueForm
                                     $fail('الكمية المصروفة أكبر من الرصيد المتوفر في المخزن لهذا الصنف.');
                                 }
                             })
-                            ->helperText('أدخل كمية العلف المصروف بالكيلو جرام. (يتم إدخال آخر كمية تم استخدامها تلقائياً)'),
+                            ->helperText('أدخل كمية العلف المصروف بالكيلو جرام.'),
 
                         Section::make('إضافات وملاحظات')
                             ->description('معلومات المستخدم والملاحظات الإضافية')
@@ -137,7 +134,6 @@ class DailyFeedIssueForm
                                     ->label('ملاحظات')
                                     ->columnSpanFull()
                                     ->maxLength(1000)
-                                    ->default(fn () => Cache::get('user_'.auth('web')->id().'_last_notes'))
                                     ->helperText('أضف أية ملاحظات إضافية متعلقة بالصرف'),
                             ])
                             ->columns(1)->columnSpanFull(),

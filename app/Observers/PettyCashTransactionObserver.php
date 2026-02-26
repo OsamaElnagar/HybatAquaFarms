@@ -49,14 +49,14 @@ class PettyCashTransactionObserver
         }
 
         // Cache the last used values for this user
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_id', $pettyCashTransaction->petty_cash_id);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_farm_id', $pettyCashTransaction->farm_id);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_batch_id', $pettyCashTransaction->batch_id);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_direction', $pettyCashTransaction->direction);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_category_id', $pettyCashTransaction->expense_category_id);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_employee_id', $pettyCashTransaction->employee_id);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_amount', $pettyCashTransaction->amount);
-        Cache::put('user_'.auth('web')->id().'_last_petty_cash_description', $pettyCashTransaction->description);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_id', $pettyCashTransaction->petty_cash_id);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_farm_id', $pettyCashTransaction->farm_id);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_batch_id', $pettyCashTransaction->batch_id);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_direction', $pettyCashTransaction->direction);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_category_id', $pettyCashTransaction->expense_category_id);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_employee_id', $pettyCashTransaction->employee_id);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_amount', $pettyCashTransaction->amount);
+        // Cache::put('user_'.auth('web')->id().'_last_petty_cash_description', $pettyCashTransaction->description);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PettyCashTransactions\Schemas;
 
+use App\Enums\PettyTransacionType;
 use App\Models\ExpenseCategory;
 use App\Models\PettyCash;
 use Filament\Forms\Components\DatePicker;
@@ -23,8 +24,8 @@ class PettyCashTransactionForm
                     ->schema([
                         Select::make('petty_cash_id')
                             ->label('العهدة')
-                            ->relationship('pettyCash', 'name')
-                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_id'))
+                            ->options(fn () => \Illuminate\Support\Facades\Cache::remember('petty_cashes_list', now()->addDay(), fn () => PettyCash::pluck('name', 'id')->toArray()))
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->required()
                             ->live()
                             ->afterStateUpdated(function ($state, callable $set) {
@@ -47,29 +48,28 @@ class PettyCashTransactionForm
                             ->preload(),
                         TextEntry::make('current_balance')
                             ->label('رصيد العهده الحالي')
-                            ->placeholder('حدد عهده للبدأ. (يتم تحديد آخر عهدة تم استخدامها تلقائياً)'),
+                            ->placeholder('حدد عهده للبدأ.'),
                         // ->visible(fn ($get) => filled($get('petty_cash_id'))),
 
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->relationship('farm', 'name', modifyQueryUsing: function ($query, callable $get) {
+                            ->options(function (callable $get) {
                                 $pettyCashId = $get('petty_cash_id');
-                                if ($pettyCashId) {
-                                    $query->whereHas('pettyCashes', function ($q) use ($pettyCashId) {
-                                        $q->where('petty_cashes.id', $pettyCashId);
-                                    });
-                                } else {
-                                    $query->whereRaw('1 = 0');
+                                if (! $pettyCashId) {
+                                    return [];
                                 }
 
-                                return $query;
+                                return \Illuminate\Support\Facades\Cache::remember("petty_cash_{$pettyCashId}_farms", now()->addDay(), function () use ($pettyCashId) {
+                                    return \App\Models\Farm::whereHas('pettyCashes', function ($q) use ($pettyCashId) {
+                                        $q->where('petty_cashes.id', $pettyCashId);
+                                    })->pluck('name', 'id')->toArray();
+                                });
                             })
                             ->searchable()
                             ->preload()
                             ->afterStateUpdated(fn (callable $set) => $set('batch_id', null))
                             ->visible(fn (callable $get) => filled($get('petty_cash_id')))
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_farm_id'))
-                            ->helperText('المزرعة التي تخصها المعاملة. (يتم تحديد آخر مزرعة تم استخدامها تلقائياً)'),
+                            ->helperText('المزرعة التي تخصها المعاملة.'),
 
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
@@ -85,37 +85,31 @@ class PettyCashTransactionForm
                             })
                             ->searchable()
                             ->preload()
-                            ->visible(fn (callable $get) => filled($get('farm_id')) && $get('direction') === 'out')
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_batch_id'))
-                            ->helperText('اختر دفعة الزريعة المفتوحة (اختياري). (يتم تحديد آخر دفعة تم استخدامها تلقائياً)'),
+                            ->visible(fn (callable $get) => filled($get('farm_id')) && $get('direction') === PettyTransacionType::OUT)
+                            ->helperText('اختر دفعة الزريعة المفتوحة (اختياري).'),
 
                         Select::make('direction')
                             ->label('النوع')
-                            ->options([
-                                'out' => 'صرف',
-                                'in' => 'قبض',
-                            ])
+                            ->options(PettyTransacionType::class)
                             ->required()
                             ->live()
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_direction') ?? 'out')
-                            ->helperText('(يتم تحديد آخر نوع تم استخدامه تلقائياً)'),
+                            ->default(PettyTransacionType::OUT),
+
                         Select::make('expense_category_id')
                             ->label('نوع المصروف')
                             ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                            ->visible(fn ($get) => $get('direction') === 'out')
-                            ->required(fn ($get) => $get('direction') === 'out')
+                            ->visible(fn ($get) => $get('direction') === PettyTransacionType::OUT)
+                            ->required(fn ($get) => $get('direction') === PettyTransacionType::OUT)
                             ->searchable()
                             ->preload()
-                            ->live()
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_category_id'))
-                            ->helperText('(يتم تحديد آخر نوع مصروف تم استخدامه تلقائياً)'),
+                            ->live(),
                         Select::make('employee_id')
                             ->label('الموظف')
                             ->relationship('employee', 'name')
                             ->searchable()
                             ->preload()
                             ->visible(function ($get) {
-                                if ($get('direction') !== 'out') {
+                                if ($get('direction') !== PettyTransacionType::OUT) {
                                     return false;
                                 }
                                 $categoryId = $get('expense_category_id');
@@ -125,9 +119,7 @@ class PettyCashTransactionForm
                                 $category = ExpenseCategory::find($categoryId);
 
                                 return $category && $category->code === 'WORKER_SALARY';
-                            })
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_employee_id'))
-                            ->helperText('(يتم تحديد آخر موظف تم استخدامه تلقائياً)'),
+                            }),
                         DatePicker::make('date')
                             ->label('التاريخ')
                             ->displayFormat('Y-m-d')
@@ -143,15 +135,12 @@ class PettyCashTransactionForm
                             ->label('المبلغ')
                             ->required()
                             ->numeric()
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_amount'))
-                            ->suffix(' EGP ')
-                            ->helperText('(يتم إدخال آخر مبلغ تم استخدامه تلقائياً)'),
+                            ->suffix(' EGP '),
                         Textarea::make('description')
                             ->label('الوصف التفصيلي')
                             ->columnSpanFull()
                             ->maxLength(1000)
-                            ->default(fn () => \Illuminate\Support\Facades\Cache::get('user_'.auth('web')->id().'_last_petty_cash_description'))
-                            ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل. (يتم إدخال آخر وصف تم استخدامه تلقائياً)'),
+                            ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
                     ])
                     ->columnSpanFull(),
             ]);
