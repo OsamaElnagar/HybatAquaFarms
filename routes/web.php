@@ -11,7 +11,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::redirect('', '/admin');
+Route::redirect('/', '/admin');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

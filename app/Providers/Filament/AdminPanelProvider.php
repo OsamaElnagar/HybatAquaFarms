@@ -56,7 +56,7 @@ class AdminPanelProvider extends PanelProvider
                 // Dashboard::class,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->topNavigation(false)
+            ->topNavigation()
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label('إدارة المزارع')
