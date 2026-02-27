@@ -20,7 +20,7 @@ class EmployeeAdvancesTable
     {
         return $table
             ->modifyQueryUsing(
-                fn(Builder $query) => $query
+                fn (Builder $query) => $query
                     ->withCount('repayments')
                     ->withSum('repayments', 'amount_paid'),
             )
@@ -59,7 +59,7 @@ class EmployeeAdvancesTable
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn(float $state) => $state > 0 ? 'warning' : 'success')
+                    ->color(fn (float $state) => $state > 0 ? 'warning' : 'success')
                     ->sortable()
                     ->summarize([
                         Sum::make()
@@ -130,9 +130,9 @@ class EmployeeAdvancesTable
                             ->native(false),
                     ])
                     ->query(
-                        fn(Builder $query, array $data): Builder => $query
-                            ->when($data['from'] ?? null, fn(Builder $q, $date) => $q->whereDate('request_date', '>=', $date))
-                            ->when($data['to'] ?? null, fn(Builder $q, $date) => $q->whereDate('request_date', '<=', $date)),
+                        fn (Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('request_date', '>=', $date))
+                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('request_date', '<=', $date)),
                     ),
             ])
             ->defaultSort('request_date', 'desc')

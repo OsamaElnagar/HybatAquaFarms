@@ -14,6 +14,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -48,13 +49,55 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
-            // ->sidebarCollapsibleOnDesktop()
-            ->topNavigation()
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 // Dashboard::class,
+            ])
+            ->sidebarCollapsibleOnDesktop()
+            ->topNavigation(false)
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('إدارة المزارع')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('الزريعة')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('الأعلاف')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('الحصاد والمبيعات')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('العُهد والمصروفات')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('المحاسبة و المالية')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('الموارد البشرية')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('الشركاء')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('التقارير')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('اعدادات النظام')
+                    ->collapsible()
+                    ->collapsed(),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
@@ -79,24 +122,24 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->plugins([
-                FilamentLoggerPlugin::make(),
-                FilamentSpatieLaravelBackupPlugin::make(),
-                FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
-                FilamentAbyssThemePlugin::make(),
-                FilamentApexChartsPlugin::make(),
-                GlobalSearchModalPlugin::make(),
-                FilamentLogViewer::make()->authorize(fn () => auth('web')->check())
-                    ->navigationGroup('اعدادات النظام')
-                    ->navigationIcon('heroicon-o-document-text')
-                    ->navigationLabel('Log Viewer')
-                    ->navigationSort(10)
-                    ->navigationUrl('/logs')
-                    ->pollingTime(null),
-            ])
+                    FilamentLoggerPlugin::make(),
+                    FilamentSpatieLaravelBackupPlugin::make(),
+                    FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
+                    FilamentAbyssThemePlugin::make(),
+                    FilamentApexChartsPlugin::make(),
+                    GlobalSearchModalPlugin::make(),
+                    FilamentLogViewer::make()->authorize(fn() => auth('web')->check())
+                        ->navigationGroup('اعدادات النظام')
+                        ->navigationIcon('heroicon-o-document-text')
+                        ->navigationLabel('Log Viewer')
+                        ->navigationSort(10)
+                        ->navigationUrl('/logs')
+                        ->pollingTime(null),
+                ])
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->login(
-                        fn (AuthPageConfig $config) => $config
+                        fn(AuthPageConfig $config) => $config
                             ->media(asset('assets/images/pexel-waterfall.mp4'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(0)

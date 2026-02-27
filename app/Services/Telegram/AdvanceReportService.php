@@ -16,7 +16,7 @@ class AdvanceReportService
 
         if ($activeAdvances->isEmpty()) {
             return [
-                'html' => "لا توجد سلف نشطة في الوقت الحالي.",
+                'html' => 'لا توجد سلف نشطة في الوقت الحالي.',
                 'employees' => collect(),
             ];
         }
@@ -30,13 +30,13 @@ class AdvanceReportService
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         $html .= "📊 <b>إجمالي عدد السلف:</b> <code>{$totalCount}</code>\n";
-        $html .= '💰 <b>إجمالي المبالغ المنصرفة:</b> <code>' . number_format((float) $totalOriginalAmount) . " ج.م</code>\n";
-        $html .= '⚠️ <b>إجمالي الرصيد المتبقي:</b> <code>' . number_format((float) $totalBalanceRemaining) . " ج.م</code>\n\n";
+        $html .= '💰 <b>إجمالي المبالغ المنصرفة:</b> <code>'.number_format((float) $totalOriginalAmount)." ج.م</code>\n";
+        $html .= '⚠️ <b>إجمالي الرصيد المتبقي:</b> <code>'.number_format((float) $totalBalanceRemaining)." ج.م</code>\n\n";
 
-        $html .= "<i>اختر الموظف من القائمة أدناه لعرض تفاصيل السلف الخاص به:</i>";
+        $html .= '<i>اختر الموظف من القائمة أدناه لعرض تفاصيل السلف الخاص به:</i>';
 
         // Group by employee to avoid duplicate buttons if an employee has multiple active advances
-        $employeesWithAdvances = $activeAdvances->map(fn($advance) => $advance->employee)->unique('id')->filter();
+        $employeesWithAdvances = $activeAdvances->map(fn ($advance) => $advance->employee)->unique('id')->filter();
 
         return [
             'html' => $html,
@@ -52,11 +52,11 @@ class AdvanceReportService
                 $query->where('status', AdvanceStatus::Active)
                     ->withCount('repayments')
                     ->orderBy('request_date', 'asc');
-            }
+            },
         ])->find($employeeId);
 
-        if (!$employee) {
-            return "الموظف غير موجود.";
+        if (! $employee) {
+            return 'الموظف غير موجود.';
         }
 
         if ($employee->advances->isEmpty()) {
@@ -68,7 +68,7 @@ class AdvanceReportService
 
         $html = "👤 <b>الموظف: {$employee->name}</b>\n";
         $html .= "📍 <b>المزرعة:</b> {$farmName}\n";
-        $html .= '💵 <b>إجمالي السلف المستحقة:</b> <code>' . number_format($totalOutstanding) . " ج.م</code>\n\n";
+        $html .= '💵 <b>إجمالي السلف المستحقة:</b> <code>'.number_format($totalOutstanding)." ج.م</code>\n\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         $html .= "📋 <b><u>تفاصيل السلف النشطة:</u></b>\n\n";

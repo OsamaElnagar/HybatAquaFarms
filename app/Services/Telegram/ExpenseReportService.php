@@ -30,15 +30,15 @@ class ExpenseReportService
 
         $html = "<b><u>مصروفات الشهر الحالي</u></b>\n\n";
 
-        $html .= 'إجمالي السندات: <b>' . number_format((float) $totalVouchers) . " ج.م</b>\n";
-        $html .= 'إجمالي العهد: <b>' . number_format((float) $totalPettyCash) . " ج.م</b>\n\n";
+        $html .= 'إجمالي السندات: <b>'.number_format((float) $totalVouchers)." ج.م</b>\n";
+        $html .= 'إجمالي العهد: <b>'.number_format((float) $totalPettyCash)." ج.م</b>\n\n";
 
-        $html .= '<b><u>الإجمالي العام</u>: ' . number_format((float) $grandTotal) . " ج.م</b>\n";
+        $html .= '<b><u>الإجمالي العام</u>: '.number_format((float) $grandTotal)." ج.م</b>\n";
         $html .= "عدد الحركات: {$totalTransactionsCount}\n\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n\n";
 
         if ($totalTransactionsCount > 0) {
-            $html .= "<b><u>أحدث حركات الصرف:</u></b>\n\n";
+            $html .= "<b><u>(معاملة 25) - أحدث حركات الصرف:</u></b>\n\n";
 
             // Combine and sort to get latest
             $combined = collect();
@@ -47,7 +47,7 @@ class ExpenseReportService
                 $combined->push([
                     'date' => Carbon::parse($v->date),
                     'amount' => $v->amount,
-                    'desc' => $v->description ?? 'سند صرف (بدون وصف)',
+                    'desc' => $v->description,
                     'type' => 'سند',
                 ]);
             }
@@ -56,12 +56,12 @@ class ExpenseReportService
                 $combined->push([
                     'date' => Carbon::parse($p->date),
                     'amount' => $p->amount,
-                    'desc' => $p->description ?? 'عهدة نقدية (بدون وصف)',
+                    'desc' => $p->description,
                     'type' => 'عهدة',
                 ]);
             }
 
-            $latest = $combined->sortByDesc('date')->take(10);
+            $latest = $combined->sortByDesc('date')->take(25);
 
             foreach ($latest as $transaction) {
                 $dateStr = $transaction['date']->format('Y-m-d');

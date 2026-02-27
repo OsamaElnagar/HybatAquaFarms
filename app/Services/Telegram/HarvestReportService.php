@@ -49,9 +49,9 @@ class HarvestReportService
 
         $html .= "📊 <b><u>ملخص شهر {$now->month}</u>:</b>\n";
         $html .= "🐟 إجمالي الحصاد: <b>{$count}</b> عملية\n";
-        $html .= '📦 إجمالي الصناديق: <b>' . number_format($totalBoxes) . " صندوق</b>\n";
-        $html .= '⚖️ إجمالي الوزن: <b>' . number_format($totalWeight) . " كجم</b>\n";
-        $html .= '💰 إجمالي المبيعات التقديرية: <b>' . number_format($totalSalesAmount) . " ج.م</b>\n\n";
+        $html .= '📦 إجمالي الصناديق: <b>'.number_format($totalBoxes)." صندوق</b>\n";
+        $html .= '⚖️ إجمالي الوزن: <b>'.number_format($totalWeight)." كجم</b>\n";
+        $html .= '💰 إجمالي المبيعات التقديرية: <b>'.number_format($totalSalesAmount)." ج.م</b>\n\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
         $html .= "📋 <b><u>تفاصيل آخر 10 عمليات حصاد</u>:</b>\n\n";
 
@@ -76,13 +76,13 @@ class HarvestReportService
 
             $html .= "🚜 <b>مزرعة:</b> {$farmName} | <b>دورة:</b> <code>{$batchCode}</code>\n\n";
             $html .= "🔖 <b>رقم الحصاد:</b> <code>{$harvestNumber}</code> | 🗓️ <b>التاريخ:</b> {$date} | 🏷️ <b>الحالة:</b> {$status}\n\n";
-            $html .= '📦 <b>الصناديق:</b> <code>' . number_format($hBoxes) . '</code> | ⚖️ <b>الوزن:</b> <code>' . number_format($hWeight) . " كجم</code>\n\n";
-            $html .= '💵 <b>مبيعات الحصاد:</b> <code>' . number_format($hSalesAmount) . " ج.م</code>\n\n";
+            $html .= '📦 <b>الصناديق:</b> <code>'.number_format($hBoxes).'</code> | ⚖️ <b>الوزن:</b> <code>'.number_format($hWeight)." كجم</code>\n\n";
+            $html .= '💵 <b>مبيعات الحصاد:</b> <code>'.number_format($hSalesAmount)." ج.م</code>\n\n";
             $html .= "──────────────────\n\n";
         }
 
         if ($count > 10) {
-            $html .= "\n\n<i>...و " . ($count - 10) . " عمليات أخرى في وقت سابق من هذا الشهر.</i>\n\n";
+            $html .= "\n\n<i>...و ".($count - 10)." عمليات أخرى في وقت سابق من هذا الشهر.</i>\n\n";
         }
 
         return $html;

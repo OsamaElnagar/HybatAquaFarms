@@ -20,8 +20,8 @@ class FeedStockReportService
 
         $html .= "📊 <b><u>إجمالي عام</u>:</b>\n";
         $html .= "📦 الأصناف المتوفرة: <b>{$totalItemsCount} صنف</b>\n";
-        $html .= '⚖️ إجمالي الوزن: <b>' . number_format($totalWeight) . ' كجم (' . number_format($totalWeightTons, 2) . " طن)</b>\n";
-        $html .= '💰 القيمة الإجمالية: <b>' . number_format($totalValue) . " ج.م</b>\n\n";
+        $html .= '⚖️ إجمالي الوزن: <b>'.number_format($totalWeight).' كجم ('.number_format($totalWeightTons, 2)." طن)</b>\n";
+        $html .= '💰 القيمة الإجمالية: <b>'.number_format($totalValue)." ج.م</b>\n\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         $lowStocks = $allStocks->where('quantity_in_stock', '<=', 500)->sortBy('quantity_in_stock');
@@ -48,7 +48,7 @@ class FeedStockReportService
 
         return [
             'html' => $html,
-            'warehouses' => $warehouses
+            'warehouses' => $warehouses,
         ];
     }
 
@@ -59,20 +59,20 @@ class FeedStockReportService
             ->get();
 
         if ($stocks->isEmpty()) {
-            return "<i>لا توجد أصناف في هذا المستودع.</i>";
+            return '<i>لا توجد أصناف في هذا المستودع.</i>';
         }
 
         $warehouse = $stocks->first()->warehouse;
         $warehouseName = $warehouse ? $warehouse->name : 'مستودع غير معروف';
         if ($warehouse && $warehouse->farm) {
-            $warehouseName .= ' (' . $warehouse->farm->name . ')';
+            $warehouseName .= ' ('.$warehouse->farm->name.')';
         }
 
         $totalWeight = $stocks->sum('quantity_in_stock');
         $totalItemsCount = $stocks->unique('feed_item_id')->count();
 
         $html = "🏪 <b><u>مستودع: {$warehouseName}</u></b>\n";
-        $html .= "📦 الأصناف: <b>{$totalItemsCount}</b> | ⚖️ الوزن: <b>" . number_format($totalWeight) . " كجم</b>\n";
+        $html .= "📦 الأصناف: <b>{$totalItemsCount}</b> | ⚖️ الوزن: <b>".number_format($totalWeight)." كجم</b>\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         foreach ($stocks as $stock) {

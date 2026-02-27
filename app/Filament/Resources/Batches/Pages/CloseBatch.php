@@ -57,13 +57,13 @@ class CloseBatch extends Page
                     ->schema([
                         Placeholder::make('total_cost')
                             ->label('تكلفة الزريعة')
-                            ->content(Number::currency($baseTotalCost, 'EGP', precision:0)),
+                            ->content(Number::currency($baseTotalCost, 'EGP', precision: 0)),
                         Placeholder::make('total_feed_cost')
                             ->label('تكلفة الأعلاف')
-                            ->content(Number::currency($baseFeedCost, 'EGP', precision:0)),
+                            ->content(Number::currency($baseFeedCost, 'EGP', precision: 0)),
                         Placeholder::make('allocated_expenses')
                             ->label('المصروفات التشغيلية الأساسية')
-                            ->content(Number::currency($baseOperatingExpenses, 'EGP', precision:0)),
+                            ->content(Number::currency($baseOperatingExpenses, 'EGP', precision: 0)),
 
                         Placeholder::make('total_cycle_expenses')
                             ->label('إجمالي التكاليف')
@@ -72,7 +72,7 @@ class CloseBatch extends Page
                                 $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
                                 $total = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
 
-                                return Number::currency($total, 'EGP', precision:0);
+                                return Number::currency($total, 'EGP', precision: 0);
                             }),
 
                         Placeholder::make('total_revenue')
@@ -82,7 +82,7 @@ class CloseBatch extends Page
                                 $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
                                 $total = $baseTotalRevenue + $miscRev;
 
-                                return Number::currency($total, 'EGP', precision:0);
+                                return Number::currency($total, 'EGP', precision: 0);
                             }),
 
                         Placeholder::make('net_profit')
@@ -96,7 +96,7 @@ class CloseBatch extends Page
                                 $totalRev = $baseTotalRevenue + $miscRev;
                                 $profit = $totalRev - $totalExp;
 
-                                return Number::currency($profit, 'EGP', precision:0);
+                                return Number::currency($profit, 'EGP', precision: 0);
                             }),
 
                         Placeholder::make('profit_margin')

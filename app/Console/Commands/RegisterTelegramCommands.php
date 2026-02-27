@@ -15,7 +15,7 @@ class RegisterTelegramCommands extends Command
     {
         $bot = TelegraphBot::first();
 
-        if (!$bot) {
+        if (! $bot) {
             $this->error('No TelegraphBot found in the database. Please register the bot first.');
 
             return self::FAILURE;
@@ -33,6 +33,7 @@ class RegisterTelegramCommands extends Command
             'cashflow' => 'عرض التدفقات النقدية والقيود',
             'advances' => 'التحقق من سلف الموظفين المتبقية',
             'feedStock' => 'تنبيهات نقص المخزون في مستودعات الأعلاف',
+            'dailyFeedIssues' => 'تقرير المنصرف اليومي للأعلاف (آخر يومين)',
         ])->send();
 
         $this->info('Commands registered successfully! Open your Telegram app and type "/" to see the menu.');

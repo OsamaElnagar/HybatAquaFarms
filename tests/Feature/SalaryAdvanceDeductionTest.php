@@ -10,7 +10,7 @@ use App\Models\SalaryRecord;
 
 beforeEach(function () {
     $this->mock(\App\Domain\Accounting\PostingService::class, function ($mock) {
-        $mock->shouldReceive('post')->andReturn(new \App\Models\JournalEntry());
+        $mock->shouldReceive('post')->andReturn(new \App\Models\JournalEntry);
     });
 });
 

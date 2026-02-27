@@ -20,9 +20,9 @@ class SalesReportService
         $html .= "<i>ملخص آخر المعاملات</i>\n";
         $html .= "━━━━━━━━━━━━━━━━━━\n\n";
 
-        $html .= '📅 <b>اليوم:</b> <code>' . number_format((float) $today) . " ج.م</code> <i>({$todayOrdersCount} طلب)</i>\n";
-        $html .= '📅 <b>هذا الأسبوع:</b> <code>' . number_format((float) $thisWeek) . " ج.م</code>\n";
-        $html .= '📅 <b>هذا الشهر:</b> <code>' . number_format((float) $thisMonth) . " ج.م</code> <i>({$monthOrdersCount} طلب)</i>\n";
+        $html .= '📅 <b>اليوم:</b> <code>'.number_format((float) $today)." ج.م</code> <i>({$todayOrdersCount} طلب)</i>\n";
+        $html .= '📅 <b>هذا الأسبوع:</b> <code>'.number_format((float) $thisWeek)." ج.م</code>\n";
+        $html .= '📅 <b>هذا الشهر:</b> <code>'.number_format((float) $thisMonth)." ج.م</code> <i>({$monthOrdersCount} طلب)</i>\n";
 
         return $html;
     }

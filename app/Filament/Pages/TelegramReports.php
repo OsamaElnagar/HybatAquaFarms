@@ -107,7 +107,7 @@ class TelegramReports extends Page
                                 Action::make('send_daily_pdf')
                                     ->label('إرسال لـ Telegram')
                                     ->button()
-                                    ->action(fn() => $this->sendReport('daily_pdf')),
+                                    ->action(fn () => $this->sendReport('daily_pdf')),
                             ]),
 
                         Callout::make('المبيعات')
@@ -119,7 +119,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('success')
-                                    ->action(fn() => $this->sendReport('sales')),
+                                    ->action(fn () => $this->sendReport('sales')),
                             ]),
 
                         Callout::make('الحصاد')
@@ -131,7 +131,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('warning')
-                                    ->action(fn() => $this->sendReport('harvest')),
+                                    ->action(fn () => $this->sendReport('harvest')),
                             ]),
 
                         Callout::make('تنبيهات مخزون الأعلاف')
@@ -143,7 +143,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('danger')
-                                    ->action(fn() => $this->sendReport('feedStock')),
+                                    ->action(fn () => $this->sendReport('feedStock')),
                             ]),
 
                         Callout::make('الدورات النشطة')
@@ -155,7 +155,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('info')
-                                    ->action(fn() => $this->sendReport('batches')),
+                                    ->action(fn () => $this->sendReport('batches')),
                             ]),
 
                         Callout::make('المصروفات')
@@ -167,7 +167,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('danger')
-                                    ->action(fn() => $this->sendReport('expenses')),
+                                    ->action(fn () => $this->sendReport('expenses')),
                             ]),
 
                         Callout::make('الخزينة والقيود')
@@ -179,7 +179,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('success')
-                                    ->action(fn() => $this->sendReport('cashflow')),
+                                    ->action(fn () => $this->sendReport('cashflow')),
                             ]),
 
                         Callout::make('السلف')
@@ -191,7 +191,7 @@ class TelegramReports extends Page
                                     ->label('إرسال لـ Telegram')
                                     ->button()
                                     ->color('primary')
-                                    ->action(fn() => $this->sendReport('advances')),
+                                    ->action(fn () => $this->sendReport('advances')),
                             ]),
                     ]),
             ]);

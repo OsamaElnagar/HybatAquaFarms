@@ -28,14 +28,14 @@ class SalaryRecordForm
                         Select::make('employee_id')
                             ->label('الموظف')
                             ->relationship('employee', 'name')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->searchable()
                             ->preload()
                             ->required()
                             ->helperText('اختر الموظف الذي يتم إعداد كشف المرتب له')
                             ->live()
                             ->afterStateHydrated(function (Set $set, Get $get, string $operation) {
-                                if (!$get('employee_id')) {
+                                if (! $get('employee_id')) {
                                     return;
                                 }
 
@@ -44,7 +44,7 @@ class SalaryRecordForm
                                 } elseif ($operation === 'edit') {
                                     $emp = Employee::find($get('employee_id'));
                                     if ($emp) {
-                                        $set('em_basic_salary', number_format((float) $emp->basic_salary) . ' EGP');
+                                        $set('em_basic_salary', number_format((float) $emp->basic_salary).' EGP');
                                         $perDay = (float) $emp->basic_salary / 26;
                                         $set('per_day_rate', round($perDay));
                                     }
@@ -75,14 +75,14 @@ class SalaryRecordForm
                             ->native(false)
                             ->helperText('تاريخ بداية فترة الإستحقاق')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
                                     $employeeId = (int) $get('employee_id');
                                     $start = $get('pay_period_start');
                                     $end = $get('pay_period_end');
 
-                                    if (!$employeeId || !$start || !$end) {
+                                    if (! $employeeId || ! $start || ! $end) {
                                         return;
                                     }
 
@@ -113,14 +113,14 @@ class SalaryRecordForm
                             ->rule('after_or_equal:pay_period_start')
                             ->helperText('تاريخ نهاية فترة الإستحقاق')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->rule(function (Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get): void {
                                     $employeeId = (int) $get('employee_id');
                                     $start = $get('pay_period_start');
                                     $end = $get('pay_period_end');
 
-                                    if (!$employeeId || !$start || !$end) {
+                                    if (! $employeeId || ! $start || ! $end) {
                                         return;
                                     }
 
@@ -149,7 +149,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(1)
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->helperText('أيام يتم خصمها من الحساب (غياب/إجازة غير مدفوعة)')
                             ->columnSpan(1),
                         TextInput::make('per_day_rate')
@@ -179,7 +179,7 @@ class SalaryRecordForm
                             ->step(0.01)
                             ->live(true)
 
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('الراتب الأساسي قبل الإضافات والخصومات')
                             ->columnSpan(1),
                         TextInput::make('bonuses')
@@ -190,7 +190,7 @@ class SalaryRecordForm
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('أي مكافآت أو حوافز إضافية')
                             ->columnSpan(1),
                         TextInput::make('deductions')
@@ -201,7 +201,7 @@ class SalaryRecordForm
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('الخصومات: غياب، تأخير، جزاءات ...')
                             ->columnSpan(1),
                         TextInput::make('advances_deducted')
@@ -214,13 +214,14 @@ class SalaryRecordForm
                                         return $owner->total_outstanding_advances;
                                     }
                                 }
+
                                 return 0;
                             })
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText('مبالغ السُلف التي تم خصمها من مرتب هذا الشهر')
                             ->columnSpan(1),
                         TextInput::make('net_salary')
@@ -233,7 +234,7 @@ class SalaryRecordForm
                             ->dehydrated()
                             ->live(true)
                             ->helperText('يتم احتسابه تلقائياً: الأساسي + المكافآت - الخصومات - السُلف')
-                            ->afterStateHydrated(fn($state, Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateHydrated(fn ($state, Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->columnSpan(1),
                     ])
                     ->columns(2)
@@ -285,22 +286,22 @@ class SalaryRecordForm
     {
         $employeeId = (int) $get('employee_id');
 
-        if (!$employeeId) {
+        if (! $employeeId) {
             return;
         }
 
         $employee = Employee::find($employeeId);
-        if (!$employee) {
+        if (! $employee) {
             return;
         }
 
-        $set('em_basic_salary', number_format((float) $employee->basic_salary, 2) . ' EGP');
+        $set('em_basic_salary', number_format((float) $employee->basic_salary, 2).' EGP');
 
         $start = $get('pay_period_start');
         $end = $get('pay_period_end');
         $unpaid = (int) ($get('unpaid_days') ?? 0);
 
-        if (!$start || !$end) {
+        if (! $start || ! $end) {
             // If employee is selected but dates are incomplete, default basic to fixed monthly salary
             $perDay = (float) $employee->basic_salary / 26;
             $set('per_day_rate', round($perDay));
@@ -308,6 +309,7 @@ class SalaryRecordForm
             $set('basic_salary', (float) $employee->basic_salary);
 
             self::updateNetSalary($set, $get);
+
             return;
         }
 

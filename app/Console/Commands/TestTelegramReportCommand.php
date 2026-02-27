@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class TestTelegramReportCommand extends Command
 {
-    protected $signature = 'reports:test {report? : The name of the report to test (sales, harvest, feed, batches, expenses, cashflow, advances)}';
+    protected $signature = 'reports:test {report? : The name of the report to test (sales, harvest, feed, batches, expenses, cashflow, advances, dailyFeedIssues)}';
 
     protected $description = 'Test generating and sending a specific Telegram report';
 
@@ -18,7 +18,7 @@ class TestTelegramReportCommand extends Command
         if (! $reportType) {
             $reportType = $this->choice(
                 'Which report would you like to test?',
-                ['sales', 'harvest', 'feed', 'batches', 'expenses', 'cashflow', 'advances'],
+                ['sales', 'harvest', 'feed', 'batches', 'expenses', 'cashflow', 'advances', 'dailyFeedIssues'],
                 0
             );
         }
@@ -70,6 +70,9 @@ class TestTelegramReportCommand extends Command
                 break;
             case 'advances':
                 $html = app(\App\Services\Telegram\AdvanceReportService::class)->generateReport();
+                break;
+            case 'dailyFeedIssues':
+                $html = app(\App\Services\Telegram\DailyFeedIssueReportService::class)->generateReport();
                 break;
             default:
                 $this->error('Invalid report type.');

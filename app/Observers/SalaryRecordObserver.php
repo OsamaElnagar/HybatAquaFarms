@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class SalaryRecordObserver
 {
-    public function __construct(private PostingService $posting)
-    {
-    }
+    public function __construct(private PostingService $posting) {}
 
     public function created(SalaryRecord $salaryRecord): void
     {
@@ -32,7 +30,7 @@ class SalaryRecordObserver
 
     public function updated(SalaryRecord $salaryRecord): void
     {
-        if (!$salaryRecord->wasChanged('status')) {
+        if (! $salaryRecord->wasChanged('status')) {
             return;
         }
 
@@ -64,7 +62,7 @@ class SalaryRecordObserver
                 'farm_id' => $salaryRecord->employee?->farm_id,
             ]);
         } catch (\Throwable $e) {
-            Log::warning('Failed to post salary payment accounting entry: ' . $e->getMessage(), [
+            Log::warning('Failed to post salary payment accounting entry: '.$e->getMessage(), [
                 'salary_record_id' => $salaryRecord->id,
             ]);
         }

@@ -50,7 +50,7 @@ class EmployeeAdvanceForm
                             ->minValue(0.01)
                             ->step(0.01)
                             ->suffix(' EGP ')
-                            ->afterStateUpdated(fn(Set $set, Get $get) => $set('balance_remaining', $get('amount')))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => $set('balance_remaining', $get('amount')))
                             ->live(true)
                             ->helperText('قيمة السلفة الإجمالية')
                             ->columnSpan(1),
