@@ -1,7 +1,6 @@
 @extends('errors::minimal')
 
-@section('title', __('Too Many Requests'))
+@section('title', __('طلبات كثيرة جداً'))
 @section('code', '429')
-@section('message', __('Slow Down the Feeding!'))
-@section('description', __('You\'re making requests too quickly! Like overfeeding your fish, moderation is key. Please wait a moment before trying again.'))
-@section('icon', '<div class="fish-icon">⏱️</div>')
+@section('message', __('طلبات كثيرة جداً'))
+@section('description', __('عذراً، لقد قمت بإرسال عدد كبير جداً من الطلبات. يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.'))

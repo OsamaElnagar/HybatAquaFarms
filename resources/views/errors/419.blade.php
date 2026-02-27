@@ -1,7 +1,6 @@
 @extends('errors::minimal')
 
-@section('title', __('Page Expired'))
+@section('title', __('انتهت صلاحية الجلسة'))
 @section('code', '419')
-@section('message', __('Your Session Has Evaporated'))
-@section('description', __('Your session has expired like water under the sun. Please refresh and try again to continue your farm management.'))
-@section('icon', '<div class="fish-icon">💨</div>')
+@section('message', __('انتهت صلاحية الجلسة'))
+@section('description', __('عذراً، انتهت صلاحية جلستك. يرجى تحديث الصفحة والمحاولة مرة أخرى.'))

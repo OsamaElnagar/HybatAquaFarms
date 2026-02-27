@@ -1,7 +1,6 @@
 @extends('errors::minimal')
 
-@section('title', __('Unauthorized Access'))
+@section('title', __('غير مصرح'))
 @section('code', '401')
-@section('message', __('This Pond Requires Credentials'))
-@section('description', __('You need proper authorization to access this area. Please log in to dive into these waters.'))
-@section('icon', '<div class="fish-icon">🔒</div>')
+@section('message', __('غير مصرح بالوصول'))
+@section('description', __('عذراً، تحتاج إلى تسجيل الدخول للوصول إلى هذه الصفحة.'))
