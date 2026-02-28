@@ -26,6 +26,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jacobtims\FilamentLogger\FilamentLoggerPlugin;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+use Moataz01\FilamentNotificationSound\FilamentNotificationSoundPlugin;
 use Nagi\FilamentAbyssTheme\FilamentAbyssThemePlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
@@ -135,6 +136,11 @@ class AdminPanelProvider extends PanelProvider
                         ->navigationSort(10)
                         ->navigationUrl('/logs')
                         ->pollingTime(null),
+                    FilamentNotificationSoundPlugin::make()
+                        ->soundPath('/sounds/notification-success.mp3') // Custom sound path
+                        ->volume(0.5) // Volume (0.0 to 1.0)
+                        ->showAnimation(true) // Show animation on notification badge
+                        ->enabled(true),
                 ])
             ->plugin(
                 AuthDesignerPlugin::make()

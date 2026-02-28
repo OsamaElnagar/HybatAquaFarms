@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\PettyCashTransactions\Tables;
 
 use App\Enums\PettyTransacionType;
+use App\Filament\Exports\PettyCashTransactionExporter;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -26,6 +28,10 @@ class PettyCashTransactionsTable
             ->columns([
                 TextColumn::make('pettyCash.name')
                     ->label('العهدة')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('farm.name')
+                    ->label('المزرعة')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('date')
@@ -54,7 +60,7 @@ class PettyCashTransactionsTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn ($record) => [
+                            ->fillForm(fn($record) => [
                                 'expense_category_id' => $record->expense_category_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -69,17 +75,17 @@ class PettyCashTransactionsTable
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
@@ -107,6 +113,11 @@ class PettyCashTransactionsTable
                     ->relationship('pettyCash', 'name')
                     ->searchable()
                     ->preload(),
+                SelectFilter::make('farm_id')
+                    ->label('المزرعة')
+                    ->relationship('farm', 'name')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('direction')
                     ->label('الاتجاه | النوع')
                     ->options(PettyTransacionType::class),
@@ -130,11 +141,11 @@ class PettyCashTransactionsTable
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
                             );
                     }),
             ])
@@ -147,6 +158,11 @@ class PettyCashTransactionsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->exporter(PettyCashTransactionExporter::class)
+                        ->label('تصدير المحدد Excel')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('secondary'),
                 ]),
             ]);
     }

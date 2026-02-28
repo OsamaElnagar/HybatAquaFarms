@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\DailyFeedIssues\Pages;
 
+use App\Filament\Exports\DailyFeedIssueExporter;
 use App\Filament\Resources\DailyFeedIssues\DailyFeedIssueResource;
 use App\Filament\Resources\DailyFeedIssues\Widgets\DailyFeedIssuesStatsWidget;
 use Filament\Actions\CreateAction;
+use Filament\Actions\ExportAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListDailyFeedIssues extends ListRecords
@@ -17,6 +19,12 @@ class ListDailyFeedIssues extends ListRecords
             CreateAction::make()
                 ->slideOver()
                 ->closeModalByClickingAway(false),
+
+            ExportAction::make('export')
+                ->label('تصدير Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('secondary')
+                ->exporter(DailyFeedIssueExporter::class),
         ];
     }
 

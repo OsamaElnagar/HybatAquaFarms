@@ -16,26 +16,36 @@ class FarmExporter extends Exporter
     {
         return [
             ExportColumn::make('id')
-                ->label('ID'),
-            ExportColumn::make('code'),
-            ExportColumn::make('name'),
-            ExportColumn::make('size'),
-            ExportColumn::make('location'),
-            ExportColumn::make('status'),
-            ExportColumn::make('established_date'),
-            ExportColumn::make('manager.name'),
-            ExportColumn::make('notes'),
-            ExportColumn::make('created_at'),
-            ExportColumn::make('updated_at'),
+                ->label('المعرف'),
+            ExportColumn::make('code')
+                ->label('الكود'),
+            ExportColumn::make('name')
+                ->label('الاسم'),
+            ExportColumn::make('size')
+                ->label('المساحة'),
+            ExportColumn::make('location')
+                ->label('الموقع'),
+            ExportColumn::make('status')
+                ->label('الحالة'),
+            ExportColumn::make('established_date')
+                ->label('تاريخ الإنشاء'),
+            ExportColumn::make('manager.name')
+                ->label('المدير'),
+            ExportColumn::make('notes')
+                ->label('ملاحظات'),
+            ExportColumn::make('created_at')
+                ->label('تاريخ الإنشاء'),
+            ExportColumn::make('updated_at')
+                ->label('تاريخ التحديث'),
         ];
     }
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your farm export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
+        $body = 'Your farm export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
+            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
         }
 
         return $body;
