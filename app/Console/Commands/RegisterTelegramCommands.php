@@ -22,11 +22,17 @@ class RegisterTelegramCommands extends Command
         }
 
         $this->info('Unregistering old commands...');
-        $bot->unregisterCommands()->send();
+        $unregisterResponse = $bot->unregisterCommands()->send();
+        if (!$unregisterResponse->successful()) {
+            $this->error('Failed to unregister commands: ' . $unregisterResponse->body());
+        }
+
+        $this->info('Waiting 3 seconds to clear Telegram cache...');
+        sleep(3);
 
         $this->info('Registering new commands with Telegram API...');
 
-        $bot->registerCommands([
+        $registerResponse = $bot->registerCommands([
             'menu' => 'عرض القائمة التفاعلية الرئيسية للتقارير',
             'report' => 'إنشاء وتحميل تقرير اليوم الكامل (PDF)',
             'sales' => 'الحصول على ملخص سريع لمبيعات هذا الشهر',
@@ -35,12 +41,17 @@ class RegisterTelegramCommands extends Command
             'expenses' => 'عرض إجمالي مصروفات السندات لهذا الشهر',
             'cashflow' => 'عرض التدفقات النقدية والقيود',
             'advances' => 'التحقق من سلف الموظفين المتبقية',
-            'feedStock' => 'تنبيهات نقص المخزون في مستودعات الأعلاف',
-            'dailyFeedIssues' => 'تقرير المنصرف اليومي للأعلاف (آخر يومين)',
+            'feedstock' => 'تنبيهات نقص المخزون في مستودعات الأعلاف',
+            'dailyfeedissues' => 'تقرير المنصرف اليومي للأعلاف (آخر يومين)',
             'external' => 'عرض تقرير الحسابات الخارجية',
         ])->send();
 
-        $this->info('Commands registered successfully! Open your Telegram app and type "/" to see the menu.');
+        if (!$registerResponse->successful()) {
+            $this->error('Failed to register commands: ' . $registerResponse->body());
+            return self::FAILURE;
+        }
+
+        $this->info('Commands registered successfully! Open your Telegram app and type "/" to see the menu. If they do not appear, fully close and reopen your Telegram app to clear its local cache.');
 
         return self::SUCCESS;
     }
