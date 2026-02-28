@@ -69,8 +69,8 @@ class ExternalCalculationResource extends Resource
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 return $query
-                    ->withSum(['entries as receipts_sum' => fn($q) => $q->where('type', ExternalCalculationType::Receipt)], 'amount')
-                    ->withSum(['entries as payments_sum' => fn($q) => $q->where('type', ExternalCalculationType::Payment)], 'amount');
+                    ->withSum(['entries as receipts_sum' => fn ($q) => $q->where('type', ExternalCalculationType::Receipt)], 'amount')
+                    ->withSum(['entries as payments_sum' => fn ($q) => $q->where('type', ExternalCalculationType::Payment)], 'amount');
             })
             ->columns([
                 TextColumn::make('name')
@@ -79,16 +79,16 @@ class ExternalCalculationResource extends Resource
                     ->sortable(),
                 TextColumn::make('balance')
                     ->label('الرصيد')
-                    ->state(fn(ExternalCalculation $record): float => ($record->receipts_sum ?? 0) - ($record->payments_sum ?? 0))
+                    ->state(fn (ExternalCalculation $record): float => ($record->receipts_sum ?? 0) - ($record->payments_sum ?? 0))
                     ->numeric()
                     ->badge()
-                    ->color(fn(float $state): string => $state >= 0 ? 'success' : 'danger')
+                    ->color(fn (float $state): string => $state >= 0 ? 'success' : 'danger')
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderByRaw('
                             (
                                 COALESCE((SELECT SUM(amount) FROM external_calculation_entries WHERE external_calculation_id = external_calculations.id AND type = "receipt"), 0) -
                                 COALESCE((SELECT SUM(amount) FROM external_calculation_entries WHERE external_calculation_id = external_calculations.id AND type = "payment"), 0)
-                            ) ' . $direction
+                            ) '.$direction
                         );
                     }),
                 TextColumn::make('description')

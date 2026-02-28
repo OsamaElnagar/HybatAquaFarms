@@ -34,6 +34,7 @@ class RegisterTelegramCommands extends Command
             'advances' => 'التحقق من سلف الموظفين المتبقية',
             'feedStock' => 'تنبيهات نقص المخزون في مستودعات الأعلاف',
             'dailyFeedIssues' => 'تقرير المنصرف اليومي للأعلاف (آخر يومين)',
+            'external' => 'عرض تقرير الحسابات الخارجية',
         ])->send();
 
         $this->info('Commands registered successfully! Open your Telegram app and type "/" to see the menu.');

@@ -2,12 +2,17 @@
 
 namespace App\Services\Reports;
 
+use App\Enums\ExternalCalculationType;
 use App\Models\Batch;
 use App\Models\DailyFeedIssue;
 use App\Models\EmployeeAdvance;
+use App\Models\ExternalCalculation;
+use App\Models\ExternalCalculationEntry;
 use App\Models\FeedStock;
 use App\Models\Harvest;
 use App\Models\JournalEntry;
+use App\Models\OrderItem;
+use App\Models\PettyCashTransaction;
 use App\Models\SalesOrder;
 use App\Models\Voucher;
 use Carbon\Carbon;
@@ -43,10 +48,10 @@ class ComprehensiveDailyReportDataService
         $salesMonthCount = SalesOrder::whereMonth('date', $now->month)->count();
 
         // Used by existing PDF layout partially
-        $salesQuery = \App\Models\SalesOrder::query()->whereDate('order_date', $today);
+        $salesQuery = SalesOrder::query()->whereDate('order_date', $today);
         $salesRevenueLegacy = (clone $salesQuery)->sum('total_after_discount');
         $oldSalesOrdersCount = (clone $salesQuery)->count();
-        $soldWeightLegacy = \App\Models\OrderItem::query()
+        $soldWeightLegacy = OrderItem::query()
             ->whereHas('order.salesOrders', function ($q) use ($today) {
                 $q->whereDate('order_date', $today);
             })->sum('total_weight');
@@ -89,11 +94,11 @@ class ComprehensiveDailyReportDataService
         $harvestMonthSalesAmount = $allSalesOrders->unique('id')->sum('net_amount');
 
         // Legacy map
-        $harvestWeightLegacy = \App\Models\OrderItem::query()
+        $harvestWeightLegacy = OrderItem::query()
             ->whereHas('order', function ($q) use ($today) {
                 $q->whereDate('date', $today);
             })->sum('total_weight');
-        $harvestCountLegacy = \App\Models\Harvest::query()->whereDate('harvest_date', $today)->count();
+        $harvestCountLegacy = Harvest::query()->whereDate('harvest_date', $today)->count();
 
         $harvestData = [
             'month_count' => $harvestMonthCount,
@@ -155,7 +160,7 @@ class ComprehensiveDailyReportDataService
         ];
 
         // 6. Daily Feed Issues
-        $feedQueryLegacy = \App\Models\DailyFeedIssue::query()->whereDate('date', $today);
+        $feedQueryLegacy = DailyFeedIssue::query()->whereDate('date', $today);
         $feedStatsLegacy = (clone $feedQueryLegacy)
             ->selectRaw('SUM(quantity) as total_quantity')
             ->selectRaw('COUNT(DISTINCT batch_id) as active_batches')
@@ -166,7 +171,7 @@ class ComprehensiveDailyReportDataService
             ->sum(\Illuminate\Support\Facades\DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
 
         // Get the latest 2 dates with feed issues
-        $latestDates = \App\Models\DailyFeedIssue::select('date')
+        $latestDates = DailyFeedIssue::select('date')
             ->distinct()
             ->orderBy('date', 'desc')
             ->limit(2)
@@ -206,7 +211,7 @@ class ComprehensiveDailyReportDataService
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
-        $outPettyCash = \App\Models\PettyCashTransaction::with(['pettyCash.farms'])
+        $outPettyCash = PettyCashTransaction::with(['pettyCash.farms'])
             ->where('direction', \App\Enums\PettyTransacionType::OUT)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
@@ -230,9 +235,9 @@ class ComprehensiveDailyReportDataService
         foreach ($outPettyCash as $p) {
             $locationName = 'عهدة';
             if ($p->pettyCash) {
-                $locationName .= ' - ' . $p->pettyCash->name;
+                $locationName .= ' - '.$p->pettyCash->name;
                 if ($p->pettyCash->farms->isNotEmpty()) {
-                    $locationName .= ' (' . $p->pettyCash->farms->first()->name . ')';
+                    $locationName .= ' ('.$p->pettyCash->farms->first()->name.')';
                 }
             }
 
@@ -282,6 +287,34 @@ class ComprehensiveDailyReportDataService
             'remaining' => $advancesRemaining,
         ];
 
+        // 10. External Calculations
+        $receipts = ExternalCalculationEntry::where('type', ExternalCalculationType::Receipt)->sum('amount');
+        $payments = ExternalCalculationEntry::where('type', ExternalCalculationType::Payment)->sum('amount');
+        $net = $receipts - $payments;
+
+        $monthReceipts = ExternalCalculationEntry::where('type', ExternalCalculationType::Receipt)
+            ->whereMonth('date', Carbon::now()->month)
+            ->whereYear('date', Carbon::now()->year)
+            ->sum('amount');
+
+        $monthPayments = ExternalCalculationEntry::where('type', ExternalCalculationType::Payment)
+            ->whereMonth('date', Carbon::now()->month)
+            ->whereYear('date', Carbon::now()->year)
+            ->sum('amount');
+
+        $accounts = ExternalCalculation::withSum(['entries as receipts_sum' => fn ($q) => $q->where('type', ExternalCalculationType::Receipt)], 'amount')
+            ->withSum(['entries as payments_sum' => fn ($q) => $q->where('type', ExternalCalculationType::Payment)], 'amount')
+            ->get();
+
+        $externalCalculationsData = [
+            'total_receipts' => $receipts,
+            'total_payments' => $payments,
+            'net_balance' => $net,
+            'month_receipts' => $monthReceipts,
+            'month_payments' => $monthPayments,
+            'accounts' => $accounts,
+        ];
+
         return [
             'report_date' => $today,
             'treasury' => $treasuryData,
@@ -293,6 +326,7 @@ class ComprehensiveDailyReportDataService
             'expenses' => $expensesData,
             'cashflow' => $cashflowData,
             'advances' => $advancesData,
+            'external_calculations' => $externalCalculationsData,
         ];
     }
 }

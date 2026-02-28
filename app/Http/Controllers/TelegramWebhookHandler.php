@@ -157,8 +157,43 @@ class TelegramWebhookHandler extends WebhookHandler
                 Button::make('💸العُهد - المصروفات')->action('expenses'),
                 Button::make('🧾 الخزينة والقيود')->action('cashflow'),
                 Button::make('💵 السلف')->action('advances'),
+                Button::make('📊 حسابات خارجية')->action('externalCalculations'),
                 Button::make('📄 تقرير اليوم بأكمله (PDF)')->action('report'),
             ]))->send();
+    }
+
+    public function external()
+    {
+        $this->externalCalculations();
+    }
+
+    public function externalCalculations()
+    {
+        $service = app(\App\Services\Telegram\ExternalCalculationReportService::class);
+        $this->chat->html('<i>جاري جلب بيانات الحسابات الخارجية...</i> ⏳')->send();
+
+        $data = $service->generateSummaryReport();
+
+        $keyboard = Keyboard::make();
+        if (isset($data['accounts']) && $data['accounts']->isNotEmpty()) {
+            foreach ($data['accounts'] as $account) {
+                $keyboard->button($account->name)->action('externalCalculationReport')->param('id', $account->id);
+            }
+        }
+
+        if ($keyboard->isEmpty()) {
+            $this->chat->html($data['html'] ?? 'لا توجد بيانات متاحة.')->send();
+        } else {
+            $this->chat->html($data['html'])->keyboard($keyboard)->send();
+        }
+    }
+
+    public function externalCalculationReport(int $id)
+    {
+        $service = app(\App\Services\Telegram\ExternalCalculationReportService::class);
+        $html = $service->generateAccountReport($id);
+
+        $this->chat->html($html)->send();
     }
 
     protected function handleUnknownCommand(Stringable $text): void

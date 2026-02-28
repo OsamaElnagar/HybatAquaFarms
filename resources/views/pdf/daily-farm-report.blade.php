@@ -426,6 +426,66 @@
         @endif
     </div>
 
+    <!-- 9. External Calculations -->
+    <div class="section">
+        <div class="section-title">الحسابات الخارجية</div>
+        <table class="grid">
+            <tr>
+                <td class="card">
+                    <span class="card-title">إجمالي المقبوضات (الحسابات الخارجية)</span>
+                    <span
+                        class="card-value text-success">{{ number_format($data['external_calculations']['total_receipts'] ?? 0) }}
+                        ج.م</span>
+                </td>
+                <td class="card">
+                    <span class="card-title">إجمالي المدفوعات (الحسابات الخارجية)</span>
+                    <span
+                        class="card-value text-danger">{{ number_format($data['external_calculations']['total_payments'] ?? 0) }}
+                        ج.م</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="card">
+                    <span class="card-title">صافي الأثر (الرصيد الكلي)</span>
+                    <span
+                        class="card-value {{ ($data['external_calculations']['net_balance'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
+                        {{ number_format($data['external_calculations']['net_balance'] ?? 0) }} ج.م
+                    </span>
+                </td>
+                <td class="card">
+                    <span class="card-title">حركة الشهر (مقبوض / مدفوع)</span>
+                    <span class="card-value">
+                        <span
+                            class="text-success">{{ number_format($data['external_calculations']['month_receipts'] ?? 0) }}</span>
+                        /
+                        <span
+                            class="text-danger">{{ number_format($data['external_calculations']['month_payments'] ?? 0) }}</span>
+                        ج.م
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        @if(isset($data['external_calculations']['accounts']) && count($data['external_calculations']['accounts']) > 0)
+            <div style="margin-top: 15px; font-size: 13px;">
+                <strong>أرصدة الحسابات:</strong>
+                <ul style="padding-right: 20px; margin-top: 5px;">
+                    @foreach($data['external_calculations']['accounts'] as $account)
+                        @php
+                            $balance = ($account->receipts_sum ?? 0) - ($account->payments_sum ?? 0);
+                        @endphp
+                        <li style="margin-bottom: 4px;">
+                            <strong>{{ $account->name }}</strong>:
+                            <span class="{{ $balance >= 0 ? 'text-success' : 'text-danger' }}">
+                                <strong>{{ number_format($balance) }} ج.م</strong>
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </div>
+
     <div class="footer">
         تم إنشاء هذا التقرير آلياً بواسطة نظام إدارة المزرعة بتاريخ {{ now()->format('Y-m-d h:i A') }}
     </div>
