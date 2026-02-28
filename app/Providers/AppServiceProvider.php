@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms\Components\DatePicker;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Table;
@@ -54,5 +57,22 @@ class AppServiceProvider extends ServiceProvider
         });
 
         DatePicker::configureUsing(fn (DatePicker $picker) => $picker->displayFormat('Y-m-d')->native(false));
+
+        ExportAction::configureUsing(function (ExportAction $action) {
+            return $action->formats([
+                ExportFormat::Xlsx,
+            ])->label('تصدير Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('secondary');
+        });
+
+        ExportBulkAction::configureUsing(function (ExportBulkAction $action) {
+            return $action->formats([
+                ExportFormat::Xlsx,
+            ])->label('تصدير المحدد Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('secondary');
+        });
+
     }
 }

@@ -17,63 +17,10 @@ class SendDailyFarmReport extends Command
 
     public function handle(\App\Services\PdfService $pdfService)
     {
-        $this->info('Fetching real-time data...');
+        $this->info('Fetching comprehensive realtime data...');
 
-        // 1. Treasury
-        $treasuryService = app(\App\Services\TreasuryService::class);
-        $dailyTreasury = $treasuryService->getDailySummary();
-        $totalBalance = $treasuryService->getTreasuryBalance();
-
-        // 2. Sales
-        $salesQuery = \App\Models\SalesOrder::query()->whereDate('order_date', now());
-        $salesRevenue = (clone $salesQuery)->sum('total_after_discount');
-        $salesOrdersCount = (clone $salesQuery)->count();
-        // Assume selling weight from order items
-        $soldWeight = \App\Models\OrderItem::query()
-            ->whereHas('order.salesOrders', function ($q) {
-                $q->whereDate('order_date', now());
-            })->sum('total_weight');
-
-        // 3. Harvest
-        $harvestWeight = \App\Models\OrderItem::query()
-            ->whereHas('order', function ($q) {
-                $q->whereDate('date', now());
-            })->sum('total_weight');
-        $harvestCount = \App\Models\Harvest::query()->whereDate('harvest_date', now())->count();
-
-        // 4. Feed & Batches
-        $feedQuery = \App\Models\DailyFeedIssue::query()->whereDate('date', now());
-        $feedStats = (clone $feedQuery)
-            ->selectRaw('SUM(quantity) as total_quantity')
-            ->selectRaw('COUNT(DISTINCT batch_id) as active_batches')
-            ->first();
-
-        $feedCost = (clone $feedQuery)
-            ->join('feed_items', 'daily_feed_issues.feed_item_id', '=', 'feed_items.id')
-            ->sum(\Illuminate\Support\Facades\DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
-
-        $data = [
-            'date' => now()->format('Y-m-d'),
-            'treasury' => [
-                'balance' => $totalBalance,
-                'incoming' => $dailyTreasury['incoming'] ?? 0,
-                'outgoing' => $dailyTreasury['outgoing'] ?? 0,
-            ],
-            'sales' => [
-                'revenue' => $salesRevenue,
-                'orders_count' => $salesOrdersCount,
-                'weight' => $soldWeight,
-            ],
-            'harvest' => [
-                'weight' => $harvestWeight,
-                'operations_count' => $harvestCount,
-            ],
-            'feed' => [
-                'consumption' => $feedStats->total_quantity ?? 0,
-                'cost' => $feedCost,
-                'active_batches' => $feedStats->active_batches ?? 0,
-            ],
-        ];
+        $dataService = app(\App\Services\Reports\ComprehensiveDailyReportDataService::class);
+        $data = $dataService->gatherData();
 
         $this->info('Generating PDF Report...');
 

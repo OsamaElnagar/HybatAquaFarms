@@ -18,10 +18,7 @@ class ListPettyCashTransactions extends ListRecords
         return [
             CreateAction::make()->slideOver()->closeModalByClickingAway(false),
             ExportAction::make()
-                ->exporter(PettyCashTransactionExporter::class)
-                ->label('تصدير Excel')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('secondary'),
+                ->exporter(PettyCashTransactionExporter::class),
         ];
     }
 

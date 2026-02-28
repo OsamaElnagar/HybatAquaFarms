@@ -24,9 +24,9 @@ class PettyCashTransactionExporter extends Exporter
             ExportColumn::make('voucher.voucher_number')->label('الفاتورة'),
             ExportColumn::make('expenseCategory.name')->label('مصروف'),
             ExportColumn::make('employee.name')->label('الموظف'),
-            ExportColumn::make('date')->label('التاريخ')->formatStateUsing(fn($state) => Carbon::parse($state)->format('Y-m-d')),
-            ExportColumn::make('direction')->label('الاتجاه')->formatStateUsing(fn($state) => $state->getLabel()),
-            ExportColumn::make('amount')->label('المبلغ')->formatStateUsing(fn($state) => Number::format($state)),
+            ExportColumn::make('date')->label('التاريخ')->formatStateUsing(fn ($state) => Carbon::parse($state)->format('Y-m-d')),
+            ExportColumn::make('direction')->label('الاتجاه')->formatStateUsing(fn ($state) => $state->getLabel()),
+            ExportColumn::make('amount')->label('المبلغ')->formatStateUsing(fn ($state) => Number::format($state)),
             ExportColumn::make('description')->label('الوصف'),
             ExportColumn::make('recordedBy.name')->label('مسجل بواسطة'),
         ];
@@ -34,10 +34,10 @@ class PettyCashTransactionExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your petty cash transaction export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your petty cash transaction export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;

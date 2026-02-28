@@ -23,13 +23,13 @@ class DailyFeedIssueExporter extends Exporter
             ExportColumn::make('batch.batch_code')
                 ->label('رقم الدفعة/الدورة'),
             ExportColumn::make('quantity')
-                ->label('الكمية')->formatStateUsing(fn($state) => Number::format($state)),
+                ->label('الكمية')->formatStateUsing(fn ($state) => Number::format($state)),
             ExportColumn::make('feedItem.name')
                 ->label('صنف العلف'),
             ExportColumn::make('warehouse.name')
                 ->label('المستودع'),
             ExportColumn::make('date')
-                ->label('التاريخ')->formatStateUsing(fn($state) => Carbon::parse($state)->format('Y-m-d')),
+                ->label('التاريخ')->formatStateUsing(fn ($state) => Carbon::parse($state)->format('Y-m-d')),
             ExportColumn::make('notes')
                 ->label('ملاحظات'),
             ExportColumn::make('recordedBy.name')
@@ -39,10 +39,10 @@ class DailyFeedIssueExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'تم تصدير ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' بنجاح.';
+        $body = 'تم تصدير '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' بنجاح.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' فشل تصديرها.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' فشل تصديرها.';
         }
 
         return $body;

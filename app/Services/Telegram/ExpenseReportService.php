@@ -17,8 +17,8 @@ class ExpenseReportService
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
-        // 2. Outgoing Petty Cash
-        $outPettyCash = \App\Models\PettyCashTransaction::where('direction', \App\Enums\PettyTransacionType::OUT)
+        $outPettyCash = \App\Models\PettyCashTransaction::with(['pettyCash.farms'])
+            ->where('direction', \App\Enums\PettyTransacionType::OUT)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
@@ -53,11 +53,19 @@ class ExpenseReportService
             }
 
             foreach ($outPettyCash as $p) {
+                $locationName = 'عهدة';
+                if ($p->pettyCash) {
+                    $locationName .= ' - '.$p->pettyCash->name;
+                    if ($p->pettyCash->farms->isNotEmpty()) {
+                        $locationName .= ' ('.$p->pettyCash->farms->first()->name.')';
+                    }
+                }
+
                 $combined->push([
                     'date' => Carbon::parse($p->date),
                     'amount' => $p->amount,
                     'desc' => $p->description,
-                    'type' => 'عهدة',
+                    'type' => $locationName,
                 ]);
             }
 

@@ -21,9 +21,6 @@ class ListDailyFeedIssues extends ListRecords
                 ->closeModalByClickingAway(false),
 
             ExportAction::make('export')
-                ->label('تصدير Excel')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('secondary')
                 ->exporter(DailyFeedIssueExporter::class),
         ];
     }
