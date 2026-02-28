@@ -15,7 +15,7 @@ class RegisterTelegramCommands extends Command
     {
         $bot = TelegraphBot::first();
 
-        if (!$bot) {
+        if (! $bot) {
             $this->error('No TelegraphBot found in the database. Please register the bot first.');
 
             return self::FAILURE;
@@ -23,8 +23,8 @@ class RegisterTelegramCommands extends Command
 
         $this->info('Unregistering old commands...');
         $unregisterResponse = $bot->unregisterCommands()->send();
-        if (!$unregisterResponse->successful()) {
-            $this->error('Failed to unregister commands: ' . $unregisterResponse->body());
+        if (! $unregisterResponse->successful()) {
+            $this->error('Failed to unregister commands: '.$unregisterResponse->body());
         }
 
         $this->info('Waiting 3 seconds to clear Telegram cache...');
@@ -46,8 +46,9 @@ class RegisterTelegramCommands extends Command
             'external' => 'عرض تقرير الحسابات الخارجية',
         ])->send();
 
-        if (!$registerResponse->successful()) {
-            $this->error('Failed to register commands: ' . $registerResponse->body());
+        if (! $registerResponse->successful()) {
+            $this->error('Failed to register commands: '.$registerResponse->body());
+
             return self::FAILURE;
         }
 

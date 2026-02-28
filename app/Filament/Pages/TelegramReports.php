@@ -70,6 +70,10 @@ class TelegramReports extends Page
                         $data = app(\App\Services\Telegram\AdvanceReportService::class)->generateSummaryReport();
                         $html = $data['html'] ?? '';
                         break;
+                    case 'external':
+                        $data = app(\App\Services\Telegram\ExternalCalculationReportService::class)->generateSummaryReport();
+                        $html = $data['html'] ?? '';
+                        break;
                     default:
                         throw new \Exception('نوع التقرير غير معروف.');
                 }
@@ -192,6 +196,18 @@ class TelegramReports extends Page
                                     ->button()
                                     ->color('primary')
                                     ->action(fn () => $this->sendReport('advances')),
+                            ]),
+
+                        Callout::make('حسابات خارجية')
+                            ->description('مقبوضات ومدفوعات وأرصدة الحسابات الخارجية.')
+                            ->icon('heroicon-o-calculator')
+                            ->color('info')
+                            ->actions([
+                                Action::make('send_external')
+                                    ->label('إرسال لـ Telegram')
+                                    ->button()
+                                    ->color('info')
+                                    ->action(fn () => $this->sendReport('external')),
                             ]),
                     ]),
             ]);
