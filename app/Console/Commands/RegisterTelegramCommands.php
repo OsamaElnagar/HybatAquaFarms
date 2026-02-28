@@ -15,13 +15,16 @@ class RegisterTelegramCommands extends Command
     {
         $bot = TelegraphBot::first();
 
-        if (! $bot) {
+        if (!$bot) {
             $this->error('No TelegraphBot found in the database. Please register the bot first.');
 
             return self::FAILURE;
         }
 
-        $this->info('Registering commands with Telegram API...');
+        $this->info('Unregistering old commands...');
+        $bot->unregisterCommands()->send();
+
+        $this->info('Registering new commands with Telegram API...');
 
         $bot->registerCommands([
             'menu' => 'عرض القائمة التفاعلية الرئيسية للتقارير',
