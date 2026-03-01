@@ -52,7 +52,7 @@ class AdvancesRelationManager extends RelationManager
                 TextColumn::make('balance_remaining')
                     ->label('المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
+                    ->color(fn($state) => $state > 0 ? 'warning' : 'success')
                     ->sortable()
                     ->summarize(
                         Sum::make()
@@ -65,7 +65,7 @@ class AdvancesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('installments_count')
                     ->label('الأقساط')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->toggleable(),
             ])
             ->filters([

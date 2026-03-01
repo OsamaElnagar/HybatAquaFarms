@@ -51,7 +51,7 @@ class FarmsTable
                     ->sortable(),
                 TextColumn::make('total_current_stock')
                     ->label('المخزون الحالي')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->color('success')
                     ->toggleable(),
                 TextColumn::make('manager.name')
@@ -66,7 +66,7 @@ class FarmsTable
                     ->toggleable(),
                 TextColumn::make('size')
                     ->label('المساحة')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('established_date')
@@ -95,10 +95,10 @@ class FarmsTable
                     ->relationship('manager', 'name'),
             ])
             ->headerActions([
-                ExportAction::make()
-                    ->exporter(FarmExporter::class)
-                    ->label('تصدير المزارع')
-                    ->icon('heroicon-o-arrow-down-tray'),
+                // ExportAction::make()
+                //     ->exporter(FarmExporter::class)
+                //     ->label('تصدير المزارع')
+                //     ->icon('heroicon-o-arrow-down-tray'),
             ])
             ->recordActions([
                 ViewAction::make()->label('عرض'),

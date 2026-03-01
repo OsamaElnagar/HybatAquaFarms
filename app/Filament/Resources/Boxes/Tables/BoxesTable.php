@@ -22,10 +22,10 @@ class BoxesTable
                     ->searchable(),
                 TextColumn::make('species.name')
                     ->label('النوع')
-                    ->numeric(),
+                    ->numeric(locale: 'en'),
                 TextColumn::make('max_weight')
                     ->label('الوزن الأقصى')
-                    ->numeric(),
+                    ->numeric(locale: 'en'),
                 TextColumn::make('class')
                     ->label('التصنيف')
                     ->searchable(),
@@ -34,7 +34,7 @@ class BoxesTable
                     ->searchable(),
                 TextColumn::make('class_total_weight')
                     ->label('وزن الفئة (شامل الاسماك)')
-                    ->numeric(),
+                    ->numeric(locale: 'en'),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()

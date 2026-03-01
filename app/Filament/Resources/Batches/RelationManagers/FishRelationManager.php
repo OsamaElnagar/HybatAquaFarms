@@ -116,11 +116,11 @@ class FishRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('unit_cost')
                     ->label('تكلفة الوحدة')
-                    ->money('EGP', decimalPlaces: 0, locale: 'en')
+                    ->money('EGP', decimalPlaces: 2, locale: 'en')
                     ->sortable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة الإجمالية')

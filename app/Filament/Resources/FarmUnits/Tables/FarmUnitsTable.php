@@ -18,7 +18,7 @@ class FarmUnitsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->addSelect([
+            ->modifyQueryUsing(fn(Builder $query) => $query->addSelect([
                 'total_feed_consumed' => \App\Models\DailyFeedIssue::selectRaw('COALESCE(SUM(quantity), 0)')
                     ->whereIn('batch_id', function (\Illuminate\Database\Query\Builder $subQuery) {
                         $subQuery->select('batch_id')
@@ -29,7 +29,7 @@ class FarmUnitsTable
             ->columns([
                 TextColumn::make('farm.name')
                     ->searchable()
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable()
                     ->label('اسم المزرعة'),
                 TextColumn::make('code')
@@ -48,7 +48,7 @@ class FarmUnitsTable
                     ->searchable()
                     ->label('نوع الوحدة'),
                 TextColumn::make('capacity')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable()
                     ->label('السعة'),
                 TextColumn::make('status')
@@ -59,11 +59,11 @@ class FarmUnitsTable
                     ->counts('batches')
                     ->label('عدد دفعات الزريعة')
                     ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'warning')
+                    ->color(fn($state) => $state > 0 ? 'success' : 'warning')
                     ->sortable(),
                 TextColumn::make('total_feed_consumed')
                     ->label('استهلاك العلف (كجم)')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->color('info')
                     ->toggleable(),
                 TextColumn::make('created_at')

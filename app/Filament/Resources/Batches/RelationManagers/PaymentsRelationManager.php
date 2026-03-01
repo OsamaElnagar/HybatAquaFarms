@@ -37,12 +37,12 @@ class PaymentsRelationManager extends RelationManager
                         Select::make('factory_id')
                             ->label('المورد')
                             ->relationship('factory', 'name', function (Builder $query) {
-                                return $query->where('type', FactoryType::SEEDS);
+                                return $query->where('type', '!=', FactoryType::FEEDS);
                             })
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->default(fn ($livewire) => $livewire->getOwnerRecord()?->factory_id),
+                            ->default(fn($livewire) => $livewire->getOwnerRecord()?->factory_id),
                         DatePicker::make('date')
                             ->label('تاريخ الدفعة')
                             ->required()

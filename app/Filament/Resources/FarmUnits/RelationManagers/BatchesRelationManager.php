@@ -48,12 +48,12 @@ class BatchesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('initial_quantity')
                     ->label('الكمية الأولية')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('current_quantity')
                     ->label('الكمية الحالية')
-                    ->numeric()
-                    ->color(fn ($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
+                    ->numeric(locale: 'en')
+                    ->color(fn($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('current_weight_avg')
                     ->label('متوسط الوزن (جم)')

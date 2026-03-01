@@ -16,7 +16,7 @@ class ViewBatch extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'تفاصيل دورة: '.$this->getRecord()->batch_code;
+        return 'تفاصيل دورة: ' . $this->getRecord()->batch_code;
     }
 
     public function getBreadcrumbs(): array
@@ -32,21 +32,18 @@ class ViewBatch extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('close_cycle')
+            Action::make('close_batch')
                 ->label('إقفال الدورة')
+                ->color('danger')
                 ->icon('heroicon-o-lock-closed')
-                ->color('warning')
-                ->visible(
-                    fn ($record) => ! $record->is_cycle_closed &&
-                    $record->status->value === 'harvested',
-                )
-                ->url(fn ($record) => BatchResource::getUrl('close', ['record' => $record])),
+                ->url(fn() => BatchResource::getUrl('close', ['record' => $this->getRecord()]))
+                ->visible(fn() => !$this->getRecord()->is_cycle_closed),
 
             Action::make('reopen_cycle')
                 ->label('إعادة فتح الدورة')
                 ->icon('heroicon-o-lock-open')
                 ->color('danger')
-                ->visible(fn ($record) => $record->is_cycle_closed)
+                ->visible(fn($record) => $record->is_cycle_closed)
                 ->requiresConfirmation()
                 ->modalHeading('إعادة فتح دورة الإنتاج')
                 ->modalDescription(
@@ -75,9 +72,9 @@ class ViewBatch extends ViewRecord
                 }),
 
             EditAction::make()
-                ->disabled(fn ($record) => $record->is_cycle_closed)
+                ->disabled(fn($record) => $record->is_cycle_closed)
                 ->tooltip(
-                    fn ($record) => $record->is_cycle_closed
+                    fn($record) => $record->is_cycle_closed
                     ? 'لا يمكن تعديل دورة مقفلة'
                     : null,
                 ),

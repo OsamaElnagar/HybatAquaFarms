@@ -31,7 +31,7 @@ class BatchesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('batch_code')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['units', 'species']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['units', 'species']))
             ->columns([
                 TextColumn::make('batch_code')
                     ->label('كود الدفعة')
@@ -40,9 +40,11 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('units.code')
                     ->label('الوحدات')
                     ->badge()
+                    ->wrap()
                     ->sortable(),
                 TextColumn::make('species.name')
                     ->label('النوع')
+                    ->wrap()
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('الحالة')
@@ -54,8 +56,8 @@ class BatchesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('current_quantity')
                     ->label('الكمية الحالية')
-                    ->numeric()
-                    ->color(fn ($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
+                    ->numeric(locale: 'en')
+                    ->color(fn($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('current_weight_avg')
                     ->label('متوسط الوزن')

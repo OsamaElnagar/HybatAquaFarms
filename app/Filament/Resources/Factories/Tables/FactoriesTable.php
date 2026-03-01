@@ -43,7 +43,7 @@ class FactoriesTable
                     ->searchable(),
                 TextColumn::make('payment_terms_days')
                     ->label('شروط الدفع (أيام)')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('current_year_activity')
@@ -87,8 +87,8 @@ class FactoriesTable
                 Action::make('call')
                     ->label('اتصال')
                     ->icon('heroicon-m-phone')
-                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
-                    ->hidden(fn ($record) => blank($record->phone)),
+                    ->url(fn($record) => $record->phone ? 'tel:' . $record->phone : null)
+                    ->hidden(fn($record) => blank($record->phone)),
                 Action::make('whatsapp')
                     ->label('واتساب')
                     ->icon('heroicon-m-chat-bubble-left-right')
@@ -100,14 +100,14 @@ class FactoriesTable
 
                         $phone = preg_replace('/\D+/', '', $record->phone);
 
-                        if (! str_starts_with($phone, '2')) {
-                            $phone = '2'.$phone;
+                        if (!str_starts_with($phone, '2')) {
+                            $phone = '2' . $phone;
                         }
 
-                        return 'https://wa.me/'.$phone;
+                        return 'https://wa.me/' . $phone;
                     })
                     ->openUrlInNewTab()
-                    ->hidden(fn ($record) => blank($record->phone)),
+                    ->hidden(fn($record) => blank($record->phone)),
                 EditAction::make(),
             ])
             ->toolbarActions([

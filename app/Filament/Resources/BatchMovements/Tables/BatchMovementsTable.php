@@ -48,7 +48,7 @@ class BatchMovementsTable
                     ->toggleable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('weight')
                     ->label('الوزن (كجم)')
@@ -87,7 +87,7 @@ class BatchMovementsTable
                     ->native(false),
                 SelectFilter::make('batch_id')
                     ->label('الدفعة')
-                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('from_farm_id')

@@ -38,7 +38,7 @@ class BatchesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('initial_quantity')
                     ->label('الكمية')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة')

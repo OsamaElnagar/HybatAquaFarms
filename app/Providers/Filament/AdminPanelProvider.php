@@ -56,7 +56,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 // Dashboard::class,
             ])
-            ->sidebarCollapsibleOnDesktop()
+            // ->sidebarCollapsibleOnDesktop()
             ->topNavigation()
             ->navigationGroups([
                 NavigationGroup::make()
@@ -123,29 +123,29 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->plugins([
-                FilamentLoggerPlugin::make(),
-                FilamentSpatieLaravelBackupPlugin::make(),
-                FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
-                FilamentAbyssThemePlugin::make(),
-                FilamentApexChartsPlugin::make(),
-                GlobalSearchModalPlugin::make(),
-                FilamentLogViewer::make()->authorize(fn () => auth('web')->check())
-                    ->navigationGroup('اعدادات النظام')
-                    ->navigationIcon('heroicon-o-document-text')
-                    ->navigationLabel('Log Viewer')
-                    ->navigationSort(10)
-                    ->navigationUrl('/logs')
-                    ->pollingTime(null),
-                FilamentNotificationSoundPlugin::make()
-                    ->soundPath('/sounds/notification-success.mp3') // Custom sound path
-                    ->volume(0.5) // Volume (0.0 to 1.0)
-                    ->showAnimation(true) // Show animation on notification badge
-                    ->enabled(true),
-            ])
+                    FilamentLoggerPlugin::make(),
+                    FilamentSpatieLaravelBackupPlugin::make(),
+                    FilamentSpatieLaravelHealthPlugin::make()->navigationGroup('اعدادات النظام'),
+                    FilamentAbyssThemePlugin::make(),
+                    FilamentApexChartsPlugin::make(),
+                    GlobalSearchModalPlugin::make(),
+                    FilamentLogViewer::make()->authorize(fn() => auth('web')->check())
+                        ->navigationGroup('اعدادات النظام')
+                        ->navigationIcon('heroicon-o-document-text')
+                        ->navigationLabel('Log Viewer')
+                        ->navigationSort(10)
+                        ->navigationUrl('/logs')
+                        ->pollingTime(null),
+                    FilamentNotificationSoundPlugin::make()
+                        ->soundPath('/sounds/notification-success.mp3') // Custom sound path
+                        ->volume(0.5) // Volume (0.0 to 1.0)
+                        ->showAnimation(true) // Show animation on notification badge
+                        ->enabled(true),
+                ])
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->login(
-                        fn (AuthPageConfig $config) => $config
+                        fn(AuthPageConfig $config) => $config
                             ->media(asset('assets/images/pexel-waterfall.mp4'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(0)
