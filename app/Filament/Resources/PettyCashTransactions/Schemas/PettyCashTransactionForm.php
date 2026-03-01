@@ -35,9 +35,23 @@ class PettyCashTransactionForm
                                         $set('current_balance', number_format($pettyCash->current_balance, 0));
 
                                         if ($pettyCash->farms->count() === 1) {
-                                            $set('farm_id', $pettyCash->farms->first()->id);
+                                            $farmId = $pettyCash->farms->first()->id;
+                                            $set('farm_id', $farmId);
+
+                                            // Smart auto-select Main batch logic
+                                            $mainActiveBatches = \App\Models\Batch::where('farm_id', $farmId)
+                                                ->where('is_cycle_closed', false)
+                                                ->where('cycle_type', \App\Enums\BatchCycleType::Main->value)
+                                                ->get();
+
+                                            if ($mainActiveBatches->count() === 1) {
+                                                $set('batch_id', $mainActiveBatches->first()->id);
+                                            } else {
+                                                $set('batch_id', null);
+                                            }
                                         } else {
                                             $set('farm_id', null);
+                                            $set('batch_id', null);
                                         }
                                     }
                                 } else {
@@ -67,7 +81,22 @@ class PettyCashTransactionForm
                             })
                             ->searchable()
                             ->preload()
-                            ->afterStateUpdated(fn (callable $set) => $set('batch_id', null))
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $mainActiveBatches = \App\Models\Batch::where('farm_id', $state)
+                                        ->where('is_cycle_closed', false)
+                                        ->where('cycle_type', \App\Enums\BatchCycleType::Main->value)
+                                        ->get();
+
+                                    if ($mainActiveBatches->count() === 1) {
+                                        $set('batch_id', $mainActiveBatches->first()->id);
+                                    } else {
+                                        $set('batch_id', null);
+                                    }
+                                } else {
+                                    $set('batch_id', null);
+                                }
+                            })
                             ->visible(fn (callable $get) => filled($get('petty_cash_id')))
                             ->helperText('المزرعة التي تخصها المعاملة.'),
 

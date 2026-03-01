@@ -44,6 +44,7 @@ class Batch extends Model
         'closed_by',
         'closure_notes',
         'misc_transactions',
+        'cycle_type',
     ];
 
     protected function casts(): array
@@ -63,6 +64,7 @@ class Batch extends Model
             'total_revenue' => 'decimal:2',
             'net_profit' => 'decimal:2',
             'misc_transactions' => 'array',
+            'cycle_type' => \App\Enums\BatchCycleType::class,
         ];
     }
 
@@ -298,20 +300,48 @@ class Batch extends Model
         $batchUnitsCapacity = (float) $this->units()->sum('capacity');
 
         $proratedFarmExpenses = 0.0;
-        if ($farmUnitsCapacity > 0 && $batchUnitsCapacity > 0) {
-            $ratio = $batchUnitsCapacity / $farmUnitsCapacity;
 
-            $endDate = $this->is_cycle_closed && $this->closure_date ? $this->closure_date : now();
+        // Advanced Time-Based Capacity Allocation for General Farm Expenses
+        $endDate = $this->is_cycle_closed && $this->closure_date ? $this->closure_date : now();
 
-            $farmExpensesSum = (float) PettyCashTransaction::query()
+        $farmTransactions = PettyCashTransaction::query()
+            ->where('farm_id', $this->farm_id)
+            ->whereNull('batch_id')
+            ->where('direction', \App\Enums\PettyTransacionType::OUT)
+            ->whereDate('date', '>=', $this->entry_date)
+            ->whereDate('date', '<=', $endDate)
+            ->get();
+
+        if ($farmTransactions->isNotEmpty()) {
+            // Get all batches for this farm so we don't query inside the loop
+            $farmBatches = \App\Models\Batch::with('units')
                 ->where('farm_id', $this->farm_id)
-                ->whereNull('batch_id')
-                ->where('direction', \App\Enums\PettyTransacionType::OUT)
-                ->where('date', '>=', $this->entry_date)
-                ->where('date', '<=', $endDate)
-                ->sum('amount');
+                ->get();
 
-            $proratedFarmExpenses = $farmExpensesSum * $ratio;
+            $thisBatchCapacity = (float) $this->units()->sum('capacity');
+
+            foreach ($farmTransactions as $transaction) {
+                // Find all batches that were active on the exact date of this transaction
+                $txDate = $transaction->date->startOfDay();
+
+                $activeBatchesOnDate = $farmBatches->filter(function ($b) use ($txDate) {
+                    $entry = $b->entry_date ? $b->entry_date->startOfDay() : null;
+                    $closure = ($b->is_cycle_closed && $b->closure_date) ? $b->closure_date->endOfDay() : now()->endOfDay();
+
+                    return $entry && $txDate->between($entry, $closure);
+                });
+
+                $totalActiveCapacityOnDate = 0.0;
+                foreach ($activeBatchesOnDate as $activeBatch) {
+                    $totalActiveCapacityOnDate += (float) $activeBatch->units->sum('capacity');
+                }
+
+                // If this batch has capacity and there are active batches
+                if ($thisBatchCapacity > 0 && $totalActiveCapacityOnDate > 0) {
+                    $ratio = $thisBatchCapacity / $totalActiveCapacityOnDate;
+                    $proratedFarmExpenses += ($transaction->amount * $ratio);
+                }
+            }
         }
 
         $this->cachedAllocatedExpenses = $voucherTotal + $pettyCashTotal + $proratedFarmExpenses;

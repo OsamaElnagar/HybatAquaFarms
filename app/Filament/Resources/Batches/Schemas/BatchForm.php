@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\Schemas;
 
+use App\Enums\BatchCycleType;
 use App\Enums\BatchStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -21,7 +22,7 @@ class BatchForm
                 SchemaSection::make('معلومات أساسية')
                     ->description('المعلومات الأساسية للدفعة')
                     ->schema([
-                        SchemaGrid::make(3)
+                        SchemaGrid::make(4)
                             ->schema([
                                 TextInput::make('batch_code')
                                     ->label('كود الدفعة')
@@ -47,6 +48,15 @@ class BatchForm
                                     ->required()
                                     ->native(false)
                                     ->helperText('حالة الدفعة: نشط، محصود، مستنفذ')
+                                    ->columnSpan(1),
+
+                                Select::make('cycle_type')
+                                    ->label('نوع الدورة')
+                                    ->options(BatchCycleType::class)
+                                    ->default(BatchCycleType::Main->value)
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText('إختر إذا ما كانت دورة إنتاج أساسية أم دورة تحضين')
                                     ->columnSpan(1),
                             ]),
 
