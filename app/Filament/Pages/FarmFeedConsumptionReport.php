@@ -97,15 +97,15 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
             ->query(function () {
                 $query = DailyFeedIssue::query();
 
-                if (!empty($this->filters['farm_id'])) {
+                if (! empty($this->filters['farm_id'])) {
                     $query->where('farm_id', $this->filters['farm_id']);
                 }
 
-                if (!empty($this->filters['date_start'])) {
+                if (! empty($this->filters['date_start'])) {
                     $query->whereDate('date', '>=', $this->filters['date_start']);
                 }
 
-                if (!empty($this->filters['date_end'])) {
+                if (! empty($this->filters['date_end'])) {
                     $query->whereDate('date', '<=', $this->filters['date_end']);
                 }
 
@@ -141,7 +141,7 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
                         return app(\App\Services\PdfService::class)->generateReportPdf(
                             'تقرير استهلاك الأعلاف',
                             ['التاريخ', 'المزرعة', 'الدورة', 'نوع العلف', 'الكمية (كجم)'],
-                            $table->getQuery()->get()->map(fn($record) => [
+                            $table->getQuery()->get()->map(fn ($record) => [
                                 $record->date->format('Y-m-d H:i A'),
                                 $record->farm?->name ?? '-',
                                 $record->batch?->batch_code ?? '-',

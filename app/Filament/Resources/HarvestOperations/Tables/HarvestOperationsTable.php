@@ -28,7 +28,7 @@ class HarvestOperationsTable
                     ->label('الدفعة')
                     ->searchable()
                     ->sortable()
-                    ->description(fn($record) => $record->batch?->species?->name ?? ''),
+                    ->description(fn ($record) => $record->batch?->species?->name ?? ''),
 
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
@@ -85,7 +85,7 @@ class HarvestOperationsTable
 
                 SelectFilter::make('batch_id')
                     ->label('الدفعة')
-                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
+                    ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
                     ->searchable()
                     ->preload()
                     ->native(false),

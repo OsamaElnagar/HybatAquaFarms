@@ -43,12 +43,12 @@ class ExternalCalculationsRelationManager extends RelationManager
                             ->required(),
                         Select::make('treasury_account_id')
                             ->label('الخزينة')
-                            ->options(fn() => Account::where('is_treasury', true)->pluck('name', 'id'))
+                            ->options(fn () => Account::where('is_treasury', true)->pluck('name', 'id'))
                             ->searchable()
                             ->required(),
                         Select::make('account_id')
                             ->label('الحساب المقابل')
-                            ->options(fn() => Account::pluck('name', 'id'))
+                            ->options(fn () => Account::pluck('name', 'id'))
                             ->searchable()
                             ->required(),
                         TextInput::make('amount')

@@ -145,6 +145,39 @@ class TelegramWebhookHandler extends WebhookHandler
         $this->chat->html($service->generateReport())->send();
     }
 
+    public function employees()
+    {
+        $service = app(\App\Services\Telegram\EmployeeReportService::class);
+        $this->chat->html('<i>جاري جلب بيانات الموظفين...</i> ⏳')->send();
+
+        $data = $service->generateSummaryReport();
+
+        $keyboard = Keyboard::make();
+        if (isset($data['employees']) && $data['employees']->isNotEmpty()) {
+            foreach ($data['employees'] as $employee) {
+                $name = $employee->name;
+                if ($employee->farm) {
+                    $name .= ' ('.$employee->farm->name.')';
+                }
+                $keyboard->button($name)->action('employeeReport')->param('id', $employee->id);
+            }
+        }
+
+        if ($keyboard->isEmpty()) {
+            $this->chat->html($data['html'] ?? $data)->send();
+        } else {
+            $this->chat->html($data['html'])->keyboard($keyboard)->send();
+        }
+    }
+
+    public function employeeReport(int $id)
+    {
+        $service = app(\App\Services\Telegram\EmployeeReportService::class);
+        $html = $service->generateEmployeeReport($id);
+
+        $this->chat->html($html)->send();
+    }
+
     public function menu()
     {
         $this->chat->html('<b>مرحباً بك في نظام إدارة المزرعة 🐟</b>'."\n\n".'يرجى تحديد التقرير الذي ترغب في عرضه من القائمة أدناه:')
@@ -157,6 +190,7 @@ class TelegramWebhookHandler extends WebhookHandler
                 Button::make('💸العُهد - المصروفات')->action('expenses'),
                 Button::make('🧾 الخزينة والقيود')->action('cashflow'),
                 Button::make('💵 السلف')->action('advances'),
+                Button::make('👥 الموظفين')->action('employees'),
                 Button::make('📊 حسابات خارجية')->action('externalCalculations'),
                 Button::make('📄 تقرير اليوم بأكمله (PDF)')->action('report'),
             ]))->send();

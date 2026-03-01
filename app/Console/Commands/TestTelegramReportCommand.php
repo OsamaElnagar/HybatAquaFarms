@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class TestTelegramReportCommand extends Command
 {
-    protected $signature = 'reports:test {report? : The name of the report to test (sales, harvest, feed, batches, expenses, cashflow, advances, dailyFeedIssues)}';
+    protected $signature = 'reports:test {report? : The name of the report to test (sales, harvest, feed, batches, expenses, cashflow, advances, dailyFeedIssues, employees)}';
 
     protected $description = 'Test generating and sending a specific Telegram report';
 
@@ -18,7 +18,7 @@ class TestTelegramReportCommand extends Command
         if (! $reportType) {
             $reportType = $this->choice(
                 'Which report would you like to test?',
-                ['sales', 'harvest', 'feed', 'batches', 'expenses', 'cashflow', 'advances', 'dailyFeedIssues'],
+                ['sales', 'harvest', 'feed', 'batches', 'expenses', 'cashflow', 'advances', 'dailyFeedIssues', 'employees'],
                 0
             );
         }
@@ -73,6 +73,21 @@ class TestTelegramReportCommand extends Command
                 break;
             case 'dailyFeedIssues':
                 $html = app(\App\Services\Telegram\DailyFeedIssueReportService::class)->generateReport();
+                break;
+            case 'employees':
+                $data = app(\App\Services\Telegram\EmployeeReportService::class)->generateSummaryReport();
+                $html = $data['html'];
+
+                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                if (isset($data['employees']) && $data['employees']->isNotEmpty()) {
+                    foreach ($data['employees'] as $employee) {
+                        $name = $employee->name;
+                        if ($employee->farm) {
+                            $name .= ' ('.$employee->farm->name.')';
+                        }
+                        $keyboard->button($name)->action('employeeReport')->param('id', $employee->id);
+                    }
+                }
                 break;
             default:
                 $this->error('Invalid report type.');
