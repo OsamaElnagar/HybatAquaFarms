@@ -38,6 +38,7 @@ class BatchPayment extends Model
 
     protected $fillable = [
         'batch_id',
+        'batch_fish_id',
         'factory_id',
         'date',
         'amount',
@@ -70,5 +71,10 @@ class BatchPayment extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    public function batchFish(): BelongsTo
+    {
+        return $this->belongsTo(BatchFish::class);
     }
 }

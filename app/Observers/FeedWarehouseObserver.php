@@ -15,10 +15,14 @@ class FeedWarehouseObserver
 
     protected static function generateCode(FeedWarehouse $unit): string
     {
-        // Get the last unit for the same farm
-        $lastUnit = FeedWarehouse::where('farm_id', $unit->farm_id)
-            ->latest('id')
-            ->first();
+        $query = FeedWarehouse::query();
+        if ($unit->farm_id) {
+            $query->where('farm_id', $unit->farm_id);
+        } else {
+            $query->whereNull('farm_id');
+        }
+
+        $lastUnit = $query->latest('id')->first();
 
         if ($lastUnit && preg_match('/(\d+)$/', $lastUnit->code, $matches)) {
             $number = (int) $matches[1] + 1;
@@ -26,8 +30,7 @@ class FeedWarehouseObserver
             $number = 1;
         }
 
-        // Ensure farm is loaded to get the code
-        $farmCode = $unit->farm ? $unit->farm->code : 'FARM';
+        $farmCode = $unit->farm ? $unit->farm->code : 'CWH';
 
         return $farmCode.'-WH-'.str_pad($number, 3, '0', STR_PAD_LEFT);
     }

@@ -17,6 +17,7 @@ class FeedWarehousesTable
             ->columns([
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
+                    ->default('مستودع مركزي')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('code')

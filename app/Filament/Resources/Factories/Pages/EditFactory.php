@@ -34,7 +34,7 @@ class EditFactory extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل: ' . $this->getRecord()->name;
+        return 'تعديل: '.$this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -59,5 +59,6 @@ class EditFactory extends EditRecord
     {
         return true;
     }
+
     protected static bool $isLazy = false;
 }

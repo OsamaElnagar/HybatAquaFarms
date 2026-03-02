@@ -6,6 +6,7 @@ use AchyutN\FilamentLogViewer\FilamentLogViewer;
 use App\Filament\Widgets\SalesTrendChart;
 use App\Filament\Widgets\TreasuryOverview;
 use App\Filament\Widgets\TreasuryTransactions;
+use Awcodes\QuickCreate\QuickCreatePlugin;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
 use Caresome\FilamentAuthDesigner\Data\AuthPageConfig;
 use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
@@ -40,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             // ->spa()
             ->id('admin')
             ->path('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->profile()
             ->unsavedChangesAlerts()
@@ -72,15 +74,15 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
-                    ->label('الحصاد والمبيعات')
-                    ->collapsible()
-                    ->collapsed(),
-                NavigationGroup::make()
                     ->label('العُهد والمصروفات')
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
-                    ->label('المحاسبة و المالية')
+                    ->label('الحصاد والمبيعات')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('الشركاء')
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
@@ -88,7 +90,7 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
-                    ->label('الشركاء')
+                    ->label('المحاسبة و المالية')
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
@@ -141,6 +143,10 @@ class AdminPanelProvider extends PanelProvider
                     ->volume(0.5) // Volume (0.0 to 1.0)
                     ->showAnimation(true) // Show animation on notification badge
                     ->enabled(true),
+                // QuickCreatePlugin::make()
+                //     ->sortBy('navigation')
+                //     ->keyBindings(['command+shift+a', 'ctrl+shift+a'])
+                //     ->includes([]),
             ])
             ->plugin(
                 AuthDesignerPlugin::make()

@@ -26,7 +26,7 @@ class FeedWarehouseForm
                         Select::make('farm_id')
                             ->label('المزرعة')
                             ->relationship('farm', 'name')
-                            ->required(),
+                            ->placeholder('مستودع مركزي (بدون مزرعة)'),
 
                         TextInput::make('name')
                             ->label('الاسم')

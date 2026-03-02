@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources\BatchPayments\Schemas;
 
-use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
+use App\Models\BatchFish;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
 
 class BatchPaymentForm
 {
@@ -24,22 +26,67 @@ class BatchPaymentForm
                     ->schema([
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
-                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
                             ->required()
                             ->searchable()
                             ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn(Set $set) => $set('batch_fish_id', null))
                             ->helperText('اختر دفعة الزريعة التي تم شراؤها من المورد')
                             ->columnSpan(1),
-                        Select::make('factory_id')
-                            ->label('المورد (مصنع التفريخ)')
-                            ->relationship('factory', 'name', function (Builder $query) {
-                                return $query->where('type', FactoryType::SEEDS);
+                        Select::make('batch_fish_id')
+                            ->label('الصنف والمورد')
+                            ->options(function (Get $get) {
+                                $batchId = $get('batch_id');
+                                if (!$batchId) {
+                                    return [];
+                                }
+
+                                return BatchFish::with(['species', 'factory'])
+                                    ->where('batch_id', $batchId)
+                                    ->get()
+                                    ->mapWithKeys(function ($fish) {
+                                        $factoryName = $fish->factory ? $fish->factory->name : 'بدون مورد';
+
+                                        return [$fish->id => "{$factoryName} - {$fish->species->name} ({$fish->quantity} سمكة)"];
+                                    });
                             })
                             ->required()
                             ->searchable()
-                            ->preload()
-                            ->helperText('المورد الذي تم شراء الزريعة منه - سيتم استخدامه لتتبع المدفوعات')
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                if ($state) {
+                                    $fish = BatchFish::find($state);
+                                    if ($fish && $fish->factory_id) {
+                                        $set('factory_id', $fish->factory_id);
+                                    }
+                                }
+                            })
+                            ->helperText('اختر الصنف والمورد المرتبط بهذه الدفعة')
                             ->columnSpan(1),
+                        \Filament\Forms\Components\Hidden::make('factory_id')
+                            ->live(),
+                        TextEntry::make('factory_balance')
+                            ->label('رصيد المورد (لجميع الزريعة)')
+                            ->state(function (Get $get) {
+                                $factoryId = $get('factory_id');
+                                if (!$factoryId) {
+                                    return '-';
+                                }
+
+                                $factory = \App\Models\Factory::find($factoryId);
+                                if (!$factory) {
+                                    return '-';
+                                }
+
+                                $balance = $factory->outstanding_balance;
+                                $color = $balance > 0 ? 'text-danger-600' : 'text-success-600';
+
+                                return new \Illuminate\Support\HtmlString(
+                                    "<span class='font-bold {$color}'>" . number_format($balance, 2) . " EGP</span>"
+                                );
+                            })
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -95,7 +142,7 @@ class BatchPaymentForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn () => auth('web')->id())
+                            ->default(fn() => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل هذه الدفعة في النظام')
                             ->columnSpan(1),
                         Textarea::make('notes')

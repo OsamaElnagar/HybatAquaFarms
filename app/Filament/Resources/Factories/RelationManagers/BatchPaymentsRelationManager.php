@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -31,12 +32,29 @@ class BatchPaymentsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('batch_id')
-                    ->label('الدفعة')
-                    ->relationship('batch', 'batch_code', function ($query, $livewire) {
-                        return $query->where('factory_id', $livewire->ownerRecord->id);
+                Select::make('batch_fish_id')
+                    ->label('الدفعة (الصنف)')
+                    ->options(function ($livewire) {
+                        return \App\Models\BatchFish::with(['batch', 'species'])
+                            ->where('factory_id', $livewire->ownerRecord->id)
+                            ->get()
+                            ->mapWithKeys(function ($fish) {
+                                return [$fish->id => "{$fish->batch->batch_code} - {$fish->species->name}"];
+                            });
+                    })
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        if ($state) {
+                            $fish = \App\Models\BatchFish::find($state);
+                            if ($fish) {
+                                $set('batch_id', $fish->batch_id);
+                            }
+                        }
                     })
                     ->required(),
+                \Filament\Forms\Components\Hidden::make('batch_id'),
+                \Filament\Forms\Components\Hidden::make('factory_id')
+                    ->default(fn ($livewire) => $livewire->ownerRecord->id),
                 DatePicker::make('date')
                     ->label('التاريخ')
                     ->default(now())
@@ -68,8 +86,12 @@ class BatchPaymentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                TextColumn::make('batch.batch_code')
-                    ->label('المفرخ (رقم الدفعة)')
+                TextColumn::make('batchFish.batch.batch_code')
+                    ->label('الدفعة')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('batchFish.species.name')
+                    ->label('الصنف')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('date')

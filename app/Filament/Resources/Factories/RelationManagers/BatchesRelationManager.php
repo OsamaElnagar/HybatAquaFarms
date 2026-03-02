@@ -13,50 +13,56 @@ use Filament\Tables\Table;
 
 class BatchesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'batches';
+    protected static string $relationship = 'batchFish';
 
     protected static ?string $title = 'دفعات الزريعة الموردة';
+
+    protected static ?string $recordTitleAttribute = 'id';
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('batch_code')
             ->columns([
-                TextColumn::make('batch_code')
-                    ->label('كود الدفعة')
+                TextColumn::make('batch.batch_code')
+                    ->label('الدفعة المجمعة')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('farm.name')
+                TextColumn::make('batch.farm.name')
                     ->label('المزرعة')
                     ->sortable(),
                 TextColumn::make('species.name')
-                    ->label('النوع')
+                    ->label('الصنف')
                     ->sortable(),
-                TextColumn::make('entry_date')
-                    ->label('تاريخ الإدخال')
+                TextColumn::make('batch.entry_date')
+                    ->label('تاريخ الإدخال (للدفعة كاملة)')
                     ->date('Y-m-d')
                     ->sortable(),
-                TextColumn::make('initial_quantity')
-                    ->label('الكمية')
+                TextColumn::make('quantity')
+                    ->label('الكمية الموردة')
                     ->numeric(locale: 'en')
                     ->sortable(),
+                TextColumn::make('unit_cost')
+                    ->label('سعر الوحدة')
+                    ->money('EGP', locale: 'en', decimalPlaces: 2)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_cost')
-                    ->label('التكلفة')
+                    ->label('التكلفة (لهذا المورد)')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Sum::make()
-                            ->label('المجموع')
+                            ->label('الإجمالي')
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
-                TextColumn::make('status')
-                    ->label('الحالة')
+                TextColumn::make('batch.status')
+                    ->label('حالة الدفعة المجمعة')
                     ->badge()
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('status')
-                    ->label('الحالة')
+                SelectFilter::make('batch.status')
+                    ->label('حالة الدفعة')
                     ->options(BatchStatus::class)
                     ->native(false),
             ])
@@ -71,6 +77,6 @@ class BatchesRelationManager extends RelationManager
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('entry_date', 'desc');
+            ->defaultSort('created_at', 'desc');
     }
 }

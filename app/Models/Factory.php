@@ -61,6 +61,11 @@ class Factory extends Model
         return $this->hasMany(Batch::class);
     }
 
+    public function batchFish(): HasMany
+    {
+        return $this->hasMany(BatchFish::class);
+    }
+
     public function factoryPayments(): HasMany
     {
         return $this->hasMany(FactoryPayment::class);
@@ -98,8 +103,8 @@ class Factory extends Model
                 return (float) $movement->quantity * $unitCost;
             });
 
-        // Seed purchases (batches)
-        $totalSeedPurchases = $this->batches()
+        // Seed purchases (batch fish)
+        $totalSeedPurchases = $this->batchFish()
             ->whereNotNull('total_cost')
             ->sum('total_cost');
 
@@ -164,8 +169,10 @@ class Factory extends Model
 
             $payments += $voucherPayments;
         } elseif ($this->type === FactoryType::SEEDS) {
-            $purchases = $this->batches()
-                ->where('entry_date', '>=', $startOfYear)
+            $purchases = $this->batchFish()
+                ->whereHas('batch', function ($q) use ($startOfYear) {
+                    $q->where('entry_date', '>=', $startOfYear);
+                })
                 ->sum('total_cost');
 
             $payments = $this->batchPayments()

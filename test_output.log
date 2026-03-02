@@ -1,0 +1,357 @@
+
+   PASS  Tests\Unit\BatchPaymentFishTest
+  ✓ example                                                                                             0.02s  
+
+   PASS  Tests\Unit\BatchPaymentModelTest
+  ✓ example                                                                                             0.01s  
+
+   PASS  Tests\Unit\BatchPaymentTest
+  ✓ example
+
+   FAIL  Tests\Unit\DailyFeedIssueCacheTest
+  ⨯ daily feed issue creation caches feed item and quantity                                             1.50s  
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true
+
+   PASS  Tests\Feature\Auth\AuthenticationTest
+  ✓ login screen can be rendered                                                                        0.31s  
+  ✓ users can authenticate using the login screen                                                       0.25s  
+  ✓ users can not authenticate with invalid password                                                    0.23s  
+  ✓ users with two factor enabled are redirected to two factor challenge                                0.23s  
+  ✓ users can logout                                                                                    0.24s  
+
+   PASS  Tests\Feature\Auth\EmailVerificationTest
+  ✓ email verification screen can be rendered                                                           0.25s  
+  ✓ email can be verified                                                                               0.24s  
+  ✓ email is not verified with invalid hash                                                             0.23s  
+
+   PASS  Tests\Feature\Auth\PasswordConfirmationTest
+  ✓ confirm password screen can be rendered                                                             0.25s  
+
+   PASS  Tests\Feature\Auth\PasswordResetTest
+  ✓ reset password link screen can be rendered                                                          0.24s  
+  ✓ reset password link can be requested                                                                0.46s  
+  ✓ reset password screen can be rendered                                                               0.47s  
+  ✓ password can be reset with valid token                                                              0.44s  
+
+   PASS  Tests\Feature\Auth\RegistrationTest
+  ✓ registration screen can be rendered                                                                 0.26s  
+  ✓ new users can register                                                                              0.23s  
+
+   PASS  Tests\Feature\Auth\TwoFactorChallengeTest
+  ✓ two factor challenge redirects to login when not authenticated                                      0.25s  
+  ✓ two factor challenge can be rendered                                                                0.24s  
+
+   PASS  Tests\Feature\ClearingEntryPostingTest
+  ✓ clearing entry creates correct journal entry                                                        0.34s  
+
+   PASS  Tests\Feature\DailyFeedImportsReportTest - 4 todos
+  ↓ it renders daily feed imports report page                                                           0.23s  
+  ✓ it renders daily feed imports chart widget                                                          0.27s  
+  ↓ it shows chart with feed movement data                                                              0.23s  
+  ↓ it filters chart data by factory                                                                    0.23s  
+  ↓ it filters chart data by date range                                                                 0.24s  
+
+   PASS  Tests\Feature\DashboardTest
+  ✓ guests are redirected to the login page                                                             0.24s  
+  ✓ authenticated users can visit the dashboard                                                         0.28s  
+
+   FAIL  Tests\Feature\ExampleTest
+  ⨯ returns a successful response                                                                       0.23s  
+
+   FAIL  Tests\Feature\ExternalCalculationAccountingTest
+  ⨯ it posts journal for payment (expense vs treasury)                                                  0.25s  
+  ⨯ it posts journal for receipt (treasury vs income)                                                   0.25s  
+
+   PASS  Tests\Feature\FactoryPaymentSupplierTest
+  ✓ it can create a payment for a supplier with farm_id                                                 0.26s  
+  ✓ it uses farm_id from payment in observer                                                            0.25s  
+
+   FAIL  Tests\Feature\FactorySupplierActivityTest
+  ✓ it can assign a supplier activity to a factory                                                      0.24s  
+  ⨯ it has seeded supplier activities                                                                   0.31s  
+
+   FAIL  Tests\Feature\MultiSpeciesBatchTest
+  ⨯ it can aggregate multi-species fish data in batch                                                   0.27s  
+
+   PASS  Tests\Feature\SalaryAdvanceDeductionTest
+  ✓ it automatically creates advance repayments when salary is paid                                     0.26s  
+  ✓ it marks advance as completed when fully paid off from salary                                       0.50s  
+
+   FAIL  Tests\Feature\SalesOrderAccountingTest
+  ⨯ cash sale with paid status creates voucher and updates treasury only                                0.42s  
+  ⨯ credit sale posts receivable and sales without touching treasury                                    0.27s  
+
+   FAIL  Tests\Feature\SalesOrderPostingTest
+  ⨯ cash sale creates correct journal entry                                                             0.33s  
+  ⨯ credit sale creates correct journal entry                                                           0.53s  
+  ⨯ payment received creates payment journal entry                                                      0.38s  
+  ⨯ partial payment status also creates credit sale entry                                               0.32s  
+
+   FAIL  Tests\Feature\SalesOrderRelationshipTest
+  ⨯ sales order can retrieve harvests via pivot table                                                   0.28s  
+
+   PASS  Tests\Feature\Settings\PasswordUpdateTest
+  ✓ password can be updated                                                                             0.54s  
+  ✓ correct password must be provided to update password                                                0.45s  
+
+   PASS  Tests\Feature\Settings\ProfileUpdateTest
+  ✓ profile page is displayed                                                                           0.44s  
+  ✓ profile information can be updated                                                                  0.55s  
+  ✓ email verification status is unchanged when email address is unchanged                              0.69s  
+  ✓ user can delete their account                                                                       0.37s  
+  ✓ correct password must be provided to delete account                                                 0.41s  
+
+   PASS  Tests\Feature\Settings\TwoFactorAuthenticationTest
+  ✓ two factor settings page can be rendered                                                            0.40s  
+  ✓ two factor settings page requires password confirmation when enabled                                0.30s  
+  ✓ two factor settings page returns forbidden response when two factor is disabled                     0.25s  
+  ✓ two factor authentication disabled when confirmation abandoned between requests                     0.31s  
+
+   PASS  Tests\Feature\TreasuryServiceTest
+  ✓ treasury balance starts at zero                                                                     0.25s  
+  ✓ recording a receipt increases treasury balance                                                      0.48s  
+  ✓ recording a payment decreases treasury balance                                                      0.54s  
+  ✓ multiple transactions are calculated correctly                                                      0.31s  
+  ✓ account balance is calculated from journal lines                                                    0.28s  
+  ✓ daily summary is calculated correctly                                                               0.29s  
+  ✓ transactions from different farms are isolated                                                      0.26s  
+  ✓ journal entries are balanced                                                                        0.26s  
+  ✓ get transactions returns correct records                                                            0.25s  
+  ✓ balance as of specific date works correctly                                                         0.28s  
+  ✓ vouchers automatically create journal entries with selected accounts                                0.28s  
+
+   PASS  Tests\Feature\TreasuryTest
+  ✓ it calculates treasury balance                                                                      0.25s  
+  ✓ it posts salary payment to treasury                                                                 0.25s  
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Unit\DailyFeedIssueCacheTest > daily feed issue creation caches feed item and quant…  Error   
+  Non-static method App\Models\FeedItem::factory() cannot be called statically
+
+  at tests\Unit\DailyFeedIssueCacheTest.php:17
+     13▕ test('daily feed issue creation caches feed item and quantity', function () {
+     14▕     $user = User::factory()->create();
+     15▕     $farm = Farm::factory()->create();
+     16▕     $warehouse = FeedWarehouse::factory()->create(['farm_id' => $farm->id, 'name' => 'Main Warehouse']);
+  ➜  17▕     $feedItem = FeedItem::factory()->create();
+     18▕ 
+     19▕     // Create stock so movement doesnt fail
+     20▕     \App\Models\FeedStock::factory()->create([
+     21▕         'feed_warehouse_id' => $warehouse->id,
+
+  1   tests\Unit\DailyFeedIssueCacheTest.php:17
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\ExampleTest > returns a successful response                                           
+  Expected response status code [200] but received 302.
+Failed asserting that 302 is identical to 200.
+
+  at tests\Feature\ExampleTest.php:6
+      2▕ 
+      3▕ test('returns a successful response', function () {
+      4▕     $response = $this->get('/');
+      5▕ 
+  ➜   6▕     $response->assertStatus(200);
+      7▕ });
+      8▕
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\ExternalCalculationAccountingTest > it posts journal for payment (…  QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: external_calculations.name (Connection: sqlite, Database: :memory:, SQL: insert into "external_calculations" ("updated_at", "created_at") values (2026-03-02 18:07:58, 2026-03-02 18:07:58))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+    583▕ 
+  ➜ 584▕             return $statement->execute();
+    585▕         });
+    586▕     }
+    587▕ 
+    588▕     /**
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\ExternalCalculationAccountingTest > it posts journal for receipt (…  QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: external_calculations.name (Connection: sqlite, Database: :memory:, SQL: insert into "external_calculations" ("updated_at", "created_at") values (2026-03-02 18:07:58, 2026-03-02 18:07:58))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+    583▕ 
+  ➜ 584▕             return $statement->execute();
+    585▕         });
+    586▕     }
+    587▕ 
+    588▕     /**
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\FactorySupplierActivityTest > it has seeded supplier activities                       
+  Failed asserting that an array contains 'سباخ'.
+
+  at tests\Feature\FactorySupplierActivityTest.php:26
+     22▕     $activities = SupplierActivity::pluck('name')->toArray();
+     23▕ 
+     24▕     expect($activities)->toContain('تبن')
+     25▕         ->toContain('قش')
+  ➜  26▕         ->toContain('سباخ')
+     27▕         ->toContain('سابله')
+     28▕         ->toContain('مواشي')
+     29▕         ->toContain('أدوية');
+     30▕ });
+
+  1   tests\Feature\FactorySupplierActivityTest.php:26
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\MultiSpeciesBatchTest > it can aggregate multi-species fish data i…  QueryException   
+  SQLSTATE[HY000]: General error: 1 table species has no column named notes (Connection: sqlite, Database: :memory:, SQL: insert into "species" ("name", "notes", "updated_at", "created_at") values (Tilapia, Sapiente minus et et occaecati., 2026-03-02 18:07:59, 2026-03-02 18:07:59))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+    574▕             if ($this->pretending()) {
+    575▕                 return true;
+    576▕             }
+    577▕ 
+  ➜ 578▕             $statement = $this->getPdo()->prepare($query);
+    579▕ 
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderAccountingTest > cash sale with paid status creates voucher and u…  Error   
+  Non-static method App\Models\Batch::factory() cannot be called statically
+
+  at tests\Feature\SalesOrderAccountingTest.php:79
+     75▕     [$treasury, $receivable, $sales] = setupAccountsAndRules($farm);
+     76▕ 
+     77▕     $harvestOperation = \App\Models\HarvestOperation::create([
+     78▕         'operation_number' => 'OP-TEST-'.rand(1000, 9999),
+  ➜  79▕         'batch_id' => \App\Models\Batch::factory()->create(['farm_id' => $farm->id])->id,
+     80▕         'farm_id' => $farm->id,
+     81▕         'start_date' => now(),
+     82▕         'status' => 'ongoing',
+     83▕     ]);
+
+  1   tests\Feature\SalesOrderAccountingTest.php:79
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderAccountingTest > credit sale posts receivable and sales without t…  Error   
+  Non-static method App\Models\Batch::factory() cannot be called statically
+
+  at tests\Feature\SalesOrderAccountingTest.php:151
+    147▕     [$treasury, $receivable, $sales] = setupAccountsAndRules($farm);
+    148▕ 
+    149▕     $harvestOperation = \App\Models\HarvestOperation::create([
+    150▕         'operation_number' => 'OP-TEST-'.rand(1000, 9999),
+  ➜ 151▕         'batch_id' => \App\Models\Batch::factory()->create(['farm_id' => $farm->id])->id,
+    152▕         'farm_id' => $farm->id,
+    153▕         'start_date' => now(),
+    154▕         'status' => 'ongoing',
+    155▕     ]);
+
+  1   tests\Feature\SalesOrderAccountingTest.php:151
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderPostingTest > cash sale creates correct journal entry      QueryException   
+  SQLSTATE[HY000]: General error: 1 table sales_orders has no column named subtotal (Connection: sqlite, Database: :memory:, SQL: insert into "sales_orders" ("order_number", "date", "subtotal", "tax_amount", "discount_amount", "total_amount", "payment_status", "farm_id", "trader_id", "created_by", "commission_rate", "updated_at", "created_at") values (SO-8495, 2025-07-21 17:03:05, 17631.97, 2468.4758, 1402.22, 10000, paid, 1, 1, 1, 0, 2026-03-02 18:08:01, 2026-03-02 18:08:01))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+    574▕             if ($this->pretending()) {
+    575▕                 return true;
+    576▕             }
+    577▕ 
+  ➜ 578▕             $statement = $this->getPdo()->prepare($query);
+    579▕ 
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderPostingTest > credit sale creates correct journal entry    QueryException   
+  SQLSTATE[HY000]: General error: 1 table sales_orders has no column named subtotal (Connection: sqlite, Database: :memory:, SQL: insert into "sales_orders" ("order_number", "date", "subtotal", "tax_amount", "discount_amount", "total_amount", "payment_status", "farm_id", "trader_id", "created_by", "commission_rate", "updated_at", "created_at") values (SO-8424, 2026-01-07 08:49:22, 28998.79, 4059.8306, 1670.61, 15000, pending, 1, 1, 1, 0, 2026-03-02 18:08:02, 2026-03-02 18:08:02))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+    574▕             if ($this->pretending()) {
+    575▕                 return true;
+    576▕             }
+    577▕ 
+  ➜ 578▕             $statement = $this->getPdo()->prepare($query);
+    579▕ 
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderPostingTest > payment received creates payment journal e…  QueryException   
+  SQLSTATE[HY000]: General error: 1 table sales_orders has no column named subtotal (Connection: sqlite, Database: :memory:, SQL: insert into "sales_orders" ("order_number", "date", "subtotal", "tax_amount", "discount_amount", "total_amount", "payment_status", "farm_id", "trader_id", "created_by", "commission_rate", "updated_at", "created_at") values (SO-1713, 2025-03-31 23:54:03, 43916.84, 6148.3576, 3618.66, 20000, pending, 1, 1, 1, 0, 2026-03-02 18:08:02, 2026-03-02 18:08:02))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+    574▕             if ($this->pretending()) {
+    575▕                 return true;
+    576▕             }
+    577▕ 
+  ➜ 578▕             $statement = $this->getPdo()->prepare($query);
+    579▕ 
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderPostingTest > partial payment status also creates credit…  QueryException   
+  SQLSTATE[HY000]: General error: 1 table sales_orders has no column named subtotal (Connection: sqlite, Database: :memory:, SQL: insert into "sales_orders" ("order_number", "date", "subtotal", "tax_amount", "discount_amount", "total_amount", "payment_status", "farm_id", "trader_id", "created_by", "commission_rate", "updated_at", "created_at") values (SO-5769, 2026-01-27 04:15:20, 5086.78, 712.1492, 496.38, 12500, partial, 1, 1, 1, 0, 2026-03-02 18:08:03, 2026-03-02 18:08:03))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+    574▕             if ($this->pretending()) {
+    575▕                 return true;
+    576▕             }
+    577▕ 
+  ➜ 578▕             $statement = $this->getPdo()->prepare($query);
+    579▕ 
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕ 
+    582▕             $this->recordsHaveBeenModified();
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:578
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\SalesOrderRelationshipTest > sales order can retrieve harvests via pivot ta…  Error   
+  Class "Database\Factories\HarvestOperationFactory" not found
+
+  at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:993
+    989▕     public static function factoryForModel(string $modelName)
+    990▕     {
+    991▕         $factory = static::resolveFactoryName($modelName);
+    992▕ 
+  ➜ 993▕         return $factory::new();
+    994▕     }
+    995▕ 
+    996▕     /**
+    997▕      * Specify the callback that should be invoked to guess factory names based on dynamic relationship names.
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:993
+  2   vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\HasFactory.php:21
+
+
+  Tests:    13 failed, 4 todos, 54 passed (126 assertions)
+  Duration: 22.73s
+
