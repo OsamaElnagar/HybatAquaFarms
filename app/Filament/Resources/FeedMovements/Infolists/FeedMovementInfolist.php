@@ -27,7 +27,7 @@ class FeedMovementInfolist
                             ->columnSpan(1),
                         TextEntry::make('quantity')
                             ->label('الكمية')
-                            ->formatStateUsing(fn ($record) => number_format($record->quantity, 3).' '.($record->feedItem?->unit_of_measure ?? ''))
+                            ->formatStateUsing(fn($record) => number_format($record->quantity, 3) . ' ' . ($record->feedItem?->unit_of_measure ?? ''))
                             ->badge()
                             ->color('primary')
                             ->columnSpan(1),
@@ -40,15 +40,19 @@ class FeedMovementInfolist
                         TextEntry::make('fromWarehouse.name')
                             ->label('من المستودع')
                             ->placeholder('غير محدد')
+                            ->url(fn($record) => $record->from_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $record->from_warehouse_id]) : null)
+                            ->color(fn($record) => $record->from_warehouse_id ? 'primary' : null)
                             ->columnSpan(1),
                         TextEntry::make('toWarehouse.name')
                             ->label('إلى المستودع')
                             ->placeholder('غير محدد')
+                            ->url(fn($record) => $record->to_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $record->to_warehouse_id]) : null)
+                            ->color(fn($record) => $record->to_warehouse_id ? 'primary' : null)
                             ->columnSpan(1),
                     ])
                     ->columns(2)
                     ->columnSpanFull()
-                    ->visible(fn ($record) => $record->fromWarehouse || $record->toWarehouse),
+                    ->visible(fn($record) => $record->fromWarehouse || $record->toWarehouse),
 
                 Section::make('معلومات إضافية')
                     ->schema([

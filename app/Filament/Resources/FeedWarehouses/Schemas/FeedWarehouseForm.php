@@ -22,15 +22,15 @@ class FeedWarehouseForm
                             ->disabled()
                             ->dehydrated()
                             ->helperText('يتم إنشاؤه تلقائياً'),
+                        TextInput::make('name')
+                            ->label('الاسم')
+                            ->required(),
 
                         Select::make('farm_id')
                             ->label('المزرعة')
                             ->relationship('farm', 'name')
                             ->placeholder('مستودع مركزي (بدون مزرعة)'),
 
-                        TextInput::make('name')
-                            ->label('الاسم')
-                            ->required(),
                         TextInput::make('location')
                             ->label('الموقع'),
                         Toggle::make('is_active')

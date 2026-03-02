@@ -31,11 +31,15 @@ class FeedMovementsTable
                     ->label('من المستودع')
                     ->searchable()
                     ->sortable()
+                    ->url(fn($record) => $record->from_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('edit', ['record' => $record->from_warehouse_id]) : null)
+                    ->color(fn($record) => $record->from_warehouse_id ? 'primary' : null)
                     ->toggleable(),
                 TextColumn::make('toWarehouse.name')
                     ->label('إلى المستودع')
                     ->searchable()
                     ->sortable()
+                    ->url(fn($record) => $record->to_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('edit', ['record' => $record->to_warehouse_id]) : null)
+                    ->color(fn($record) => $record->to_warehouse_id ? 'primary' : null)
                     ->toggleable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
