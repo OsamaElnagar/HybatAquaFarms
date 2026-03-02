@@ -74,8 +74,9 @@ class FactoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\BatchesRelationManager::class,
             RelationManagers\PaymentsRelationManager::class,
+            RelationManagers\BatchesRelationManager::class,
+            RelationManagers\BatchPaymentsRelationManager::class,
         ];
     }
 

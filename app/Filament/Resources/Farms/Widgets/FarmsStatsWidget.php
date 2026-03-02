@@ -2,11 +2,8 @@
 
 namespace App\Filament\Resources\Farms\Widgets;
 
-use App\Enums\FarmStatus;
 use App\Models\Batch;
 use App\Models\DailyFeedIssue;
-use App\Models\Farm;
-use App\Models\FarmUnit;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -19,12 +16,7 @@ class FarmsStatsWidget extends StatsOverviewWidget
     protected function getStats(): array
     {
         return Cache::remember('farms_stats', 600, function () {
-            $totalFarms = Farm::count();
-            $activeFarms = Farm::where('status', FarmStatus::Active)->count();
 
-            // Direct counts/sums instead of loading all farms
-            $totalUnits = FarmUnit::count();
-            $totalBatches = Batch::count();
             $activeBatchesCount = Batch::where('status', 'active')->count();
             $totalCurrentStock = Batch::where('status', 'active')->sum('current_quantity');
 
@@ -41,25 +33,15 @@ class FarmsStatsWidget extends StatsOverviewWidget
                 ->sum('quantity');
 
             return [
-                Stat::make('إجمالي المزارع', number_format($totalFarms))
-                    ->description($activeFarms.' مزرعة نشطة، '.$totalUnits.' وحدة')
-                    ->descriptionIcon('heroicon-o-home-modern')
-                    ->color('primary'),
-
-                Stat::make('دفعات الزريعة النشطة', number_format($activeBatchesCount))
-                    ->description('إجمالي الكمية الحالية: '.number_format($totalCurrentStock))
-                    ->descriptionIcon('heroicon-o-cube')
-                    ->color('success'),
-
                 Stat::make('استهلاك العلف هذا الشهر', number_format($thisMonthFeedConsumed).' كجم')
                     ->description($this->getFeedConsumptionComparison($thisMonthFeedConsumed, $lastMonthFeedConsumed))
                     ->descriptionIcon($thisMonthFeedConsumed > $lastMonthFeedConsumed ? 'heroicon-o-arrow-trending-up' : 'heroicon-o-arrow-trending-down')
                     ->color($this->getFeedConsumptionColor($thisMonthFeedConsumed, $lastMonthFeedConsumed)),
 
-                Stat::make('إجمالي الدفعات', number_format($totalBatches))
-                    ->description('عبر جميع المزارع والوحدات')
-                    ->descriptionIcon('heroicon-o-rectangle-stack')
-                    ->color('info'),
+                Stat::make('دفعات الزريعة النشطة', number_format($activeBatchesCount))
+                    ->description('إجمالي الكمية الحالية: '.number_format($totalCurrentStock))
+                    ->descriptionIcon('heroicon-o-cube')
+                    ->color('success'),
             ];
         });
     }
