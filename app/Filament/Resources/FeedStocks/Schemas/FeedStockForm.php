@@ -19,8 +19,8 @@ class FeedStockForm
                         Select::make('feed_warehouse_id')
                             ->label('المستودع')
                             ->relationship('warehouse', 'name')
-                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
-                            ->disabled(fn ($livewire) => $livewire instanceof RelationManager)
+                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->disabled(fn($livewire) => $livewire instanceof RelationManager)
                             ->required()
                             ->searchable()
                             ->preload()
@@ -34,12 +34,6 @@ class FeedStockForm
                             ->preload()
                             ->helperText('نوع العلف')
                             ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-
-                Section::make('الكميات والتكاليف')
-                    ->schema([
                         TextInput::make('quantity_in_stock')
                             ->label('الكمية في المخزون بالكيلوجرام')
                             ->required()
@@ -50,30 +44,9 @@ class FeedStockForm
                             ->default(0)
                             ->helperText('الكمية المتوفرة حالياً في المخزون')
                             ->columnSpan(1),
-                        TextInput::make('average_cost')
-                            ->label('متوسط التكلفة')
-
-                            ->numeric()
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->default(0)
-                            ->suffix(' EGP ')
-                            ->helperText('متوسط تكلفة الوحدة الواحدة')
-                            ->columnSpan(1),
-                        TextInput::make('total_value')
-                            ->label('القيمة الإجمالية')
-
-                            ->numeric()
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->default(0)
-                            ->suffix(' EGP ')
-                            ->helperText('القيمة الإجمالية = الكمية × متوسط التكلفة')
-                            ->columnSpan(2),
                     ])
                     ->columns(2)
-                    ->columnSpanFull()
-                    ->collapsible(),
+                    ->columnSpanFull(),
             ]);
     }
 }

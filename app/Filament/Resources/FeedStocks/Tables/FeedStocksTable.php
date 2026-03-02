@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -25,18 +26,11 @@ class FeedStocksTable
                     ->sortable(),
                 TextColumn::make('quantity_in_stock')
                     ->label('الكمية في المخزون')
-                    ->numeric(decimalPlaces: 0)
-                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
-                    ->sortable(),
-                TextColumn::make('average_cost')
-                    ->label('متوسط التكلفة (للكيلو)')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->sortable(),
-                TextColumn::make('total_value')
-                    ->label('القيمة الإجمالية')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color('success')
-                    ->sortable(),
+                    ->numeric(decimalPlaces: 0, locale: 'en')
+                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
+                    ->sortable()
+                    ->summarize(Sum::make()->numeric(decimalPlaces: 0, locale: 'en')),
+
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()

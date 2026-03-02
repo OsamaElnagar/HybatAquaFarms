@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 
 use App\Filament\Resources\FeedStocks\Schemas\FeedStockForm;
 use App\Filament\Resources\FeedStocks\Tables\FeedStocksTable;
-use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -26,9 +25,6 @@ class FeedStocksRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return FeedStocksTable::configure($table)
-            ->headerActions([
-                CreateAction::make()->label('إضافة رصيد جديد')->icon('heroicon-o-plus'),
-            ]);
+        return FeedStocksTable::configure($table);
     }
 }

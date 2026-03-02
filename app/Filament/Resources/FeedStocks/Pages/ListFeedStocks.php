@@ -17,11 +17,4 @@ class ListFeedStocks extends ListRecords
             // CreateAction::make(),
         ];
     }
-
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            FeedStocksStatsWidget::class,
-        ];
-    }
 }

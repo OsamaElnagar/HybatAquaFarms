@@ -58,6 +58,8 @@ class FeedMovementInfolist
                     ->schema([
                         TextEntry::make('factory.name')
                             ->label('المصنع')
+                            ->url(fn($record) => $record->factory_id ? \App\Filament\Resources\Factories\FactoryResource::getUrl('view', ['record' => $record->factory_id]) : null)
+                            ->color(fn($record) => $record->factory_id ? 'primary' : null)
                             ->placeholder('غير محدد')
                             ->columnSpan(1),
                         TextEntry::make('recordedBy.name')

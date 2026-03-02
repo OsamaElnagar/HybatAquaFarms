@@ -15,16 +15,13 @@ class FeedStock extends Model
         'feed_warehouse_id',
         'feed_item_id',
         'quantity_in_stock',
-        'average_cost',
-        'total_value',
+
     ];
 
     protected function casts(): array
     {
         return [
             'quantity_in_stock' => 'decimal:3',
-            'average_cost' => 'decimal:2',
-            'total_value' => 'decimal:2',
         ];
     }
 

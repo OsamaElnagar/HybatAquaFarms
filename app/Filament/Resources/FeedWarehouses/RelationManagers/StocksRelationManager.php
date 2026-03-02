@@ -4,7 +4,6 @@ namespace App\Filament\Resources\FeedWarehouses\RelationManagers;
 
 use App\Filament\Resources\FeedStocks\Schemas\FeedStockForm;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -37,7 +36,7 @@ class StocksRelationManager extends RelationManager
                     ->label('الكمية المتاحة')
                     ->numeric(locale: 'en')
                     ->suffix(' كجم')
-                    ->color(fn ($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
+                    ->color(fn($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
                     ->sortable()
                     ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()
                         ->label('إجمالي الكمية')),
@@ -53,21 +52,10 @@ class StocksRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('stock_value')
                     ->label('القيمة')
-                    ->state(fn ($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
+                    ->state(fn($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->toggleable(),
-            ])
-            ->filters([
-                //
-            ])
-            ->headerActions([
-                CreateAction::make()->label('إضافة أرصدة علف')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['feed_warehouse_id'] = $this->getOwnerRecord()->id;
-
-                        return $data;
-                    }),
             ])
             ->recordActions([
                 EditAction::make(),
