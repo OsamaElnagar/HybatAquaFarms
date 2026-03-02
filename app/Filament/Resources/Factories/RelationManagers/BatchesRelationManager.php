@@ -22,6 +22,7 @@ class BatchesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn($query) => $query->with(['batch.farm', 'species']))
             ->columns([
                 TextColumn::make('batch.batch_code')
                     ->label('الدفعة المجمعة')
@@ -33,10 +34,6 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('species.name')
                     ->label('الصنف')
                     ->sortable(),
-                TextColumn::make('batch.entry_date')
-                    ->label('تاريخ الإدخال (للدفعة كاملة)')
-                    ->date('Y-m-d')
-                    ->sortable(),
                 TextColumn::make('quantity')
                     ->label('الكمية الموردة')
                     ->numeric(locale: 'en')
@@ -45,7 +42,7 @@ class BatchesRelationManager extends RelationManager
                     ->label('سعر الوحدة')
                     ->money('EGP', locale: 'en', decimalPlaces: 2)
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('total_cost')
                     ->label('التكلفة (لهذا المورد)')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -55,10 +52,15 @@ class BatchesRelationManager extends RelationManager
                             ->label('الإجمالي')
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
-                TextColumn::make('batch.status')
-                    ->label('حالة الدفعة المجمعة')
-                    ->badge()
-                    ->sortable(),
+                // TextColumn::make('batch.entry_date')
+                //     ->label('تاريخ الإدخال (للدفعة كاملة)')
+                //     ->date('Y-m-d')
+                //     ->sortable(),
+
+                // TextColumn::make('batch.status')
+                //     ->label('حالة الدفعة المجمعة')
+                //     ->badge()
+                //     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('batch.status')

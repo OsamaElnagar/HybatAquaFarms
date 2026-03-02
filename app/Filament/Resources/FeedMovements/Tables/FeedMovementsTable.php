@@ -7,6 +7,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -42,8 +43,16 @@ class FeedMovementsTable
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label('الكمية')
-                    ->numeric(decimalPlaces: 0)
-                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
+                    ->numeric(decimalPlaces: 0, locale: 'en')
+                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
+                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0))
+                    ->sortable(),
+
+                TextColumn::make('total_cost')
+                    ->label('التكلفة')
+                    ->numeric(decimalPlaces: 0, locale: 'en')
+                    ->suffix('EGP')
+                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0))
                     ->sortable(),
                 TextColumn::make('factory.name')
                     ->label('المصنع')
@@ -96,8 +105,8 @@ class FeedMovementsTable
                 ViewAction::make()->label('عرض'),
                 EditAction::make()
                     ->label('تعديل')
-                    ->visible(fn ($record) => $record->movement_type !== \App\Enums\FeedMovementType::Out)
-                    ->tooltip(fn ($record) => $record->movement_type === \App\Enums\FeedMovementType::Out
+                    ->visible(fn($record) => $record->movement_type !== FeedMovementType::Out)
+                    ->tooltip(fn($record) => $record->movement_type === FeedMovementType::Out
                         ? 'لا يمكن تعديل حركات الصرف - يتم إنشاؤها تلقائياً من الصرف اليومي'
                         : null),
             ])
