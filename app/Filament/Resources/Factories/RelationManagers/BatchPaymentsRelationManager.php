@@ -3,13 +3,10 @@
 namespace App\Filament\Resources\Factories\RelationManagers;
 
 use App\Enums\PaymentMethod;
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -35,21 +32,33 @@ class BatchPaymentsRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('batch_id')
-                    ->relationship('batch', 'id')
+                    ->label('الدفعة')
+                    ->relationship('batch', 'batch_code', function ($query, $livewire) {
+                        return $query->where('factory_id', $livewire->ownerRecord->id);
+                    })
                     ->required(),
                 DatePicker::make('date')
+                    ->label('التاريخ')
+                    ->default(now())
                     ->required(),
                 TextInput::make('amount')
+                    ->label('المبلغ')
                     ->required()
                     ->numeric(),
                 Select::make('payment_method')
-                    ->options(PaymentMethod::class),
-                TextInput::make('reference_number'),
+                    ->label('طريقة الدفع')
+                    ->options(PaymentMethod::class)
+                    ->default(PaymentMethod::CASH)
+                    ->required(),
+                TextInput::make('reference_number')
+                    ->label('الرقم المرجعي'),
                 Textarea::make('description')
+                    ->label('البيان')
                     ->columnSpanFull(),
-                TextInput::make('recorded_by')
-                    ->numeric(),
+                \Filament\Forms\Components\Hidden::make('recorded_by')
+                    ->default(fn () => auth()->id()),
                 Textarea::make('notes')
+                    ->label('ملاحظات')
                     ->columnSpanFull(),
             ]);
     }
@@ -57,29 +66,38 @@ class BatchPaymentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('batch_id')
+            ->recordTitleAttribute('id')
             ->columns([
-                TextColumn::make('batch.id')
-                    ->searchable(),
+                TextColumn::make('batch.batch_code')
+                    ->label('المفرخ (رقم الدفعة)')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('date')
+                    ->label('التاريخ')
                     ->date()
                     ->sortable(),
                 TextColumn::make('amount')
+                    ->label('المبلغ')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('payment_method')
+                    ->label('طريقة الدفع')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('reference_number')
+                    ->label('الرقم المرجعي')
                     ->searchable(),
-                TextColumn::make('recorded_by')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('recordedBy.name')
+                    ->label('بواسطة')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('تاريخ التعديل')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -89,16 +107,13 @@ class BatchPaymentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);
