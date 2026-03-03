@@ -28,10 +28,6 @@ class FeedItemsTable
                 TextColumn::make('factory.name')
                     ->label('المصنع')
                     ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('unit_of_measure')
-                    ->label('وحدة القياس')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('standard_cost')
                     ->label('التكلفة القياسية')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)

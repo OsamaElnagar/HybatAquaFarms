@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Batches\RelationManagers;
 
 use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
+use App\Filament\Resources\BatchPayments\Schemas\BatchPaymentForm;
+use App\Filament\Resources\BatchPayments\Tables\BatchPaymentsTable;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,116 +32,60 @@ class PaymentsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                \Filament\Schemas\Components\Section::make('تفاصيل الدفعة')
-                    ->schema([
-                        Select::make('factory_id')
-                            ->label('المورد')
-                            ->relationship('factory', 'name', function (Builder $query) {
-                                return $query->where('type', '!=', FactoryType::FEEDS);
-                            })
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->default(fn ($livewire) => $livewire->getOwnerRecord()?->factory_id),
-                        DatePicker::make('date')
-                            ->label('تاريخ الدفعة')
-                            ->required()
-                            ->default(now())
-                            ->displayFormat('Y-m-d')
-                            ->native(false),
-
-                        TextInput::make('amount')
-                            ->label('المبلغ')
-                            ->required()
-                            ->numeric()
-                            ->suffix(' EGP ')
-                            ->minValue(0.01)
-                            ->step(0.01),
-                        Select::make('payment_method')
-                            ->label('طريقة الدفع')
-                            ->options(PaymentMethod::class)
-                            ->searchable(),
-
-                        TextInput::make('reference_number')
-                            ->label('رقم المرجع')
-                            ->maxLength(255)
-                            ->helperText('رقم الشيك أو التحويل البنكي')
-                            ->columnSpanFull(),
-                        Textarea::make('description')
-                            ->label('الوصف')
-                            ->maxLength(500)
-                            ->rows(3)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(1)
-                    ->columnSpanFull(),
-
-                \Filament\Schemas\Components\Section::make('ملاحظات')
-                    ->schema([
-                        Textarea::make('notes')
-                            ->label('ملاحظات')
-                            ->maxLength(1000)
-                            ->rows(3)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(1)
-                    ->collapsible()
-                    ->collapsed(),
-            ]);
+        return BatchPaymentForm::configure($schema);
     }
 
     public function table(Table $table): Table
     {
-        return $table
-            ->recordTitleAttribute('amount')
-            ->columns([
-                TextColumn::make('date')
-                    ->label('تاريخ الدفعة')
-                    ->date('Y-m-d')
-                    ->sortable(),
-                TextColumn::make('amount')
-                    ->label('المبلغ')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color('success')
-                    ->sortable()
-                    ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Sum::make()
-                            ->label('إجمالي المدفوع')
-                            ->money('EGP', locale: 'en', decimalPlaces: 0),
-                        \Filament\Tables\Columns\Summarizers\Count::make()
-                            ->label('عدد الدفعات'),
-                    ]),
-                TextColumn::make('payment_method')
-                    ->label('طريقة الدفع')
-                    ->badge()
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('reference_number')
-                    ->label('رقم المرجع')
-                    ->searchable()
-                    ->toggleable(),
-                TextColumn::make('description')
-                    ->label('الوصف')
-                    ->limit(50)
-                    ->wrap()
-                    ->toggleable(),
-                TextColumn::make('recordedBy.name')
-                    ->label('سجل بواسطة')
-                    ->toggleable(),
-                TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('payment_method')
-                    ->label('طريقة الدفع')
-                    ->options(PaymentMethod::class),
-            ])
-            ->defaultSort('date', 'desc')
+        return BatchPaymentsTable::configure($table)
+            // $table
+            //     ->recordTitleAttribute('amount')
+            //     ->columns([
+            //         TextColumn::make('date')
+            //             ->label('تاريخ الدفعة')
+            //             ->date('Y-m-d')
+            //             ->sortable(),
+            //         TextColumn::make('amount')
+            //             ->label('المبلغ')
+            //             ->money('EGP', locale: 'en', decimalPlaces: 0)
+            //             ->color('success')
+            //             ->sortable()
+            //             ->summarize([
+            //                 \Filament\Tables\Columns\Summarizers\Sum::make()
+            //                     ->label('إجمالي المدفوع')
+            //                     ->money('EGP', locale: 'en', decimalPlaces: 0),
+            //                 \Filament\Tables\Columns\Summarizers\Count::make()
+            //                     ->label('عدد الدفعات'),
+            //             ]),
+            //         TextColumn::make('payment_method')
+            //             ->label('طريقة الدفع')
+            //             ->badge()
+            //             ->searchable()
+            //             ->sortable(),
+            //         TextColumn::make('reference_number')
+            //             ->label('رقم المرجع')
+            //             ->searchable()
+            //             ->toggleable(),
+            //         TextColumn::make('description')
+            //             ->label('الوصف')
+            //             ->limit(50)
+            //             ->wrap()
+            //             ->toggleable(),
+            //         TextColumn::make('recordedBy.name')
+            //             ->label('سجل بواسطة')
+            //             ->toggleable(),
+            //         TextColumn::make('created_at')
+            //             ->label('تاريخ الإنشاء')
+            //             ->dateTime()
+            //             ->sortable()
+            //             ->toggleable(isToggledHiddenByDefault: true),
+            //     ])
+            //     ->filters([
+            //         \Filament\Tables\Filters\SelectFilter::make('payment_method')
+            //             ->label('طريقة الدفع')
+            //             ->options(PaymentMethod::class),
+            //     ])
+            //     ->defaultSort('date', 'desc')
             ->headerActions([
                 CreateAction::make()->label('إضافة دفعة مالية')
                     ->mutateDataUsing(function (array $data, $livewire): array {
@@ -152,14 +98,14 @@ class PaymentsRelationManager extends RelationManager
 
                         return $data;
                     }),
-            ])
-            ->recordActions([
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
+        //     ->recordActions([
+        //         EditAction::make(),
+        //     ])
+        //     ->toolbarActions([
+        //         BulkActionGroup::make([
+        //             DeleteBulkAction::make(),
+        //         ]),
+        //     ]);
     }
 }

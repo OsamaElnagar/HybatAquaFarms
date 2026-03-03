@@ -27,6 +27,7 @@ class BatchPaymentForm
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
                             ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
+                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->required()
                             ->searchable()
                             ->preload()
@@ -48,7 +49,7 @@ class BatchPaymentForm
                                     ->mapWithKeys(function ($fish) {
                                         $factoryName = $fish->factory ? $fish->factory->name : 'بدون مورد';
 
-                                        return [$fish->id => "{$factoryName} - {$fish->species->name} ({$fish->quantity} سمكة)"];
+                                        return [$fish->id => "{$factoryName} - {$fish->species->name} - عدد {$fish->quantity} - {$fish->total_cost} EGP"];
                                     });
                             })
                             ->required()
@@ -83,7 +84,7 @@ class BatchPaymentForm
                                 $color = $balance > 0 ? 'text-danger-600' : 'text-success-600';
 
                                 return new \Illuminate\Support\HtmlString(
-                                    "<span class='font-bold {$color}'>" . number_format($balance, 2) . " EGP</span>"
+                                    "<span class='font-bold {$color}'>" . number_format($balance) . " EGP</span>"
                                 );
                             })
                             ->columnSpanFull(),

@@ -31,7 +31,7 @@ class BatchesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('batch_code')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['units', 'species']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['units', 'species']))
             ->columns([
                 TextColumn::make('batch_code')
                     ->label('كود الدفعة')
@@ -42,7 +42,7 @@ class BatchesRelationManager extends RelationManager
                     ->badge()
                     ->wrap()
                     ->sortable(),
-                TextColumn::make('species.name')
+                TextColumn::make('fish.species.name')
                     ->label('النوع')
                     ->wrap()
                     ->sortable(),
@@ -57,13 +57,8 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('current_quantity')
                     ->label('الكمية الحالية')
                     ->numeric(locale: 'en')
-                    ->color(fn ($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
+                    ->color(fn($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
                     ->sortable(),
-                TextColumn::make('current_weight_avg')
-                    ->label('متوسط الوزن')
-                    ->numeric(decimalPlaces: 3)
-                    ->suffix(' جم')
-                    ->toggleable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -78,22 +73,8 @@ class BatchesRelationManager extends RelationManager
                     ->label('الوحدة')
                     ->relationship('units', 'code'),
             ])
-            ->headerActions([
-                CreateAction::make()->label('إضافة دفعة زريعه')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['farm_id'] = $this->getOwnerRecord()->id;
-
-                        return $data;
-                    }),
-            ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ])
             ->defaultSort('entry_date', 'desc');
     }

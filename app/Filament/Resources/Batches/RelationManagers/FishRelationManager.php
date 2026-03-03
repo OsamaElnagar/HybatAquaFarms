@@ -117,7 +117,8 @@ class FishRelationManager extends RelationManager
                 TextColumn::make('quantity')
                     ->label('الكمية')
                     ->numeric(locale: 'en')
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->label('الإجمالي')->numeric(decimalPlaces: 0, locale: 'en')),
                 TextColumn::make('unit_cost')
                     ->label('تكلفة الوحدة')
                     ->money('EGP', decimalPlaces: 2, locale: 'en')
