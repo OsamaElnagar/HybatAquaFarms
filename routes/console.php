@@ -10,3 +10,5 @@ Artisan::command('inspire', function () {
 
 Schedule::command('reports:daily-sales')->dailyAt('08:00');
 Schedule::command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();
+Schedule::command('backup:clean')->daily()->at('19:12');
+Schedule::command('backup:run')->daily()->at('19:13');

@@ -136,14 +136,15 @@ class ManualJournalEntry extends Page implements HasForms
         $totalDebit = collect($data['lines'])->sum('debit');
         $totalCredit = collect($data['lines'])->sum('credit');
 
-        // if (abs($totalDebit - $totalCredit) > 0.01) {
-        //     Notification::make()
-        //         ->title('خطأ في التوازن')
-        //         ->body("إجمالي المدين ({$totalDebit}) لا يساوي إجمالي الدائن ({$totalCredit})")
-        //         ->danger()
-        //         ->send();
-        //     return;
-        // }
+        if (abs($totalDebit - $totalCredit) > 0.01) {
+            Notification::make()
+                ->title('خطأ في التوازن')
+                ->body("إجمالي المدين ({$totalDebit}) لا يساوي إجمالي الدائن ({$totalCredit})")
+                ->danger()
+                ->send();
+
+            return;
+        }
 
         if ($totalDebit == 0 && $totalCredit == 0) {
             Notification::make()
