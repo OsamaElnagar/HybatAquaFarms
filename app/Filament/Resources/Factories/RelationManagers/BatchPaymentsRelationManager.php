@@ -100,7 +100,7 @@ class BatchPaymentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')

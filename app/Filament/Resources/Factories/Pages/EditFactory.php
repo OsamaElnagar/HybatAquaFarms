@@ -14,8 +14,15 @@ class EditFactory extends EditRecord
     {
         $type = $this->getRecord()->type;
 
-        if ($type === FactoryType::FEEDS || $type === FactoryType::SUPPLIER) {
+        if ($type === FactoryType::SUPPLIER) {
             return [
+                RelationManagers\PaymentsRelationManager::class,
+            ];
+        }
+
+        if ($type === FactoryType::FEEDS) {
+            return [
+                RelationManagers\FeedMovementsRelationManager::class,
                 RelationManagers\PaymentsRelationManager::class,
             ];
         }

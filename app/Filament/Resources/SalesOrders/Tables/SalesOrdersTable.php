@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -48,7 +49,8 @@ class SalesOrdersTable
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)),
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->badge()

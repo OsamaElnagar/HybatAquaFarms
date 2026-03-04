@@ -77,6 +77,7 @@ class FactoryResource extends Resource
             RelationManagers\PaymentsRelationManager::class,
             RelationManagers\BatchesRelationManager::class,
             RelationManagers\BatchPaymentsRelationManager::class,
+            RelationManagers\FeedMovementsRelationManager::class,
         ];
     }
 

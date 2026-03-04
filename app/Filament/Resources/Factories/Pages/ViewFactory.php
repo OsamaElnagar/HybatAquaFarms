@@ -14,9 +14,16 @@ class ViewFactory extends ViewRecord
     {
         $type = $this->getRecord()->type;
 
-        if ($type === FactoryType::FEEDS || $type === FactoryType::SUPPLIER) {
+        if ($type === FactoryType::SUPPLIER) {
             return [
                 RelationManagers\PaymentsRelationManager::class,
+            ];
+        }
+
+        if ($type === FactoryType::FEEDS) {
+            return [
+                RelationManagers\PaymentsRelationManager::class,
+                RelationManagers\FeedMovementsRelationManager::class,
             ];
         }
 

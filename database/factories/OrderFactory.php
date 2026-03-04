@@ -17,7 +17,11 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'code' => 'ORD-' . now()->format('Ymd') . '-' . fake()->unique()->numberBetween(1000, 9999),
+            'harvest_operation_id' => \App\Models\HarvestOperation::factory(),
+            'harvest_id' => \App\Models\Harvest::factory(),
+            'trader_id' => \App\Models\Trader::factory(),
+            'date' => fake()->date(),
         ];
     }
 }

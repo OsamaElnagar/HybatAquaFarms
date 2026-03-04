@@ -34,6 +34,9 @@ class Order extends Model
             if (empty($order->code)) {
                 $order->code = static::generateOrderCode();
             }
+            if (empty($order->harvest_operation_id) && ! empty($order->harvest_id)) {
+                $order->harvest_operation_id = \App\Models\Harvest::find($order->harvest_id)?->harvest_operation_id;
+            }
         });
     }
 

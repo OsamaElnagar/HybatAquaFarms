@@ -7,8 +7,6 @@ use App\Filament\Resources\HarvestOperations\Pages\EditHarvestOperation;
 use App\Filament\Resources\HarvestOperations\Pages\ListHarvestOperations;
 use App\Filament\Resources\HarvestOperations\Pages\ViewHarvestOperation;
 use App\Filament\Resources\HarvestOperations\RelationManagers\HarvestsRelationManager;
-use App\Filament\Resources\HarvestOperations\RelationManagers\OrderItemsRelationManager;
-use App\Filament\Resources\HarvestOperations\RelationManagers\OrdersRelationManager;
 use App\Filament\Resources\HarvestOperations\Schemas\HarvestOperationForm;
 use App\Filament\Resources\HarvestOperations\Tables\HarvestOperationsTable;
 use App\Models\HarvestOperation;
@@ -80,8 +78,6 @@ class HarvestOperationResource extends Resource
     {
         return [
             HarvestsRelationManager::class,
-            OrdersRelationManager::class,
-            OrderItemsRelationManager::class,
         ];
     }
 
