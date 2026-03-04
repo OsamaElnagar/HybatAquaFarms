@@ -74,12 +74,9 @@ test('cash sale with paid status creates voucher and updates treasury only', fun
 
     [$treasury, $receivable, $sales] = setupAccountsAndRules($farm);
 
-    $harvestOperation = \App\Models\HarvestOperation::create([
-        'operation_number' => 'OP-TEST-'.rand(1000, 9999),
+    $harvestOperation = \App\Models\HarvestOperation::factory()->create([
         'batch_id' => \App\Models\Batch::factory()->create(['farm_id' => $farm->id])->id,
         'farm_id' => $farm->id,
-        'start_date' => now(),
-        'status' => 'ongoing',
     ]);
 
     $trader = Trader::factory()->create();
@@ -146,12 +143,9 @@ test('credit sale posts receivable and sales without touching treasury', functio
 
     [$treasury, $receivable, $sales] = setupAccountsAndRules($farm);
 
-    $harvestOperation = \App\Models\HarvestOperation::create([
-        'operation_number' => 'OP-TEST-'.rand(1000, 9999),
+    $harvestOperation = \App\Models\HarvestOperation::factory()->create([
         'batch_id' => \App\Models\Batch::factory()->create(['farm_id' => $farm->id])->id,
         'farm_id' => $farm->id,
-        'start_date' => now(),
-        'status' => 'ongoing',
     ]);
 
     $trader = Trader::factory()->create();

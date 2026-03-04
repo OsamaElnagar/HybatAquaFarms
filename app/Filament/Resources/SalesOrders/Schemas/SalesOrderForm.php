@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -42,10 +43,12 @@ class SalesOrderForm
                             ->columnSpan(1),
                         Select::make('harvest_operation_id')
                             ->label('عملية الحصاد')
-                            ->relationship('harvestOperation',
+                            ->relationship(
+                                'harvestOperation',
                                 'operation_number',
-                                modifyQueryUsing: fn ($query) => $query->with('farm')->latest())
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_display_name)
+                                modifyQueryUsing: fn($query) => $query->with('farm')->latest()
+                            )
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_display_name)
                             ->required()
                             ->searchable()
                             ->preload()
@@ -64,7 +67,7 @@ class SalesOrderForm
                                 }
                             })
                             ->required()
-                            ->visible(fn (Get $get): bool => filled($get('harvest_operation_id')))
+                            ->visible(fn(Get $get): bool => filled($get('harvest_operation_id')))
                             ->searchable()
                             ->preload()
                             ->helperText('التاجر أو الحلقة المشتريه')
@@ -72,7 +75,7 @@ class SalesOrderForm
                             ->columnSpan(1),
                         CheckboxList::make('orders')
                             ->label('الطلبات')
-                            ->relationship('orders', 'code', modifyQueryUsing: function (Builder $query, $get) {
+                            ->relationship('orders', 'code', modifyQueryUsing: function (Builder $query, $get, ?Model $record) {
                                 // Filter by trader if selected
                                 $traderId = $get('trader_id');
                                 if ($traderId) {
@@ -84,16 +87,26 @@ class SalesOrderForm
                                 if ($hopId) {
                                     $query->where('harvest_operation_id', $hopId);
                                 }
+
+                                // Exclude orders already assigned to any other sales order
+                                $query->whereDoesntHave('salesOrders', function ($q) use ($record) {
+                                    if ($record && $record->exists) {
+                                        $q->where('sales_orders.id', '!=', $record->id);
+                                    }
+                                });
+
+                                // Eager load for label generation
+                                $query->with(['trader', 'harvest']);
                             })
-                            ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->code)
+                            ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->code} - {$record->trader?->name} - جلسة رقم {$record->harvest?->harvest_number}")
                             ->selectAllAction(
-                                fn (Action $action) => $action->label('اختيار جميع الطلبات'),
+                                fn(Action $action) => $action->label('اختيار جميع الطلبات'),
                             )
                             ->searchable()
                             ->noSearchResultsMessage('لا توجد نتائج للبحث')
                             ->searchPrompt('ابحث عن كود الطلب...')
                             ->searchDebounce(500)
-                            ->visible(fn (Get $get) => $get('harvest_operation_id') && $get('trader_id'))
+                            ->visible(fn(Get $get) => $get('harvest_operation_id') && $get('trader_id'))
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -103,13 +116,14 @@ class SalesOrderForm
                     ->schema([
                         TextInput::make('boxes_subtotal')
                             ->label('المجموع الفرعي')
-                            ->required()
+                            // ->required()
                             ->numeric()
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
                             ->helperText('المجموع قبل الضرائب والخصم')
-                            ->columnSpan(1),
+                            ->columnSpan(1)
+                            ->visible(false),
                         TextInput::make('tax_amount')
                             ->label('الضرائب')
                             ->numeric()
@@ -118,7 +132,8 @@ class SalesOrderForm
                             ->default(0)
                             ->suffix(' EGP ')
                             ->helperText('قيمة الضرائب (إن وُجدت)')
-                            ->columnSpan(1),
+                            ->columnSpan(1)
+                            ->visible(false),
                         TextInput::make('discount_amount')
                             ->label('الخصم')
                             ->numeric()
@@ -127,7 +142,8 @@ class SalesOrderForm
                             ->default(0)
                             ->suffix(' EGP ')
                             ->helperText('قيمة الخصم (إن وُجد)')
-                            ->columnSpan(1),
+                            ->columnSpan(1)
+                            ->visible(false),
                         TextInput::make('net_amount')
                             ->label('المجموع الإجمالي')
                             ->required()
@@ -180,19 +196,10 @@ class SalesOrderForm
 
                 Section::make('الملاحظات')
                     ->schema([
-                        // Textarea::make('delivery_address')
-                        //     ->label('عنوان التوصيل')
-                        //     ->rows(3)
-                        //     ->maxLength(500)
-                        //     ->helperText('عنوان توصيل المنتجات')
-                        //     ->columnSpan(1),
-                        Select::make('created_by')
+
+                        Hidden::make('created_by')
                             ->label('أنشأ بواسطة')
-                            ->relationship('createdBy', 'name')
-                            ->default(fn () => Auth::id())
-                            ->searchable()
-                            ->preload()
-                            ->helperText('المستخدم الذي أنشأ العملية')
+                            ->default(fn() => Auth::id())
                             ->columnSpan(1),
 
                         Textarea::make('notes')
@@ -203,8 +210,7 @@ class SalesOrderForm
                     ])
                     ->columns(1)
                     ->columnSpanFull()
-                    ->collapsible()
-                    ->collapsed(),
+                    ->collapsible(),
             ]);
     }
 }

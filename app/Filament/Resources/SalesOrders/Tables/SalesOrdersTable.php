@@ -12,12 +12,14 @@ use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SalesOrdersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn(\Illuminate\Database\Eloquent\Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
             ->columns([
                 TextColumn::make('order_number')
                     ->label('رقم العملية')
@@ -27,6 +29,7 @@ class SalesOrdersTable
                 TextColumn::make('date')
                     ->label('التاريخ')
                     ->date('Y-m-d')
+                    ->description(fn(Model $record): string => $record->orders->map(fn($o) => "{$o->code} (" . ($o->date ? $o->date->format('Y-m-d') : '') . ")")->implode(' ، '))
                     ->sortable(),
                 TextColumn::make('trader.name')
                     ->label('التاجر')
@@ -34,18 +37,13 @@ class SalesOrdersTable
                     ->sortable(),
                 TextColumn::make('harvestOperation.operation_number')
                     ->label('عملية الحصاد')
+                    ->description(fn(Model $record): string => $record->harvestOperation?->batch?->batch_code)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->sortable()
                     ->toggleable(),
-                // TextColumn::make('items_count')
-                //     ->counts('items')
-                //     ->label('الأصناف')
-                //     ->badge()
-                //     ->color('primary')
-                //     ->sortable(),
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -58,11 +56,12 @@ class SalesOrdersTable
                 TextColumn::make('delivery_status')
                     ->label('حالة التوصيل')
                     ->badge()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('delivery_date')
                     ->label('تاريخ التوصيل')
                     ->date('Y-m-d')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('createdBy.name')
                     ->label('أنشأ بواسطة')
                     ->toggleable(isToggledHiddenByDefault: true),

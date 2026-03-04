@@ -248,6 +248,7 @@ class HarvestsRelationManager extends RelationManager
                                         ->minValue(1),
                                     TextInput::make('weight_per_box')
                                         ->label('وزن البوكسه')
+                                        ->default(25)
                                         ->numeric()
                                         ->required(),
                                 ])

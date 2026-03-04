@@ -21,7 +21,7 @@ class HarvestOperationFactory extends Factory
     public function definition(): array
     {
         return [
-            'operation_number' => HarvestOperation::generateOperationNumber(),
+            'operation_number' => 'OP-' . fake()->unique()->randomNumber(5, true),
             'batch_id' => \App\Models\Batch::factory(),
             'farm_id' => \App\Models\Farm::factory(),
             'start_date' => fake()->date(),

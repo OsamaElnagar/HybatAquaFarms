@@ -18,12 +18,9 @@ test('sales order can retrieve harvests via pivot table', function () {
         'status' => 'active',
     ]);
     // Create HarvestOperation manually (since factory might be missing)
-    $harvestOperation = HarvestOperation::create([
-        'operation_number' => 'OP-TEST-'.rand(1000, 9999),
+    $harvestOperation = HarvestOperation::factory()->create([
         'batch_id' => $batch->id,
         'farm_id' => $farm->id,
-        'start_date' => now(),
-        'status' => 'ongoing',
     ]);
 
     // Create Harvest
