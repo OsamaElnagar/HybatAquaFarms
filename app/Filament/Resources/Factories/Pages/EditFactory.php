@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Factories\Pages;
 use App\Enums\FactoryType;
 use App\Filament\Resources\Factories\FactoryResource;
 use App\Filament\Resources\Factories\RelationManagers;
+use App\Filament\Resources\Factories\Widgets\FactoryActivityWidget;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -41,7 +42,7 @@ class EditFactory extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل: '.$this->getRecord()->name;
+        return 'تعديل: ' . $this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -59,6 +60,13 @@ class EditFactory extends EditRecord
     {
         return [
             DeleteAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FactoryActivityWidget::class,
         ];
     }
 

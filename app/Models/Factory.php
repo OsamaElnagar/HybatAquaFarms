@@ -185,4 +185,54 @@ class Factory extends Model
             'payments' => (float) $payments,
         ];
     }
+
+    /**
+     * Calculate purchases and payments for the past year.
+     */
+    public function getPastYearActivityAttribute(): array
+    {
+        $startOfPastYear = now()->subYear()->startOfYear();
+        $endOfPastYear = now()->subYear()->endOfYear();
+
+        $purchases = 0.0;
+        $payments = 0.0;
+
+        if ($this->type === FactoryType::FEEDS) {
+            $purchases = $this->feedMovements()
+                ->where('movement_type', 'in')
+                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
+                ->get()
+                ->sum(function ($movement) {
+                    $unitCost = $movement->feedItem?->standard_cost ?? 0;
+
+                    return (float) ($movement->total_cost ?? ($movement->quantity * $unitCost));
+                });
+
+            $payments = $this->factoryPayments()
+                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
+                ->sum('amount');
+
+            $voucherPayments = $this->vouchers()
+                ->where('voucher_type', 'payment')
+                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
+                ->sum('amount');
+
+            $payments += $voucherPayments;
+        } elseif ($this->type === FactoryType::SEEDS) {
+            $purchases = $this->batchFish()
+                ->whereHas('batch', function ($q) use ($startOfPastYear, $endOfPastYear) {
+                    $q->whereBetween('entry_date', [$startOfPastYear, $endOfPastYear]);
+                })
+                ->sum('total_cost');
+
+            $payments = $this->batchPayments()
+                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
+                ->sum('amount');
+        }
+
+        return [
+            'purchases' => (float) $purchases,
+            'payments' => (float) $payments,
+        ];
+    }
 }

@@ -13,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -70,7 +71,7 @@ class PaymentsRelationManager extends RelationManager
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
-                    ->sortable(),
+                    ->sortable()->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
                     ->badge(),

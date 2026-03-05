@@ -65,12 +65,12 @@ class FactoriesStatsWidget extends StatsOverviewWidget
         $totalPayables = $data['totalPayables'];
 
         return [
-            Stat::make('مشتريات العام الحالي', number_format($totalPurchases).' EGP')
-                ->description('زريعة وأعلاف ('.now()->year.')')
+            Stat::make('مشتريات العام الحالي', number_format($totalPurchases) . ' EGP')
+                ->description('زريعة وأعلاف (' . now()->year . ')')
                 ->descriptionIcon('heroicon-o-shopping-bag')
                 ->color('success'),
 
-            Stat::make('مستحقات العام الحالي', number_format($totalPayables).' EGP')
+            Stat::make('مستحقات العام الحالي', number_format($totalPayables) . ' EGP')
                 ->description('الرصيد المتبقي عن مشتريات العام الحالي')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color($totalPayables > 0 ? 'warning' : 'success'),

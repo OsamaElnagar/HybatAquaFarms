@@ -45,6 +45,7 @@ class PettyCashTransactionsTable
                 ActionableColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
+                    ->searchable()
                     ->toggleable()
                     ->actionIcon(Heroicon::PencilSquare)
                     ->actionIconColor('primary')
@@ -60,7 +61,7 @@ class PettyCashTransactionsTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn ($record) => [
+                            ->fillForm(fn($record) => [
                                 'expense_category_id' => $record->expense_category_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -75,17 +76,17 @@ class PettyCashTransactionsTable
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
@@ -110,12 +111,12 @@ class PettyCashTransactionsTable
             ->filters([
                 SelectFilter::make('petty_cash_id')
                     ->label('العهدة')
-                    ->relationship('pettyCash', 'name')
+                    ->relationship('pettyCash', 'name')->multiple()
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('farm_id')
                     ->label('المزرعة')
-                    ->relationship('farm', 'name')
+                    ->relationship('farm', 'name')->multiple()
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('direction')
@@ -125,6 +126,7 @@ class PettyCashTransactionsTable
                     ->label('نوع المصروف')
                     ->relationship('expenseCategory', 'name')
                     ->searchable()
+                    ->multiple()
                     ->preload(),
                 Filter::make('date')
                     ->schema([
@@ -141,11 +143,11 @@ class PettyCashTransactionsTable
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
                             );
                     }),
             ])

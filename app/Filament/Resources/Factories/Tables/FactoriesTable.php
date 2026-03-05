@@ -64,6 +64,24 @@ class FactoriesTable
                     })
                     ->html()
                     ->toggleable(),
+                TextColumn::make('past_year_activity')
+                    ->label('نشاط العام الماضي')
+                    ->state(function (\App\Models\Factory $record): string {
+                        if ($record->type === FactoryType::SUPPLIER) {
+                            return '-';
+                        }
+
+                        $activity = $record->past_year_activity;
+                        $purchases = number_format($activity['purchases']);
+                        $payments = number_format($activity['payments']);
+
+                        return "<div class='text-sm space-y-1'>
+                                    <div><span class='font-medium text-gray-500'>مشتريات:</span> <span class='text-danger-600 font-semibold'>{$purchases} EGP</span></div>
+                                    <div><span class='font-medium text-gray-500'>مدفوعات:</span> <span class='text-success-600 font-semibold'>{$payments} EGP</span></div>
+                                </div>";
+                    })
+                    ->html()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 IconColumn::make('is_active')
                     ->label('نشط')
                     ->boolean(),

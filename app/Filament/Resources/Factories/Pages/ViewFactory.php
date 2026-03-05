@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Factories\Pages;
 use App\Enums\FactoryType;
 use App\Filament\Resources\Factories\FactoryResource;
 use App\Filament\Resources\Factories\RelationManagers;
+use App\Filament\Resources\Factories\Widgets\FactoryActivityWidget;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -41,7 +42,7 @@ class ViewFactory extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'عرض: '.$this->getRecord()->name;
+        return 'عرض: ' . $this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -58,6 +59,13 @@ class ViewFactory extends ViewRecord
     {
         return [
             EditAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            FactoryActivityWidget::class,
         ];
     }
 
