@@ -13,6 +13,7 @@ use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -69,9 +70,20 @@ class EmployeesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('outstanding_advances')
                     ->label('سلف مستحقة')
-                    ->state(fn ($record) => number_format($record->total_outstanding_advances))
+                    ->state(fn($record) => number_format($record->total_outstanding_advances))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->color(fn($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->summarize(
+                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                            ->numeric(locale: 'en')
+                            ->using(function (\Illuminate\Database\Query\Builder $query) {
+                                return \App\Models\EmployeeAdvance::query()
+                                    ->whereIn('employee_id', (clone $query)->select('employees.id'))
+                                    ->where('status', \App\Enums\AdvanceStatus::Active)
+                                    ->where('approval_status', \App\Enums\AdvanceApprovalStatus::APPROVED)
+                                    ->sum('balance_remaining');
+                            })
+                    )
                     ->toggleable(),
                 TextColumn::make('status')
                     ->label('الحالة')
@@ -102,14 +114,14 @@ class EmployeesRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
-                DeleteAction::make(),
+                // DissociateAction::make(),
+                // DeleteAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DissociateBulkAction::make(),
-                    DeleteBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DissociateBulkAction::make(),
+                //     DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 }

@@ -158,9 +158,9 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
                     ->default('-'),
                 TextColumn::make('quantity')
                     ->label('الكمية (كجم)')
-                    ->numeric(2)
+                    ->numeric(locale: 'en')
                     ->sortable()
-                    ->summarize(Sum::make()->label('الإجمالي')),
+                    ->summarize(Sum::make()->label('الإجمالي')->numeric(locale: 'en')),
             ])
             ->defaultSort('date', 'desc')
             ->headerActions([

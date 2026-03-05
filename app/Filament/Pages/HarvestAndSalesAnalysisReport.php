@@ -153,13 +153,14 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms, HasTable
                     ->default('-'),
                 TextColumn::make('harvestOperation.batch.farm.name')
                     ->label('المزرعة')
+                    ->description(fn ($record) => $record->harvestOperation->batch->batch_code)
                     ->sortable()
                     ->default('-'),
                 TextColumn::make('net_amount')
                     ->label('صافي المبلغ')
-                    ->money('EGP')
+                    ->money('EGP', decimalPlaces: 0, locale: 'en')
                     ->sortable()
-                    ->summarize(Sum::make()->label('الإجمالي')->money('EGP')),
+                    ->summarize(Sum::make()->label('الإجمالي')->money('EGP', decimalPlaces: 0, locale: 'en')),
             ])
             ->defaultSort('date', 'desc')
             ->headerActions([

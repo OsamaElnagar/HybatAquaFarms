@@ -130,7 +130,7 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
                     ->label('الكمية (كجم)')
                     ->numeric(locale: 'en')
                     ->sortable()
-                    ->summarize(Sum::make()->label('الإجمالي')),
+                    ->summarize(Sum::make()->label('الإجمالي')->numeric(locale: 'en')),
             ])
             ->defaultSort('date', 'desc')
             ->headerActions([
