@@ -57,14 +57,7 @@ class TreasuryService
         ?Account $revenueAccount = null,
         array $metadata = []
     ): JournalEntry {
-        return DB::transaction(function () use (
-            $treasuryAccount,
-            $amount,
-            $description,
-            $source,
-            $revenueAccount,
-            $metadata
-        ) {
+        return DB::transaction(function () use ($treasuryAccount, $amount, $description, $source, $revenueAccount, $metadata) {
             // If no revenue account specified, use a default "Sales Revenue" or "Other Income"
             if (! $revenueAccount) {
                 $revenueAccount = Account::where('code', 'REVENUE')->first();
@@ -114,14 +107,7 @@ class TreasuryService
         ?Account $expenseAccount = null,
         array $metadata = []
     ): JournalEntry {
-        return DB::transaction(function () use (
-            $treasuryAccount,
-            $amount,
-            $description,
-            $source,
-            $expenseAccount,
-            $metadata
-        ) {
+        return DB::transaction(function () use ($treasuryAccount, $amount, $description, $source, $expenseAccount, $metadata) {
             // If no expense account specified, use a default "Other Expenses"
             if (! $expenseAccount) {
                 $expenseAccount = Account::where('code', 'EXPENSE')->first();
@@ -212,8 +198,25 @@ class TreasuryService
             $query->where('farm_id', $farm->id);
         }
 
-        $totalIncoming = (float) $query->sum('debit');
-        $totalOutgoing = (float) $query->sum('credit');
+        $lines = $query->get();
+
+        $totalIncoming = 0;
+        $totalOutgoing = 0;
+
+        // Group by journal entry to prevent double counting internal treasury transfers
+        $groupedByEntry = $lines->groupBy('journal_entry_id');
+
+        foreach ($groupedByEntry as $entryLines) {
+            $entryDebit = $entryLines->sum('debit');
+            $entryCredit = $entryLines->sum('credit');
+            $netEffect = $entryDebit - $entryCredit;
+
+            if ($netEffect > 0) {
+                $totalIncoming += $netEffect;
+            } elseif ($netEffect < 0) {
+                $totalOutgoing += abs($netEffect);
+            }
+        }
 
         return [
             'date' => $date,
@@ -242,8 +245,25 @@ class TreasuryService
             $query->where('farm_id', $farm->id);
         }
 
-        $totalIncoming = (float) $query->sum('debit');
-        $totalOutgoing = (float) $query->sum('credit');
+        $lines = $query->get();
+
+        $totalIncoming = 0;
+        $totalOutgoing = 0;
+
+        // Group by journal entry to prevent double counting internal treasury transfers
+        $groupedByEntry = $lines->groupBy('journal_entry_id');
+
+        foreach ($groupedByEntry as $entryLines) {
+            $entryDebit = $entryLines->sum('debit');
+            $entryCredit = $entryLines->sum('credit');
+            $netEffect = $entryDebit - $entryCredit;
+
+            if ($netEffect > 0) {
+                $totalIncoming += $netEffect;
+            } elseif ($netEffect < 0) {
+                $totalOutgoing += abs($netEffect);
+            }
+        }
 
         return [
             'month' => $base->format('Y-m'),

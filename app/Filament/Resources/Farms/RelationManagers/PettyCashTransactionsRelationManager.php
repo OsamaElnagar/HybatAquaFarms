@@ -37,7 +37,7 @@ class PettyCashTransactionsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('date')
-            ->modifyQueryUsing(fn($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
             ->columns([
                 TextColumn::make('pettyCash.name')
                     ->label('العهدة')
@@ -62,19 +62,23 @@ class PettyCashTransactionsRelationManager extends RelationManager
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
+                TextColumn::make('description')
+                    ->label('ملاحظات')
+                    ->limit(50)
+                    ->toggleable(),
                 TextColumn::make('recordedBy.name')
                     ->label('سجل بواسطة')
                     ->toggleable(),
@@ -99,8 +103,8 @@ class PettyCashTransactionsRelationManager extends RelationManager
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['date_from'] ?? null, fn($q, $date) => $q->where('date', '>=', $date))
-                            ->when($data['date_to'] ?? null, fn($q, $date) => $q->where('date', '<=', $date));
+                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', $date))
+                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', $date));
                     }),
             ])
             ->headerActions([
