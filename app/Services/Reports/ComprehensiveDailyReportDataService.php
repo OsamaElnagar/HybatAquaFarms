@@ -331,8 +331,7 @@ class ComprehensiveDailyReportDataService
 
         $farmExpensesByFarm = Farm::withSum(['farmExpenses as month_expenses' => fn ($q) => $q->where('type', FarmExpenseType::Expense)->whereBetween('date', [$startOfMonth, $endOfMonth])], 'amount')
             ->withSum(['farmExpenses as month_revenues' => fn ($q) => $q->where('type', FarmExpenseType::Revenue)->whereBetween('date', [$startOfMonth, $endOfMonth])], 'amount')
-            ->withCount(['farmExpenses as month_count' => fn ($q) => $q->whereBetween('date', [$startOfMonth, $endOfMonth])])
-            ->having('month_count', '>', 0)
+            ->whereHas('farmExpenses', fn ($q) => $q->whereBetween('date', [$startOfMonth, $endOfMonth]))
             ->get();
 
         $latestFarmExpenses = FarmExpense::with(['farm', 'expenseCategory'])

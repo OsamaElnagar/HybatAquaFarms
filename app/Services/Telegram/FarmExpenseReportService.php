@@ -29,8 +29,7 @@ class FarmExpenseReportService
 
         $farms = Farm::withSum(['farmExpenses as expenses_sum' => fn ($q) => $q->where('type', FarmExpenseType::Expense)], 'amount')
             ->withSum(['farmExpenses as revenues_sum' => fn ($q) => $q->where('type', FarmExpenseType::Revenue)], 'amount')
-            ->withCount('farmExpenses')
-            ->having('farm_expenses_count', '>', 0)
+            ->has('farmExpenses')
             ->get();
 
         $html = "🏗️ <b><u>مصروفات وإيرادات المزارع</u></b> 🏗️\n\n";

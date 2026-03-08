@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class TestTelegramReportCommand extends Command
 {
-    protected $signature = 'reports:test {report? : The name of the report to test (sales, harvest, feed, batches, expenses, cashflow, advances, dailyFeedIssues, employees)}';
+    protected $signature = 'reports:test {report? : The name of the report to test (sales, harvest, feed, batches, expenses, cashflow, advances, dailyFeedIssues, employees, farmExpenses)}';
 
     protected $description = 'Test generating and sending a specific Telegram report';
 
@@ -18,7 +18,7 @@ class TestTelegramReportCommand extends Command
         if (! $reportType) {
             $reportType = $this->choice(
                 'Which report would you like to test?',
-                ['sales', 'harvest', 'feed', 'batches', 'expenses', 'cashflow', 'advances', 'dailyFeedIssues', 'employees'],
+                ['sales', 'harvest', 'feed', 'batches', 'expenses', 'cashflow', 'advances', 'dailyFeedIssues', 'employees', 'farmExpenses'],
                 0
             );
         }
@@ -86,6 +86,17 @@ class TestTelegramReportCommand extends Command
                             $name .= ' ('.$employee->farm->name.')';
                         }
                         $keyboard->button($name)->action('employeeReport')->param('id', $employee->id);
+                    }
+                }
+                break;
+            case 'farmExpenses':
+                $data = app(\App\Services\Telegram\FarmExpenseReportService::class)->generateSummaryReport();
+                $html = $data['html'];
+
+                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                if (isset($data['farms']) && $data['farms']->isNotEmpty()) {
+                    foreach ($data['farms'] as $farm) {
+                        $keyboard->button($farm->name)->action('farmExpenseReport')->param('id', $farm->id);
                     }
                 }
                 break;
