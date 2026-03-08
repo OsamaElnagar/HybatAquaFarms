@@ -22,7 +22,7 @@ class BatchesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn($query) => $query->with(['batch.farm', 'species']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['batch.farm', 'species']))
             ->columns([
                 TextColumn::make('batch.batch_code')
                     ->label('الدفعة المجمعة')

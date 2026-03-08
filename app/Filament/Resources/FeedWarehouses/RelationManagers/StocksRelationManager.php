@@ -36,7 +36,7 @@ class StocksRelationManager extends RelationManager
                     ->label('الكمية المتاحة')
                     ->numeric(locale: 'en')
                     ->suffix(' كجم')
-                    ->color(fn($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
+                    ->color(fn ($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
                     ->sortable()
                     ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()
                         ->label('إجمالي الكمية')),
@@ -52,7 +52,7 @@ class StocksRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('stock_value')
                     ->label('القيمة')
-                    ->state(fn($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
+                    ->state(fn ($record) => number_format($record->quantity_in_stock * ($record->feedItem->standard_cost ?? 0)))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
                     ->toggleable(),

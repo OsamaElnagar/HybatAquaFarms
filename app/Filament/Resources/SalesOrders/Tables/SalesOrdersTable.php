@@ -19,7 +19,7 @@ class SalesOrdersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(\Illuminate\Database\Eloquent\Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
             ->columns([
                 TextColumn::make('order_number')
                     ->label('رقم العملية')
@@ -29,7 +29,7 @@ class SalesOrdersTable
                 TextColumn::make('date')
                     ->label('التاريخ')
                     ->date('Y-m-d')
-                    ->description(fn(Model $record): string => $record->orders->map(fn($o) => "{$o->code} (" . ($o->date ? $o->date->format('Y-m-d') : '') . ")")->implode(' ، '))
+                    ->description(fn (Model $record): string => $record->orders->map(fn ($o) => "{$o->code} (".($o->date ? $o->date->format('Y-m-d') : '').')')->implode(' ، '))
                     ->sortable(),
                 TextColumn::make('trader.name')
                     ->label('التاجر')
@@ -37,7 +37,7 @@ class SalesOrdersTable
                     ->sortable(),
                 TextColumn::make('harvestOperation.operation_number')
                     ->label('عملية الحصاد')
-                    ->description(fn(Model $record): string => $record->harvestOperation?->batch?->batch_code)
+                    ->description(fn (Model $record): string => $record->harvestOperation?->batch?->batch_code)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('farm.name')

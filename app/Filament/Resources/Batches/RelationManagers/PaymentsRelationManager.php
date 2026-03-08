@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
-use App\Enums\FactoryType;
 use App\Enums\PaymentMethod;
 use App\Filament\Resources\BatchPayments\Schemas\BatchPaymentForm;
 use App\Filament\Resources\BatchPayments\Tables\BatchPaymentsTable;
@@ -10,15 +9,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class PaymentsRelationManager extends RelationManager
 {

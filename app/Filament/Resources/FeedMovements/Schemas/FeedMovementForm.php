@@ -38,8 +38,8 @@ class FeedMovementForm
                             })
                             ->searchable()
                             ->preload()
-                            ->visible(fn(Get $get) => $get('movement_type') === FeedMovementType::In)
-                            ->required(fn(Get $get) => $get('movement_type') === FeedMovementType::In)
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
                             ->helperText('مطلوب للحركات الواردة')
                             ->columnSpan(1),
                         Select::make('driver_id')
@@ -47,7 +47,7 @@ class FeedMovementForm
                             ->relationship('driver', 'name')
                             ->searchable()
                             ->preload()
-                            ->visible(fn(Get $get) => $get('movement_type') === FeedMovementType::In)
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
                             ->helperText('السائق الذي قام بتسليم العلف للحركات الواردة')
                             ->columnSpan(1),
                         Select::make('feed_item_id')
@@ -81,8 +81,8 @@ class FeedMovementForm
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix('EGP')
-                            ->visible(fn(Get $get) => $get('movement_type') === FeedMovementType::In)
-                            ->required(fn(Get $get) => $get('movement_type') === FeedMovementType::In)
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
                             ->helperText('تكلفة الشحنة الواردة بالكامل')
                             ->columnSpan(1),
                     ])
@@ -99,12 +99,12 @@ class FeedMovementForm
                             ->hintAction(
                                 \Filament\Actions\Action::make('view_from_warehouse')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->url(fn($state) => $state ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
-                                    ->visible(fn($state) => filled($state))
+                                    ->url(fn ($state) => $state ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
+                                    ->visible(fn ($state) => filled($state))
                                     ->tooltip('عرض المستودع')
                             )
-                            ->visible(fn(Get $get) => $get('movement_type') === FeedMovementType::Transfer)
-                            ->required(fn(Get $get) => $get('movement_type') === FeedMovementType::Transfer)
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::Transfer)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::Transfer)
                             ->helperText('مطلوب للحركات النقل (Transfer)')
                             ->columnSpan(1),
                         Select::make('to_warehouse_id')
@@ -115,11 +115,11 @@ class FeedMovementForm
                             ->hintAction(
                                 \Filament\Actions\Action::make('view_to_warehouse')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->url(fn($state) => $state ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
-                                    ->visible(fn($state) => filled($state))
+                                    ->url(fn ($state) => $state ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
+                                    ->visible(fn ($state) => filled($state))
                                     ->tooltip('عرض المستودع')
                             )
-                            ->required(fn(Get $get) => $get('movement_type') !== FeedMovementType::Out)
+                            ->required(fn (Get $get) => $get('movement_type') !== FeedMovementType::Out)
                             ->helperText('مطلوب للحركات الواردة (In) والنقل (Transfer)')
                             ->columnSpan(1),
                     ])
@@ -135,7 +135,7 @@ class FeedMovementForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn() => Auth::id())
+                            ->default(fn () => Auth::id())
                             ->helperText('المستخدم الذي قام بتسجيل الحركة')
                             ->columnSpan(1),
                         Textarea::make('description')

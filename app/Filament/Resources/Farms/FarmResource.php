@@ -91,6 +91,7 @@ class FarmResource extends Resource
         return [
 
             RelationManagers\PettyCashTransactionsRelationManager::class,
+            RelationManagers\FarmExpensesRelationManager::class,
             RelationManagers\DailyFeedIssuesRelationManager::class,
             RelationManagers\FeedStocksRelationManager::class,
             RelationManagers\FeedWarehousesRelationManager::class,

@@ -4,10 +4,6 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 
 use App\Enums\BatchStatus;
 use App\Filament\Resources\Batches\Schemas\BatchForm;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -31,7 +27,7 @@ class BatchesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('batch_code')
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['units', 'species']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['units', 'species']))
             ->columns([
                 TextColumn::make('batch_code')
                     ->label('كود الدفعة')
@@ -57,7 +53,7 @@ class BatchesRelationManager extends RelationManager
                 TextColumn::make('current_quantity')
                     ->label('الكمية الحالية')
                     ->numeric(locale: 'en')
-                    ->color(fn($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
+                    ->color(fn ($record) => $record->current_quantity < $record->initial_quantity ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('total_cost')
                     ->label('التكلفة')

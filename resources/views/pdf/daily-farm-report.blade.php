@@ -486,6 +486,88 @@
         @endif
     </div>
 
+    <!-- 10. Farm Expenses -->
+    <div class="section">
+        <div class="section-title">مصروفات وإيرادات المزارع (الشهر الجاري)</div>
+        <table class="grid">
+            <tr>
+                <td class="card">
+                    <span class="card-title">إجمالي المصروفات (الشهر)</span>
+                    <span
+                        class="card-value text-danger">{{ number_format($data['farm_expenses']['month_expenses'] ?? 0) }}
+                        ج.م</span>
+                </td>
+                <td class="card">
+                    <span class="card-title">إجمالي الإيرادات (الشهر)</span>
+                    <span
+                        class="card-value text-success">{{ number_format($data['farm_expenses']['month_revenues'] ?? 0) }}
+                        ج.م</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="card">
+                    <span class="card-title">صافي الشهر</span>
+                    <span
+                        class="card-value {{ ($data['farm_expenses']['month_net'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
+                        {{ number_format($data['farm_expenses']['month_net'] ?? 0) }} ج.م
+                    </span>
+                </td>
+                <td class="card">
+                    <span class="card-title">عدد القيود</span>
+                    <span class="card-value">{{ number_format($data['farm_expenses']['month_count'] ?? 0) }} قيد</span>
+                </td>
+            </tr>
+        </table>
+
+        @if(isset($data['farm_expenses']['by_farm']) && count($data['farm_expenses']['by_farm']) > 0)
+            <div style="margin-top: 15px; font-size: 13px;">
+                <strong>توزيع المصروفات حسب المزرعة:</strong>
+                <ul style="padding-right: 20px; margin-top: 5px;">
+                    @foreach($data['farm_expenses']['by_farm'] as $farm)
+                        @php
+                            $farmNet = ($farm->month_revenues ?? 0) - ($farm->month_expenses ?? 0);
+                        @endphp
+                        <li style="margin-bottom: 4px;">
+                            <strong>{{ $farm->name }}</strong>:
+                            مصروفات <span class="text-danger"><strong>{{ number_format($farm->month_expenses ?? 0) }}
+                                    ج.م</strong></span>
+                            | إيرادات <span class="text-success"><strong>{{ number_format($farm->month_revenues ?? 0) }}
+                                    ج.م</strong></span>
+                            | صافي <span
+                                class="{{ $farmNet >= 0 ? 'text-success' : 'text-danger' }}"><strong>{{ number_format($farmNet) }}
+                                    ج.م</strong></span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if(isset($data['farm_expenses']['latest']) && count($data['farm_expenses']['latest']) > 0)
+            <div style="margin-top: 15px; font-size: 13px;">
+                <strong>أحدث القيود:</strong>
+                <ul style="padding-right: 20px; margin-top: 5px;">
+                    @foreach($data['farm_expenses']['latest'] as $entry)
+                        <li style="margin-bottom: 4px;">
+                            <strong>[{{ $entry->type === \App\Enums\FarmExpenseType::Revenue ? 'إيراد' : 'مصروف' }}]</strong>
+                            <span
+                                class="{{ $entry->type === \App\Enums\FarmExpenseType::Revenue ? 'text-success' : 'text-danger' }}">
+                                <strong>{{ number_format($entry->amount) }} ج.م</strong>
+                            </span>
+                            | <em>{{ \Carbon\Carbon::parse($entry->date)->format('Y-m-d') }}</em>
+                            | {{ $entry->farm?->name ?? '-' }}
+                            @if($entry->expenseCategory)
+                                ({{ $entry->expenseCategory->name }})
+                            @endif
+                            <br>
+                            <span
+                                style="color: #64748b;">{{ \Illuminate\Support\Str::limit($entry->description ?? '-', 60) }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </div>
+
     <div class="footer">
         تم إنشاء هذا التقرير آلياً بواسطة نظام إدارة المزرعة بتاريخ {{ now()->format('Y-m-d h:i A') }}
     </div>

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Farms\Widgets;
 
+use App\Enums\FarmExpenseType;
 use App\Models\Batch;
 use App\Models\DailyFeedIssue;
+use App\Models\FarmExpense;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -32,6 +34,21 @@ class FarmsStatsWidget extends StatsOverviewWidget
                 ->where('date', '<=', $lastMonthEnd->format('Y-m-d'))
                 ->sum('quantity');
 
+            // Farm expenses stats
+            $thisMonthExpenses = FarmExpense::where('type', FarmExpenseType::Expense)
+                ->where('date', '>=', $thisMonthStart->format('Y-m-d'))
+                ->where('date', '<=', now()->format('Y-m-d'))
+                ->sum('amount');
+
+            $thisMonthRevenues = FarmExpense::where('type', FarmExpenseType::Revenue)
+                ->where('date', '>=', $thisMonthStart->format('Y-m-d'))
+                ->where('date', '<=', now()->format('Y-m-d'))
+                ->sum('amount');
+
+            $farmExpensesCount = FarmExpense::where('date', '>=', $thisMonthStart->format('Y-m-d'))
+                ->where('date', '<=', now()->format('Y-m-d'))
+                ->count();
+
             return [
                 Stat::make('استهلاك العلف هذا الشهر', number_format($thisMonthFeedConsumed).' كجم')
                     ->description($this->getFeedConsumptionComparison($thisMonthFeedConsumed, $lastMonthFeedConsumed))
@@ -42,6 +59,11 @@ class FarmsStatsWidget extends StatsOverviewWidget
                     ->description('إجمالي الكمية الحالية: '.number_format($totalCurrentStock))
                     ->descriptionIcon('heroicon-o-cube')
                     ->color('success'),
+
+                Stat::make('مصروفات المزارع (الشهر)', number_format($thisMonthExpenses).' ج.م')
+                    ->description('إيرادات: '.number_format($thisMonthRevenues).' ج.م | '.$farmExpensesCount.' قيد')
+                    ->descriptionIcon('heroicon-o-building-office-2')
+                    ->color($thisMonthExpenses > $thisMonthRevenues ? 'danger' : 'success'),
             ];
         });
     }

@@ -31,15 +31,15 @@ class FeedMovementsTable
                     ->label('من المستودع')
                     ->searchable()
                     ->sortable()
-                    ->url(fn($record) => $record->from_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('edit', ['record' => $record->from_warehouse_id]) : null)
-                    ->color(fn($record) => $record->from_warehouse_id ? 'primary' : null)
+                    ->url(fn ($record) => $record->from_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('edit', ['record' => $record->from_warehouse_id]) : null)
+                    ->color(fn ($record) => $record->from_warehouse_id ? 'primary' : null)
                     ->toggleable(),
                 TextColumn::make('toWarehouse.name')
                     ->label('إلى المستودع')
                     ->searchable()
                     ->sortable()
-                    ->url(fn($record) => $record->to_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('edit', ['record' => $record->to_warehouse_id]) : null)
-                    ->color(fn($record) => $record->to_warehouse_id ? 'primary' : null)
+                    ->url(fn ($record) => $record->to_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('edit', ['record' => $record->to_warehouse_id]) : null)
+                    ->color(fn ($record) => $record->to_warehouse_id ? 'primary' : null)
                     ->toggleable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
@@ -48,7 +48,7 @@ class FeedMovementsTable
                 TextColumn::make('quantity')
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0, locale: 'en')
-                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
+                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
                     ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0))
                     ->sortable(),
 
@@ -109,8 +109,8 @@ class FeedMovementsTable
                 ViewAction::make()->label('عرض'),
                 EditAction::make()
                     ->label('تعديل')
-                    ->visible(fn($record) => $record->movement_type !== FeedMovementType::Out)
-                    ->tooltip(fn($record) => $record->movement_type === FeedMovementType::Out
+                    ->visible(fn ($record) => $record->movement_type !== FeedMovementType::Out)
+                    ->tooltip(fn ($record) => $record->movement_type === FeedMovementType::Out
                         ? 'لا يمكن تعديل حركات الصرف - يتم إنشاؤها تلقائياً من الصرف اليومي'
                         : null),
             ])

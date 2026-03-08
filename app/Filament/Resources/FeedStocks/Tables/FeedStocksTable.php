@@ -27,8 +27,8 @@ class FeedStocksTable
                 TextColumn::make('quantity_in_stock')
                     ->label('الكمية في المخزون')
                     ->numeric(decimalPlaces: 0, locale: 'en')
-                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
-                    ->color(fn($state): string => $state > 0 ? 'success' : 'danger')
+                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
+                    ->color(fn ($state): string => $state > 0 ? 'success' : 'danger')
                     ->badge()
                     ->sortable()
                     ->summarize(Sum::make()->numeric(decimalPlaces: 0, locale: 'en')),

@@ -26,20 +26,20 @@ class BatchPaymentForm
                     ->schema([
                         Select::make('batch_id')
                             ->label('دفعة الزريعة')
-                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn($query) => $query->latest())
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->relationship('batch', 'batch_code', modifyQueryUsing: fn ($query) => $query->latest())
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->required()
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn(Set $set) => $set('batch_fish_id', null))
+                            ->afterStateUpdated(fn (Set $set) => $set('batch_fish_id', null))
                             ->helperText('اختر دفعة الزريعة التي تم شراؤها من المورد')
                             ->columnSpan(1),
                         Select::make('batch_fish_id')
                             ->label('الصنف والمورد')
                             ->options(function (Get $get) {
                                 $batchId = $get('batch_id');
-                                if (!$batchId) {
+                                if (! $batchId) {
                                     return [];
                                 }
 
@@ -71,12 +71,12 @@ class BatchPaymentForm
                             ->label('رصيد المورد (لجميع الزريعة)')
                             ->state(function (Get $get) {
                                 $factoryId = $get('factory_id');
-                                if (!$factoryId) {
+                                if (! $factoryId) {
                                     return '-';
                                 }
 
                                 $factory = \App\Models\Factory::find($factoryId);
-                                if (!$factory) {
+                                if (! $factory) {
                                     return '-';
                                 }
 
@@ -84,7 +84,7 @@ class BatchPaymentForm
                                 $color = $balance > 0 ? 'text-danger-600' : 'text-success-600';
 
                                 return new \Illuminate\Support\HtmlString(
-                                    "<span class='font-bold {$color}'>" . number_format($balance) . " EGP</span>"
+                                    "<span class='font-bold {$color}'>".number_format($balance).' EGP</span>'
                                 );
                             })
                             ->columnSpanFull(),
@@ -143,7 +143,7 @@ class BatchPaymentForm
                             ->relationship('recordedBy', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(fn() => auth('web')->id())
+                            ->default(fn () => auth('web')->id())
                             ->helperText('المستخدم الذي قام بتسجيل هذه الدفعة في النظام')
                             ->columnSpan(1),
                         Textarea::make('notes')

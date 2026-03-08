@@ -13,7 +13,6 @@ use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -70,9 +69,9 @@ class EmployeesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('outstanding_advances')
                     ->label('سلف مستحقة')
-                    ->state(fn($record) => number_format($record->total_outstanding_advances))
+                    ->state(fn ($record) => number_format($record->total_outstanding_advances))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                     ->summarize(
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->numeric(locale: 'en')

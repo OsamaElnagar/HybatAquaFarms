@@ -192,6 +192,7 @@ class TelegramWebhookHandler extends WebhookHandler
                 Button::make('💵 السلف')->action('advances'),
                 Button::make('👥 الموظفين')->action('employees'),
                 Button::make('📊 حسابات خارجية')->action('externalCalculations'),
+                Button::make('🏗️ مصروفات المزارع')->action('farmExpenses'),
                 Button::make('📄 تقرير اليوم بأكمله (PDF)')->action('report'),
             ]))->send();
     }
@@ -226,6 +227,35 @@ class TelegramWebhookHandler extends WebhookHandler
     {
         $service = app(\App\Services\Telegram\ExternalCalculationReportService::class);
         $html = $service->generateAccountReport($id);
+
+        $this->chat->html($html)->send();
+    }
+
+    public function farmExpenses()
+    {
+        $service = app(\App\Services\Telegram\FarmExpenseReportService::class);
+        $this->chat->html('<i>جاري جلب بيانات مصروفات المزارع...</i> ⏳')->send();
+
+        $data = $service->generateSummaryReport();
+
+        $keyboard = Keyboard::make();
+        if (isset($data['farms']) && $data['farms']->isNotEmpty()) {
+            foreach ($data['farms'] as $farm) {
+                $keyboard->button($farm->name)->action('farmExpenseReport')->param('id', $farm->id);
+            }
+        }
+
+        if ($keyboard->isEmpty()) {
+            $this->chat->html($data['html'] ?? 'لا توجد بيانات متاحة.')->send();
+        } else {
+            $this->chat->html($data['html'])->keyboard($keyboard)->send();
+        }
+    }
+
+    public function farmExpenseReport(int $id)
+    {
+        $service = app(\App\Services\Telegram\FarmExpenseReportService::class);
+        $html = $service->generateFarmReport($id);
 
         $this->chat->html($html)->send();
     }

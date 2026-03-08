@@ -3,11 +3,14 @@
 namespace App\Services\Reports;
 
 use App\Enums\ExternalCalculationType;
+use App\Enums\FarmExpenseType;
 use App\Models\Batch;
 use App\Models\DailyFeedIssue;
 use App\Models\EmployeeAdvance;
 use App\Models\ExternalCalculation;
 use App\Models\ExternalCalculationEntry;
+use App\Models\Farm;
+use App\Models\FarmExpense;
 use App\Models\FeedStock;
 use App\Models\Harvest;
 use App\Models\JournalEntry;
@@ -315,6 +318,37 @@ class ComprehensiveDailyReportDataService
             'accounts' => $accounts,
         ];
 
+        // 11. Farm Expenses
+        $farmMonthExpenses = FarmExpense::where('type', FarmExpenseType::Expense)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
+
+        $farmMonthRevenues = FarmExpense::where('type', FarmExpenseType::Revenue)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
+
+        $farmMonthCount = FarmExpense::whereBetween('date', [$startOfMonth, $endOfMonth])->count();
+
+        $farmExpensesByFarm = Farm::withSum(['farmExpenses as month_expenses' => fn ($q) => $q->where('type', FarmExpenseType::Expense)->whereBetween('date', [$startOfMonth, $endOfMonth])], 'amount')
+            ->withSum(['farmExpenses as month_revenues' => fn ($q) => $q->where('type', FarmExpenseType::Revenue)->whereBetween('date', [$startOfMonth, $endOfMonth])], 'amount')
+            ->withCount(['farmExpenses as month_count' => fn ($q) => $q->whereBetween('date', [$startOfMonth, $endOfMonth])])
+            ->having('month_count', '>', 0)
+            ->get();
+
+        $latestFarmExpenses = FarmExpense::with(['farm', 'expenseCategory'])
+            ->orderBy('date', 'desc')
+            ->take(10)
+            ->get();
+
+        $farmExpensesData = [
+            'month_expenses' => $farmMonthExpenses,
+            'month_revenues' => $farmMonthRevenues,
+            'month_net' => $farmMonthRevenues - $farmMonthExpenses,
+            'month_count' => $farmMonthCount,
+            'by_farm' => $farmExpensesByFarm,
+            'latest' => $latestFarmExpenses,
+        ];
+
         return [
             'report_date' => $today,
             'treasury' => $treasuryData,
@@ -327,6 +361,7 @@ class ComprehensiveDailyReportDataService
             'cashflow' => $cashflowData,
             'advances' => $advancesData,
             'external_calculations' => $externalCalculationsData,
+            'farm_expenses' => $farmExpensesData,
         ];
     }
 }

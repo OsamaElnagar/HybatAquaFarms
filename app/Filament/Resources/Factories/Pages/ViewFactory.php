@@ -42,7 +42,7 @@ class ViewFactory extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'عرض: ' . $this->getRecord()->name;
+        return 'عرض: '.$this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array

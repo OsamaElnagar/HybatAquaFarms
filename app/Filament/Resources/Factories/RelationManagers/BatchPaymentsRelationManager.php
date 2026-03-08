@@ -15,6 +15,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -101,6 +103,15 @@ class BatchPaymentsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->numeric(locale: 'en')
+                    ->summarize([
+                        Sum::make()
+                            ->label('إجمالي المدفوعات')
+                            ->numeric(locale: 'en'),
+                        Summarizer::make()
+                            ->label('المتبقي')
+                            ->using(fn ($livewire) => $livewire->getOwnerRecord()->outstanding_balance)
+                            ->numeric(locale: 'en'),
+                    ])
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
@@ -108,7 +119,7 @@ class BatchPaymentsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('reference_number')
                     ->label('الرقم المرجعي')
-                    ->searchable(),
+                    ->searchable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('recordedBy.name')
                     ->label('بواسطة')
                     ->sortable()

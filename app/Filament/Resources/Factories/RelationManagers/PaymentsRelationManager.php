@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -71,7 +72,16 @@ class PaymentsRelationManager extends RelationManager
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
-                    ->sortable()->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)),
+                    ->sortable()
+                    ->summarize([
+                        Sum::make()
+                            ->label('إجمالي المدفوعات')
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                        Summarizer::make()
+                            ->label('المتبقي')
+                            ->using(fn ($livewire) => $livewire->getOwnerRecord()->outstanding_balance)
+                            ->money('EGP', locale: 'en', decimalPlaces: 0),
+                    ]),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
                     ->badge(),

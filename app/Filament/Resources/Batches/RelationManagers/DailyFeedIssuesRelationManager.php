@@ -8,7 +8,6 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 
 class DailyFeedIssuesRelationManager extends RelationManager
@@ -17,6 +16,7 @@ class DailyFeedIssuesRelationManager extends RelationManager
 
     // protected static ?string $title = 'صرف الأعلاف اليومى';
     protected static ?string $pluralModelLabel = 'مصروفات الأعلاف اليومية';
+
     protected static ?string $modelLabel = 'مصروف علف جديد';
 
     public function isReadOnly(): bool

@@ -7,13 +7,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Operation;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\HtmlString;
 
 class FactoryForm
 {
@@ -50,8 +46,8 @@ class FactoryForm
                                 ->maxLength(255)
                                 ->unique('supplier_activities', 'name'),
                         ])
-                        ->required(fn(Get $get) => $get('type') === FactoryType::SUPPLIER)
-                        ->visible(fn(Get $get) => $get('type') === FactoryType::SUPPLIER)
+                        ->required(fn (Get $get) => $get('type') === FactoryType::SUPPLIER)
+                        ->visible(fn (Get $get) => $get('type') === FactoryType::SUPPLIER)
                         ->helperText('اختر نشاط المورد'),
                     TextInput::make('phone')
                         ->label('الهاتف')
