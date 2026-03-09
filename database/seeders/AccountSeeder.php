@@ -287,5 +287,33 @@ class AccountSeeder extends Seeder
                 'is_treasury' => false,
             ]
         );
+        Account::firstOrCreate(
+            ['code' => '4800'],
+            [
+                'name' => "إيرادات متنوعة",
+                'type' => AccountType::Income,
+                'parent_id' => $income->id,
+                'is_treasury' => false,
+            ]
+        );
+        Account::firstOrCreate(
+            ['code' => '5280'],
+            [
+                'name' => 'مصروفات متنوعة',
+                'type' => AccountType::Expense,
+                'parent_id' => $expenses->id,
+                'is_treasury' => false,
+            ]
+        );
+
+        Account::firstOrCreate(
+            ['code' => '5281'],
+            [
+                'name' => 'سلف خارجيه',
+                'type' => AccountType::Expense,
+                'parent_id' => $assets->id,
+                'is_treasury' => false,
+            ]
+        );
     }
 }
