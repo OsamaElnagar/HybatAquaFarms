@@ -99,6 +99,18 @@ class TraderInfolist
                             ->badge()
                             ->color('info')
                             ->columnSpan(1),
+                        TextEntry::make('partner_loans_balance')
+                            ->label('السلف المستحقة')
+                            ->state(fn ($record) => number_format($record->partner_loans_balance).' EGP ')
+                            ->badge()
+                            ->color(fn ($record) => $record->partner_loans_balance > 0 ? 'danger' : 'success')
+                            ->columnSpan(1),
+                        TextEntry::make('net_balance')
+                            ->label('صافي الرصيد')
+                            ->state(fn ($record) => number_format($record->outstanding_balance - $record->partner_loans_balance).' EGP ')
+                            ->badge()
+                            ->color(fn ($record) => ($record->outstanding_balance - $record->partner_loans_balance) >= 0 ? 'success' : 'danger')
+                            ->columnSpan(1),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

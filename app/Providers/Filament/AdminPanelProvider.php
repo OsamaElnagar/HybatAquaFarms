@@ -158,6 +158,8 @@ class AdminPanelProvider extends PanelProvider
                     )
             )
             ->databaseNotifications()
-            ->databaseNotificationspolling('10s');
+
+            ->databaseNotificationsPolling(app()->isProduction() ? '120s' : '10s');
+
     }
 }

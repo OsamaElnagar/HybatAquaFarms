@@ -65,6 +65,20 @@ class Trader extends Model
         return $this->hasMany(ClearingEntry::class);
     }
 
+    public function partnerLoans(): MorphMany
+    {
+        return $this->morphMany(PartnerLoan::class, 'loanable');
+    }
+
+    /**
+     * Total outstanding loan balance (what the farm owes this trader).
+     */
+    public function getPartnerLoansBalanceAttribute(): float
+    {
+        return (float) $this->partnerLoans
+            ->sum(fn (PartnerLoan $loan) => $loan->remaining_balance);
+    }
+
     /**
      * Calculate outstanding receivable balance for this trader.
      * Total credit sales (unpaid) minus settlements.

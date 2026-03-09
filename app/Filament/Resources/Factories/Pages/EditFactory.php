@@ -18,6 +18,8 @@ class EditFactory extends EditRecord
         if ($type === FactoryType::SUPPLIER) {
             return [
                 RelationManagers\PaymentsRelationManager::class,
+                RelationManagers\PartnerLoansRelationManager::class,
+
             ];
         }
 
@@ -25,6 +27,8 @@ class EditFactory extends EditRecord
             return [
                 RelationManagers\FeedMovementsRelationManager::class,
                 RelationManagers\PaymentsRelationManager::class,
+                RelationManagers\PartnerLoansRelationManager::class,
+
             ];
         }
 
@@ -32,6 +36,8 @@ class EditFactory extends EditRecord
             return [
                 RelationManagers\BatchesRelationManager::class,
                 RelationManagers\BatchPaymentsRelationManager::class,
+                RelationManagers\PartnerLoansRelationManager::class,
+
             ];
         }
 
@@ -42,7 +48,7 @@ class EditFactory extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل: '.$this->getRecord()->name;
+        return 'تعديل: ' . $this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array

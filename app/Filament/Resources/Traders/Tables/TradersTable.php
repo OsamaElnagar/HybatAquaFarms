@@ -31,30 +31,37 @@ class TradersTable
                 TextColumn::make('contact_person')
                     ->label('الشخص المسؤول')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('phone')
                     ->label('الهاتف')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('trader_type')
                     ->label('النوع')
                     ->badge()
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sales_orders_count')
                     ->counts('salesOrders')
-                    ->label('أوامر البيع')
+                    ->label('فواتير/مرات البيع')
                     ->badge()
                     ->color('primary')
                     ->sortable(),
                 TextColumn::make('outstanding_balance')
-                    ->label('المستحقات')
+                    ->label('المستحقات/ مبيعات آجلة')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
+                    ->color(fn($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
                     ->sortable(),
+                TextColumn::make('partner_loans_balance')
+                    ->label('السلف')
+                    ->state(fn($record) => $record->partner_loans_balance)
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ->color(fn($state) => $state > 0 ? 'danger' : 'success')
+                    ->toggleable(),
                 TextColumn::make('credit_limit')
                     ->label('حد الائتمان')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active')
                     ->label('نشط')
                     ->boolean(),

@@ -18,6 +18,7 @@ class ViewFactory extends ViewRecord
         if ($type === FactoryType::SUPPLIER) {
             return [
                 RelationManagers\PaymentsRelationManager::class,
+                RelationManagers\PartnerLoansRelationManager::class,
             ];
         }
 
@@ -25,6 +26,8 @@ class ViewFactory extends ViewRecord
             return [
                 RelationManagers\PaymentsRelationManager::class,
                 RelationManagers\FeedMovementsRelationManager::class,
+                RelationManagers\PartnerLoansRelationManager::class,
+
             ];
         }
 
@@ -32,6 +35,8 @@ class ViewFactory extends ViewRecord
             return [
                 RelationManagers\BatchesRelationManager::class,
                 RelationManagers\BatchPaymentsRelationManager::class,
+                RelationManagers\PartnerLoansRelationManager::class,
+
             ];
         }
 
@@ -42,7 +47,7 @@ class ViewFactory extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'عرض: '.$this->getRecord()->name;
+        return 'عرض: ' . $this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array

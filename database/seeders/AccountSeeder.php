@@ -134,6 +134,16 @@ class AccountSeeder extends Seeder
             ]
         );
 
+        Account::firstOrCreate(
+            ['code' => '2130'],
+            [
+                'name' => 'سلف الشركاء',
+                'type' => AccountType::Liability,
+                'parent_id' => $liabilities->id,
+                'is_treasury' => false,
+            ]
+        );
+
         // Equity
         $equity = Account::firstOrCreate(
             ['code' => '3000'],

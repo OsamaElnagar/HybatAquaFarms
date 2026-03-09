@@ -86,6 +86,20 @@ class Factory extends Model
         return $this->belongsTo(SupplierActivity::class);
     }
 
+    public function partnerLoans(): MorphMany
+    {
+        return $this->morphMany(PartnerLoan::class, 'loanable');
+    }
+
+    /**
+     * Total outstanding loan balance (what the farm owes this factory as loans).
+     */
+    public function getPartnerLoansBalanceAttribute(): float
+    {
+        return (float) $this->partnerLoans
+            ->sum(fn (PartnerLoan $loan) => $loan->remaining_balance);
+    }
+
     /**
      * Calculate outstanding payable balance for this factory.
      * Total feed purchases + seed purchases minus payments and settlements.

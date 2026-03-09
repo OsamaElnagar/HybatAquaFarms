@@ -16,6 +16,10 @@ class ExternalCalculationsRelationManager extends RelationManager
 
     protected static ?string $title = 'حسابات خارجية';
 
+    protected static ?string $modelLabel = 'معاملة';
+
+    protected static ?string $pluralModelLabel = 'معاملات';
+
     public function table(Table $table): Table
     {
         return $table

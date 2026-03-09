@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Traders\Pages;
 
-use App\Filament\Resources\Traders\Infolists\TraderInfolist;
 use App\Filament\Resources\Traders\TraderResource;
+use App\Filament\Resources\Traders\Widgets\TraderStatsWidget;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
@@ -34,13 +34,22 @@ class ViewTrader extends ViewRecord
         ];
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TraderStatsWidget::class,
+        ];
+    }
+
     public function infolist(Schema $schema): Schema
     {
-        return TraderInfolist::configure($schema);
+        return \App\Filament\Resources\Traders\Infolists\TraderInfolist::configure($schema);
     }
 
     public function hasCombinedRelationManagerTabsWithContent(): bool
     {
         return true;
     }
+
+    protected static bool $isLazy = false;
 }

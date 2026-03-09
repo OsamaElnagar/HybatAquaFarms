@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Traders\Pages;
 
 use App\Filament\Resources\Traders\TraderResource;
+use App\Filament\Resources\Traders\Widgets\TraderStatsWidget;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -33,8 +34,17 @@ class EditTrader extends EditRecord
         ];
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TraderStatsWidget::class,
+        ];
+    }
+
     public function hasCombinedRelationManagerTabsWithContent(): bool
     {
         return true;
     }
+
+    protected static bool $isLazy = false;
 }

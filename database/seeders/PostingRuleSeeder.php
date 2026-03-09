@@ -33,6 +33,11 @@ class PostingRuleSeeder extends Seeder
 
             ['event_key' => 'factory.payment', 'debit' => '2110', 'credit' => '1110', 'description' => 'دفعة لمصنع أعلاف'],
             ['event_key' => 'batch.payment', 'debit' => '2110', 'credit' => '1110', 'description' => 'دفعة لزريعة'],
+
+            ['event_key' => 'partner_loan.borrow', 'debit' => '1110', 'credit' => '2130', 'description' => 'استلام سلفة من شريك'],
+            ['event_key' => 'partner_loan.repay_cash', 'debit' => '2130', 'credit' => '1110', 'description' => 'سداد سلفة نقدي'],
+            ['event_key' => 'partner_loan.repay_netting_trader', 'debit' => '2130', 'credit' => '1140', 'description' => 'مقاصة سلفة من مبيعات تاجر'],
+            ['event_key' => 'partner_loan.repay_netting_factory', 'debit' => '2130', 'credit' => '2110', 'description' => 'مقاصة سلفة من مستحقات مصنع'],
         ];
 
         foreach ($rules as $rule) {

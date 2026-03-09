@@ -17,7 +17,11 @@ class ClearingEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'clearingEntries';
 
-    protected static ?string $title = 'تسويات الحساب';
+    protected static ?string $title = 'تسويات الحساب - نقل من حلقة لمصنع مباشر';
+
+    protected static ?string $modelLabel = 'تسوية';
+
+    protected static ?string $pluralModelLabel = 'تسويات';
 
     public function form(Schema $schema): Schema
     {
@@ -58,7 +62,7 @@ class ClearingEntriesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make()->label('إضافة تسوية حساب')
+                CreateAction::make()
                     ->mutateDataUsing(function (array $data): array {
                         $data['trader_id'] = $this->getOwnerRecord()->id;
 
