@@ -21,7 +21,7 @@ class OrdersRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('code')
-            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
+            ->modifyQueryUsing(fn(Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
@@ -47,15 +47,15 @@ class OrdersRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('items_count')
                     ->label('عدد الأصناف')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('items_sum_quantity')
                     ->label('الصناديق')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
                 TextColumn::make('items_sum_total_weight')
                     ->label('الوزن (كجم)')
-                    ->numeric()
+                    ->numeric(locale: 'en')
                     ->sortable(),
 
                 TextColumn::make('notes')
