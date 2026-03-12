@@ -50,7 +50,7 @@ class TraderResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return $record->name . ' - ' . $record->code;
+        return $record->name.' - '.$record->code;
     }
 
     public static function getGlobalSearchResultActions(Model $record): array
@@ -76,7 +76,7 @@ class TraderResource extends Resource
         return parent::getEloquentQuery()
             ->withSum(
                 [
-                    'salesOrders as pending_sales_total' => fn($query) => $query
+                    'salesOrders as pending_sales_total' => fn ($query) => $query
                         ->whereIn('payment_status', ['pending', 'partial']),
                 ],
                 'net_amount',
@@ -84,7 +84,7 @@ class TraderResource extends Resource
             ->withSum('clearingEntries as clearing_entries_total', 'amount')
             ->withSum(
                 [
-                    'vouchers as receipt_vouchers_total' => fn($query) => $query
+                    'vouchers as receipt_vouchers_total' => fn ($query) => $query
                         ->where('voucher_type', \App\Enums\VoucherType::Receipt),
                 ],
                 'amount',

@@ -94,9 +94,14 @@ class Farm extends Model
         return $this->hasMany(FarmExpense::class);
     }
 
-    public function salesOrders(): HasMany
+    public function harvestOperations(): HasMany
     {
-        return $this->hasMany(SalesOrder::class);
+        return $this->hasMany(HarvestOperation::class);
+    }
+
+    public function salesOrders(): HasManyThrough
+    {
+        return $this->hasManyThrough(SalesOrder::class, HarvestOperation::class);
     }
 
     public function feedWarehouses(): HasMany

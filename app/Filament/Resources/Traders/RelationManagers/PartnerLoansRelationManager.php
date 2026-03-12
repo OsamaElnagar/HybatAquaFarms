@@ -62,7 +62,7 @@ class PartnerLoansRelationManager extends RelationManager
                     ->relationship(
                         'treasuryAccount',
                         'name',
-                        fn($query) => $query->where('is_treasury', true)
+                        fn ($query) => $query->where('is_treasury', true)
                     )
                     ->searchable()
                     ->preload()
@@ -71,7 +71,7 @@ class PartnerLoansRelationManager extends RelationManager
                     ->label('الوصف')
                     ->columnSpanFull(),
                 Hidden::make('created_by')
-                    ->default(fn() => auth('web')->id()),
+                    ->default(fn () => auth('web')->id()),
             ]);
     }
 
@@ -101,7 +101,7 @@ class PartnerLoansRelationManager extends RelationManager
                 TextColumn::make('remaining_balance')
                     ->label('المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($state) => $state > 0 ? 'warning' : 'success'),
+                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success'),
                 TextColumn::make('payment_method')
                     ->label('طريقة الدفع')
                     ->badge()
@@ -111,7 +111,7 @@ class PartnerLoansRelationManager extends RelationManager
                     ->limit(40)
                     ->toggleable(),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query->withSum('repayments', 'amount'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->withSum('repayments', 'amount'))
             ->filters([])
             ->headerActions([
                 CreateAction::make(),
@@ -121,7 +121,7 @@ class PartnerLoansRelationManager extends RelationManager
                     ->label('سداد')
                     ->icon('heroicon-o-banknotes')
                     ->color('success')
-                    ->visible(fn(PartnerLoan $record) => $record->remaining_balance > 0)
+                    ->visible(fn (PartnerLoan $record) => $record->remaining_balance > 0)
                     ->schema([
                         Select::make('repayment_type')
                             ->label('نوع السداد')
@@ -144,19 +144,19 @@ class PartnerLoansRelationManager extends RelationManager
                         Select::make('payment_method')
                             ->label('طريقة الدفع')
                             ->options(PaymentMethod::class)
-                            ->visible(fn(Get $get): bool => $get('repayment_type') === RepaymentType::Cash)
-                            ->required(fn(Get $get): bool => $get('repayment_type') === RepaymentType::Cash),
+                            ->visible(fn (Get $get): bool => $get('repayment_type') === RepaymentType::Cash)
+                            ->required(fn (Get $get): bool => $get('repayment_type') === RepaymentType::Cash),
                         Select::make('treasury_account_id')
                             ->label('الخزنة / البنك')
                             ->relationship(
                                 'treasuryAccount',
                                 'name',
-                                fn($query) => $query->where('is_treasury', true)
+                                fn ($query) => $query->where('is_treasury', true)
                             )
                             ->searchable()
                             ->preload()
-                            ->visible(fn(Get $get): bool => $get('repayment_type') === RepaymentType::Cash)
-                            ->required(fn(Get $get): bool => $get('repayment_type') === RepaymentType::Cash),
+                            ->visible(fn (Get $get): bool => $get('repayment_type') === RepaymentType::Cash)
+                            ->required(fn (Get $get): bool => $get('repayment_type') === RepaymentType::Cash),
                         Select::make('sales_order_id')
                             ->label('أمر البيع (المبيعات)')
                             ->options(function () {
@@ -166,11 +166,11 @@ class PartnerLoansRelationManager extends RelationManager
                                     ->where('trader_id', $traderId)
                                     ->whereIn('payment_status', ['pending', 'partial'])
                                     ->get()
-                                    ->mapWithKeys(fn($so) => [$so->id => "{$so->order_number} - {$so->net_amount} EGP"])
+                                    ->mapWithKeys(fn ($so) => [$so->id => "{$so->order_number} - {$so->net_amount} EGP"])
                                     ->toArray();
                             })
                             ->searchable()
-                            ->visible(fn(Get $get): bool => $get('repayment_type') === RepaymentType::Netting),
+                            ->visible(fn (Get $get): bool => $get('repayment_type') === RepaymentType::Netting),
                         Textarea::make('description')
                             ->label('الوصف'),
                     ])

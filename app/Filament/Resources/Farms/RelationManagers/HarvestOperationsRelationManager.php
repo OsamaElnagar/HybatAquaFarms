@@ -1,14 +1,23 @@
 <?php
 
-namespace App\Filament\Resources\Batches\RelationManagers;
+namespace App\Filament\Resources\Farms\RelationManagers;
 
+use App\Enums\HarvestOperationStatus;
 use App\Filament\Resources\HarvestOperations\Schemas\HarvestOperationForm;
 use App\Filament\Resources\HarvestOperations\Tables\HarvestOperationsTable;
+use App\Models\HarvestOperation;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class HarvestOperationsRelationManager extends RelationManager

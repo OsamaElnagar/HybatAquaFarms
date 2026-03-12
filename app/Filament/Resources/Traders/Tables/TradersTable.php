@@ -50,13 +50,13 @@ class TradersTable
                 TextColumn::make('outstanding_balance')
                     ->label('المستحقات/ مبيعات آجلة')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
+                    ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
                     ->sortable(),
                 TextColumn::make('partner_loans_balance')
                     ->label('السلف')
-                    ->state(fn($record) => $record->partner_loans_balance)
+                    ->state(fn ($record) => $record->partner_loans_balance)
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($state) => $state > 0 ? 'danger' : 'success')
+                    ->color(fn ($state) => $state > 0 ? 'danger' : 'success')
                     ->toggleable(),
                 TextColumn::make('credit_limit')
                     ->label('حد الائتمان')

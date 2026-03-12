@@ -31,7 +31,7 @@ class HarvestsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with('orders.items'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('orders.items'))
             ->columns([
                 TextColumn::make('harvest_number')
                     ->label('رقم الحصاد')
@@ -47,13 +47,13 @@ class HarvestsRelationManager extends RelationManager
                 TextColumn::make('shift')
                     ->label('الفترة')
                     ->badge()
-                    ->formatStateUsing(fn($state) => match ($state) {
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'morning' => 'صباحي',
                         'afternoon' => 'ظهري',
                         'night' => 'مسائي',
                         default => '—'
                     })
-                    ->color(fn($state) => match ($state) {
+                    ->color(fn ($state) => match ($state) {
                         'morning' => 'warning',
                         'afternoon' => 'info',
                         'night' => 'gray',
@@ -75,7 +75,7 @@ class HarvestsRelationManager extends RelationManager
                             ->label('الإجمالي')
                             ->numeric(locale: 'en')
                             ->using(
-                                fn(\Illuminate\Database\Query\Builder $query): int => \App\Models\Order::whereIn('harvest_id', (clone $query)->pluck('harvests.id'))->count()
+                                fn (\Illuminate\Database\Query\Builder $query): int => \App\Models\Order::whereIn('harvest_id', (clone $query)->pluck('harvests.id'))->count()
                             )
                     ),
 
@@ -92,9 +92,9 @@ class HarvestsRelationManager extends RelationManager
                             ->label('الإجمالي')
                             ->numeric(locale: 'en')
                             ->using(
-                                fn(\Illuminate\Database\Query\Builder $query): int => (int) \App\Models\OrderItem::whereHas(
+                                fn (\Illuminate\Database\Query\Builder $query): int => (int) \App\Models\OrderItem::whereHas(
                                     'order',
-                                    fn($q) => $q->whereIn('harvest_id', (clone $query)->pluck('harvests.id'))
+                                    fn ($q) => $q->whereIn('harvest_id', (clone $query)->pluck('harvests.id'))
                                 )->sum('quantity')
                             )
                     ),
@@ -112,9 +112,9 @@ class HarvestsRelationManager extends RelationManager
                             ->label('الإجمالي')
                             ->numeric(decimalPlaces: 0, locale: 'en')
                             ->using(
-                                fn(\Illuminate\Database\Query\Builder $query): float => (float) \App\Models\OrderItem::whereHas(
+                                fn (\Illuminate\Database\Query\Builder $query): float => (float) \App\Models\OrderItem::whereHas(
                                     'order',
-                                    fn($q) => $q->whereIn('harvest_id', (clone $query)->pluck('harvests.id'))
+                                    fn ($q) => $q->whereIn('harvest_id', (clone $query)->pluck('harvests.id'))
                                 )->sum('total_weight')
                             )
                     ),
@@ -154,7 +154,7 @@ class HarvestsRelationManager extends RelationManager
                 ->schema([
                     TextInput::make('harvest_number')
                         ->label('رقم الحصاد')
-                        ->default(fn() => \App\Models\Harvest::generateHarvestNumber())
+                        ->default(fn () => \App\Models\Harvest::generateHarvestNumber())
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50)
@@ -236,7 +236,7 @@ class HarvestsRelationManager extends RelationManager
                                         ->relationship('box', 'name', modifyQueryUsing: function (Builder $query) {
                                             return $query->select('*');
                                         })
-                                        ->getOptionLabelFromRecordUsing(fn(Model $record) => $record->full_name)
+                                        ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->full_name)
                                         ->searchable()
                                         ->preload()
                                         ->required(),
@@ -259,7 +259,7 @@ class HarvestsRelationManager extends RelationManager
                         ])
                         ->collapsible()
                         ->collapsed(false)
-                        ->itemLabel(fn(array $state): ?string => $state['code'] ?? null)
+                        ->itemLabel(fn (array $state): ?string => $state['code'] ?? null)
                         ->columns(2)
                         ->addActionLabel('إضافة إيصال جديد'),
                 ])->columnSpanFull(),

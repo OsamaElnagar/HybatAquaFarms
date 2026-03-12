@@ -13,7 +13,7 @@ class TraderStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (!$this->record || !$this->record instanceof Trader) {
+        if (! $this->record || ! $this->record instanceof Trader) {
             return [];
         }
 
@@ -39,22 +39,22 @@ class TraderStatsWidget extends BaseWidget
         $netBalance = $outstandingReceivable - $loansBalance;
 
         return [
-            Stat::make('إجمالي المبيعات', number_format($totalSales) . ' EGP')
+            Stat::make('إجمالي المبيعات', number_format($totalSales).' EGP')
                 ->description('إجمالي كل المبيعات لهذا التاجر')
                 ->color('primary')
                 ->icon('heroicon-o-shopping-cart'),
 
-            Stat::make('المستحقات (لنا)', number_format($outstandingReceivable) . ' EGP')
+            Stat::make('المستحقات (لنا)', number_format($outstandingReceivable).' EGP')
                 ->description('مبيعات آجلة لم يتم تحصيلها بعد')
                 ->color($outstandingReceivable > 0 ? 'warning' : 'success')
                 ->icon('heroicon-o-clock'),
 
-            Stat::make('السلف (علينا)', number_format($loansBalance) . ' EGP')
-                ->description('إجمالي السلف: ' . number_format($totalLoans) . ' | المسدد: ' . number_format($totalRepayments))
+            Stat::make('السلف (علينا)', number_format($loansBalance).' EGP')
+                ->description('إجمالي السلف: '.number_format($totalLoans).' | المسدد: '.number_format($totalRepayments))
                 ->color($loansBalance > 0 ? 'danger' : 'success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make('صافي الرصيد', number_format(abs($netBalance)) . ' EGP')
+            Stat::make('صافي الرصيد', number_format(abs($netBalance)).' EGP')
                 ->description($netBalance >= 0 ? 'لصالح المزرعة' : 'لصالح التاجر')
                 ->color($netBalance >= 0 ? 'success' : 'danger')
                 ->icon($netBalance >= 0 ? 'heroicon-o-arrow-trending-up' : 'heroicon-o-arrow-trending-down'),

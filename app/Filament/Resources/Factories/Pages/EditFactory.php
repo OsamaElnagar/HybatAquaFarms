@@ -48,7 +48,7 @@ class EditFactory extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل: ' . $this->getRecord()->name;
+        return 'تعديل: '.$this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array

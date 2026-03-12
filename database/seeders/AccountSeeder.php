@@ -290,7 +290,7 @@ class AccountSeeder extends Seeder
         Account::firstOrCreate(
             ['code' => '4800'],
             [
-                'name' => "إيرادات متنوعة",
+                'name' => 'إيرادات متنوعة',
                 'type' => AccountType::Income,
                 'parent_id' => $income->id,
                 'is_treasury' => false,
