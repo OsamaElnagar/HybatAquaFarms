@@ -17,6 +17,7 @@ class DailyFeedIssueObserver
             $this->createFeedMovement($issue);
 
             // Cache the last used values for this user
+            Cache::put('user_' . auth('web')->id() . '_last_date', $issue->date);
             // Cache::put('user_'.auth('web')->id().'_last_feed_item', $issue->feed_item_id);
             // Cache::put('user_'.auth('web')->id().'_last_feed_qty', $issue->quantity);
             // Cache::put('user_'.auth('web')->id().'_last_farm_id', $issue->farm_id);
@@ -77,7 +78,7 @@ class DailyFeedIssueObserver
 
         $quantity = (float) $issue->quantity;
 
-        if (! $stock || (float) $stock->quantity_in_stock < $quantity) {
+        if (!$stock || (float) $stock->quantity_in_stock < $quantity) {
             throw ValidationException::withMessages([
                 'quantity' => 'Insufficient stock for daily feed issue',
             ]);
