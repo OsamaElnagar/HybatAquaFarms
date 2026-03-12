@@ -66,6 +66,7 @@ class OrdersRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('code')
+            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
@@ -83,6 +84,18 @@ class OrdersRelationManager extends RelationManager
                     ->label('التاريخ')
                     ->date('Y-m-d')
                     ->sortable(),
+                TextColumn::make('items_count')
+                    ->label('عدد الأصناف')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('items_sum_quantity')
+                    ->label('الصناديق')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('items_sum_total_weight')
+                    ->label('الوزن (كجم)')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()
@@ -98,18 +111,18 @@ class OrdersRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make()->label('إنشاء إيصال'),
+                // CreateAction::make()->label('إنشاء إيصال'),
                 // AssociateAction::make(),
             ])
             ->recordActions([
-                EditAction::make()->label('تعديل إيصال'),
+                // EditAction::make()->label('تعديل إيصال'),
                 // DissociateAction::make(),
-                DeleteAction::make()->label('حذف إيصال'),
+                // DeleteAction::make()->label('حذف إيصال'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     // DissociateBulkAction::make(),
-                    DeleteBulkAction::make()->label('حذف إيصالات'),
+                    // DeleteBulkAction::make()->label('حذف إيصالات'),
                 ]),
             ]);
     }

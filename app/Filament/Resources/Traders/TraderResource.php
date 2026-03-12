@@ -94,6 +94,7 @@ class TraderResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\OrdersRelationManager::class,
             RelationManagers\SalesOrdersRelationManager::class,
             RelationManagers\PartnerLoansRelationManager::class,
             RelationManagers\ClearingEntriesRelationManager::class,
