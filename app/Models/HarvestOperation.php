@@ -108,6 +108,6 @@ class HarvestOperation extends Model
         $startDate = $this->start_date;
         $date = $startDate?->format('Y-m-d') ?? '—';
 
-        return "{$this->operation_number} - {$this->batch->batch_code} - ({$date})";
+        return "{$this->operation_number} - {$this->farm->name} - {$this->batch->batch_code} - ({$date})";
     }
 }
