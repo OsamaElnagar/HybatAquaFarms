@@ -33,7 +33,7 @@ class HarvestsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with('orders.items'))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['orders.items', 'orders.trader']))
             ->columns([
                 TextColumn::make('harvest_number')
                     ->label('رقم الحصاد')
@@ -71,6 +71,7 @@ class HarvestsRelationManager extends RelationManager
                     ->counts('orders')
                     ->label('عدد الإيصالات')
                     ->numeric(locale: 'en')
+                    ->description(fn (Model $record): string => collect($record->orders)->pluck('trader.name')->filter()->unique()->join(' ، '))
                     ->sortable()
                     ->summarize(
                         Summarizer::make()
@@ -89,6 +90,14 @@ class HarvestsRelationManager extends RelationManager
                         });
                     })
                     ->numeric(locale: 'en')
+                    ->description(function (Model $record): string {
+                        return collect($record->orders)
+                            ->groupBy('trader.name')
+                            ->map(fn ($orders) => $orders->sum(fn ($order) => collect($order->items)->sum('quantity')))
+                            ->filter()
+                            ->map(fn ($sum, $traderName) => "{$traderName}: {$sum}")
+                            ->join(' ، ');
+                    })
                     ->summarize(
                         Summarizer::make()
                             ->label('الإجمالي')
