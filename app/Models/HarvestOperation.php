@@ -39,7 +39,7 @@ class HarvestOperation extends Model
     protected static function booted()
     {
         static::creating(function ($model) {
-            if (! $model->operation_number) {
+            if (!$model->operation_number) {
                 $model->operation_number = static::generateOperationNumber();
             }
         });
@@ -53,7 +53,7 @@ class HarvestOperation extends Model
         $lastOperation = static::latest('id')->first();
         $number = $lastOperation ? ((int) substr($lastOperation->operation_number, 4)) + 1 : 1;
 
-        return 'HOP-'.str_pad($number, 4, '0', STR_PAD_LEFT);
+        return 'HOP-' . str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 
     // Relationships
@@ -108,6 +108,6 @@ class HarvestOperation extends Model
         $startDate = $this->start_date;
         $date = $startDate?->format('Y-m-d') ?? '—';
 
-        return "{$this->operation_number} - {$this->farm->name} - ({$date})";
+        return "{$this->operation_number} - {$this->batch->batch_code} - ({$date})";
     }
 }
