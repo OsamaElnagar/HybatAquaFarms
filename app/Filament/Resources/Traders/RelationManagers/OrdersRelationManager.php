@@ -22,7 +22,7 @@ class OrdersRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('code')
-            ->modifyQueryUsing(fn(Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
@@ -52,7 +52,7 @@ class OrdersRelationManager extends RelationManager
                     ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),
                 TextColumn::make('items_sum_quantity')
-                    ->label('الصناديق')
+                    ->label('الصناديق (البكس)')
                     ->numeric(locale: 'en')
                     ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),

@@ -96,9 +96,9 @@ class SalesOrderForm
                                 });
 
                                 // Eager load for label generation
-                                $query->with(['trader', 'harvest']);
+                                $query->with(['trader', 'harvest', 'driver']);
                             })
-                            ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->code} - {$record->trader?->name} - جلسة رقم {$record->harvest?->harvest_number}")
+                            ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->code} - {$record->trader?->name}".($record->driver ? " - السائق: {$record->driver->name}" : '')." - جلسة رقم {$record->harvest?->harvest_number}")
                             ->selectAllAction(
                                 fn (Action $action) => $action->label('اختيار جميع الطلبات'),
                             )

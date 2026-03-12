@@ -41,9 +41,9 @@ class OrdersRelationManager extends RelationManager
                     ->relationship(
                         'harvest',
                         'harvest_number',
-                        modifyQueryUsing: fn(Builder $query) => $query->where('harvest_operation_id', $this->getOwnerRecord()->id),
+                        modifyQueryUsing: fn (Builder $query) => $query->where('harvest_operation_id', $this->getOwnerRecord()->id),
                     )
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->harvest_number . ' - ' . $record->harvest_date->format('Y-m-d'))
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->harvest_number.' - '.$record->harvest_date->format('Y-m-d'))
                     ->required(),
                 Select::make('trader_id')
                     ->label('التاجر')
@@ -67,7 +67,7 @@ class OrdersRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('code')
-            ->modifyQueryUsing(fn(Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
             ->columns([
                 TextColumn::make('code')
                     ->label('الكود')
@@ -91,7 +91,7 @@ class OrdersRelationManager extends RelationManager
                     ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),
                 TextColumn::make('items_sum_quantity')
-                    ->label('الصناديق')
+                    ->label('الصناديق (البكس)')
                     ->numeric(locale: 'en')
                     ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),
