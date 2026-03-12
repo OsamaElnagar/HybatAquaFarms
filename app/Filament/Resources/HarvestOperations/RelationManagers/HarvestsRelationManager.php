@@ -33,7 +33,7 @@ class HarvestsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['orders.items', 'orders.trader']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['orders.items', 'orders.trader', 'orders.driver']))
             ->columns([
                 TextColumn::make('harvest_number')
                     ->label('رقم الحصاد')
@@ -71,7 +71,19 @@ class HarvestsRelationManager extends RelationManager
                     ->counts('orders')
                     ->label('عدد الإيصالات')
                     ->numeric(locale: 'en')
-                    ->description(fn (Model $record): string => collect($record->orders)->pluck('trader.name')->filter()->unique()->join(' ، '))
+                    ->wrap()
+                    ->description(function (Model $record): string {
+                        $traders = collect($record->orders)->pluck('trader.name')->filter()->unique()->join(' ، ');
+                        $drivers = collect($record->orders)->pluck('driver.name')->filter()->unique()->join(' ، ');
+
+                        $description = [];
+                        if ($traders)
+                            $description[] = "التجار: {$traders}";
+                        if ($drivers)
+                            $description[] = "السائقين: {$drivers}";
+
+                        return implode(' | ', $description);
+                    })
                     ->sortable()
                     ->summarize(
                         Summarizer::make()
@@ -93,9 +105,9 @@ class HarvestsRelationManager extends RelationManager
                     ->description(function (Model $record): string {
                         return collect($record->orders)
                             ->groupBy('trader.name')
-                            ->map(fn ($orders) => $orders->sum(fn ($order) => collect($order->items)->sum('quantity')))
+                            ->map(fn($orders) => $orders->sum(fn($order) => collect($order->items)->sum('quantity')))
                             ->filter()
-                            ->map(fn ($sum, $traderName) => "{$traderName}: {$sum}")
+                            ->map(fn($sum, $traderName) => "{$traderName}: {$sum}")
                             ->join(' ، ');
                     })
                     ->summarize(
