@@ -16,6 +16,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -87,14 +88,17 @@ class OrdersRelationManager extends RelationManager
                 TextColumn::make('items_count')
                     ->label('عدد الأصناف')
                     ->numeric(locale: 'en')
+                    ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),
                 TextColumn::make('items_sum_quantity')
                     ->label('الصناديق')
                     ->numeric(locale: 'en')
+                    ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),
                 TextColumn::make('items_sum_total_weight')
                     ->label('الوزن (كجم)')
                     ->numeric(locale: 'en')
+                    ->summarize(Sum::make()->numeric(locale: 'en'))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
