@@ -90,8 +90,8 @@ class SalaryRecordsRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn (Builder $query, $date) => $query->where('pay_period_start', '>=', $date))
-                            ->when($data['to'], fn (Builder $query, $date) => $query->where('pay_period_end', '<=', $date));
+                            ->when($data['from'], fn(Builder $query, $date) => $query->where('pay_period_start', '>=', \Carbon\Carbon::parse($date)))
+                            ->when($data['to'], fn(Builder $query, $date) => $query->where('pay_period_end', '<=', \Carbon\Carbon::parse($date)));
                     }),
                 SelectFilter::make('status')
                     ->label('الحالة')

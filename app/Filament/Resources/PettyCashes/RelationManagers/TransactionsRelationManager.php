@@ -18,7 +18,9 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionsRelationManager extends RelationManager
@@ -57,22 +59,22 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->direction === PettyTransacionType::OUT ? 'danger' : 'success')
+                    ->color(fn($record) => $record->direction === PettyTransacionType::OUT ? 'danger' : 'success')
                     ->sortable()
                     ->summarize([
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         \Filament\Tables\Columns\Summarizers\Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn ($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
@@ -98,6 +100,28 @@ class TransactionsRelationManager extends RelationManager
                     ->relationship('expenseCategory', 'name')
                     ->searchable()
                     ->preload(),
+                Filter::make('date')
+                    ->schema([
+                        DatePicker::make('date_from')
+                            ->label('من تاريخ')
+                            ->displayFormat('Y-m-d')
+                            ->native(false),
+                        DatePicker::make('date_to')
+                            ->label('إلى تاريخ')
+                            ->displayFormat('Y-m-d')
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', \Carbon\Carbon::parse($date)),
+                            )
+                            ->when(
+                                $data['date_to'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', \Carbon\Carbon::parse($date)),
+                            );
+                    }),
             ])
             ->headerActions([
                 CreateAction::make()
@@ -139,9 +163,9 @@ class TransactionsRelationManager extends RelationManager
                                     ->default('out'),
                                 Select::make('expense_category_id')
                                     ->label('نوع المصروف')
-                                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                                    ->visible(fn ($get) => $get('direction') === 'out')
-                                    ->required(fn ($get) => $get('direction') === 'out')
+                                    ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
+                                    ->visible(fn($get) => $get('direction') === 'out')
+                                    ->required(fn($get) => $get('direction') === 'out')
                                     ->searchable()
                                     ->preload(),
                                 DatePicker::make('date')

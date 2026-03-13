@@ -51,7 +51,7 @@ class EntriesRelationManager extends RelationManager
                     ->relationship(
                         'treasuryAccount',
                         'name',
-                        fn ($query) => $query->where('is_treasury', true)
+                        fn($query) => $query->where('is_treasury', true)
                     )
                     ->searchable()
                     ->preload()
@@ -102,8 +102,8 @@ class EntriesRelationManager extends RelationManager
                     ->label('النوع')
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => $state?->getLabel())
-                    ->color(fn ($state) => $state?->getColor()),
+                    ->formatStateUsing(fn($state) => $state?->getLabel())
+                    ->color(fn($state) => $state?->getColor()),
                 Tables\Columns\TextColumn::make('date')
                     ->label('التاريخ')
                     ->date('Y-m-d')
@@ -120,22 +120,22 @@ class EntriesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->type === ExternalCalculationType::Receipt ? 'success' : 'danger')
+                    ->color(fn($record) => $record->type === ExternalCalculationType::Receipt ? 'success' : 'danger')
                     ->sortable()
                     ->summarize([
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المقبوضات (دائن)')
-                            ->query(fn ($query) => $query->where('type', ExternalCalculationType::Receipt))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('type', ExternalCalculationType::Receipt))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المدفوعات (مدين)')
-                            ->query(fn ($query) => $query->where('type', ExternalCalculationType::Payment))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('type', ExternalCalculationType::Payment))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN type = 'receipt' THEN amount ELSE -amount END")))
+                            ->using(fn($query) => $query->sum(DB::raw("CASE WHEN type = 'receipt' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 Tables\Columns\TextColumn::make('reference_number')
@@ -160,9 +160,9 @@ class EntriesRelationManager extends RelationManager
                             ->native(false),
                     ])
                     ->query(
-                        fn (Builder $query, array $data): Builder => $query
-                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('date', '>=', $date))
-                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('date', '<=', $date)),
+                        fn(Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn(Builder $q, $date) => $q->whereDate('date', '>=', \Carbon\Carbon::parse($date)))
+                            ->when($data['to'] ?? null, fn(Builder $q, $date) => $q->whereDate('date', '<=', \Carbon\Carbon::parse($date))),
                     ),
             ])
             ->headerActions([
