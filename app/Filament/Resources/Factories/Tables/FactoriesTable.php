@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Factories\Tables;
 
 use App\Enums\FactoryType;
+use App\Filament\Resources\Factories\FactoryResource;
 use App\Models\Factory;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -127,6 +128,10 @@ class FactoriesTable
                     })
                     ->openUrlInNewTab()
                     ->hidden(fn ($record) => blank($record->phone)),
+                Action::make('statement')
+                    ->label('كشف الحساب')
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn ($record) => FactoryResource::getUrl('statement', ['record' => $record])),
                 EditAction::make(),
             ])
             ->toolbarActions([

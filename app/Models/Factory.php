@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FactoryStatementStatus;
 use App\Enums\FactoryType;
 use App\Observers\FactoryObserver;
 use Database\Factories\FactoryFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[ObservedBy([FactoryObserver::class])]
@@ -23,6 +25,7 @@ class Factory extends Model
         'code',
         'name',
         'type',
+        'account_id',
         'supplier_activity_id',
         'contact_person',
         'phone',
@@ -45,6 +48,43 @@ class Factory extends Model
     public function feedMovements(): HasMany
     {
         return $this->hasMany(FeedMovement::class);
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
+
+    public function statements(): HasMany
+    {
+        return $this->hasMany(FactoryStatement::class);
+    }
+
+    public function activeStatement(): HasOne
+    {
+        return $this->hasOne(FactoryStatement::class)->where('status', FactoryStatementStatus::Open)->latest();
+    }
+
+    /**
+     * Open a new statement session, carrying over any outstanding balance.
+     */
+    public function openNewStatement(?string $title = null, ?string $notes = null): FactoryStatement
+    {
+        // Close any existing open statement first
+        $this->statements()->where('status', FactoryStatementStatus::Open)->update([
+            'status' => FactoryStatementStatus::Closed,
+            'closed_at' => now()->toDateString(),
+            'closing_balance' => $this->outstanding_balance,
+        ]);
+
+        return $this->statements()->create([
+            'opened_at' => now()->toDateString(),
+            'title' => $title,
+            'opening_balance' => $this->outstanding_balance,
+            'status' => FactoryStatementStatus::Open,
+            'created_by' => auth()->id(),
+            'notes' => $notes,
+        ]);
     }
 
     public function vouchers(): MorphMany
@@ -102,43 +142,18 @@ class Factory extends Model
     }
 
     /**
-     * Calculate outstanding payable balance for this factory.
-     * Total feed purchases + seed purchases minus payments and settlements.
+     * Outstanding balance derived directly from the dedicated GL account.
+     * Positive = We owe them (Credit balance). Negative = They owe us / Advance payment (Debit balance).
      */
     public function getOutstandingBalanceAttribute(): float
     {
-        // Feed purchases - calculate from feed movements using standard_cost from FeedItem
-        $totalFeedPurchases = $this->feedMovements()
-            ->where('movement_type', 'in')
-            ->get()
-            ->sum(function ($movement) {
-                $feedItem = $movement->feedItem;
-                $unitCost = $feedItem?->standard_cost ?? 0;
+        if ($this->account_id) {
+            // For Liability accounts, balance is usually Credit - Debit
+            // Using absolute value for common display, but need to check if we need sign
+            return (float) $this->account->balance;
+        }
 
-                return (float) $movement->quantity * $unitCost;
-            });
-
-        // Seed purchases (batch fish)
-        $totalSeedPurchases = $this->batchFish()
-            ->whereNotNull('total_cost')
-            ->sum('total_cost');
-
-        $totalPurchases = $totalFeedPurchases + $totalSeedPurchases;
-
-        // Old voucher payments (keeping for backward compatibility)
-        $totalPaidVouchers = $this->vouchers()
-            ->where('voucher_type', 'payment')
-            ->sum('amount');
-
-        // Factory payments (for feed purchases)
-        $totalPaidFactoryPayments = $this->factoryPayments()->sum('amount');
-
-        // Batch payments (for seed purchases)
-        $totalPaidBatchPayments = $this->batchPayments()->sum('amount');
-
-        $totalSettled = $this->clearingEntries()->sum('amount');
-
-        return (float) max(0, $totalPurchases - $totalPaidVouchers - $totalPaidFactoryPayments - $totalPaidBatchPayments - $totalSettled);
+        return 0;
     }
 
     #[Scope]

@@ -39,7 +39,7 @@ class TraderStatsWidget extends BaseWidget
                 ->icon('heroicon-o-shopping-cart'),
 
             Stat::make($outstandingReceivable >= 0 ? 'المستحقات (لنا)' : 'الرصيد الدائن (علينا)', number_format(abs($outstandingReceivable)).' EGP')
-                ->description($outstandingReceivable >= 0 ? 'الرصيد الحالي المستحق لنا' : 'رصيد مستحق للتاجر')
+                ->description($outstandingReceivable >= 0 ? 'متبقى على التاجر' : 'رصيد مستحق للتاجر')
                 ->color($outstandingReceivable >= 0 ? 'warning' : 'danger')
                 ->icon('heroicon-o-clock'),
 

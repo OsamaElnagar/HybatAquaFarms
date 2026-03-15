@@ -6,6 +6,7 @@ use App\Enums\FactoryType;
 use App\Filament\Resources\Factories\FactoryResource;
 use App\Filament\Resources\Factories\RelationManagers;
 use App\Filament\Resources\Factories\Widgets\FactoryActivityWidget;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -63,6 +64,10 @@ class ViewFactory extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('statement')
+                ->label('كشف حساب')
+                ->icon('heroicon-o-document-text')
+                ->url(fn () => FactoryResource::getUrl('statement', ['record' => $this->record])),
             EditAction::make(),
         ];
     }

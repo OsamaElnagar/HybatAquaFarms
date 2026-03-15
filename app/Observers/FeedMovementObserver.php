@@ -258,6 +258,7 @@ class FeedMovementObserver
                     'date' => $movement->date?->toDateString(),
                     'source_type' => $movement->getMorphClass(),
                     'source_id' => $movement->id,
+                    'factory_statement_id' => $movement->factory?->activeStatement?->id,
                     'description' => $movement->description,
                 ]);
             } elseif ($movement->movement_type === FeedMovementType::Out) {

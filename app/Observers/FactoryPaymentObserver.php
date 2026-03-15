@@ -36,6 +36,7 @@ class FactoryPaymentObserver
                 'date' => $payment->date?->toDateString(),
                 'source_type' => $payment->getMorphClass(),
                 'source_id' => $payment->id,
+                'factory_statement_id' => $factory->activeStatement?->id,
                 'description' => $payment->description ?? "دفعة لمصنع {$factory->name}",
             ]);
         } catch (\Exception $e) {

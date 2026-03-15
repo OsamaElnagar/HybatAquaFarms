@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\Factories;
 
-use App\Filament\Resources\Factories\Pages\CreateFactory;
-use App\Filament\Resources\Factories\Pages\EditFactory;
-use App\Filament\Resources\Factories\Pages\ListFactories;
+use App\Filament\Resources\Factories\Pages\ListStatements;
+use App\Filament\Resources\Factories\Pages\StatementOfAccount;
 use App\Filament\Resources\Factories\Schemas\FactoryForm;
 use App\Filament\Resources\Factories\Tables\FactoriesTable;
 use App\Models\Factory;
@@ -58,6 +57,10 @@ class FactoryResource extends Resource
         return [
             Action::make('edit')
                 ->url(static::getUrl('edit', ['record' => $record])),
+            Action::make('statement')
+                ->label('كشف الحساب')
+                ->icon('heroicon-o-document-text')
+                ->url(static::getUrl('statement', ['record' => $record])),
         ];
     }
 
@@ -85,10 +88,12 @@ class FactoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListFactories::route('/'),
-            'create' => CreateFactory::route('/create'),
+            'index' => Pages\ListFactories::route('/'),
+            'create' => Pages\CreateFactory::route('/create'),
             'view' => Pages\ViewFactory::route('/{record}'),
-            'edit' => EditFactory::route('/{record}/edit'),
+            'edit' => Pages\EditFactory::route('/{record}/edit'),
+            'statement' => StatementOfAccount::route('/{record}/statement'),
+            'statements' => ListStatements::route('/{record}/statements'),
         ];
     }
 }

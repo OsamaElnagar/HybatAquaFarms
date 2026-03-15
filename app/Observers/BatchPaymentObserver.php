@@ -19,12 +19,15 @@ class BatchPaymentObserver
 
         // Post accounting entry: Debit Accounts Payable (2110), Credit Cash/Bank (1110)
         try {
+            $activeStatement = $factory?->activeStatement;
+
             $this->posting->post('batch.payment', [
                 'amount' => (float) $payment->amount,
                 'farm_id' => $farmId,
                 'date' => $payment->date?->toDateString(),
                 'source_type' => $payment->getMorphClass(),
                 'source_id' => $payment->id,
+                'factory_statement_id' => $activeStatement?->id,
                 'description' => $payment->description ?? "دفعة لزريعة - دفعة {$batch->batch_code} - {$factory->name}",
             ]);
         } catch (\Exception $e) {

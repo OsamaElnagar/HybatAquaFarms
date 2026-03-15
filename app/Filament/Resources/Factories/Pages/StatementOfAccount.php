@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Traders\Pages;
+namespace App\Filament\Resources\Factories\Pages;
 
-use App\Filament\Resources\Traders\Actions\GiveCashAction;
-use App\Filament\Resources\Traders\Actions\OpenNewStatementAction;
-use App\Filament\Resources\Traders\Actions\ReceivePaymentAction;
-use App\Filament\Resources\Traders\TraderResource;
-use App\Filament\Resources\Traders\Widgets\TraderStatsWidget;
+use App\Filament\Resources\Factories\Actions\MakePaymentAction;
+use App\Filament\Resources\Factories\Actions\OpenNewStatementAction;
+use App\Filament\Resources\Factories\FactoryResource;
+use App\Filament\Resources\Factories\Widgets\FactoryStatsWidget;
+use App\Models\FactoryStatement;
 use App\Models\JournalLine;
-use App\Models\TraderStatement;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
@@ -27,9 +26,9 @@ class StatementOfAccount extends Page implements HasTable
     use InteractsWithRecord;
     use InteractsWithTable;
 
-    protected static string $resource = TraderResource::class;
+    protected static string $resource = FactoryResource::class;
 
-    protected string $view = 'filament.resources.traders.pages.statement-of-account';
+    protected string $view = 'filament.resources.factories.pages.statement-of-account';
 
     protected static ?string $title = 'كشف حساب';
 
@@ -78,7 +77,7 @@ class StatementOfAccount extends Page implements HasTable
                 ->label('سجل الكشوفات')
                 ->icon('heroicon-o-list-bullet')
                 ->color('gray')
-                ->url(fn () => TraderResource::getUrl('statements', ['record' => $this->record])),
+                ->url(fn () => FactoryResource::getUrl('statements', ['record' => $this->record])),
 
             Action::make('viewAllHistory')
                 ->label($this->activeStatementId ? 'عرض كل التاريخ' : 'عرض الكشف الحالي فقط')
@@ -89,15 +88,14 @@ class StatementOfAccount extends Page implements HasTable
                         ? null
                         : $this->record->activeStatement?->id;
                 }),
-            ReceivePaymentAction::make(),
-            GiveCashAction::make(),
+            MakePaymentAction::make(),
         ];
     }
 
     protected function getHeaderWidgets(): array
     {
         return [
-            TraderStatsWidget::class,
+            FactoryStatsWidget::class,
         ];
     }
 
@@ -111,7 +109,7 @@ class StatementOfAccount extends Page implements HasTable
                         $this->activeStatementId,
                         fn (Builder $q) => $q->whereHas(
                             'journalEntry',
-                            fn (Builder $inner) => $inner->where('trader_statement_id', $this->activeStatementId)
+                            fn (Builder $inner) => $inner->where('factory_statement_id', $this->activeStatementId)
                         )
                     )
                     ->with('journalEntry')
@@ -128,28 +126,28 @@ class StatementOfAccount extends Page implements HasTable
                     ->label('البيان')
                     ->wrap()
                     ->getStateUsing(fn (JournalLine $record) => $record->description ?: $record->journalEntry->description),
-                TextColumn::make('debit')
-                    ->label('مدين (عليه)')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color('danger')
-                    ->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)->label('إجمالي المدين')),
                 TextColumn::make('credit')
                     ->label('دائن (له)')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ->color('danger')
+                    ->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)->label('إجمالي المشتريات')),
+                TextColumn::make('debit')
+                    ->label('مدين (صرفنا له)')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color('success')
-                    ->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)->label('إجمالي الدائن')),
+                    ->summarize(Sum::make()->money('EGP', locale: 'en', decimalPlaces: 0)->label('إجمالي المدفوعات')),
             ])
             ->defaultSort('journalEntry.date', 'desc')
             ->filters([
                 SelectFilter::make('statement')
                     ->label('الكشف / الجلسة')
-                    ->options(fn () => TraderStatement::where('trader_id', $this->record->id)
+                    ->options(fn () => FactoryStatement::where('factory_id', $this->record->id)
                         ->orderByDesc('opened_at')
                         ->get()
                         ->mapWithKeys(fn ($s) => [$s->id => ($s->title ? $s->title.' | ' : '').$s->opened_at->format('Y-m-d').' | '.$s->status->getLabel()])
                         ->toArray())
                     ->query(fn (Builder $query, array $data) => $data['value']
-                        ? $query->whereHas('journalEntry', fn ($q) => $q->where('trader_statement_id', $data['value']))
+                        ? $query->whereHas('journalEntry', fn ($q) => $q->where('factory_statement_id', $data['value']))
                         : $query),
                 Filter::make('date')
                     ->form([
