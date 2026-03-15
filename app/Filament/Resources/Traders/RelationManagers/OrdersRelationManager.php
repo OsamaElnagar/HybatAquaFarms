@@ -12,7 +12,7 @@ class OrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'orders';
 
-    protected static ?string $title = 'أردرات التاجر';
+    protected static ?string $title = 'أٌردرات التاجر';
 
     protected static ?string $modelLabel = 'أردر';
 

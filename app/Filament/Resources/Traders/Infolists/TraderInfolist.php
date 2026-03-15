@@ -88,29 +88,11 @@ class TraderInfolist
                             ->color('success')
                             ->columnSpan(1),
                         TextEntry::make('outstanding_balance')
-                            ->label('الرصيد المستحق')
+                            ->label('صافي الرصيد المستحق')
                             ->state(fn ($record) => number_format($record->outstanding_balance).' EGP ')
                             ->badge()
-                            ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
-                            ->columnSpan(1),
-                        TextEntry::make('clearing_entries_count')
-                            ->label('التسويات')
-                            ->state(fn ($record) => $record->clearingEntries()->count())
-                            ->badge()
-                            ->color('info')
-                            ->columnSpan(1),
-                        TextEntry::make('partner_loans_balance')
-                            ->label('السلف المستحقة')
-                            ->state(fn ($record) => number_format($record->partner_loans_balance).' EGP ')
-                            ->badge()
-                            ->color(fn ($record) => $record->partner_loans_balance > 0 ? 'danger' : 'success')
-                            ->columnSpan(1),
-                        TextEntry::make('net_balance')
-                            ->label('صافي الرصيد')
-                            ->state(fn ($record) => number_format($record->outstanding_balance - $record->partner_loans_balance).' EGP ')
-                            ->badge()
-                            ->color(fn ($record) => ($record->outstanding_balance - $record->partner_loans_balance) >= 0 ? 'success' : 'danger')
-                            ->columnSpan(1),
+                            ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : ($record->outstanding_balance < 0 ? 'danger' : 'success'))
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
