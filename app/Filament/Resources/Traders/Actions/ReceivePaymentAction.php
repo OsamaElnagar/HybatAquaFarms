@@ -22,7 +22,7 @@ class ReceivePaymentAction extends Action
     {
         parent::setUp();
 
-        $this->label('استلام دفعة')
+        $this->label('استلام مبلغ')
             ->icon('heroicon-o-banknotes')
             ->color('success')
             ->form([
@@ -34,10 +34,10 @@ class ReceivePaymentAction extends Action
                     ->label('المبلغ')
                     ->numeric()
                     ->required()
-                    ->default(fn (Trader $record) => max(0, $record->outstanding_balance)),
+                    ->default(fn(Trader $record) => max(0, $record->outstanding_balance)),
                 Select::make('treasury_account_id')
                     ->label('الخزينة المستلمة')
-                    ->options(fn () => Account::where('is_treasury', true)->pluck('name', 'id'))
+                    ->options(fn() => Account::where('is_treasury', true)->pluck('name', 'id'))
                     ->required(),
                 Textarea::make('description')
                     ->label('البيان')
