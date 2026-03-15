@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 
 use App\Enums\PettyTransacionType;
 use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionForm;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -12,11 +13,13 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PettyCashTransactionsRelationManager extends RelationManager
 {
@@ -37,7 +40,7 @@ class PettyCashTransactionsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('date')
-            ->modifyQueryUsing(fn($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['pettyCash', 'expenseCategory', 'recordedBy']))
             ->columns([
                 TextColumn::make('pettyCash.name')
                     ->label('العهدة')
@@ -60,19 +63,19 @@ class PettyCashTransactionsRelationManager extends RelationManager
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
@@ -103,8 +106,8 @@ class PettyCashTransactionsRelationManager extends RelationManager
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['date_from'] ?? null, fn($q, $date) => $q->where('date', '>=', \Carbon\Carbon::parse($date)))
-                            ->when($data['date_to'] ?? null, fn($q, $date) => $q->where('date', '<=', \Carbon\Carbon::parse($date)));
+                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', Carbon::parse($date)))
+                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', Carbon::parse($date)));
                     }),
             ])
             ->headerActions([

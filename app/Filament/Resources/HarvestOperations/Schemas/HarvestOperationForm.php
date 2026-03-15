@@ -4,6 +4,7 @@ namespace App\Filament\Resources\HarvestOperations\Schemas;
 
 use App\Enums\HarvestOperationStatus;
 use App\Models\Batch;
+use App\Models\HarvestOperation;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -24,7 +25,7 @@ class HarvestOperationForm
                     ->schema([
                         TextInput::make('operation_number')
                             ->label('رقم العملية')
-                            ->default(fn () => 'HOP-'.str_pad(((\App\Models\HarvestOperation::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
+                            ->default(fn () => 'HOP-'.str_pad(((HarvestOperation::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
                             ->disabled()
                             ->dehydrated()
                             ->required()

@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Enums\VoucherType;
 use App\Models\Account;
 use App\Models\Farm;
 use App\Models\JournalEntry;
+use App\Models\PostingRule;
 use App\Models\User;
+use App\Models\Voucher;
 use App\Services\TreasuryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -301,16 +304,16 @@ test('vouchers automatically create journal entries with selected accounts', fun
     ]);
 
     // Create posting rules
-    \App\Models\PostingRule::factory()->create([
+    PostingRule::factory()->create([
         'event_key' => 'voucher.payment',
         'debit_account_id' => $categoryAccount->id,
         'credit_account_id' => $this->treasuryAccount->id,
     ]);
 
     // Create a payment voucher
-    $voucher = \App\Models\Voucher::create([
+    $voucher = Voucher::create([
         'farm_id' => $this->farm->id,
-        'voucher_type' => \App\Enums\VoucherType::Payment,
+        'voucher_type' => VoucherType::Payment,
         'voucher_number' => 'V-TEST-001',
         'date' => now(),
         'amount' => 750.00,
@@ -322,7 +325,7 @@ test('vouchers automatically create journal entries with selected accounts', fun
     ]);
 
     // Check if Journal Entry exists
-    $entry = \App\Models\JournalEntry::where('source_type', $voucher->getMorphClass())
+    $entry = JournalEntry::where('source_type', $voucher->getMorphClass())
         ->where('source_id', $voucher->id)
         ->first();
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\FactoryType;
+use App\Enums\PaymentMethod;
 use App\Models\Factory;
 use App\Models\FactoryPayment;
 use App\Models\Farm;
@@ -23,7 +24,7 @@ test('it can create a payment for a supplier with farm_id', function () {
         'farm_id' => $farm->id,
         'date' => now(),
         'amount' => 1000,
-        'payment_method' => \App\Enums\PaymentMethod::CASH,
+        'payment_method' => PaymentMethod::CASH,
         'description' => 'Payment for supplies',
         'recorded_by' => $this->user->id,
     ]);
@@ -48,7 +49,7 @@ test('it uses farm_id from payment in observer', function () {
         'farm_id' => $farm->id,
         'date' => now(),
         'amount' => 500,
-        'payment_method' => \App\Enums\PaymentMethod::CASH,
+        'payment_method' => PaymentMethod::CASH,
     ]);
 
     expect($payment->farm_id)->not->toBeNull();

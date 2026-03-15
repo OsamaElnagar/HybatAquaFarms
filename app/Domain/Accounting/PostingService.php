@@ -21,6 +21,7 @@ class PostingService
                 'source_type' => $context['source_type'] ?? null,
                 'source_id' => $context['source_id'] ?? null,
                 'is_posted' => true,
+                'trader_statement_id' => $context['trader_statement_id'] ?? null,
                 'posted_by' => $context['user_id'] ?? null,
                 'posted_at' => now(),
             ]);

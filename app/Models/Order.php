@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
@@ -35,7 +36,7 @@ class Order extends Model
                 $order->code = static::generateOrderCode();
             }
             if (empty($order->harvest_operation_id) && ! empty($order->harvest_id)) {
-                $order->harvest_operation_id = \App\Models\Harvest::find($order->harvest_id)?->harvest_operation_id;
+                $order->harvest_operation_id = Harvest::find($order->harvest_id)?->harvest_operation_id;
             }
         });
     }
@@ -65,7 +66,7 @@ class Order extends Model
         return $this->belongsTo(HarvestOperation::class);
     }
 
-    public function salesOrders(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function salesOrders(): BelongsToMany
     {
         return $this->belongsToMany(SalesOrder::class);
     }

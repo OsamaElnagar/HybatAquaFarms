@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\BatchFishObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[ObservedBy(BatchFishObserver::class)]
 class BatchFish extends Model
@@ -29,17 +30,17 @@ class BatchFish extends Model
         ];
     }
 
-    public function batch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function batch(): BelongsTo
     {
         return $this->belongsTo(Batch::class);
     }
 
-    public function species(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function species(): BelongsTo
     {
         return $this->belongsTo(Species::class);
     }
 
-    public function factory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function factory(): BelongsTo
     {
         return $this->belongsTo(Factory::class);
     }

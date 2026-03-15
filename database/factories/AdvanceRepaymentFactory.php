@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\AdvanceRepayment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AdvanceRepayment>
+ * @extends Factory<AdvanceRepayment>
  */
 class AdvanceRepaymentFactory extends Factory
 {

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\OrderItem;
 use App\Models\SalesOrder;
 use Filament\Widgets\ChartWidget;
 
@@ -28,7 +29,7 @@ class SalesTrendChart extends ChartWidget
         if ($batchId) {
             // Filter by batch via order items
             // We want Sales Date vs Subtotal of items from this batch
-            $query = \App\Models\OrderItem::query()
+            $query = OrderItem::query()
                 ->selectRaw('DATE(sales_orders.date) as day, sum(orders_items.subtotal) as total')
                 ->join('orders', 'orders_items.order_id', '=', 'orders.id')
                 ->join('order_sales_order', 'orders.id', '=', 'order_sales_order.order_id')

@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Enums\HarvestStatus;
+use App\Models\Harvest;
+use App\Models\HarvestOperation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Harvest>
+ * @extends Factory<Harvest>
  */
 class HarvestFactory extends Factory
 {
@@ -17,11 +20,11 @@ class HarvestFactory extends Factory
     public function definition(): array
     {
         return [
-            'harvest_number' => \App\Models\Harvest::generateHarvestNumber(),
-            'harvest_operation_id' => \App\Models\HarvestOperation::factory(),
+            'harvest_number' => Harvest::generateHarvestNumber(),
+            'harvest_operation_id' => HarvestOperation::factory(),
             'harvest_date' => fake()->dateTimeBetween('-3 months', 'now'),
             'shift' => fake()->randomElement(['morning', 'afternoon', 'night', null]),
-            'status' => \App\Enums\HarvestStatus::Pending, // Default per migration or random
+            'status' => HarvestStatus::Pending, // Default per migration or random
             'notes' => fake()->optional()->sentence(),
         ];
     }

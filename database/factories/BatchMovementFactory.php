@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\BatchMovement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BatchMovement>
+ * @extends Factory<BatchMovement>
  */
 class BatchMovementFactory extends Factory
 {

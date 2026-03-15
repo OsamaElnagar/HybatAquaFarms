@@ -2,8 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\SalesOrder;
-use App\Models\Trader; // Assuming Trader model exists
+use App\Models\OrderItem;
+use App\Models\SalesOrder; // Assuming Trader model exists
+use App\Models\Trader;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
@@ -45,7 +46,7 @@ class SalesByCustomerChart extends ChartWidget
             // Let's simplify: Sum order items subtotal for this batch and group by trader on the related order.
 
             // Better approach using OrderItem directly for batch specific view
-            $results = \App\Models\OrderItem::query()
+            $results = OrderItem::query()
                 ->select('orders.trader_id', DB::raw('sum(orders_items.subtotal) as total'))
                 ->join('orders', 'orders_items.order_id', '=', 'orders.id')
                 ->join('harvest_operations', 'orders.harvest_operation_id', '=', 'harvest_operations.id')
@@ -67,7 +68,7 @@ class SalesByCustomerChart extends ChartWidget
                         'backgroundColor' => ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
                     ],
                 ],
-                'labels' => $results->map(fn ($item) => \App\Models\Trader::find($item->trader_id)?->name ?? 'Unknown')->toArray(),
+                'labels' => $results->map(fn ($item) => Trader::find($item->trader_id)?->name ?? 'Unknown')->toArray(),
             ];
 
         } else {

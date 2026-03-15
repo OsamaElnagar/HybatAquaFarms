@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[ObservedBy([SalesOrderObserver::class])]
@@ -115,7 +117,7 @@ class SalesOrder extends Model
         return $this->belongsTo(HarvestOperation::class);
     }
 
-    public function farm(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    public function farm(): HasOneThrough
     {
         return $this->hasOneThrough(Farm::class, HarvestOperation::class, 'id', 'id', 'harvest_operation_id', 'farm_id');
     }
@@ -135,7 +137,7 @@ class SalesOrder extends Model
         return $this->morphMany(JournalEntry::class, 'source');
     }
 
-    public function orders(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function orders(): BelongsToMany
     {
         return $this->belongsToMany(Order::class);
     }

@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\AdvanceApprovalStatus;
+use App\Enums\AdvanceStatus;
 use App\Enums\EmployeeStatus;
 use App\Observers\EmployeeObserver;
+use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([EmployeeObserver::class])]
 class Employee extends Model
 {
-    /** @use HasFactory<\Database\Factories\EmployeeFactory> */
+    /** @use HasFactory<EmployeeFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -70,8 +73,8 @@ class Employee extends Model
     public function getTotalOutstandingAdvancesAttribute(): float
     {
         return (float) $this->advances()
-            ->where('status', \App\Enums\AdvanceStatus::Active)
-            ->where('approval_status', \App\Enums\AdvanceApprovalStatus::APPROVED)
+            ->where('status', AdvanceStatus::Active)
+            ->where('approval_status', AdvanceApprovalStatus::APPROVED)
             ->sum('balance_remaining');
     }
 

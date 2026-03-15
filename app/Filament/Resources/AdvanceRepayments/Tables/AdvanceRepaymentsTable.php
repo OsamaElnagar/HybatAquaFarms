@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -88,8 +89,8 @@ class AdvanceRepaymentsTable
                 Filter::make('payment_date')
                     ->label('تاريخ الدفع')
                     ->schema([
-                        \Filament\Forms\Components\DatePicker::make('from')->label('من')->displayFormat('Y-m-d')->native(false),
-                        \Filament\Forms\Components\DatePicker::make('to')->label('إلى')->displayFormat('Y-m-d')->native(false),
+                        DatePicker::make('from')->label('من')->displayFormat('Y-m-d')->native(false),
+                        DatePicker::make('to')->label('إلى')->displayFormat('Y-m-d')->native(false),
                     ])
                     ->query(
                         fn (Builder $query, array $data): Builder => $query

@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\Batches\Widgets;
 
+use App\Models\Batch;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class BatchPaymentSummaryWidget extends BaseWidget
 {
-    public ?\App\Models\Batch $record = null;
+    public ?Batch $record = null;
 
     protected ?string $pollingInterval = null;
 
@@ -15,7 +16,7 @@ class BatchPaymentSummaryWidget extends BaseWidget
     {
         $record = $this->record ?? $this->getParent()?->record ?? null;
 
-        if (! $record instanceof \App\Models\Batch) {
+        if (! $record instanceof Batch) {
             return [];
         }
 

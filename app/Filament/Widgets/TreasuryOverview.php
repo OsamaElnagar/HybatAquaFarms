@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Services\TreasuryService;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -11,7 +12,7 @@ class TreasuryOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $service = app(\App\Services\TreasuryService::class);
+        $service = app(TreasuryService::class);
         $summary = $service->getMonthlySummary();
         $lastMonthSummary = $service->getMonthlySummary(null, now()->subMonth()->format('Y-m'));
         $daily = $service->getDailySummary();

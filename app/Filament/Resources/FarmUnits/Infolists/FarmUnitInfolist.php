@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FarmUnits\Infolists;
 
+use App\Models\DailyFeedIssue;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -71,7 +72,7 @@ class FarmUnitInfolist
                             ->columnSpan(1),
                         TextEntry::make('daily_feed_issues_count')
                             ->label('سجلات صرف الأعلاف')
-                            ->state(fn ($record) => \App\Models\DailyFeedIssue::query()
+                            ->state(fn ($record) => DailyFeedIssue::query()
                                 ->join('batch_farm_unit', 'batch_farm_unit.batch_id', '=', 'daily_feed_issues.batch_id')
                                 ->where('batch_farm_unit.farm_unit_id', $record->id)
                                 ->count())

@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\PaymentMethod;
 use App\Enums\VoucherType;
 use App\Observers\VoucherObserver;
+use App\Traits\ProtectsClosedBatch;
+use Database\Factories\VoucherFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[ObservedBy([VoucherObserver::class])]
 class Voucher extends Model
 {
-    /** @use HasFactory<\Database\Factories\VoucherFactory> */
-    use \App\Traits\ProtectsClosedBatch, HasFactory;
+    /** @use HasFactory<VoucherFactory> */
+    use HasFactory, ProtectsClosedBatch;
 
     protected $fillable = [
         'farm_id',

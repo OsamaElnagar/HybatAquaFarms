@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Observers\AdvanceRepaymentObserver;
+use Database\Factories\AdvanceRepaymentFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([AdvanceRepaymentObserver::class])]
 class AdvanceRepayment extends Model
 {
-    /** @use HasFactory<\Database\Factories\AdvanceRepaymentFactory> */
+    /** @use HasFactory<AdvanceRepaymentFactory> */
     use HasFactory;
 
     protected $fillable = [

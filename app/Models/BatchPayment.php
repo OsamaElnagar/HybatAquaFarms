@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Observers\BatchPaymentObserver;
+use Database\Factories\BatchPaymentFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([BatchPaymentObserver::class])]
 class BatchPayment extends Model
 {
-    /** @use HasFactory<\Database\Factories\BatchPaymentFactory> */
+    /** @use HasFactory<BatchPaymentFactory> */
     use HasFactory;
 
     protected static function booted()

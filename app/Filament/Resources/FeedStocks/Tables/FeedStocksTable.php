@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class FeedStocksTable
@@ -45,12 +46,12 @@ class FeedStocksTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('feed_warehouse_id')
+                SelectFilter::make('feed_warehouse_id')
                     ->label('المستودع')
                     ->relationship('warehouse', 'name')
                     ->searchable()
                     ->preload(),
-                \Filament\Tables\Filters\SelectFilter::make('feed_item_id')
+                SelectFilter::make('feed_item_id')
                     ->label('صنف العلف')
                     ->relationship('feedItem', 'name')
                     ->searchable()

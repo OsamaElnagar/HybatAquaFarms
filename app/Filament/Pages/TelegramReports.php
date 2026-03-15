@@ -2,6 +2,14 @@
 
 namespace App\Filament\Pages;
 
+use App\Services\Telegram\AdvanceReportService;
+use App\Services\Telegram\BatchReportService;
+use App\Services\Telegram\CashflowReportService;
+use App\Services\Telegram\ExpenseReportService;
+use App\Services\Telegram\ExternalCalculationReportService;
+use App\Services\Telegram\FeedStockReportService;
+use App\Services\Telegram\HarvestReportService;
+use App\Services\Telegram\SalesReportService;
 use DefStudio\Telegraph\Models\TelegraphChat;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -47,31 +55,31 @@ class TelegramReports extends Page
                 $html = '';
                 switch ($type) {
                     case 'sales':
-                        $html = app(\App\Services\Telegram\SalesReportService::class)->generateReport();
+                        $html = app(SalesReportService::class)->generateReport();
                         break;
                     case 'harvest':
-                        $html = app(\App\Services\Telegram\HarvestReportService::class)->generateReport();
+                        $html = app(HarvestReportService::class)->generateReport();
                         break;
                     case 'feedStock':
-                        $data = app(\App\Services\Telegram\FeedStockReportService::class)->generateSummaryReport();
+                        $data = app(FeedStockReportService::class)->generateSummaryReport();
                         $html = $data['html'] ?? '';
                         break;
                     case 'batches':
-                        $data = app(\App\Services\Telegram\BatchReportService::class)->generateActiveBatchesReport();
+                        $data = app(BatchReportService::class)->generateActiveBatchesReport();
                         $html = $data['html'] ?? '';
                         break;
                     case 'expenses':
-                        $html = app(\App\Services\Telegram\ExpenseReportService::class)->generateReport();
+                        $html = app(ExpenseReportService::class)->generateReport();
                         break;
                     case 'cashflow':
-                        $html = app(\App\Services\Telegram\CashflowReportService::class)->generateReport();
+                        $html = app(CashflowReportService::class)->generateReport();
                         break;
                     case 'advances':
-                        $data = app(\App\Services\Telegram\AdvanceReportService::class)->generateSummaryReport();
+                        $data = app(AdvanceReportService::class)->generateSummaryReport();
                         $html = $data['html'] ?? '';
                         break;
                     case 'external':
-                        $data = app(\App\Services\Telegram\ExternalCalculationReportService::class)->generateSummaryReport();
+                        $data = app(ExternalCalculationReportService::class)->generateSummaryReport();
                         $html = $data['html'] ?? '';
                         break;
                     default:

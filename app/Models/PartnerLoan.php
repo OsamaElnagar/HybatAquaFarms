@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Observers\PartnerLoanObserver;
+use Database\Factories\PartnerLoanFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[ObservedBy([PartnerLoanObserver::class])]
 class PartnerLoan extends Model
 {
-    /** @use HasFactory<\Database\Factories\PartnerLoanFactory> */
+    /** @use HasFactory<PartnerLoanFactory> */
     use HasFactory;
 
     protected $fillable = [

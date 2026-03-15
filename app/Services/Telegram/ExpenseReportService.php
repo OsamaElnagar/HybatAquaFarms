@@ -2,8 +2,12 @@
 
 namespace App\Services\Telegram;
 
+use App\Enums\PettyTransacionType;
+use App\Enums\VoucherType;
+use App\Models\PettyCashTransaction;
 use App\Models\Voucher;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class ExpenseReportService
 {
@@ -13,12 +17,12 @@ class ExpenseReportService
         $endOfMonth = Carbon::now()->endOfMonth();
 
         // 1. Outgoing Vouchers (Payment)
-        $outVouchers = Voucher::where('voucher_type', \App\Enums\VoucherType::Payment)
+        $outVouchers = Voucher::where('voucher_type', VoucherType::Payment)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
-        $outPettyCash = \App\Models\PettyCashTransaction::with(['pettyCash.farms'])
-            ->where('direction', \App\Enums\PettyTransacionType::OUT)
+        $outPettyCash = PettyCashTransaction::with(['pettyCash.farms'])
+            ->where('direction', PettyTransacionType::OUT)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
@@ -74,7 +78,7 @@ class ExpenseReportService
             foreach ($latest as $transaction) {
                 $dateStr = $transaction['date']->format('Y-m-d');
                 $amt = number_format((float) $transaction['amount']);
-                $desc = \Illuminate\Support\Str::limit($transaction['desc'], 40);
+                $desc = Str::limit($transaction['desc'], 40);
 
                 $html .= "<b>[{$transaction['type']}]</b> <code>{$amt} ج.م</code> | {$dateStr}\n";
                 $html .= "<i>{$desc}</i>\n\n";

@@ -1,16 +1,18 @@
 <?php
 
+use App\Domain\Accounting\PostingService;
 use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\SalaryStatus;
 use App\Models\Employee;
 use App\Models\EmployeeAdvance;
+use App\Models\JournalEntry;
 use App\Models\SalaryRecord;
 
 beforeEach(function () {
-    $this->mock(\App\Domain\Accounting\PostingService::class, function ($mock) {
-        $mock->shouldReceive('post')->andReturn(new \App\Models\JournalEntry);
+    $this->mock(PostingService::class, function ($mock) {
+        $mock->shouldReceive('post')->andReturn(new JournalEntry);
     });
 });
 

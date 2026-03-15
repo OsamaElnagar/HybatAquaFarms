@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Filament\Notifications\Notification;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -19,13 +20,13 @@ Schedule::command('backup:clean')->wednesdays()->at('19:20')
         ->body('فشلت عملية تنظيف النسخة الاحتياطية اليومية.')
         ->danger()
         ->icon('heroicon-o-x-circle')
-        ->sendToDatabase(\App\Models\User::all()))
+        ->sendToDatabase(User::all()))
     ->onSuccess(fn () => Notification::make()
         ->title('تم تنظيف النسخة الاحتياطية بنجاح')
         ->body('اكتملت عملية تنظيف النسخة الاحتياطية اليومية بنجاح.')
         ->success()
         ->icon('heroicon-o-check-circle')
-        ->sendToDatabase(\App\Models\User::all()));
+        ->sendToDatabase(User::all()));
 
 Schedule::command('backup:run')->dailyAt('19:21')
     ->onFailure(fn () => Notification::make()
@@ -33,10 +34,10 @@ Schedule::command('backup:run')->dailyAt('19:21')
         ->body('فشلت عملية النسخ الاحتياطي اليومية.')
         ->danger()
         ->icon('heroicon-o-x-circle')
-        ->sendToDatabase(\App\Models\User::all()))
+        ->sendToDatabase(User::all()))
     ->onSuccess(fn () => Notification::make()
         ->title('تم النسخ الاحتياطي بنجاح')
         ->body('اكتملت عملية النسخ الاحتياطي اليومية بنجاح.')
         ->success()
         ->icon('heroicon-o-check-circle')
-        ->sendToDatabase(\App\Models\User::all()));
+        ->sendToDatabase(User::all()));

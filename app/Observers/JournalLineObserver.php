@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Enums\AccountType;
+use App\Models\Account;
 use App\Models\JournalLine;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +31,7 @@ class JournalLineObserver
 
     protected function updateAccountBalance(int $accountId): void
     {
-        $account = \App\Models\Account::find($accountId);
+        $account = Account::find($accountId);
         if (! $account) {
             return;
         }

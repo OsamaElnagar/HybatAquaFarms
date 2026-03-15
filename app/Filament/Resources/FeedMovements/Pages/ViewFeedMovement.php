@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FeedMovements\Pages;
 
+use App\Enums\FeedMovementType;
 use App\Filament\Resources\FeedMovements\FeedMovementResource;
 use App\Filament\Resources\FeedMovements\Infolists\FeedMovementInfolist;
 use Filament\Actions\EditAction;
@@ -16,7 +17,7 @@ class ViewFeedMovement extends ViewRecord
     {
         return [
             EditAction::make()
-                ->visible(fn ($record) => $record->movement_type !== \App\Enums\FeedMovementType::Out),
+                ->visible(fn ($record) => $record->movement_type !== FeedMovementType::Out),
         ];
     }
 

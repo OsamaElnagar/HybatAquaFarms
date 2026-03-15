@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FactoryType;
 use App\Observers\FactoryObserver;
+use Database\Factories\FactoryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[ObservedBy([FactoryObserver::class])]
 class Factory extends Model
 {
-    /** @use HasFactory<\Database\Factories\FactoryFactory> */
+    /** @use HasFactory<FactoryFactory> */
     use HasFactory;
 
     protected $fillable = [

@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -39,7 +40,7 @@ class HarvestsRelationManager extends RelationManager
                     ->numeric(locale: 'en')
                     ->state(fn ($record) => $record->total_boxes)
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المجموع')
                             ->using(fn ($query) => $query->get()->sum('total_boxes')),
                     ]),
@@ -49,7 +50,7 @@ class HarvestsRelationManager extends RelationManager
                     ->suffix(' كجم')
                     ->state(fn ($record) => $record->total_weight)
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المجموع')
                             ->numeric(decimalPlaces: 3)
                             ->suffix(' كجم')
@@ -60,7 +61,7 @@ class HarvestsRelationManager extends RelationManager
                     ->numeric(locale: 'en')
                     ->state(fn ($record) => $record->total_quantity)
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المجموع')
                             ->using(fn ($query) => $query->get()->sum('total_quantity')),
                     ]),

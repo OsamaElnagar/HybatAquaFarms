@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Farm;
+use App\Models\OrderItem;
 use Filament\Widgets\ChartWidget;
 
 class HarvestByFarmChart extends ChartWidget
@@ -28,7 +29,7 @@ class HarvestByFarmChart extends ChartWidget
         $data = [];
 
         foreach ($farms as $farm) {
-            $query = \App\Models\OrderItem::query();
+            $query = OrderItem::query();
             $query->whereHas('order.harvestOperation', function ($q) use ($farm, $startDate) {
                 $q->where('farm_id', $farm->id);
 

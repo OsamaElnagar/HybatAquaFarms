@@ -2,8 +2,13 @@
 
 namespace App\Filament\Resources\Traders\Pages;
 
+use App\Filament\Resources\Traders\Actions\GiveCashAction;
+use App\Filament\Resources\Traders\Actions\ReceivePaymentAction;
+use App\Filament\Resources\Traders\Infolists\TraderInfolist;
 use App\Filament\Resources\Traders\TraderResource;
 use App\Filament\Resources\Traders\Widgets\TraderStatsWidget;
+use App\Models\Trader;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
@@ -31,6 +36,18 @@ class ViewTrader extends ViewRecord
     {
         return [
             EditAction::make(),
+            ReceivePaymentAction::make(),
+            GiveCashAction::make(),
+            Action::make('statementOfAccount')
+                ->label('كشف الحساب')
+                ->icon('heroicon-o-document-text')
+                ->color('info')
+                ->url(fn (Trader $record): string => TraderResource::getUrl('statement', ['record' => $record])),
+            Action::make('statementsHistory')
+                ->label('سجل الكشوفات')
+                ->icon('heroicon-o-list-bullet')
+                ->color('gray')
+                ->url(fn (Trader $record): string => TraderResource::getUrl('statements', ['record' => $record])),
         ];
     }
 
@@ -43,7 +60,7 @@ class ViewTrader extends ViewRecord
 
     public function infolist(Schema $schema): Schema
     {
-        return \App\Filament\Resources\Traders\Infolists\TraderInfolist::configure($schema);
+        return TraderInfolist::configure($schema);
     }
 
     public function hasCombinedRelationManagerTabsWithContent(): bool

@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\Factories\RelationManagers;
 
 use App\Enums\PaymentMethod;
+use App\Models\BatchFish;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -37,7 +39,7 @@ class BatchPaymentsRelationManager extends RelationManager
                 Select::make('batch_fish_id')
                     ->label('الدفعة (الصنف)')
                     ->options(function ($livewire) {
-                        return \App\Models\BatchFish::with(['batch', 'species'])
+                        return BatchFish::with(['batch', 'species'])
                             ->where('factory_id', $livewire->ownerRecord->id)
                             ->get()
                             ->mapWithKeys(function ($fish) {
@@ -47,15 +49,15 @@ class BatchPaymentsRelationManager extends RelationManager
                     ->live()
                     ->afterStateUpdated(function (Set $set, $state) {
                         if ($state) {
-                            $fish = \App\Models\BatchFish::find($state);
+                            $fish = BatchFish::find($state);
                             if ($fish) {
                                 $set('batch_id', $fish->batch_id);
                             }
                         }
                     })
                     ->required(),
-                \Filament\Forms\Components\Hidden::make('batch_id'),
-                \Filament\Forms\Components\Hidden::make('factory_id')
+                Hidden::make('batch_id'),
+                Hidden::make('factory_id')
                     ->default(fn ($livewire) => $livewire->ownerRecord->id),
                 DatePicker::make('date')
                     ->label('التاريخ')
@@ -75,7 +77,7 @@ class BatchPaymentsRelationManager extends RelationManager
                 Textarea::make('description')
                     ->label('البيان')
                     ->columnSpanFull(),
-                \Filament\Forms\Components\Hidden::make('recorded_by')
+                Hidden::make('recorded_by')
                     ->default(fn () => auth()->id()),
                 Textarea::make('notes')
                     ->label('ملاحظات')

@@ -2,6 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Telegram\AdvanceReportService;
+use App\Services\Telegram\BatchReportService;
+use App\Services\Telegram\CashflowReportService;
+use App\Services\Telegram\DailyFeedIssueReportService;
+use App\Services\Telegram\EmployeeReportService;
+use App\Services\Telegram\ExpenseReportService;
+use App\Services\Telegram\ExternalCalculationReportService;
+use App\Services\Telegram\FarmExpenseReportService;
+use App\Services\Telegram\FeedStockReportService;
+use App\Services\Telegram\HarvestReportService;
+use App\Services\Telegram\SalesReportService;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
 use DefStudio\Telegraph\Keyboard\Button;
 use DefStudio\Telegraph\Keyboard\Keyboard;
@@ -12,7 +23,7 @@ class TelegramWebhookHandler extends WebhookHandler
 {
     public function sales()
     {
-        $service = app(\App\Services\Telegram\SalesReportService::class);
+        $service = app(SalesReportService::class);
         $this->chat->html('<i>جاري جلب بيانات المبيعات...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
@@ -25,14 +36,14 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function harvest()
     {
-        $service = app(\App\Services\Telegram\HarvestReportService::class);
+        $service = app(HarvestReportService::class);
         $this->chat->html('<i>جاري جلب بيانات الحصاد...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function feedStock()
     {
-        $service = app(\App\Services\Telegram\FeedStockReportService::class);
+        $service = app(FeedStockReportService::class);
         $this->chat->html('<i>جاري جلب تنبيهات المخزون...</i> ⏳')->send();
 
         $data = $service->generateSummaryReport();
@@ -51,7 +62,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function warehouseStock(int $id)
     {
-        $service = app(\App\Services\Telegram\FeedStockReportService::class);
+        $service = app(FeedStockReportService::class);
         $html = $service->generateWarehouseReport($id);
 
         // Send as a new HTML message to the chat
@@ -60,7 +71,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function batches()
     {
-        $batchReportService = app(\App\Services\Telegram\BatchReportService::class);
+        $batchReportService = app(BatchReportService::class);
         $this->chat->html('<i>جاري جلب بيانات الدورات النشطة...</i> ⏳')->send();
 
         $data = $batchReportService->generateActiveBatchesReport();
@@ -85,7 +96,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function batchReport(int $id)
     {
-        $service = app(\App\Services\Telegram\BatchReportService::class);
+        $service = app(BatchReportService::class);
         $html = $service->generateBatchReport($id);
 
         $this->chat->html($html)->send();
@@ -93,21 +104,21 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function expenses()
     {
-        $service = app(\App\Services\Telegram\ExpenseReportService::class);
+        $service = app(ExpenseReportService::class);
         $this->chat->html('<i>جاري جلب بيانات المصروفات...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function cashflow()
     {
-        $service = app(\App\Services\Telegram\CashflowReportService::class);
+        $service = app(CashflowReportService::class);
         $this->chat->html('<i>جاري جلب بيانات التدفقات النقدية...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function advances()
     {
-        $service = app(\App\Services\Telegram\AdvanceReportService::class);
+        $service = app(AdvanceReportService::class);
         $this->chat->html('<i>جاري جلب بيانات السلف...</i> ⏳')->send();
 
         $data = $service->generateSummaryReport();
@@ -132,7 +143,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function advanceReport(int $id)
     {
-        $service = app(\App\Services\Telegram\AdvanceReportService::class);
+        $service = app(AdvanceReportService::class);
         $html = $service->generateEmployeeAdvanceReport($id);
 
         $this->chat->html($html)->send();
@@ -140,14 +151,14 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function dailyFeedIssues()
     {
-        $service = app(\App\Services\Telegram\DailyFeedIssueReportService::class);
+        $service = app(DailyFeedIssueReportService::class);
         $this->chat->html('<i>جاري جلب بيانات منصرف الأعلاف...</i> ⏳')->send();
         $this->chat->html($service->generateReport())->send();
     }
 
     public function employees()
     {
-        $service = app(\App\Services\Telegram\EmployeeReportService::class);
+        $service = app(EmployeeReportService::class);
         $this->chat->html('<i>جاري جلب بيانات الموظفين...</i> ⏳')->send();
 
         $data = $service->generateSummaryReport();
@@ -172,7 +183,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function employeeReport(int $id)
     {
-        $service = app(\App\Services\Telegram\EmployeeReportService::class);
+        $service = app(EmployeeReportService::class);
         $html = $service->generateEmployeeReport($id);
 
         $this->chat->html($html)->send();
@@ -204,7 +215,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function externalCalculations()
     {
-        $service = app(\App\Services\Telegram\ExternalCalculationReportService::class);
+        $service = app(ExternalCalculationReportService::class);
         $this->chat->html('<i>جاري جلب بيانات الحسابات الخارجية...</i> ⏳')->send();
 
         $data = $service->generateSummaryReport();
@@ -225,7 +236,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function externalCalculationReport(int $id)
     {
-        $service = app(\App\Services\Telegram\ExternalCalculationReportService::class);
+        $service = app(ExternalCalculationReportService::class);
         $html = $service->generateAccountReport($id);
 
         $this->chat->html($html)->send();
@@ -233,7 +244,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function farmExpenses()
     {
-        $service = app(\App\Services\Telegram\FarmExpenseReportService::class);
+        $service = app(FarmExpenseReportService::class);
         $this->chat->html('<i>جاري جلب بيانات مصروفات المزارع...</i> ⏳')->send();
 
         $data = $service->generateSummaryReport();
@@ -254,7 +265,7 @@ class TelegramWebhookHandler extends WebhookHandler
 
     public function farmExpenseReport(int $id)
     {
-        $service = app(\App\Services\Telegram\FarmExpenseReportService::class);
+        $service = app(FarmExpenseReportService::class);
         $html = $service->generateFarmReport($id);
 
         $this->chat->html($html)->send();

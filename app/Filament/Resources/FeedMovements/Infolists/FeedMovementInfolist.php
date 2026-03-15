@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\FeedMovements\Infolists;
 
+use App\Filament\Resources\Factories\FactoryResource;
+use App\Filament\Resources\FeedWarehouses\FeedWarehouseResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -40,13 +42,13 @@ class FeedMovementInfolist
                         TextEntry::make('fromWarehouse.name')
                             ->label('من المستودع')
                             ->placeholder('غير محدد')
-                            ->url(fn ($record) => $record->from_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $record->from_warehouse_id]) : null)
+                            ->url(fn ($record) => $record->from_warehouse_id ? FeedWarehouseResource::getUrl('view', ['record' => $record->from_warehouse_id]) : null)
                             ->color(fn ($record) => $record->from_warehouse_id ? 'primary' : null)
                             ->columnSpan(1),
                         TextEntry::make('toWarehouse.name')
                             ->label('إلى المستودع')
                             ->placeholder('غير محدد')
-                            ->url(fn ($record) => $record->to_warehouse_id ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $record->to_warehouse_id]) : null)
+                            ->url(fn ($record) => $record->to_warehouse_id ? FeedWarehouseResource::getUrl('view', ['record' => $record->to_warehouse_id]) : null)
                             ->color(fn ($record) => $record->to_warehouse_id ? 'primary' : null)
                             ->columnSpan(1),
                     ])
@@ -58,7 +60,7 @@ class FeedMovementInfolist
                     ->schema([
                         TextEntry::make('factory.name')
                             ->label('المصنع')
-                            ->url(fn ($record) => $record->factory_id ? \App\Filament\Resources\Factories\FactoryResource::getUrl('view', ['record' => $record->factory_id]) : null)
+                            ->url(fn ($record) => $record->factory_id ? FactoryResource::getUrl('view', ['record' => $record->factory_id]) : null)
                             ->color(fn ($record) => $record->factory_id ? 'primary' : null)
                             ->placeholder('غير محدد')
                             ->columnSpan(1),

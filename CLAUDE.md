@@ -393,7 +393,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.16
+- php - 8.4.19
 - filament/filament (FILAMENT) - v4
 - laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v12
@@ -414,7 +414,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
-- `fluxui-development` — Develops UIs with Flux UI Free components. Activates when creating buttons, forms, modals, inputs, dropdowns, checkboxes, or UI components; replacing HTML form elements with Flux; working with flux: components; or when the user mentions Flux, component library, UI components, form fields, or asks about available Flux components.
+- `fluxui-development` — Use this skill for Flux UI development in Livewire applications only. Trigger when working with <flux:*> components, building or customizing Livewire component UIs, creating forms, modals, tables, or other interactive elements. Covers: flux: components (buttons, inputs, modals, forms, tables, date-pickers, kanban, badges, tooltips, etc.), component composition, Tailwind CSS styling, Heroicons/Lucide icon integration, validation patterns, responsive design, and theming. Do not use for non-Livewire frameworks or non-component styling.
 - `volt-development` — Develops single-file Livewire components with Volt. Activates when creating Volt components, converting Livewire to Volt, working with @volt directive, functional or class-based Volt APIs; or when the user mentions Volt, single-file components, functional Livewire, or inline component logic in Blade files.
 - `pest-testing` — Tests applications using the Pest 4 PHP framework. Activates when writing tests, creating unit or feature tests, adding assertions, testing Livewire components, browser testing, debugging test failures, working with datasets or mocking; or when the user mentions test, spec, TDD, expects, assertion, coverage, or needs to verify functionality works.
 - `tailwindcss-development` — Styles applications using Tailwind CSS v4 utilities. Activates when adding styles, restyling components, working with gradients, spacing, layout, flex, grid, responsive design, dark mode, colors, typography, or borders; or when the user mentions CSS, styling, classes, Tailwind, restyle, hero section, cards, buttons, or any visual/UI changes.
@@ -452,19 +452,23 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Laravel Boost is an MCP server that comes with powerful tools designed specifically for this application. Use them.
 
-## Artisan
+## Artisan Commands
 
-- Use the `list-artisan-commands` tool when you need to call an Artisan command to double-check the available parameters.
+- Run Artisan commands directly via the command line (e.g., `php artisan route:list`, `php artisan tinker --execute "..."`).
+- Use `php artisan list` to discover available commands and `php artisan [command] --help` to check parameters.
 
 ## URLs
 
 - Whenever you share a project URL with the user, you should use the `get-absolute-url` tool to ensure you're using the correct scheme, domain/IP, and port.
 
-## Tinker / Debugging
+## Debugging
 
-- You should use the `tinker` tool when you need to execute PHP to debug code or query Eloquent models directly.
 - Use the `database-query` tool when you only need to read from the database.
 - Use the `database-schema` tool to inspect table structure before writing migrations or models.
+- To execute PHP code for debugging, run `php artisan tinker --execute "your code here"` directly.
+- To read configuration values, read the config files directly or run `php artisan config:show [key]`.
+- To inspect routes, run `php artisan route:list` directly.
+- To check environment variables, read the `.env` file directly.
 
 ## Reading Browser Logs With the `browser-logs` Tool
 
@@ -541,7 +545,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 # Do Things the Laravel Way
 
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
+- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using `php artisan list` and check their parameters with `php artisan [command] --help`.
 - If you're creating a generic PHP class, use `php artisan make:class`.
 - Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
 
@@ -555,7 +559,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ### Model Creation
 
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
+- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `php artisan make:model --help` to check the available options.
 
 ### APIs & Eloquent Resources
 
@@ -623,14 +627,6 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - If you have modified any PHP files, you must run `vendor/bin/pint --dirty --format agent` before finalizing changes to ensure your code matches the project's expected style.
 - Do not run `vendor/bin/pint --test --format agent`, simply run `vendor/bin/pint --format agent` to fix any formatting issues.
-
-=== fluxui-free/core rules ===
-
-# Flux UI Free
-
-- Flux UI is the official Livewire component library. This project uses the free edition, which includes all free components and variants but not Pro components.
-- Use `<flux:*>` components when available; they are the recommended way to build Livewire interfaces.
-- IMPORTANT: Activate `fluxui-development` when working with Flux UI components.
 
 === volt/core rules ===
 

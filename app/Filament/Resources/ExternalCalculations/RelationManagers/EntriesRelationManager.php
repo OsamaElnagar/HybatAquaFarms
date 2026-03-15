@@ -4,12 +4,14 @@ namespace App\Filament\Resources\ExternalCalculations\RelationManagers;
 
 use App\Enums\AccountType;
 use App\Enums\ExternalCalculationType;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -36,7 +38,7 @@ class EntriesRelationManager extends RelationManager
                 Forms\Components\Select::make('farm_id')
                     ->label('المزرعة')
                     ->relationship('farm', 'name'),
-                Forms\Components\DatePicker::make('date')
+                DatePicker::make('date')
                     ->displayFormat('Y-m-d')
                     ->native(false)
                     ->label('التاريخ')
@@ -51,7 +53,7 @@ class EntriesRelationManager extends RelationManager
                     ->relationship(
                         'treasuryAccount',
                         'name',
-                        fn($query) => $query->where('is_treasury', true)
+                        fn ($query) => $query->where('is_treasury', true)
                     )
                     ->searchable()
                     ->preload()
@@ -102,8 +104,8 @@ class EntriesRelationManager extends RelationManager
                     ->label('النوع')
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn($state) => $state?->getLabel())
-                    ->color(fn($state) => $state?->getColor()),
+                    ->formatStateUsing(fn ($state) => $state?->getLabel())
+                    ->color(fn ($state) => $state?->getColor()),
                 Tables\Columns\TextColumn::make('date')
                     ->label('التاريخ')
                     ->date('Y-m-d')
@@ -120,22 +122,22 @@ class EntriesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->type === ExternalCalculationType::Receipt ? 'success' : 'danger')
+                    ->color(fn ($record) => $record->type === ExternalCalculationType::Receipt ? 'success' : 'danger')
                     ->sortable()
                     ->summarize([
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المقبوضات (دائن)')
-                            ->query(fn($query) => $query->where('type', ExternalCalculationType::Receipt))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('type', ExternalCalculationType::Receipt))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('المدفوعات (مدين)')
-                            ->query(fn($query) => $query->where('type', ExternalCalculationType::Payment))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('type', ExternalCalculationType::Payment))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn($query) => $query->sum(DB::raw("CASE WHEN type = 'receipt' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN type = 'receipt' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 Tables\Columns\TextColumn::make('reference_number')
@@ -150,19 +152,19 @@ class EntriesRelationManager extends RelationManager
                 Filter::make('date')
                     ->label('التاريخ')
                     ->schema([
-                        \Filament\Forms\Components\DatePicker::make('from')
+                        DatePicker::make('from')
                             ->label('من تاريخ')
                             ->displayFormat('Y-m-d')
                             ->native(false),
-                        \Filament\Forms\Components\DatePicker::make('to')
+                        DatePicker::make('to')
                             ->label('إلى تاريخ')
                             ->displayFormat('Y-m-d')
                             ->native(false),
                     ])
                     ->query(
-                        fn(Builder $query, array $data): Builder => $query
-                            ->when($data['from'] ?? null, fn(Builder $q, $date) => $q->whereDate('date', '>=', \Carbon\Carbon::parse($date)))
-                            ->when($data['to'] ?? null, fn(Builder $q, $date) => $q->whereDate('date', '<=', \Carbon\Carbon::parse($date))),
+                        fn (Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('date', '>=', Carbon::parse($date)))
+                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('date', '<=', Carbon::parse($date))),
                     ),
             ])
             ->headerActions([

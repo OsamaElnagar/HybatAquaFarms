@@ -5,10 +5,11 @@ namespace Database\Factories;
 use App\Enums\FarmExpenseType;
 use App\Models\Account;
 use App\Models\Farm;
+use App\Models\FarmExpense;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FarmExpense>
+ * @extends Factory<FarmExpense>
  */
 class FarmExpenseFactory extends Factory
 {

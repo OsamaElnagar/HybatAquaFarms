@@ -2,8 +2,11 @@
 
 namespace App\Services\Reports;
 
+use App\Enums\AdvanceStatus;
 use App\Enums\ExternalCalculationType;
 use App\Enums\FarmExpenseType;
+use App\Enums\PettyTransacionType;
+use App\Enums\VoucherType;
 use App\Models\Batch;
 use App\Models\DailyFeedIssue;
 use App\Models\EmployeeAdvance;
@@ -18,7 +21,9 @@ use App\Models\OrderItem;
 use App\Models\PettyCashTransaction;
 use App\Models\SalesOrder;
 use App\Models\Voucher;
+use App\Services\TreasuryService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ComprehensiveDailyReportDataService
 {
@@ -32,7 +37,7 @@ class ComprehensiveDailyReportDataService
         $endOfMonth = $now->copy()->endOfMonth();
 
         // 1. Treasury
-        $treasuryService = app(\App\Services\TreasuryService::class);
+        $treasuryService = app(TreasuryService::class);
         $dailyTreasury = $treasuryService->getDailySummary();
         $totalBalance = $treasuryService->getTreasuryBalance();
 
@@ -171,7 +176,7 @@ class ComprehensiveDailyReportDataService
 
         $feedCostLegacy = (clone $feedQueryLegacy)
             ->join('feed_items', 'daily_feed_issues.feed_item_id', '=', 'feed_items.id')
-            ->sum(\Illuminate\Support\Facades\DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
+            ->sum(DB::raw('daily_feed_issues.quantity * feed_items.standard_cost'));
 
         // Get the latest 2 dates with feed issues
         $latestDates = DailyFeedIssue::select('date')
@@ -210,12 +215,12 @@ class ComprehensiveDailyReportDataService
         ];
 
         // 7. Expenses
-        $outVouchers = Voucher::where('voucher_type', \App\Enums\VoucherType::Payment)
+        $outVouchers = Voucher::where('voucher_type', VoucherType::Payment)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
         $outPettyCash = PettyCashTransaction::with(['pettyCash.farms'])
-            ->where('direction', \App\Enums\PettyTransacionType::OUT)
+            ->where('direction', PettyTransacionType::OUT)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
@@ -277,7 +282,7 @@ class ComprehensiveDailyReportDataService
 
         // 9. Advances
         $activeAdvances = EmployeeAdvance::with('employee.farm')
-            ->where('status', \App\Enums\AdvanceStatus::Active)
+            ->where('status', AdvanceStatus::Active)
             ->get();
 
         $advancesCount = $activeAdvances->count();

@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use App\Enums\HarvestOperationStatus;
+use App\Traits\ProtectsClosedBatch;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class HarvestOperation extends Model
 {
-    use \App\Traits\ProtectsClosedBatch, HasFactory;
+    use HasFactory, ProtectsClosedBatch;
 
     protected $fillable = [
         'operation_number',
@@ -39,7 +42,7 @@ class HarvestOperation extends Model
     protected static function booted()
     {
         static::creating(function ($model) {
-            if (!$model->operation_number) {
+            if (! $model->operation_number) {
                 $model->operation_number = static::generateOperationNumber();
             }
         });
@@ -53,7 +56,7 @@ class HarvestOperation extends Model
         $lastOperation = static::latest('id')->first();
         $number = $lastOperation ? ((int) substr($lastOperation->operation_number, 4)) + 1 : 1;
 
-        return 'HOP-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+        return 'HOP-'.str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 
     // Relationships
@@ -92,6 +95,11 @@ class HarvestOperation extends Model
         return $this->hasMany(SalesOrder::class);
     }
 
+    public function traderStatements(): BelongsToMany
+    {
+        return $this->belongsToMany(TraderStatement::class, 'harvest_operation_trader_statement');
+    }
+
     public function getTotalBoxesAttribute(): int
     {
         return (int) $this->orderItems()->sum('quantity');
@@ -104,7 +112,7 @@ class HarvestOperation extends Model
 
     public function getFullDisplayNameAttribute(): string
     {
-        /** @var \Carbon\Carbon|null $startDate */
+        /** @var Carbon|null $startDate */
         $startDate = $this->start_date;
         $date = $startDate?->format('Y-m-d') ?? '—';
 

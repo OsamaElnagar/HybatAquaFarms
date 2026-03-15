@@ -2,22 +2,29 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
+use App\Enums\FactoryType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class FishRelationManager extends RelationManager
 {
     protected static string $relationship = 'fish';
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return 'أنواع المزروعات في الدفعة';
     }
@@ -36,9 +43,9 @@ class FishRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                \Filament\Schemas\Components\Grid::make(2)
+                Grid::make(2)
                     ->schema([
-                        \Filament\Forms\Components\Select::make('species_id')
+                        Select::make('species_id')
                             ->label('نوع المزروعات')
                             ->relationship('species', 'name')
                             ->required()
@@ -46,17 +53,17 @@ class FishRelationManager extends RelationManager
                             ->preload()
                             ->columnSpan(1),
 
-                        \Filament\Forms\Components\Select::make('factory_id')
+                        Select::make('factory_id')
                             ->label('المورد/المفرخ')
-                            ->relationship('factory', 'name', function (\Illuminate\Database\Eloquent\Builder $query) {
-                                return $query->where('type', '!=', \App\Enums\FactoryType::FEEDS);
+                            ->relationship('factory', 'name', function (Builder $query) {
+                                return $query->where('type', '!=', FactoryType::FEEDS);
                             })
                             ->searchable()
                             ->preload()
                             ->columnSpan(1),
                     ]),
 
-                \Filament\Schemas\Components\Grid::make(3)
+                Grid::make(3)
                     ->schema([
                         TextInput::make('quantity')
                             ->label('الكمية')
@@ -94,7 +101,7 @@ class FishRelationManager extends RelationManager
                             ->columnSpan(1),
                     ]),
 
-                \Filament\Forms\Components\Textarea::make('notes')
+                Textarea::make('notes')
                     ->label('ملاحظات')
                     ->maxLength(1000)
                     ->columnSpanFull(),
@@ -118,7 +125,7 @@ class FishRelationManager extends RelationManager
                     ->label('الكمية')
                     ->numeric(locale: 'en')
                     ->sortable()
-                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->label('الإجمالي')->numeric(decimalPlaces: 0, locale: 'en')),
+                    ->summarize(Sum::make()->label('الإجمالي')->numeric(decimalPlaces: 0, locale: 'en')),
                 TextColumn::make('unit_cost')
                     ->label('تكلفة الوحدة')
                     ->money('EGP', decimalPlaces: 2, locale: 'en')
@@ -127,7 +134,7 @@ class FishRelationManager extends RelationManager
                     ->label('التكلفة الإجمالية')
                     ->money('EGP', decimalPlaces: 0, locale: 'en')
                     ->sortable()
-                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->label('الإجمالي')->money('EGP', decimalPlaces: 0, locale: 'en')),
+                    ->summarize(Sum::make()->label('الإجمالي')->money('EGP', decimalPlaces: 0, locale: 'en')),
             ])
             ->filters([
                 //

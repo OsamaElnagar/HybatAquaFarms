@@ -6,6 +6,7 @@ use App\Enums\ExternalCalculationType;
 use App\Models\ExternalCalculation;
 use App\Models\ExternalCalculationEntry;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class ExternalCalculationReportService
 {
@@ -80,7 +81,7 @@ class ExternalCalculationReportService
 
                 $html .= "<b>[$sign]</b> <code>{$amount} ج.م</code> | {$dateStr}\n";
                 if ($entry->description) {
-                    $html .= '<i>'.\Illuminate\Support\Str::limit($entry->description, 50)."</i>\n";
+                    $html .= '<i>'.Str::limit($entry->description, 50)."</i>\n";
                 }
                 $html .= "\n";
             }

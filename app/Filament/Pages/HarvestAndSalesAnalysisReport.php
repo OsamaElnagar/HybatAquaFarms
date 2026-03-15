@@ -6,8 +6,10 @@ use App\Filament\Widgets\HarvestAndSalesStats;
 use App\Filament\Widgets\HarvestByFarmChart;
 use App\Filament\Widgets\SalesByCustomerChart;
 use App\Filament\Widgets\SalesTrendChart;
+use App\Models\Batch;
 use App\Models\Farm;
 use App\Models\SalesOrder;
+use App\Services\PdfService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -89,7 +91,7 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms, HasTable
                                     return [];
                                 }
 
-                                return \App\Models\Batch::where('farm_id', $farmId)
+                                return Batch::where('farm_id', $farmId)
                                     ->pluck('batch_code', 'id');
                             })
                             ->searchable()
@@ -168,7 +170,7 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms, HasTable
                     ->label('PDF تصدير')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Table $table) {
-                        return app(\App\Services\PdfService::class)->generateReportPdf(
+                        return app(PdfService::class)->generateReportPdf(
                             'تقرير المبيعات',
                             ['التاريخ', 'رقم الطلب', 'التاجر', 'المزرعة', 'صافي المبلغ'],
                             $table->getQuery()->get()->map(fn ($record) => [

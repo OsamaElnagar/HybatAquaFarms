@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\SpeciesType;
+use Database\Factories\SpeciesFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Species extends Model
 {
-    /** @use HasFactory<\Database\Factories\SpeciesFactory> */
+    /** @use HasFactory<SpeciesFactory> */
     use HasFactory;
 
     protected $fillable = [

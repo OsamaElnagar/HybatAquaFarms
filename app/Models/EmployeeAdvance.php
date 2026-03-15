@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
 use App\Observers\EmployeeAdvanceObserver;
+use Database\Factories\EmployeeAdvanceFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([EmployeeAdvanceObserver::class])]
 class EmployeeAdvance extends Model
 {
-    /** @use HasFactory<\Database\Factories\EmployeeAdvanceFactory> */
+    /** @use HasFactory<EmployeeAdvanceFactory> */
     use HasFactory;
 
     protected $fillable = [

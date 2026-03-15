@@ -3,10 +3,17 @@
 namespace App\Filament\Resources\Batches\Pages;
 
 use App\Filament\Resources\Batches\BatchResource;
+use App\Models\SalesOrder;
+use DefStudio\Telegraph\Models\TelegraphChat;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Number;
@@ -45,14 +52,14 @@ class CloseBatch extends Page
         $baseFeedCost = (float) $this->record->total_feed_cost;
         $baseOperatingExpenses = (float) $this->record->allocated_expenses;
         $baseTotalCost = (float) $this->record->total_cost;
-        $baseTotalRevenue = (float) \App\Models\SalesOrder::query()
+        $baseTotalRevenue = (float) SalesOrder::query()
             ->whereHas('harvestOperation', function ($q) {
                 $q->where('batch_id', $this->record->id);
             })->sum('net_amount');
 
         return $schema
             ->components([
-                \Filament\Schemas\Components\Section::make('الملخص المالي للدورة')
+                Section::make('الملخص المالي للدورة')
                     ->columns(4)
                     ->schema([
                         Placeholder::make('total_cost')
@@ -119,13 +126,13 @@ class CloseBatch extends Page
                             }),
                     ]),
 
-                \Filament\Schemas\Components\Section::make('معلومات الإقفال والتسويات')
+                Section::make('معلومات الإقفال والتسويات')
                     ->columns(1)
                     ->schema([
-                        \Filament\Forms\Components\Repeater::make('misc_transactions')
+                        Repeater::make('misc_transactions')
                             ->label('التسويات المالية الإضافية (إيرادات ومصروفات أخرى)')
                             ->schema([
-                                \Filament\Forms\Components\Select::make('type')
+                                Select::make('type')
                                     ->label('النوع')
                                     ->options([
                                         'revenue' => 'إيراد',
@@ -134,11 +141,11 @@ class CloseBatch extends Page
                                     ->required()
                                     ->live(debounce: 500)
                                     ->native(false),
-                                \Filament\Forms\Components\TextInput::make('description')
+                                TextInput::make('description')
                                     ->label('البيان')
                                     ->required()
                                     ->maxLength(255),
-                                \Filament\Forms\Components\TextInput::make('amount')
+                                TextInput::make('amount')
                                     ->label('المبلغ')
                                     ->numeric()
                                     ->required()
@@ -150,7 +157,7 @@ class CloseBatch extends Page
                             ->addActionLabel('إضافة تسوية مالية')
                             ->live(debounce: 500),
 
-                        \Filament\Forms\Components\Textarea::make('closure_notes')
+                        Textarea::make('closure_notes')
                             ->label('ملاحظات الإقفال')
                             ->rows(3)
                             ->nullable()
@@ -190,7 +197,7 @@ class CloseBatch extends Page
             ->send();
 
         // Send Telegram Notification
-        $chats = \DefStudio\Telegraph\Models\TelegraphChat::all();
+        $chats = TelegraphChat::all();
         if ($chats->isNotEmpty()) {
             $currency = function ($value) {
                 return number_format((float) $value).' EGP';

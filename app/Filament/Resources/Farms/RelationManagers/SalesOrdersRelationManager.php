@@ -2,12 +2,9 @@
 
 namespace App\Filament\Resources\Farms\RelationManagers;
 
-use App\Filament\Resources\SalesOrders\SalesOrderResource;
-use App\Filament\Resources\SalesOrders\Schemas\SalesOrderForm;
 use App\Filament\Resources\SalesOrders\Tables\SalesOrdersTable;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;

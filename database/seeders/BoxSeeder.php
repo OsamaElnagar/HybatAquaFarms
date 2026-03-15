@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Box;
+use App\Models\Species;
 use Illuminate\Database\Seeder;
 
 class BoxSeeder extends Seeder
@@ -11,7 +13,7 @@ class BoxSeeder extends Seeder
      */
     public function run(): void
     {
-        $speciesList = \App\Models\Species::all();
+        $speciesList = Species::all();
 
         if ($speciesList->isEmpty()) {
             // Fallback if no species, though SpeciesSeeder should run first
@@ -29,7 +31,7 @@ class BoxSeeder extends Seeder
 
         foreach ($speciesList as $species) {
             foreach ($boxTypes as $type) {
-                \App\Models\Box::firstOrCreate(
+                Box::firstOrCreate(
                     [
                         'name' => $type['name'].' - '.$species->name,
                         'species_id' => $species->id,

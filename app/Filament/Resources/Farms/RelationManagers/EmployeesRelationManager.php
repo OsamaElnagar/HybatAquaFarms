@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Farms\RelationManagers;
 
+use App\Enums\AdvanceApprovalStatus;
+use App\Enums\AdvanceStatus;
 use App\Filament\Resources\Employees\EmployeeResource;
+use App\Models\EmployeeAdvance;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -13,8 +16,10 @@ use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Query\Builder;
 
 class EmployeesRelationManager extends RelationManager
 {
@@ -73,13 +78,13 @@ class EmployeesRelationManager extends RelationManager
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                     ->summarize(
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->numeric(locale: 'en')
-                            ->using(function (\Illuminate\Database\Query\Builder $query) {
-                                return \App\Models\EmployeeAdvance::query()
+                            ->using(function (Builder $query) {
+                                return EmployeeAdvance::query()
                                     ->whereIn('employee_id', (clone $query)->select('employees.id'))
-                                    ->where('status', \App\Enums\AdvanceStatus::Active)
-                                    ->where('approval_status', \App\Enums\AdvanceApprovalStatus::APPROVED)
+                                    ->where('status', AdvanceStatus::Active)
+                                    ->where('approval_status', AdvanceApprovalStatus::APPROVED)
                                     ->sum('balance_remaining');
                             })
                     )

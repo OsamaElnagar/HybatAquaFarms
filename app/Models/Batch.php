@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\BatchCycleType;
 use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
+use App\Enums\FeedMovementType;
+use App\Enums\PettyTransacionType;
 use App\Observers\BatchObserver;
+use Database\Factories\BatchFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[ObservedBy([BatchObserver::class])]
 class Batch extends Model
 {
-    /** @use HasFactory<\Database\Factories\BatchFactory> */
+    /** @use HasFactory<BatchFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -64,7 +68,7 @@ class Batch extends Model
             'total_revenue' => 'decimal:2',
             'net_profit' => 'decimal:2',
             'misc_transactions' => 'array',
-            'cycle_type' => \App\Enums\BatchCycleType::class,
+            'cycle_type' => BatchCycleType::class,
         ];
     }
 
@@ -246,9 +250,9 @@ class Batch extends Model
         // Fetch the latest "IN" movement unit costs for the consumed feed items
         $feedItemIds = $issues->pluck('feed_item_id')->filter()->unique();
 
-        $latestInMovements = \App\Models\FeedMovement::query()
+        $latestInMovements = FeedMovement::query()
             ->whereIn('feed_item_id', $feedItemIds)
-            ->where('movement_type', \App\Enums\FeedMovementType::In)
+            ->where('movement_type', FeedMovementType::In)
             ->whereNotNull('total_cost')
             ->where('quantity', '>', 0)
             ->latest('date')
@@ -293,7 +297,7 @@ class Batch extends Model
         $voucherTotal = (float) $this->vouchers()->sum('amount');
 
         $pettyCashTotal = (float) $this->pettyCashTransactions()
-            ->where('direction', \App\Enums\PettyTransacionType::OUT)
+            ->where('direction', PettyTransacionType::OUT)
             ->sum('amount');
 
         $farmUnitsCapacity = (float) $this->farm->units()->sum('capacity');
@@ -307,14 +311,14 @@ class Batch extends Model
         $farmTransactions = PettyCashTransaction::query()
             ->where('farm_id', $this->farm_id)
             ->whereNull('batch_id')
-            ->where('direction', \App\Enums\PettyTransacionType::OUT)
+            ->where('direction', PettyTransacionType::OUT)
             ->whereDate('date', '>=', $this->entry_date)
             ->whereDate('date', '<=', $endDate)
             ->get();
 
         if ($farmTransactions->isNotEmpty()) {
             // Get all batches for this farm so we don't query inside the loop
-            $farmBatches = \App\Models\Batch::with('units')
+            $farmBatches = Batch::with('units')
                 ->where('farm_id', $this->farm_id)
                 ->get();
 
@@ -382,7 +386,7 @@ class Batch extends Model
             return $this->cachedTotalRevenue;
         }
 
-        $this->cachedTotalRevenue = (float) \App\Models\SalesOrder::query()
+        $this->cachedTotalRevenue = (float) SalesOrder::query()
             ->whereHas('harvestOperation', function ($q) {
                 $q->where('batch_id', $this->id);
             })

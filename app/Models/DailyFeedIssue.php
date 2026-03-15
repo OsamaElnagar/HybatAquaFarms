@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Observers\DailyFeedIssueObserver;
+use App\Traits\ProtectsClosedBatch;
+use Database\Factories\DailyFeedIssueFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([DailyFeedIssueObserver::class])]
 class DailyFeedIssue extends Model
 {
-    /** @use HasFactory<\Database\Factories\DailyFeedIssueFactory> */
-    use \App\Traits\ProtectsClosedBatch, HasFactory;
+    /** @use HasFactory<DailyFeedIssueFactory> */
+    use HasFactory, ProtectsClosedBatch;
 
     protected $fillable = [
         'farm_id',

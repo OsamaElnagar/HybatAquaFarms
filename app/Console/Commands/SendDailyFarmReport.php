@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Services\PdfService;
+use App\Services\Reports\ComprehensiveDailyReportDataService;
+use DefStudio\Telegraph\Models\TelegraphChat;
 use Illuminate\Console\Command;
 
 class SendDailyFarmReport extends Command
@@ -15,11 +18,11 @@ class SendDailyFarmReport extends Command
 
     protected $description = 'Generate and send the daily sales and harvest report via Telegram';
 
-    public function handle(\App\Services\PdfService $pdfService)
+    public function handle(PdfService $pdfService)
     {
         $this->info('Fetching comprehensive realtime data...');
 
-        $dataService = app(\App\Services\Reports\ComprehensiveDailyReportDataService::class);
+        $dataService = app(ComprehensiveDailyReportDataService::class);
         $data = $dataService->gatherData();
 
         $this->info('Generating PDF Report...');
@@ -33,7 +36,7 @@ class SendDailyFarmReport extends Command
         $this->info('Sending to Telegram...');
 
         // 2. Send via Telegraph to all registered chats
-        $chats = \DefStudio\Telegraph\Models\TelegraphChat::all();
+        $chats = TelegraphChat::all();
 
         if ($chats->isEmpty()) {
             $this->warn('No Telegram chats registered.');

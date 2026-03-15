@@ -2,6 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Telegram\AdvanceReportService;
+use App\Services\Telegram\BatchReportService;
+use App\Services\Telegram\CashflowReportService;
+use App\Services\Telegram\DailyFeedIssueReportService;
+use App\Services\Telegram\EmployeeReportService;
+use App\Services\Telegram\ExpenseReportService;
+use App\Services\Telegram\FarmExpenseReportService;
+use App\Services\Telegram\FeedStockReportService;
+use App\Services\Telegram\HarvestReportService;
+use App\Services\Telegram\SalesReportService;
+use DefStudio\Telegraph\Keyboard\Keyboard;
 use DefStudio\Telegraph\Models\TelegraphChat;
 use Illuminate\Console\Command;
 
@@ -29,16 +40,16 @@ class TestTelegramReportCommand extends Command
 
         switch ($reportType) {
             case 'sales':
-                $html = app(\App\Services\Telegram\SalesReportService::class)->generateReport();
+                $html = app(SalesReportService::class)->generateReport();
                 break;
             case 'harvest':
-                $html = app(\App\Services\Telegram\HarvestReportService::class)->generateReport();
+                $html = app(HarvestReportService::class)->generateReport();
                 break;
             case 'feed':
-                $data = app(\App\Services\Telegram\FeedStockReportService::class)->generateSummaryReport();
+                $data = app(FeedStockReportService::class)->generateSummaryReport();
                 $html = $data['html'];
 
-                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                $keyboard = Keyboard::make();
                 foreach ($data['warehouses'] as $warehouse) {
                     $name = $warehouse->name;
                     if ($warehouse->farm) {
@@ -48,10 +59,10 @@ class TestTelegramReportCommand extends Command
                 }
                 break;
             case 'batches':
-                $data = app(\App\Services\Telegram\BatchReportService::class)->generateActiveBatchesReport();
+                $data = app(BatchReportService::class)->generateActiveBatchesReport();
                 $html = $data['html'];
 
-                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                $keyboard = Keyboard::make();
                 if (isset($data['batches']) && $data['batches']->isNotEmpty()) {
                     foreach ($data['batches'] as $batch) {
                         $name = $batch->batch_code;
@@ -63,22 +74,22 @@ class TestTelegramReportCommand extends Command
                 }
                 break;
             case 'expenses':
-                $html = app(\App\Services\Telegram\ExpenseReportService::class)->generateReport();
+                $html = app(ExpenseReportService::class)->generateReport();
                 break;
             case 'cashflow':
-                $html = app(\App\Services\Telegram\CashflowReportService::class)->generateReport();
+                $html = app(CashflowReportService::class)->generateReport();
                 break;
             case 'advances':
-                $html = app(\App\Services\Telegram\AdvanceReportService::class)->generateReport();
+                $html = app(AdvanceReportService::class)->generateReport();
                 break;
             case 'dailyFeedIssues':
-                $html = app(\App\Services\Telegram\DailyFeedIssueReportService::class)->generateReport();
+                $html = app(DailyFeedIssueReportService::class)->generateReport();
                 break;
             case 'employees':
-                $data = app(\App\Services\Telegram\EmployeeReportService::class)->generateSummaryReport();
+                $data = app(EmployeeReportService::class)->generateSummaryReport();
                 $html = $data['html'];
 
-                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                $keyboard = Keyboard::make();
                 if (isset($data['employees']) && $data['employees']->isNotEmpty()) {
                     foreach ($data['employees'] as $employee) {
                         $name = $employee->name;
@@ -90,10 +101,10 @@ class TestTelegramReportCommand extends Command
                 }
                 break;
             case 'farmExpenses':
-                $data = app(\App\Services\Telegram\FarmExpenseReportService::class)->generateSummaryReport();
+                $data = app(FarmExpenseReportService::class)->generateSummaryReport();
                 $html = $data['html'];
 
-                $keyboard = \DefStudio\Telegraph\Keyboard\Keyboard::make();
+                $keyboard = Keyboard::make();
                 if (isset($data['farms']) && $data['farms']->isNotEmpty()) {
                     foreach ($data['farms'] as $farm) {
                         $keyboard->button($farm->name)->action('farmExpenseReport')->param('id', $farm->id);

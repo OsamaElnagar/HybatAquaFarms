@@ -16,6 +16,7 @@ class HarvestOperationsRelationManager extends RelationManager
     protected static string $relationship = 'harvestOperations';
 
     protected static ?string $title = 'عمليات الحصاد';
+
     protected static ?string $modelLabel = 'عملية حصاد';
 
     protected static ?string $pluralModelLabel = 'عمليات حصاد';

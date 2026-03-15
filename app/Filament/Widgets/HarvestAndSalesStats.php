@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\OrderItem;
 use App\Models\SalesOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -21,7 +22,7 @@ class HarvestAndSalesStats extends BaseWidget
         $batchId = $filters['batch_id'] ?? null;
 
         // 1. Total Harvested Weight (From Order Items)
-        $weightQuery = \App\Models\OrderItem::query();
+        $weightQuery = OrderItem::query();
         $weightQuery->whereHas('order', function ($q) use ($startDate, $endDate, $farmId, $batchId) {
             // Order has harvest_id and harvest_operation_id
             if ($startDate) {
@@ -72,7 +73,7 @@ class HarvestAndSalesStats extends BaseWidget
         // We need weight of items IN those sales orders to account for partial sales logic if it existed (but here SalesOrder = Sold).
 
         // Re-use sales query filters to find sold weight
-        $soldWeightQuery = \App\Models\OrderItem::query()
+        $soldWeightQuery = OrderItem::query()
             ->whereHas('order.salesOrders', function ($q) use ($startDate, $endDate, $farmId) {
                 // Same filters as sales query
                 if ($startDate) {

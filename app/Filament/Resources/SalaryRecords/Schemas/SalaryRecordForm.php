@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\SalaryStatus;
 use App\Models\Employee;
 use App\Models\SalaryRecord;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -317,8 +318,8 @@ class SalaryRecordForm
         // 26-day month per business rule (4 days off)
         $perDay = (float) $employee->basic_salary / 26;
 
-        $startDate = \Carbon\Carbon::parse($start)->startOfDay();
-        $endDate = \Carbon\Carbon::parse($end)->startOfDay();
+        $startDate = Carbon::parse($start)->startOfDay();
+        $endDate = Carbon::parse($end)->startOfDay();
 
         // Ensure chronological order
         if ($endDate->lt($startDate)) {

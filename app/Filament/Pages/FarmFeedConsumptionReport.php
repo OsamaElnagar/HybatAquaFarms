@@ -7,6 +7,7 @@ use App\Filament\Widgets\FarmFeedConsumptionStats;
 use App\Filament\Widgets\FarmFeedTypeConsumptionChart;
 use App\Models\DailyFeedIssue;
 use App\Models\Farm;
+use App\Services\PdfService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -138,7 +139,7 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
                     ->label('PDF تصدير')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Table $table) {
-                        return app(\App\Services\PdfService::class)->generateReportPdf(
+                        return app(PdfService::class)->generateReportPdf(
                             'تقرير استهلاك الأعلاف',
                             ['التاريخ', 'المزرعة', 'الدورة', 'نوع العلف', 'الكمية (كجم)'],
                             $table->getQuery()->get()->map(fn ($record) => [

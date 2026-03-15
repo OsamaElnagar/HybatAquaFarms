@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 class PettyCashTransactionResource extends Resource
 {
@@ -56,7 +57,7 @@ class PettyCashTransactionResource extends Resource
             default => 'gray',
         };
 
-        return new \Illuminate\Support\HtmlString(
+        return new HtmlString(
             "<div class='flex items-center gap-2'>
                 <span>{$record->pettyCash->name}</span>
                 <span class='text-gray-500 text-sm'>({$record->date->format('Y-m-d')})</span>

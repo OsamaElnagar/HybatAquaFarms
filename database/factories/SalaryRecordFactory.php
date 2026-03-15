@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Enums\SalaryStatus;
+use App\Models\Employee;
+use App\Models\SalaryRecord;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SalaryRecord>
+ * @extends Factory<SalaryRecord>
  */
 class SalaryRecordFactory extends Factory
 {
@@ -17,7 +20,7 @@ class SalaryRecordFactory extends Factory
     public function definition(): array
     {
         return [
-            'employee_id' => \App\Models\Employee::factory(),
+            'employee_id' => Employee::factory(),
             'pay_period_start' => now()->startOfMonth(),
             'pay_period_end' => now()->endOfMonth(),
             'basic_salary' => $this->faker->randomFloat(2, 3000, 10000),
@@ -26,7 +29,7 @@ class SalaryRecordFactory extends Factory
             'advances_deducted' => 0,
             'net_salary' => $this->faker->randomFloat(2, 3000, 10000),
             'payment_date' => now(),
-            'status' => \App\Enums\SalaryStatus::PENDING,
+            'status' => SalaryStatus::PENDING,
         ];
     }
 }

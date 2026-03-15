@@ -13,12 +13,13 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class DailyFeedIssueResource extends Resource
 {
     protected static ?string $model = DailyFeedIssue::class;
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['farm', 'unit', 'feedItem', 'warehouse', 'batch', 'recordedBy']);
     }

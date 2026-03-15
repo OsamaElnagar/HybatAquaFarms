@@ -4,7 +4,9 @@ namespace App\Filament\Resources\BatchPayments\Schemas;
 
 use App\Enums\PaymentMethod;
 use App\Models\BatchFish;
+use App\Models\Factory;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class BatchPaymentForm
 {
@@ -65,7 +68,7 @@ class BatchPaymentForm
                             })
                             ->helperText('اختر الصنف والمورد المرتبط بهذه الدفعة')
                             ->columnSpan(1),
-                        \Filament\Forms\Components\Hidden::make('factory_id')
+                        Hidden::make('factory_id')
                             ->live(),
                         TextEntry::make('factory_balance')
                             ->label('رصيد المورد (لجميع الزريعة)')
@@ -75,7 +78,7 @@ class BatchPaymentForm
                                     return '-';
                                 }
 
-                                $factory = \App\Models\Factory::find($factoryId);
+                                $factory = Factory::find($factoryId);
                                 if (! $factory) {
                                     return '-';
                                 }
@@ -83,7 +86,7 @@ class BatchPaymentForm
                                 $balance = $factory->outstanding_balance;
                                 $color = $balance > 0 ? 'text-danger-600' : 'text-success-600';
 
-                                return new \Illuminate\Support\HtmlString(
+                                return new HtmlString(
                                     "<span class='font-bold {$color}'>".number_format($balance).' EGP</span>'
                                 );
                             })

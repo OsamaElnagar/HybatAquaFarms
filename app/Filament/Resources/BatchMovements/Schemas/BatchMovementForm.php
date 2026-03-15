@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\BatchMovements\Schemas;
 
 use App\Enums\MovementType;
+use App\Models\Batch;
+use App\Models\FarmUnit;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -61,7 +63,7 @@ class BatchMovementForm
                         Select::make('from_unit_id')
                             ->label('من الوحدة')
                             ->options(fn (Get $get): array => $get('from_farm_id')
-                                    ? \App\Models\FarmUnit::query()
+                                    ? FarmUnit::query()
                                         ->where('farm_id', $get('from_farm_id'))
                                         ->orderBy('code')
                                         ->pluck('code', 'id')
@@ -78,7 +80,7 @@ class BatchMovementForm
                         Select::make('to_unit_id')
                             ->label('إلى الوحدة')
                             ->options(fn (Get $get): array => $get('to_farm_id')
-                                    ? \App\Models\FarmUnit::query()
+                                    ? FarmUnit::query()
                                         ->where('farm_id', $get('to_farm_id'))
                                         ->orderBy('code')
                                         ->pluck('code', 'id')
@@ -115,7 +117,7 @@ class BatchMovementForm
                                             return;
                                         }
 
-                                        $batch = \App\Models\Batch::find($batchId);
+                                        $batch = Batch::find($batchId);
                                         if (! $batch) {
                                             return;
                                         }
@@ -139,7 +141,7 @@ class BatchMovementForm
                                     return 'عدد الأسماك/الزريعة';
                                 }
 
-                                $batch = \App\Models\Batch::find($batchId);
+                                $batch = Batch::find($batchId);
                                 if (! $batch) {
                                     return 'عدد الأسماك/الزريعة';
                                 }

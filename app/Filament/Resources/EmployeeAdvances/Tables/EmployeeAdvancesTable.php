@@ -7,6 +7,7 @@ use App\Enums\AdvanceStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -120,11 +121,11 @@ class EmployeeAdvancesTable
                 Filter::make('request_date')
                     ->label('تاريخ الطلب')
                     ->schema([
-                        \Filament\Forms\Components\DatePicker::make('from')
+                        DatePicker::make('from')
                             ->label('من')
                             ->displayFormat('Y-m-d')
                             ->native(false),
-                        \Filament\Forms\Components\DatePicker::make('to')
+                        DatePicker::make('to')
                             ->label('إلى')
                             ->displayFormat('Y-m-d')
                             ->native(false),

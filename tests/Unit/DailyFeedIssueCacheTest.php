@@ -3,12 +3,14 @@
 use App\Models\DailyFeedIssue;
 use App\Models\Farm;
 use App\Models\FeedItem;
+use App\Models\FeedStock;
 use App\Models\FeedWarehouse;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 test('daily feed issue creation caches feed item and quantity', function () {
     $user = User::factory()->create();
@@ -17,7 +19,7 @@ test('daily feed issue creation caches feed item and quantity', function () {
     $feedItem = FeedItem::factory()->create();
 
     // Create stock so movement doesnt fail
-    \App\Models\FeedStock::factory()->create([
+    FeedStock::factory()->create([
         'feed_warehouse_id' => $warehouse->id,
         'feed_item_id' => $feedItem->id,
         'quantity_in_stock' => 100,

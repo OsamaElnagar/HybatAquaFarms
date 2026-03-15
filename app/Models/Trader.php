@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
+use App\Enums\TraderStatementStatus;
 use App\Observers\TraderObserver;
+use Database\Factories\TraderFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[ObservedBy([TraderObserver::class])]
 class Trader extends Model
 {
-    /** @use HasFactory<\Database\Factories\TraderFactory> */
+    /** @use HasFactory<TraderFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -45,6 +49,11 @@ class Trader extends Model
         ];
     }
 
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
+
     public function salesOrders(): HasMany
     {
         return $this->hasMany(SalesOrder::class);
@@ -70,6 +79,44 @@ class Trader extends Model
         return $this->morphMany(PartnerLoan::class, 'loanable');
     }
 
+    public function statements(): HasMany
+    {
+        return $this->hasMany(TraderStatement::class);
+    }
+
+    public function activeStatement(): HasOne
+    {
+        return $this->hasOne(TraderStatement::class)->where('status', TraderStatementStatus::Open)->latest();
+    }
+
+    /**
+     * Open a new statement session, carrying over any outstanding balance.
+     */
+    public function openNewStatement(?string $title = null, ?string $notes = null, array $harvestOperationIds = []): TraderStatement
+    {
+        // Close any existing open statement first
+        $this->statements()->where('status', TraderStatementStatus::Open)->update([
+            'status' => TraderStatementStatus::Closed,
+            'closed_at' => now()->toDateString(),
+            'closing_balance' => $this->outstanding_balance,
+        ]);
+
+        $statement = $this->statements()->create([
+            'opened_at' => now()->toDateString(),
+            'title' => $title,
+            'opening_balance' => $this->outstanding_balance,
+            'status' => TraderStatementStatus::Open,
+            'created_by' => auth()->id(),
+            'notes' => $notes,
+        ]);
+
+        if (! empty($harvestOperationIds)) {
+            $statement->harvestOperations()->sync($harvestOperationIds);
+        }
+
+        return $statement;
+    }
+
     /**
      * Total outstanding loan balance (what the farm owes this trader).
      */
@@ -80,29 +127,15 @@ class Trader extends Model
     }
 
     /**
-     * Calculate outstanding receivable balance for this trader.
-     * Total credit sales (unpaid) minus settlements.
+     * Outstanding balance derived directly from the dedicated GL account.
+     * Positive = They owe us (Debit balance). Negative = We owe them / Advance payment (Credit balance).
      */
     public function getOutstandingBalanceAttribute(): float
     {
-        $totalCreditSales = array_key_exists('pending_sales_total', $this->attributes)
-            ? (float) $this->attributes['pending_sales_total']
-            : (float) $this->salesOrders()
-                ->whereIn('payment_status', ['pending', 'partial'])
-                ->sum('net_amount');
+        if ($this->account_id) {
+            return (float) $this->account->balance;
+        }
 
-        $clearingTotal = array_key_exists('clearing_entries_total', $this->attributes)
-            ? (float) $this->attributes['clearing_entries_total']
-            : (float) $this->clearingEntries()->sum('amount');
-
-        $receiptVouchersTotal = array_key_exists('receipt_vouchers_total', $this->attributes)
-            ? (float) $this->attributes['receipt_vouchers_total']
-            : (float) $this->vouchers()
-                ->where('voucher_type', \App\Enums\VoucherType::Receipt)
-                ->sum('amount');
-
-        $totalSettled = $clearingTotal + $receiptVouchersTotal;
-
-        return (float) max(0, $totalCreditSales - $totalSettled);
+        return 0;
     }
 }

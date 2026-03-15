@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FarmStatus;
 use App\Observers\FarmObserver;
+use Database\Factories\FarmFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 #[ObservedBy([FarmObserver::class])]
 class Farm extends Model
 {
-    /** @use HasFactory<\Database\Factories\FarmFactory> */
+    /** @use HasFactory<FarmFactory> */
     use HasFactory;
 
     protected $fillable = [

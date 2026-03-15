@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\FeedWarehouseObserver;
+use Database\Factories\FeedWarehouseFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy(FeedWarehouseObserver::class)]
 class FeedWarehouse extends Model
 {
-    /** @use HasFactory<\Database\Factories\FeedWarehouseFactory> */
+    /** @use HasFactory<FeedWarehouseFactory> */
     use HasFactory;
 
     protected $fillable = [

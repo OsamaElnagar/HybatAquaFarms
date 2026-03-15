@@ -4,6 +4,9 @@ namespace App\Filament\Resources\Batches\Tables;
 
 use App\Enums\BatchSource;
 use App\Enums\BatchStatus;
+use App\Filament\Resources\Batches\BatchResource;
+use App\Models\Factory;
+use App\Models\Species;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -12,6 +15,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class BatchesTable
 {
@@ -177,8 +181,8 @@ class BatchesTable
                     ->preload(),
                 SelectFilter::make('species_id')
                     ->label('النوع')
-                    ->options(fn () => \App\Models\Species::pluck('name', 'id'))
-                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                    ->options(fn () => Species::pluck('name', 'id'))
+                    ->query(function (Builder $query, array $data) {
                         if (empty($data['value'])) {
                             return $query;
                         }
@@ -189,8 +193,8 @@ class BatchesTable
                     ->preload(),
                 SelectFilter::make('factory_id')
                     ->label('مصنع التفريخ')
-                    ->options(fn () => \App\Models\Factory::pluck('name', 'id'))
-                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                    ->options(fn () => Factory::pluck('name', 'id'))
+                    ->query(function (Builder $query, array $data) {
                         if (empty($data['value'])) {
                             return $query;
                         }
@@ -262,7 +266,7 @@ class BatchesTable
                     ->label('إقفال الدورة')
                     ->color('danger')
                     ->icon('heroicon-o-lock-closed')
-                    ->url(fn ($record) => \App\Filament\Resources\Batches\BatchResource::getUrl('close', ['record' => $record]))
+                    ->url(fn ($record) => BatchResource::getUrl('close', ['record' => $record]))
                     ->visible(fn ($record) => ! $record->is_cycle_closed),
             ])
             ->toolbarActions([

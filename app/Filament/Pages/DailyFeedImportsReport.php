@@ -8,7 +8,9 @@ use App\Models\Factory;
 use App\Models\FeedItem;
 use App\Models\FeedMovement;
 use App\Models\FeedWarehouse;
+use App\Services\PdfService;
 use BackedEnum;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -168,11 +170,11 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
                     ->label('PDF تصدير')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Table $table) {
-                        return app(\App\Services\PdfService::class)->generateReportPdf(
+                        return app(PdfService::class)->generateReportPdf(
                             'تقرير واردات الأعلاف',
                             ['التاريخ', 'المصنع', 'الصنف', 'المخزن', 'الكمية (كجم)'],
                             $table->getQuery()->get()->map(fn ($record) => [
-                                $record->date instanceof \Carbon\Carbon ? $record->date->format('Y-m-d') : substr($record->date, 0, 10),
+                                $record->date instanceof Carbon ? $record->date->format('Y-m-d') : substr($record->date, 0, 10),
                                 $record->factory?->name ?? '-',
                                 $record->feedItem?->name ?? '-',
                                 $record->toWarehouse?->name ?? '-',

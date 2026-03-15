@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\BatchStatus;
 use App\Enums\MovementType;
 use App\Models\Batch;
 use App\Models\BatchMovement;
@@ -32,7 +33,7 @@ class BatchMovementObserver
 
         // Update batch status if needed
         if ($batch->current_quantity <= 0 && $batch->status->value !== 'depleted') {
-            $batch->update(['status' => \App\Enums\BatchStatus::Depleted]);
+            $batch->update(['status' => BatchStatus::Depleted]);
         }
     }
 
@@ -74,7 +75,7 @@ class BatchMovementObserver
 
         // Update status if all harvested
         if ($batch->current_quantity <= 0) {
-            $batch->update(['status' => \App\Enums\BatchStatus::Harvested]);
+            $batch->update(['status' => BatchStatus::Harvested]);
         }
     }
 

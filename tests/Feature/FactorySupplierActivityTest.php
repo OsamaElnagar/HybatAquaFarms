@@ -3,6 +3,7 @@
 use App\Enums\FactoryType;
 use App\Models\Factory;
 use App\Models\SupplierActivity;
+use Database\Seeders\SupplierActivitySeeder;
 
 test('it can assign a supplier activity to a factory', function () {
     $activity = SupplierActivity::create(['name' => 'Test Activity']);
@@ -17,7 +18,7 @@ test('it can assign a supplier activity to a factory', function () {
 });
 
 test('it has seeded supplier activities', function () {
-    $this->seed(\Database\Seeders\SupplierActivitySeeder::class);
+    $this->seed(SupplierActivitySeeder::class);
 
     $activities = SupplierActivity::pluck('name')->toArray();
 

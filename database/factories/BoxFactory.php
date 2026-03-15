@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Box;
+use App\Models\Species;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Box>
+ * @extends Factory<Box>
  */
 class BoxFactory extends Factory
 {
@@ -18,7 +20,7 @@ class BoxFactory extends Factory
     {
         return [
             'name' => fake()->word(),
-            'species_id' => \App\Models\Species::factory(),
+            'species_id' => Species::factory(),
             'max_weight' => fake()->randomFloat(2, 10, 30),
             'class_total_weight' => fake()->randomFloat(2, 10, 30),
             'class' => fake()->randomElement(['1', '2', '3', 'Jumbo']),

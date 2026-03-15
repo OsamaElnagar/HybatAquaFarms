@@ -2,6 +2,11 @@
 
 namespace App\Filament\Resources\Traders\Tables;
 
+use App\Filament\Resources\Traders\Actions\GiveCashAction;
+use App\Filament\Resources\Traders\Actions\ReceivePaymentAction;
+use App\Filament\Resources\Traders\TraderResource;
+use App\Models\Trader;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -28,6 +33,18 @@ class TradersTable
                     ->label('الاسم')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('outstanding_balance')
+                    ->label('صافى الحساب')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ->color(fn ($record) => $record->outstanding_balance > 0 ?
+                        'warning' : ($record->outstanding_balance < 0 ? 'danger' : 'default'))
+                    ->sortable(),
+                TextColumn::make('sales_orders_count')
+                    ->counts('salesOrders')
+                    ->label('فواتير/مرات البيع')
+                    ->badge()
+                    ->color('primary')
+                    ->sortable(),
                 TextColumn::make('contact_person')
                     ->label('الشخص المسؤول')
                     ->searchable()
@@ -41,23 +58,6 @@ class TradersTable
                     ->badge()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('sales_orders_count')
-                    ->counts('salesOrders')
-                    ->label('فواتير/مرات البيع')
-                    ->badge()
-                    ->color('primary')
-                    ->sortable(),
-                TextColumn::make('outstanding_balance')
-                    ->label('المستحقات/ مبيعات آجلة')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->outstanding_balance > 0 ? 'warning' : 'success')
-                    ->sortable(),
-                TextColumn::make('partner_loans_balance')
-                    ->label('السلف')
-                    ->state(fn ($record) => $record->partner_loans_balance)
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($state) => $state > 0 ? 'danger' : 'success')
-                    ->toggleable(),
                 TextColumn::make('credit_limit')
                     ->label('حد الائتمان')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -87,6 +87,18 @@ class TradersTable
                     ->label('نشط'),
             ])
             ->recordActions([
+                ReceivePaymentAction::make(),
+                GiveCashAction::make(),
+                Action::make('statementOfAccount')
+                    ->label('كشف الحساب')
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(fn (Trader $record): string => TraderResource::getUrl('statement', ['record' => $record])),
+                Action::make('statementsHistory')
+                    ->label('سجل الكشوفات')
+                    ->icon('heroicon-o-list-bullet')
+                    ->color('gray')
+                    ->url(fn (Trader $record): string => TraderResource::getUrl('statements', ['record' => $record])),
                 ViewAction::make()->label('عرض'),
                 EditAction::make()->label('تعديل'),
             ])

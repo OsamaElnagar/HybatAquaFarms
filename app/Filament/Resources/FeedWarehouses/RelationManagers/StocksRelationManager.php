@@ -9,6 +9,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -38,7 +39,7 @@ class StocksRelationManager extends RelationManager
                     ->suffix(' كجم')
                     ->color(fn ($state) => $state < 100 ? 'danger' : ($state < 500 ? 'warning' : 'success'))
                     ->sortable()
-                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()
+                    ->summarize(Sum::make()
                         ->label('إجمالي الكمية')),
                 TextColumn::make('minimum_level')
                     ->label('الحد الأدنى')

@@ -12,11 +12,11 @@ class OrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'orders';
 
-    protected static ?string $title = 'إيصالات التاجر';
+    protected static ?string $title = 'أردرات التاجر';
 
-    protected static ?string $modelLabel = 'إيصال';
+    protected static ?string $modelLabel = 'أردر';
 
-    protected static ?string $pluralModelLabel = 'إيصالات';
+    protected static ?string $pluralModelLabel = 'أردرات';
 
     public function table(Table $table): Table
     {

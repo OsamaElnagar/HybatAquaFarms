@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Order;
+use App\Models\SalesOrder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('order_sales_order', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Order::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(\App\Models\SalesOrder::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Order::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(SalesOrder::class)->constrained()->cascadeOnDelete();
             $table->unique(['order_id', 'sales_order_id']); // Ensure uniqueness
             $table->timestamps();
         });

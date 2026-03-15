@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\RepaymentType;
 use App\Models\PartnerLoan;
 use App\Models\PartnerLoanRepayment;
+use App\Models\SalesOrder;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -162,7 +163,7 @@ class PartnerLoansRelationManager extends RelationManager
                             ->options(function () {
                                 $traderId = $this->getOwnerRecord()->id;
 
-                                return \App\Models\SalesOrder::query()
+                                return SalesOrder::query()
                                     ->where('trader_id', $traderId)
                                     ->whereIn('payment_status', ['pending', 'partial'])
                                     ->get()

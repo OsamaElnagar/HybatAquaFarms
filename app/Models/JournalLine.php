@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\JournalLineObserver;
+use Database\Factories\JournalLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([JournalLineObserver::class])]
 class JournalLine extends Model
 {
-    /** @use HasFactory<\Database\Factories\JournalLineFactory> */
+    /** @use HasFactory<JournalLineFactory> */
     use HasFactory;
 
     protected $fillable = [

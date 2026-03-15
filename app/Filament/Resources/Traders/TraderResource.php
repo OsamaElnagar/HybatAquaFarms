@@ -7,6 +7,7 @@ use App\Filament\Resources\Traders\Pages\EditTrader;
 use App\Filament\Resources\Traders\Pages\ListTraders;
 use App\Filament\Resources\Traders\Schemas\TraderForm;
 use App\Filament\Resources\Traders\Tables\TradersTable;
+use App\Models\JournalLine;
 use App\Models\Trader;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -15,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class TraderResource extends Resource
@@ -71,24 +73,16 @@ class TraderResource extends Resource
         return TradersTable::configure($table);
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withSum(
-                [
-                    'salesOrders as pending_sales_total' => fn ($query) => $query
-                        ->whereIn('payment_status', ['pending', 'partial']),
-                ],
-                'net_amount',
-            )
             ->withSum('clearingEntries as clearing_entries_total', 'amount')
-            ->withSum(
-                [
-                    'vouchers as receipt_vouchers_total' => fn ($query) => $query
-                        ->where('voucher_type', \App\Enums\VoucherType::Receipt),
-                ],
-                'amount',
-            );
+            ->addSelect([
+                'receipt_vouchers_total' => JournalLine::query()
+                    ->selectRaw('sum(credit)')
+                    ->whereColumn('account_id', 'traders.account_id')
+                    ->where('credit', '>', 0),
+            ]);
     }
 
     public static function getRelations(): array
@@ -96,8 +90,6 @@ class TraderResource extends Resource
         return [
             RelationManagers\OrdersRelationManager::class,
             RelationManagers\SalesOrdersRelationManager::class,
-            RelationManagers\PartnerLoansRelationManager::class,
-            RelationManagers\ClearingEntriesRelationManager::class,
         ];
     }
 
@@ -106,6 +98,8 @@ class TraderResource extends Resource
         return [
             'index' => ListTraders::route('/'),
             'create' => CreateTrader::route('/create'),
+            'statement' => Pages\StatementOfAccount::route('/{record}/statement'),
+            'statements' => Pages\ListStatements::route('/{record}/statements'),
             'view' => Pages\ViewTrader::route('/{record}'),
             'edit' => EditTrader::route('/{record}/edit'),
         ];

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\ClearingEntryObserver;
+use Database\Factories\ClearingEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([ClearingEntryObserver::class])]
 class ClearingEntry extends Model
 {
-    /** @use HasFactory<\Database\Factories\ClearingEntryFactory> */
+    /** @use HasFactory<ClearingEntryFactory> */
     use HasFactory;
 
     protected $fillable = [

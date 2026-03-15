@@ -4,6 +4,7 @@ namespace App\Services\Telegram;
 
 use App\Models\JournalEntry;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class CashflowReportService
 {
@@ -32,7 +33,7 @@ class CashflowReportService
             $latest = $entries->sortByDesc('date')->take(5);
             foreach ($latest as $e) {
                 $date = Carbon::parse($e->date)->format('Y-m-d');
-                $desc = \Illuminate\Support\Str::limit($e->description ?? $e->reference ?? 'قيد يومية', 30);
+                $desc = Str::limit($e->description ?? $e->reference ?? 'قيد يومية', 30);
                 $html .= "🔹 {$date} - <i>{$desc}</i>\n";
             }
         }

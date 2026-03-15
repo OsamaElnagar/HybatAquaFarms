@@ -4,6 +4,9 @@ namespace App\Filament\Resources\Vouchers\Tables;
 
 use App\Enums\PaymentMethod;
 use App\Enums\VoucherType;
+use App\Models\Employee;
+use App\Models\Factory;
+use App\Models\Trader;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -41,13 +44,13 @@ class VouchersTable
                         if (! $record->counterparty) {
                             return '-';
                         }
-                        if ($record->counterparty_type === \App\Models\Trader::class) {
+                        if ($record->counterparty_type === Trader::class) {
                             return $record->counterparty->name;
                         }
-                        if ($record->counterparty_type === \App\Models\Employee::class) {
+                        if ($record->counterparty_type === Employee::class) {
                             return $record->counterparty->name;
                         }
-                        if ($record->counterparty_type === \App\Models\Factory::class) {
+                        if ($record->counterparty_type === Factory::class) {
                             return $record->counterparty->name;
                         }
 

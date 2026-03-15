@@ -4,6 +4,7 @@ namespace App\Filament\Resources\FarmUnits\Tables;
 
 use App\Enums\FarmStatus;
 use App\Enums\UnitType;
+use App\Models\DailyFeedIssue;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,7 +20,7 @@ class FarmUnitsTable
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->addSelect([
-                'total_feed_consumed' => \App\Models\DailyFeedIssue::selectRaw('COALESCE(SUM(quantity), 0)')
+                'total_feed_consumed' => DailyFeedIssue::selectRaw('COALESCE(SUM(quantity), 0)')
                     ->whereIn('batch_id', function (\Illuminate\Database\Query\Builder $subQuery) {
                         $subQuery->select('batch_id')
                             ->from('batch_farm_unit')

@@ -91,7 +91,7 @@ class SalaryRecordObserver
             ->get();
 
         foreach ($activeAdvances as $advance) {
-            /** @var \App\Models\EmployeeAdvance $advance */
+            /** @var EmployeeAdvance $advance */
             if ($amountToDeduct <= 0) {
                 break;
             }

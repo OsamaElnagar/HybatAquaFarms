@@ -7,6 +7,7 @@ use App\Models\DailyFeedIssue;
 use App\Models\Farm;
 use App\Models\FarmUnit;
 use App\Models\FeedItem;
+use App\Models\FeedStock;
 use App\Models\FeedWarehouse;
 use Illuminate\Database\Seeder;
 
@@ -31,7 +32,7 @@ class DailyFeedIssueSeeder extends Seeder
                 $batch = Batch::whereHas('units', fn ($q) => $q->where('farm_units.id', $unit->id))->first();
 
                 // Get available stocks for this warehouse
-                $availableStocks = \App\Models\FeedStock::where('feed_warehouse_id', $warehouse->id)
+                $availableStocks = FeedStock::where('feed_warehouse_id', $warehouse->id)
                     ->whereIn('feed_item_id', $feedItems->pluck('id'))
                     ->where('quantity_in_stock', '>=', 10)
                     ->get()

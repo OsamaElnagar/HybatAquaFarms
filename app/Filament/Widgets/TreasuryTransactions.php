@@ -2,7 +2,9 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\JournalLine;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +21,7 @@ class TreasuryTransactions extends TableWidget
     {
         return $table
             ->query(
-                \App\Models\JournalLine::query()
+                JournalLine::query()
                     ->whereHas('account', fn ($q) => $q->where('is_treasury', true))
                     ->with(['account', 'journalEntry'])
                     ->orderBy('created_at', 'desc')
@@ -52,7 +54,7 @@ class TreasuryTransactions extends TableWidget
                     ->badge(),
             ])
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('account_id')
+                SelectFilter::make('account_id')
                     ->label('تصفية بالحساب')
                     ->relationship('account', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_treasury', true)),
             ]);

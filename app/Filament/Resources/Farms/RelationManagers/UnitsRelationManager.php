@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 use App\Enums\FarmStatus;
 use App\Enums\UnitType;
 use App\Filament\Resources\FarmUnits\Schemas\FarmUnitForm;
+use App\Models\DailyFeedIssue;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -13,6 +14,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -33,7 +35,7 @@ class UnitsRelationManager extends RelationManager
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->withCount('batches')->addSelect([
-                'total_feed_consumed' => \App\Models\DailyFeedIssue::selectRaw('COALESCE(SUM(quantity), 0)')
+                'total_feed_consumed' => DailyFeedIssue::selectRaw('COALESCE(SUM(quantity), 0)')
                     ->whereIn('batch_id', function (\Illuminate\Database\Query\Builder $subQuery) {
                         $subQuery->select('batch_id')
                             ->from('batch_farm_unit')
@@ -60,7 +62,7 @@ class UnitsRelationManager extends RelationManager
                 TextColumn::make('capacity')
                     ->label('السعة')
                     ->numeric(locale: 'en')
-                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make())
+                    ->summarize(Sum::make())
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('الحالة')

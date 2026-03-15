@@ -156,7 +156,7 @@ class SalesOrderForm
                         Select::make('payment_status')
                             ->label('حالة الدفع')
                             ->options(PaymentStatus::class)
-                            ->default(PaymentStatus::Paid)
+                            ->default(PaymentStatus::Pending)
                             ->hidden(false)
                             ->native(false)
                             ->helperText('حالة دفع عملية البيع')

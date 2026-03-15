@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Batch;
+use App\Models\Farm;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Batch>
+ * @extends Factory<Batch>
  */
 class BatchFactory extends Factory
 {
@@ -18,7 +20,7 @@ class BatchFactory extends Factory
     {
         return [
             'batch_code' => 'BATCH-'.fake()->unique()->numerify('#####'),
-            'farm_id' => \App\Models\Farm::factory(),
+            'farm_id' => Farm::factory(),
             'species_id' => null,
             'entry_date' => fake()->date(),
             'initial_quantity' => fake()->numberBetween(1000, 50000),

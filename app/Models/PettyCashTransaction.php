@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\PettyTransacionType;
 use App\Observers\PettyCashTransactionObserver;
+use App\Traits\ProtectsClosedBatch;
+use Database\Factories\PettyCashTransactionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([PettyCashTransactionObserver::class])]
 class PettyCashTransaction extends Model
 {
-    /** @use HasFactory<\Database\Factories\PettyCashTransactionFactory> */
-    use \App\Traits\ProtectsClosedBatch, HasFactory;
+    /** @use HasFactory<PettyCashTransactionFactory> */
+    use HasFactory, ProtectsClosedBatch;
 
     protected $fillable = [
         'petty_cash_id',

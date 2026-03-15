@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\ClearingEntry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClearingEntry>
+ * @extends Factory<ClearingEntry>
  */
 class ClearingEntryFactory extends Factory
 {

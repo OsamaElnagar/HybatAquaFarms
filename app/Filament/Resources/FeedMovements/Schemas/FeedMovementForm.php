@@ -4,6 +4,8 @@ namespace App\Filament\Resources\FeedMovements\Schemas;
 
 use App\Enums\FactoryType;
 use App\Enums\FeedMovementType;
+use App\Filament\Resources\FeedWarehouses\FeedWarehouseResource;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -97,9 +99,9 @@ class FeedMovementForm
                             ->searchable()
                             ->preload()
                             ->hintAction(
-                                \Filament\Actions\Action::make('view_from_warehouse')
+                                Action::make('view_from_warehouse')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->url(fn ($state) => $state ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
+                                    ->url(fn ($state) => $state ? FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
                                     ->visible(fn ($state) => filled($state))
                                     ->tooltip('عرض المستودع')
                             )
@@ -113,9 +115,9 @@ class FeedMovementForm
                             ->searchable()
                             ->preload()
                             ->hintAction(
-                                \Filament\Actions\Action::make('view_to_warehouse')
+                                Action::make('view_to_warehouse')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->url(fn ($state) => $state ? \App\Filament\Resources\FeedWarehouses\FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
+                                    ->url(fn ($state) => $state ? FeedWarehouseResource::getUrl('view', ['record' => $state]) : null)
                                     ->visible(fn ($state) => filled($state))
                                     ->tooltip('عرض المستودع')
                             )

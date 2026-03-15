@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PaymentMethod;
 use App\Enums\SalaryStatus;
 use App\Observers\SalaryRecordObserver;
+use Database\Factories\SalaryRecordFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([SalaryRecordObserver::class])]
 class SalaryRecord extends Model
 {
-    /** @use HasFactory<\Database\Factories\SalaryRecordFactory> */
+    /** @use HasFactory<SalaryRecordFactory> */
     use HasFactory;
 
     protected $fillable = [

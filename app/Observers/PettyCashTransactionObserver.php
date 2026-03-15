@@ -25,7 +25,7 @@ class PettyCashTransactionObserver
                 'employee_id' => $pettyCashTransaction->employee_id,
                 'amount' => $pettyCashTransaction->amount,
                 'request_date' => $pettyCashTransaction->date,
-                'reason' => 'سلفة من عهدة (تلقائي) - معاملة رقم #' . $pettyCashTransaction->id,
+                'reason' => 'سلفة من عهدة (تلقائي) - معاملة رقم #'.$pettyCashTransaction->id,
                 'approval_status' => AdvanceApprovalStatus::APPROVED,
                 'approved_by' => $pettyCashTransaction->recorded_by,
                 'approved_date' => $pettyCashTransaction->date,
@@ -37,7 +37,7 @@ class PettyCashTransactionObserver
 
             Notification::make()
                 ->title('تم إنشاء سلفة تلقائياً')
-                ->body("تم تسجيل سلفة للموظف {$pettyCashTransaction->employee->name} بقيمة " . number_format($advance->amount) . ' EGP')
+                ->body("تم تسجيل سلفة للموظف {$pettyCashTransaction->employee->name} بقيمة ".number_format($advance->amount).' EGP')
                 ->success()
                 ->actions([
                     Action::make('view')
@@ -49,7 +49,7 @@ class PettyCashTransactionObserver
         }
 
         // Cache the last used values for this user
-        Cache::put('user_' . auth('web')->id() . '_last_petty_cash_date', $pettyCashTransaction->date);
+        Cache::put('user_'.auth('web')->id().'_last_petty_cash_date', $pettyCashTransaction->date);
         // Cache::put('user_'.auth('web')->id().'_last_petty_cash_id', $pettyCashTransaction->petty_cash_id);
         // Cache::put('user_'.auth('web')->id().'_last_petty_cash_farm_id', $pettyCashTransaction->farm_id);
         // Cache::put('user_'.auth('web')->id().'_last_petty_cash_batch_id', $pettyCashTransaction->batch_id);

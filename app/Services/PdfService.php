@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
+use Mccarlosen\LaravelMpdf\LaravelMpdf;
 
 class PdfService
 {
-    public function generateReportPdf(string $title, array $headers, $rows): \Mccarlosen\LaravelMpdf\LaravelMpdf
+    public function generateReportPdf(string $title, array $headers, $rows): LaravelMpdf
     {
         return PDF::loadView('pdf.generic-report', [
             'reportTitle' => $title,
@@ -19,7 +20,7 @@ class PdfService
         ]);
     }
 
-    public function generateDailyFarmReportPdf(array $data): \Mccarlosen\LaravelMpdf\LaravelMpdf
+    public function generateDailyFarmReportPdf(array $data): LaravelMpdf
     {
         return PDF::loadView('pdf.daily-farm-report', [
             'data' => $data,

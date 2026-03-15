@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\DailyFeedIssues\Schemas;
 
 use App\Models\FeedStock;
+use App\Models\FeedWarehouse;
 use Cache;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -24,8 +25,8 @@ class DailyFeedIssueForm
                     ->schema([
                         Select::make('farm_id')
                             ->label('المزرعة')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
-                            ->relationship('farm', 'name', modifyQueryUsing: fn($query) => $query->active()->latest())
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->relationship('farm', 'name', modifyQueryUsing: fn ($query) => $query->active()->latest())
                             ->required()
                             ->searchable()
                             ->preload()
@@ -33,7 +34,7 @@ class DailyFeedIssueForm
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $set('batch_id', null);
                                 if ($state) {
-                                    $warehouse = \App\Models\FeedWarehouse::where('farm_id', $state)->where('is_active', true)->first();
+                                    $warehouse = FeedWarehouse::where('farm_id', $state)->where('is_active', true)->first();
                                     if ($warehouse) {
                                         $set('feed_warehouse_id', $warehouse->id);
                                     }
@@ -51,7 +52,7 @@ class DailyFeedIssueForm
 
                                 return $query->where('is_cycle_closed', false)->latest();
                             })
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
 
                             ->required()
                             ->searchable()
@@ -67,14 +68,14 @@ class DailyFeedIssueForm
 
                         Select::make('feed_warehouse_id')
                             ->label('مخزن العلف')
-                            ->relationship('warehouse', 'name', modifyQueryUsing: fn($query, Get $get) => $query->where('farm_id', $get('farm_id')))
+                            ->relationship('warehouse', 'name', modifyQueryUsing: fn ($query, Get $get) => $query->where('farm_id', $get('farm_id')))
                             ->default(function ($livewire, Get $get) {
                                 $farmId = $get('farm_id') ?: ($livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null);
                                 if ($farmId) {
-                                    return \App\Models\FeedWarehouse::where('farm_id', $farmId)->where('is_active', true)->first()?->id;
+                                    return FeedWarehouse::where('farm_id', $farmId)->where('is_active', true)->first()?->id;
                                 }
 
-                                return Cache::get('user_' . auth('web')->id() . '_last_warehouse_id');
+                                return Cache::get('user_'.auth('web')->id().'_last_warehouse_id');
                             })
                             ->required()
                             ->searchable()
@@ -87,7 +88,7 @@ class DailyFeedIssueForm
                             ->native(false)
                             ->required()
                             ->default(function (callable $get) {
-                                return Cache::get('user_' . auth('web')->id() . '_last_date') ?? now();
+                                return Cache::get('user_'.auth('web')->id().'_last_date') ?? now();
                             })
                             ->maxDate(now()->tomorrow())
                             ->helperText('تاريخ عملية الصرف'),
@@ -96,11 +97,11 @@ class DailyFeedIssueForm
                             ->label('الكمية (كجم)')
                             ->required()
                             ->numeric()
-                            ->rule(fn(Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                            ->rule(fn (Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
                                 $warehouseId = $get('feed_warehouse_id');
                                 $itemId = $get('feed_item_id');
 
-                                if (!$warehouseId || !$itemId || $value === null || $value === '') {
+                                if (! $warehouseId || ! $itemId || $value === null || $value === '') {
                                     return;
                                 }
 
@@ -110,7 +111,7 @@ class DailyFeedIssueForm
                                     ->where('feed_item_id', $itemId)
                                     ->first();
 
-                                if (!$stock || (float) $stock->quantity_in_stock < $quantity) {
+                                if (! $stock || (float) $stock->quantity_in_stock < $quantity) {
                                     $fail('الكمية المصروفة أكبر من الرصيد المتوفر في المخزن لهذا الصنف.');
                                 }
                             })
@@ -124,7 +125,7 @@ class DailyFeedIssueForm
                                     ->relationship('recordedBy', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn() => auth('web')->id())
+                                    ->default(fn () => auth('web')->id())
                                     ->helperText('المستخدم الذي قام بتسجيل عملية الصرف'),
                                 Textarea::make('notes')
                                     ->label('ملاحظات')

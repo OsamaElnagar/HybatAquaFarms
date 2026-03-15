@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 use App\Enums\AccountType;
 use App\Enums\FarmExpenseType;
 use App\Models\Batch;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -61,7 +62,7 @@ class FarmExpensesRelationManager extends RelationManager
                             ->preload(),
                         Select::make('batch_id')
                             ->label('الدورة (اختياري)')
-                            ->options(fn() => Batch::query()
+                            ->options(fn () => Batch::query()
                                 ->where('farm_id', $this->getOwnerRecord()->getKey())
                                 ->where('status', 'active')
                                 ->pluck('batch_code', 'id'))
@@ -72,7 +73,7 @@ class FarmExpensesRelationManager extends RelationManager
                             ->relationship(
                                 'treasuryAccount',
                                 'name',
-                                fn($query) => $query->where('is_treasury', true)
+                                fn ($query) => $query->where('is_treasury', true)
                             )
                             ->searchable()
                             ->preload()
@@ -109,7 +110,7 @@ class FarmExpensesRelationManager extends RelationManager
                     ->rows(3)
                     ->columnSpanFull(),
                 Hidden::make('created_by')
-                    ->default(fn() => Auth::id()),
+                    ->default(fn () => Auth::id()),
             ]);
     }
 
@@ -117,7 +118,7 @@ class FarmExpensesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('date')
-            ->modifyQueryUsing(fn($query) => $query->with(['expenseCategory', 'treasuryAccount', 'account', 'batch']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['expenseCategory', 'treasuryAccount', 'account', 'batch']))
             ->columns([
                 TextColumn::make('date')
                     ->label('التاريخ')
@@ -152,22 +153,22 @@ class FarmExpensesRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->type === FarmExpenseType::Revenue ? 'success' : 'danger')
+                    ->color(fn ($record) => $record->type === FarmExpenseType::Revenue ? 'success' : 'danger')
                     ->sortable()
                     ->summarize([
                         Summarizer::make()
                             ->label('إجمالي المصروفات')
-                            ->query(fn($query) => $query->where('type', FarmExpenseType::Expense))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('type', FarmExpenseType::Expense))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('إجمالي الإيرادات')
-                            ->query(fn($query) => $query->where('type', FarmExpenseType::Revenue))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('type', FarmExpenseType::Revenue))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('الصافي')
-                            ->using(fn($query) => $query->sum(DB::raw("CASE WHEN type = 'revenue' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN type = 'revenue' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('reference_number')
@@ -195,8 +196,8 @@ class FarmExpensesRelationManager extends RelationManager
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['date_from'] ?? null, fn($q, $date) => $q->where('date', '>=', \Carbon\Carbon::parse($date)))
-                            ->when($data['date_to'] ?? null, fn($q, $date) => $q->where('date', '<=', \Carbon\Carbon::parse($date)));
+                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', Carbon::parse($date)))
+                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', Carbon::parse($date)));
                     }),
             ])
             ->headerActions([

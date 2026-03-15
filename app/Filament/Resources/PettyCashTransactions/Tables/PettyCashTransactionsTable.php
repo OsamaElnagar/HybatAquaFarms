@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PettyCashTransactions\Tables;
 
 use App\Enums\PettyTransacionType;
 use App\Filament\Exports\PettyCashTransactionExporter;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -13,11 +14,13 @@ use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Shreejan\ActionableColumn\Tables\Columns\ActionableColumn;
 
 class PettyCashTransactionsTable
@@ -61,7 +64,7 @@ class PettyCashTransactionsTable
                                     ->preload()
                                     ->required(),
                             ])
-                            ->fillForm(fn($record) => [
+                            ->fillForm(fn ($record) => [
                                 'expense_category_id' => $record->expense_category_id,
                             ])
                             ->action(function ($record, array $data) {
@@ -74,19 +77,19 @@ class PettyCashTransactionsTable
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
-                        \Filament\Tables\Columns\Summarizers\Summarizer::make()
+                        Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn($query) => $query->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
@@ -143,11 +146,11 @@ class PettyCashTransactionsTable
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', \Carbon\Carbon::parse($date)),
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', Carbon::parse($date)),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', \Carbon\Carbon::parse($date)),
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', Carbon::parse($date)),
                             );
                     }),
             ])

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\JournalEntryObserver;
+use Database\Factories\JournalEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
-    /** @use HasFactory<\Database\Factories\JournalEntryFactory> */
+    /** @use HasFactory<JournalEntryFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -23,6 +24,7 @@ class JournalEntry extends Model
         'source_type',
         'source_id',
         'is_posted',
+        'trader_statement_id',
         'posted_by',
         'posted_at',
     ];
@@ -34,6 +36,11 @@ class JournalEntry extends Model
             'is_posted' => 'boolean',
             'posted_at' => 'datetime',
         ];
+    }
+
+    public function traderStatement(): BelongsTo
+    {
+        return $this->belongsTo(TraderStatement::class);
     }
 
     public function source(): MorphTo

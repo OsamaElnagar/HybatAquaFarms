@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
+use App\Models\Order;
 use App\Models\SalesOrder;
 use App\Models\Trader;
 use Illuminate\Database\Seeder;
@@ -12,7 +13,7 @@ class SalesOrderSeeder extends Seeder
 {
     public function run(): void
     {
-        $orders = \App\Models\Order::whereDoesntHave('salesOrders')->with('items', 'trader', 'harvestOperation.farm')->get();
+        $orders = Order::whereDoesntHave('salesOrders')->with('items', 'trader', 'harvestOperation.farm')->get();
         $this->command->info('Found '.$orders->count().' unbilled orders.');
 
         if ($orders->isEmpty()) {

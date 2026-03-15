@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Filament\Resources\SalaryRecords\Schemas\SalaryRecordForm;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -11,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -65,7 +67,7 @@ class SalaryRecordsRelationManager extends RelationManager
                     ->color('success')
                     ->sortable()
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Sum::make()
+                        Sum::make()
                             ->label('المجموع')
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
@@ -90,8 +92,8 @@ class SalaryRecordsRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn(Builder $query, $date) => $query->where('pay_period_start', '>=', \Carbon\Carbon::parse($date)))
-                            ->when($data['to'], fn(Builder $query, $date) => $query->where('pay_period_end', '<=', \Carbon\Carbon::parse($date)));
+                            ->when($data['from'], fn (Builder $query, $date) => $query->where('pay_period_start', '>=', Carbon::parse($date)))
+                            ->when($data['to'], fn (Builder $query, $date) => $query->where('pay_period_end', '<=', Carbon::parse($date)));
                     }),
                 SelectFilter::make('status')
                     ->label('الحالة')

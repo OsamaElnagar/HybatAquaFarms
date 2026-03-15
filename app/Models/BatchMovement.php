@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\MovementType;
 use App\Observers\BatchMovementObserver;
+use App\Traits\ProtectsClosedBatch;
+use Database\Factories\BatchMovementFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([BatchMovementObserver::class])]
 class BatchMovement extends Model
 {
-    /** @use HasFactory<\Database\Factories\BatchMovementFactory> */
-    use \App\Traits\ProtectsClosedBatch, HasFactory;
+    /** @use HasFactory<BatchMovementFactory> */
+    use HasFactory, ProtectsClosedBatch;
 
     protected $fillable = [
         'batch_id',

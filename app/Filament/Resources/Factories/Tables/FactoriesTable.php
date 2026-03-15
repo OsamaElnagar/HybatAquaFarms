@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Factories\Tables;
 
 use App\Enums\FactoryType;
+use App\Models\Factory;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -48,7 +49,7 @@ class FactoriesTable
                     ->sortable(),
                 TextColumn::make('current_year_activity')
                     ->label('نشاط العام الحالي')
-                    ->state(function (\App\Models\Factory $record): string {
+                    ->state(function (Factory $record): string {
                         if ($record->type === FactoryType::SUPPLIER) {
                             return '-';
                         }
@@ -66,7 +67,7 @@ class FactoriesTable
                     ->toggleable(),
                 TextColumn::make('past_year_activity')
                     ->label('نشاط العام الماضي')
-                    ->state(function (\App\Models\Factory $record): string {
+                    ->state(function (Factory $record): string {
                         if ($record->type === FactoryType::SUPPLIER) {
                             return '-';
                         }

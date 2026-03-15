@@ -56,10 +56,9 @@ class AppServiceProvider extends ServiceProvider
             return $action->slideOver()->modalWidth(Width::SixExtraLarge);
         });
 
-        DatePicker::configureUsing(fn(DatePicker $picker) =>
-            $picker->displayFormat('Y-m-d')
-                ->native(false)
-                ->timezone(config('app.timezone')));
+        DatePicker::configureUsing(fn (DatePicker $picker) => $picker->displayFormat('Y-m-d')
+            ->native(false)
+            ->timezone(config('app.timezone')));
 
         ExportAction::configureUsing(function (ExportAction $action) {
             return $action->formats([

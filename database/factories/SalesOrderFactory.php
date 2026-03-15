@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Enums\PaymentStatus;
+use App\Models\SalesOrder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SalesOrder>
+ * @extends Factory<SalesOrder>
  */
 class SalesOrderFactory extends Factory
 {

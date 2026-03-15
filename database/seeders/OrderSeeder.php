@@ -2,6 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Box;
+use App\Models\Harvest;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Trader;
 use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
@@ -11,9 +16,9 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-        $harvests = \App\Models\Harvest::with('harvestOperation')->get();
-        $traders = \App\Models\Trader::all();
-        $boxes = \App\Models\Box::all();
+        $harvests = Harvest::with('harvestOperation')->get();
+        $traders = Trader::all();
+        $boxes = Box::all();
 
         if ($harvests->isEmpty() || $traders->isEmpty() || $boxes->isEmpty()) {
             $this->command->warn('Missing prerequisites (Harvests, Traders, or Boxes).');
@@ -28,7 +33,7 @@ class OrderSeeder extends Seeder
             // Create exactly 1 order per harvest to avoid unique constraint issues
             // (assuming constraint might still be present)
 
-            $order = \App\Models\Order::firstOrCreate(
+            $order = Order::firstOrCreate(
                 [
                     'harvest_id' => $harvest->id,
                     'harvest_operation_id' => $harvest->harvest_operation_id,
@@ -49,7 +54,7 @@ class OrderSeeder extends Seeder
                     $quantity = rand(10, 50);
                     $weight = rand(20, 25); // kg per box
 
-                    \App\Models\OrderItem::create([
+                    OrderItem::create([
                         'order_id' => $order->id,
                         'box_id' => $box->id,
                         'quantity' => $quantity,

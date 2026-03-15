@@ -12,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -49,7 +50,7 @@ class SalesOrdersRelationManager extends RelationManager
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->sortable()
                     ->summarize([
-                        \Filament\Tables\Columns\Summarizers\Sum::make()
+                        Sum::make()
                             ->label('المجموع')
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),

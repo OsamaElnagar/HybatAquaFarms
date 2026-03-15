@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FeedMovementType;
 use App\Observers\FeedMovementObserver;
+use Database\Factories\FeedMovementFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([FeedMovementObserver::class])]
 class FeedMovement extends Model
 {
-    /** @use HasFactory<\Database\Factories\FeedMovementFactory> */
+    /** @use HasFactory<FeedMovementFactory> */
     use HasFactory;
 
     protected $fillable = [

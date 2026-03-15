@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Account;
+use App\Models\PostingRule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PostingRule>
+ * @extends Factory<PostingRule>
  */
 class PostingRuleFactory extends Factory
 {
@@ -19,8 +21,8 @@ class PostingRuleFactory extends Factory
         return [
             'event_key' => $this->faker->unique()->word,
             'description' => $this->faker->sentence,
-            'debit_account_id' => \App\Models\Account::factory(),
-            'credit_account_id' => \App\Models\Account::factory(),
+            'debit_account_id' => Account::factory(),
+            'credit_account_id' => Account::factory(),
             'is_active' => true,
         ];
     }
