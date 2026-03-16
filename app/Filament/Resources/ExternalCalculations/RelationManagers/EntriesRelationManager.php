@@ -6,7 +6,6 @@ use App\Enums\AccountType;
 use App\Enums\ExternalCalculationType;
 use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -25,7 +24,7 @@ class EntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'entries';
 
-    protected static ?string $title = 'Transactions';
+    protected static ?string $title = 'المعاملات';
 
     protected static ?string $modelLabel = 'معاملة';
 
@@ -168,7 +167,7 @@ class EntriesRelationManager extends RelationManager
                     ),
             ])
             ->headerActions([
-                CreateAction::make(),
+                // Handled via header actions in the main resource
             ])
             ->recordActions([
                 EditAction::make(),

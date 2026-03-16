@@ -31,6 +31,12 @@ class ExternalCalculationEntryObserver
                 $context['credit_account_id'] = $entry->account_id;
             }
 
+            $activeStatement = $entry->externalCalculation->activeStatement;
+            if ($activeStatement) {
+                $entry->external_calculation_statement_id = $activeStatement->id;
+                $context['external_calculation_statement_id'] = $activeStatement->id;
+            }
+
             $journalEntry = $this->posting->post('external.calculation', $context);
 
             $entry->journal_entry_id = $journalEntry->id;

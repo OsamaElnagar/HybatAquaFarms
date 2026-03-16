@@ -8,6 +8,7 @@ use App\Filament\Resources\ExternalCalculations\Pages\EditExternalCalculation;
 use App\Filament\Resources\ExternalCalculations\Pages\ListExternalCalculations;
 use App\Filament\Resources\ExternalCalculations\Pages\ViewExternalCalculation;
 use App\Filament\Resources\ExternalCalculations\RelationManagers\EntriesRelationManager;
+use App\Filament\Resources\ExternalCalculations\RelationManagers\StatementsRelationManager;
 use App\Models\ExternalCalculation;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -112,6 +113,7 @@ class ExternalCalculationResource extends Resource
     public static function getRelations(): array
     {
         return [
+            StatementsRelationManager::class,
             EntriesRelationManager::class,
         ];
     }

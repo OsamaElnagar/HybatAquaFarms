@@ -16,6 +16,7 @@ class ExternalCalculationEntry extends Model
 
     protected $fillable = [
         'external_calculation_id',
+        'external_calculation_statement_id',
         'farm_id',
         'treasury_account_id',
         'account_id',
@@ -40,6 +41,11 @@ class ExternalCalculationEntry extends Model
     public function externalCalculation(): BelongsTo
     {
         return $this->belongsTo(ExternalCalculation::class);
+    }
+
+    public function statement(): BelongsTo
+    {
+        return $this->belongsTo(ExternalCalculationStatement::class, 'external_calculation_statement_id');
     }
 
     public function farm(): BelongsTo

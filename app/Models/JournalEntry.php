@@ -26,6 +26,7 @@ class JournalEntry extends Model
         'is_posted',
         'trader_statement_id',
         'factory_statement_id',
+        'external_calculation_statement_id',
         'posted_by',
         'posted_at',
     ];
@@ -47,6 +48,11 @@ class JournalEntry extends Model
     public function factoryStatement(): BelongsTo
     {
         return $this->belongsTo(FactoryStatement::class);
+    }
+
+    public function externalCalculationStatement(): BelongsTo
+    {
+        return $this->belongsTo(ExternalCalculationStatement::class);
     }
 
     public function source(): MorphTo
