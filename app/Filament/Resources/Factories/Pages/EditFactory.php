@@ -3,10 +3,14 @@
 namespace App\Filament\Resources\Factories\Pages;
 
 use App\Enums\FactoryType;
+use App\Filament\Resources\Factories\Actions\MakePaymentAction;
+use App\Filament\Resources\Factories\Actions\ReceivePaymentAction;
 use App\Filament\Resources\Factories\FactoryResource;
 use App\Filament\Resources\Factories\RelationManagers;
 use App\Filament\Resources\Factories\Widgets\FactoryActivityWidget;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditFactory extends EditRecord
@@ -18,7 +22,6 @@ class EditFactory extends EditRecord
         if ($type === FactoryType::SUPPLIER) {
             return [
                 RelationManagers\PaymentsRelationManager::class,
-                RelationManagers\PartnerLoansRelationManager::class,
 
             ];
         }
@@ -26,8 +29,7 @@ class EditFactory extends EditRecord
         if ($type === FactoryType::FEEDS) {
             return [
                 RelationManagers\FeedMovementsRelationManager::class,
-                RelationManagers\PaymentsRelationManager::class,
-                RelationManagers\PartnerLoansRelationManager::class,
+                // RelationManagers\PaymentsRelationManager::class,
 
             ];
         }
@@ -35,9 +37,7 @@ class EditFactory extends EditRecord
         if ($type === FactoryType::SEEDS) {
             return [
                 RelationManagers\BatchesRelationManager::class,
-                RelationManagers\BatchPaymentsRelationManager::class,
-                RelationManagers\PartnerLoansRelationManager::class,
-
+                // RelationManagers\BatchPaymentsRelationManager::class,
             ];
         }
 
@@ -65,6 +65,13 @@ class EditFactory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('statement')
+                ->label('كشف الحساب')
+                ->icon('heroicon-o-document-text')
+                ->url(fn () => FactoryResource::getUrl('statement', ['record' => $this->record])),
+            MakePaymentAction::make(),
+            ReceivePaymentAction::make(),
+            ViewAction::make(),
             DeleteAction::make(),
         ];
     }

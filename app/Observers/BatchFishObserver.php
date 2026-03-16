@@ -21,8 +21,6 @@ class BatchFishObserver
     public function updated(BatchFish $batchFish): void
     {
         $this->syncBatch($batchFish->batch);
-        // For simplicity, we only post on creation for now.
-        // In a full implementation, we would reverse and re-post or update the JE.
     }
 
     public function deleted(BatchFish $batchFish): void
@@ -33,7 +31,7 @@ class BatchFishObserver
     protected function postAccountingEntry(BatchFish $batchFish): void
     {
         $factory = $batchFish->factory;
-        if (! $factory) {
+        if (! $factory || ! $factory->account_id) {
             return;
         }
 
@@ -47,6 +45,7 @@ class BatchFishObserver
                 'source_type' => $batchFish->getMorphClass(),
                 'source_id' => $batchFish->id,
                 'factory_statement_id' => $activeStatement?->id,
+                'credit_account_id' => $factory->account_id,
                 'description' => "شراء زريعة - {$batchFish->batch?->batch_code} - {$factory->name}",
             ]);
         } catch (\Exception $e) {
@@ -64,12 +63,9 @@ class BatchFishObserver
         $totalQuantity = $fish->sum('quantity');
         $totalCost = $fish->sum('total_cost');
 
-        // Note: For current_quantity, we might need to handle mortality/harvests.
-        // For now, we update it to match initial_quantity if it was a new batch,
-        // or just maintain the delta. However, simple approach for now:
         $batch->updateQuietly([
             'initial_quantity' => $totalQuantity,
-            'current_quantity' => $totalQuantity, // Assuming starting point
+            'current_quantity' => $totalQuantity,
             'total_cost' => $totalCost,
         ]);
     }

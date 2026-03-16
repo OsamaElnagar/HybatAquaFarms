@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Factories\Pages;
 
 use App\Enums\FactoryType;
+use App\Filament\Resources\Factories\Actions\MakePaymentAction;
+use App\Filament\Resources\Factories\Actions\ReceivePaymentAction;
 use App\Filament\Resources\Factories\FactoryResource;
 use App\Filament\Resources\Factories\RelationManagers;
 use App\Filament\Resources\Factories\Widgets\FactoryActivityWidget;
@@ -18,16 +20,14 @@ class ViewFactory extends ViewRecord
 
         if ($type === FactoryType::SUPPLIER) {
             return [
-                RelationManagers\PaymentsRelationManager::class,
-                RelationManagers\PartnerLoansRelationManager::class,
+                // RelationManagers\PaymentsRelationManager::class,
             ];
         }
 
         if ($type === FactoryType::FEEDS) {
             return [
-                RelationManagers\PaymentsRelationManager::class,
+                // RelationManagers\PaymentsRelationManager::class,
                 RelationManagers\FeedMovementsRelationManager::class,
-                RelationManagers\PartnerLoansRelationManager::class,
 
             ];
         }
@@ -35,9 +35,7 @@ class ViewFactory extends ViewRecord
         if ($type === FactoryType::SEEDS) {
             return [
                 RelationManagers\BatchesRelationManager::class,
-                RelationManagers\BatchPaymentsRelationManager::class,
-                RelationManagers\PartnerLoansRelationManager::class,
-
+                // RelationManagers\BatchPaymentsRelationManager::class,
             ];
         }
 
@@ -65,9 +63,11 @@ class ViewFactory extends ViewRecord
     {
         return [
             Action::make('statement')
-                ->label('كشف حساب')
+                ->label('كشف الحساب')
                 ->icon('heroicon-o-document-text')
                 ->url(fn () => FactoryResource::getUrl('statement', ['record' => $this->record])),
+            MakePaymentAction::make(),
+            ReceivePaymentAction::make(),
             EditAction::make(),
         ];
     }

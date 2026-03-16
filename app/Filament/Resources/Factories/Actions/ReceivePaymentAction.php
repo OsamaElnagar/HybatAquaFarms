@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\Traders\Actions;
+namespace App\Filament\Resources\Factories\Actions;
 
 use App\Domain\Accounting\PostingService;
 use App\Models\Account;
-use App\Models\Trader;
+use App\Models\Factory;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -34,28 +34,28 @@ class ReceivePaymentAction extends Action
                     ->label('المبلغ')
                     ->numeric()
                     ->required()
-                    ->default(fn (Trader $record) => max(0, $record->outstanding_balance)),
+                    ->default(0),
                 Select::make('treasury_account_id')
                     ->label('الخزينة المستلمة')
                     ->options(fn () => Account::where('is_treasury', true)->pluck('name', 'id'))
                     ->required(),
                 Textarea::make('description')
                     ->label('البيان')
-                    ->default('تحصيل نقدية من تاجر'),
+                    ->default('استلام نقدية من مصنع/مفرخ/مورد'),
             ])
-            ->action(function (array $data, Trader $record, PostingService $posting) {
-                $posting->post('voucher.receipt', [
+            ->action(function (array $data, Factory $record, PostingService $posting) {
+                $posting->post('factory.receipt', [
                     'amount' => $data['amount'],
                     'date' => $data['date'],
                     'description' => $data['description'],
-                    'source_type' => Trader::class,
+                    'source_type' => Factory::class,
                     'source_id' => $record->id,
                     'debit_account_id' => $data['treasury_account_id'],
                     'credit_account_id' => $record->account_id,
-                    'trader_statement_id' => $record->activeStatement?->id,
+                    'factory_statement_id' => $record->activeStatement?->id,
                 ]);
             })
             ->slideOver()
-            ->successNotificationTitle('تم تسجيل الدفعة بنجاح');
+            ->successNotificationTitle('تم تسجيل المبلغ بنجاح');
     }
 }

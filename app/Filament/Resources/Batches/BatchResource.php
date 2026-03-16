@@ -93,7 +93,7 @@ class BatchResource extends Resource
         return [
             FishRelationManager::class,
             DailyFeedIssuesRelationManager::class,
-            PaymentsRelationManager::class,
+            // PaymentsRelationManager::class,
             MovementsRelationManager::class,
             HarvestOperationsRelationManager::class,
         ];

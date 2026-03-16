@@ -173,46 +173,28 @@ class Factory extends Model
      */
     public function getCurrentYearActivityAttribute(): array
     {
-        $startOfYear = now()->startOfYear();
-        $purchases = 0.0;
-        $payments = 0.0;
-
-        if ($this->type === FactoryType::FEEDS) {
-            $purchases = $this->feedMovements()
-                ->where('movement_type', 'in')
-                ->where('date', '>=', $startOfYear)
-                ->get()
-                ->sum(function ($movement) {
-                    $unitCost = $movement->feedItem?->standard_cost ?? 0;
-
-                    return (float) ($movement->total_cost ?? ($movement->quantity * $unitCost));
-                });
-
-            $payments = $this->factoryPayments()
-                ->where('date', '>=', $startOfYear)
-                ->sum('amount');
-
-            $voucherPayments = $this->vouchers()
-                ->where('voucher_type', 'payment')
-                ->where('date', '>=', $startOfYear)
-                ->sum('amount');
-
-            $payments += $voucherPayments;
-        } elseif ($this->type === FactoryType::SEEDS) {
-            $purchases = $this->batchFish()
-                ->whereHas('batch', function ($q) use ($startOfYear) {
-                    $q->where('entry_date', '>=', $startOfYear);
-                })
-                ->sum('total_cost');
-
-            $payments = $this->batchPayments()
-                ->where('date', '>=', $startOfYear)
-                ->sum('amount');
+        if (! $this->account_id) {
+            return [
+                'purchases' => 0.0,
+                'payments' => 0.0,
+            ];
         }
 
+        $startOfYear = now()->startOfYear();
+
+        $purchases = (float) JournalLine::query()
+            ->where('account_id', $this->account_id)
+            ->whereHas('journalEntry', fn ($q) => $q->where('date', '>=', $startOfYear))
+            ->sum('credit');
+
+        $payments = (float) JournalLine::query()
+            ->where('account_id', $this->account_id)
+            ->whereHas('journalEntry', fn ($q) => $q->where('date', '>=', $startOfYear))
+            ->sum('debit');
+
         return [
-            'purchases' => (float) $purchases,
-            'payments' => (float) $payments,
+            'purchases' => $purchases,
+            'payments' => $payments,
         ];
     }
 
@@ -221,48 +203,29 @@ class Factory extends Model
      */
     public function getPastYearActivityAttribute(): array
     {
+        if (! $this->account_id) {
+            return [
+                'purchases' => 0.0,
+                'payments' => 0.0,
+            ];
+        }
+
         $startOfPastYear = now()->subYear()->startOfYear();
         $endOfPastYear = now()->subYear()->endOfYear();
 
-        $purchases = 0.0;
-        $payments = 0.0;
+        $purchases = (float) JournalLine::query()
+            ->where('account_id', $this->account_id)
+            ->whereHas('journalEntry', fn ($q) => $q->whereBetween('date', [$startOfPastYear, $endOfPastYear]))
+            ->sum('credit');
 
-        if ($this->type === FactoryType::FEEDS) {
-            $purchases = $this->feedMovements()
-                ->where('movement_type', 'in')
-                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
-                ->get()
-                ->sum(function ($movement) {
-                    $unitCost = $movement->feedItem?->standard_cost ?? 0;
-
-                    return (float) ($movement->total_cost ?? ($movement->quantity * $unitCost));
-                });
-
-            $payments = $this->factoryPayments()
-                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
-                ->sum('amount');
-
-            $voucherPayments = $this->vouchers()
-                ->where('voucher_type', 'payment')
-                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
-                ->sum('amount');
-
-            $payments += $voucherPayments;
-        } elseif ($this->type === FactoryType::SEEDS) {
-            $purchases = $this->batchFish()
-                ->whereHas('batch', function ($q) use ($startOfPastYear, $endOfPastYear) {
-                    $q->whereBetween('entry_date', [$startOfPastYear, $endOfPastYear]);
-                })
-                ->sum('total_cost');
-
-            $payments = $this->batchPayments()
-                ->whereBetween('date', [$startOfPastYear, $endOfPastYear])
-                ->sum('amount');
-        }
+        $payments = (float) JournalLine::query()
+            ->where('account_id', $this->account_id)
+            ->whereHas('journalEntry', fn ($q) => $q->whereBetween('date', [$startOfPastYear, $endOfPastYear]))
+            ->sum('debit');
 
         return [
-            'purchases' => (float) $purchases,
-            'payments' => (float) $payments,
+            'purchases' => $purchases,
+            'payments' => $payments,
         ];
     }
 }

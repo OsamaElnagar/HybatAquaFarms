@@ -22,7 +22,7 @@ class MakePaymentAction extends Action
     {
         parent::setUp();
 
-        $this->label('صرف دفعة')
+        $this->label('صرف مبلغ')
             ->icon('heroicon-o-banknotes')
             ->color('danger')
             ->form([
@@ -41,7 +41,7 @@ class MakePaymentAction extends Action
                     ->required(),
                 Textarea::make('description')
                     ->label('البيان')
-                    ->default('صرف دفعة لمصنع/مورد'),
+                    ->default('صرف مبلغ لمصنع/مفرخ/مورد'),
             ])
             ->action(function (array $data, Factory $record, PostingService $posting) {
                 $posting->post('factory.payment', [
@@ -56,6 +56,6 @@ class MakePaymentAction extends Action
                 ]);
             })
             ->slideOver()
-            ->successNotificationTitle('تم تسجيل الدفعة بنجاح');
+            ->successNotificationTitle('تم تسجيل المبلغ بنجاح');
     }
 }
