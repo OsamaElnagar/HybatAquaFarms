@@ -46,9 +46,9 @@ class SalesOrderForm
                             ->relationship(
                                 'harvestOperation',
                                 'operation_number',
-                                modifyQueryUsing: fn($query) => $query->with('farm')->latest()
+                                modifyQueryUsing: fn ($query) => $query->with('farm')->latest()
                             )
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_display_name)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_display_name)
                             ->required()
                             ->searchable()
                             ->preload()
@@ -67,7 +67,7 @@ class SalesOrderForm
                                 }
                             })
                             ->required()
-                            ->visible(fn(Get $get): bool => filled($get('harvest_operation_id')))
+                            ->visible(fn (Get $get): bool => filled($get('harvest_operation_id')))
                             ->searchable()
                             ->preload()
                             ->helperText('التاجر أو الحلقة المشتريه')
@@ -98,15 +98,15 @@ class SalesOrderForm
                                 // Eager load for label generation
                                 $query->with(['trader', 'harvest', 'driver']);
                             })
-                            ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->code} - {$record->total_boxes} - {$record->trader?->name}" . ($record->driver ? " - السائق: {$record->driver->name}" : '') . " - جلسة رقم {$record->harvest?->harvest_number}")
+                            ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->code} - {$record->date?->format('Y-m-d')} - {$record->total_boxes} boxes - {$record->trader?->name}".($record->driver ? " - السائق: {$record->driver->name}" : '')." - جلسة رقم {$record->harvest?->harvest_number}")
                             ->selectAllAction(
-                                fn(Action $action) => $action->label('اختيار جميع الطلبات'),
+                                fn (Action $action) => $action->label('اختيار جميع الطلبات'),
                             )
                             ->searchable()
                             ->noSearchResultsMessage('لا توجد نتائج للبحث')
                             ->searchPrompt('ابحث عن كود الطلب...')
                             ->searchDebounce(500)
-                            ->visible(fn(Get $get) => $get('harvest_operation_id') && $get('trader_id'))
+                            ->visible(fn (Get $get) => $get('harvest_operation_id') && $get('trader_id'))
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -199,7 +199,7 @@ class SalesOrderForm
 
                         Hidden::make('created_by')
                             ->label('أنشأ بواسطة')
-                            ->default(fn() => Auth::id())
+                            ->default(fn () => Auth::id())
                             ->columnSpan(1),
 
                         Textarea::make('notes')
