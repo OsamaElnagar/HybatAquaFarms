@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\HarvestOperations\RelationManagers;
 
 use App\Enums\HarvestStatus;
+use App\Models\Box;
 use App\Models\Harvest;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -25,6 +26,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class HarvestsRelationManager extends RelationManager
 {
@@ -266,10 +268,7 @@ class HarvestsRelationManager extends RelationManager
                                 ->schema([
                                     Select::make('box_id')
                                         ->label('صنف البوكسه')
-                                        ->relationship('box', 'name', modifyQueryUsing: function (Builder $query) {
-                                            return $query->select('*');
-                                        })
-                                        ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->full_name)
+                                        ->options(fn () => Cache::remember('harvest_box_options', now()->addMinutes(2), fn () => Box::all()->pluck('full_name', 'id')->toArray()))
                                         ->searchable()
                                         ->preload()
                                         ->required(),
