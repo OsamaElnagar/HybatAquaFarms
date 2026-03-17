@@ -44,7 +44,7 @@ class RecordEntryAction extends Action
                     ->live(),
                 Select::make('treasury_account_id')
                     ->label('الخزينة الصادر منها')
-                    ->options(fn() => Account::where('is_treasury', true)->pluck('name', 'id'))
+                    ->options(fn () => Account::where('is_treasury', true)->pluck('name', 'id'))
                     ->required(),
                 Select::make('account_id')
                     ->label('الحساب المقابل')
@@ -81,7 +81,7 @@ class RecordEntryAction extends Action
             ->action(function (array $data, ExternalCalculation $record): void {
                 $activeStatement = $record->activeStatement;
 
-                if (!$activeStatement) {
+                if (! $activeStatement) {
                     Notification::make()
                         ->title('لا يوجد كشف حساب مفتوح')
                         ->body('يرجى فتح كشف حساب جديد أولاً.')

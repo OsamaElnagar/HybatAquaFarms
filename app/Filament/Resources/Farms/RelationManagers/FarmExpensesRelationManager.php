@@ -32,11 +32,11 @@ class FarmExpensesRelationManager extends RelationManager
 {
     protected static string $relationship = 'farmExpenses';
 
-    protected static ?string $title = 'مصروفات وإيرادات المزرعة';
+    protected static ?string $title = 'مصروفات المزرعة';
 
-    protected static ?string $modelLabel = 'قيد';
+    protected static ?string $modelLabel = 'مصروف';
 
-    protected static ?string $pluralModelLabel = 'مصروفات وإيرادات';
+    protected static ?string $pluralModelLabel = 'مصروفات';
 
     public function form(Schema $schema): Schema
     {
@@ -201,8 +201,7 @@ class FarmExpensesRelationManager extends RelationManager
                     }),
             ])
             ->headerActions([
-                CreateAction::make()
-                    ->label('إضافة قيد'),
+                CreateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PettyCashes\RelationManagers;
 
 use App\Enums\PettyTransacionType;
+use App\Filament\Resources\PettyCashes\Actions\BulkTransactionsAction;
 use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionForm;
 use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
@@ -11,10 +12,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -31,6 +28,10 @@ class TransactionsRelationManager extends RelationManager
     protected static string $relationship = 'transactions';
 
     protected static ?string $title = 'معاملات العهدة';
+
+    protected static ?string $modelLabel = 'معاملة جديدة';
+
+    protected static ?string $pluralModelLabel = 'معاملات العهدة';
 
     public function form(Schema $schema): Schema
     {
@@ -135,80 +136,7 @@ class TransactionsRelationManager extends RelationManager
 
                         return $data;
                     }),
-                CreateAction::make('bulkTransactions')
-                    ->label('إضافة معاملات متعددة')
-                    ->modalHeading('إضافة معاملات متعددة للعهدة')
-                    ->schema([
-                        Repeater::make('transactions')
-                            ->label('المعاملات')
-                            ->schema([
-                                Select::make('farm_id')
-                                    ->label('المزرعة')
-                                    ->options(function () {
-                                        return $this->getOwnerRecord()->farms->pluck('name', 'id');
-                                    })
-                                    ->default(function () {
-                                        $farms = $this->getOwnerRecord()->farms;
-
-                                        return $farms->count() === 1 ? $farms->first()->id : null;
-                                    })
-
-                                    ->searchable()
-                                    ->preload(),
-                                Select::make('direction')
-                                    ->label('النوع')
-                                    ->options([
-                                        'out' => 'صرف (مصروف)',
-                                        'in' => 'قبض (تزويد)',
-                                    ])
-                                    ->required()
-                                    ->live()
-                                    ->default('out'),
-                                Select::make('expense_category_id')
-                                    ->label('نوع المصروف')
-                                    ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
-                                    ->visible(fn ($get) => $get('direction') === 'out')
-                                    ->required(fn ($get) => $get('direction') === 'out')
-                                    ->searchable()
-                                    ->preload(),
-                                DatePicker::make('date')
-                                    ->displayFormat('Y-m-d')
-                                    ->native(false)
-                                    ->label('التاريخ')
-                                    ->required()
-                                    ->default(now()),
-                                TextInput::make('amount')
-                                    ->label('المبلغ')
-                                    ->required()
-                                    ->numeric()
-                                    ->suffix(' EGP ')
-                                    ->minValue(0.01)
-                                    ->step(0.01),
-                                Textarea::make('description')
-                                    ->label('الوصف التفصيلي')
-                                    ->columnSpanFull()
-                                    ->maxLength(1000)
-                                    ->helperText('اكتب تفاصيل المصروف/التزويد بالتفصيل'),
-                            ])
-                            ->minItems(1)
-                            ->reorderable()
-                            ->columnSpanFull(),
-                    ])
-                    ->action(function (array $data): void {
-                        $pettyCash = $this->getOwnerRecord();
-
-                        foreach ($data['transactions'] ?? [] as $transactionData) {
-                            $pettyCash->transactions()->create([
-                                'farm_id' => $transactionData['farm_id'],
-                                'direction' => $transactionData['direction'],
-                                'expense_category_id' => $transactionData['expense_category_id'] ?? null,
-                                'date' => $transactionData['date'],
-                                'amount' => $transactionData['amount'],
-                                'description' => $transactionData['description'],
-                                'recorded_by' => Auth::id(),
-                            ]);
-                        }
-                    }),
+                BulkTransactionsAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -14,24 +14,9 @@ class TinkerWhatever extends Command
 
     public function handle()
     {
-        $this->info('Starting Post-Migration Verification...');
+        $this->info('Starting whatever ...');
 
-        $totalEntries = ExternalCalculationEntry::count();
-        $linkedEntries = ExternalCalculationEntry::whereNotNull('external_calculation_statement_id')->count();
-        $unlinkedEntries = ExternalCalculationEntry::whereNull('external_calculation_statement_id')->count();
 
-        $this->info("Total Entries: {$totalEntries}");
-        $this->info("Linked Entries: {$linkedEntries}");
-        $this->info("Unlinked Entries: {$unlinkedEntries}");
-
-        if ($unlinkedEntries === 0) {
-            $this->info('✓ SUCCESS: All entries are linked to a statement.');
-        } else {
-            $this->error('✗ FAILURE: Some entries are still unlinked.');
-        }
-
-        $totalJournalEntries = JournalEntry::whereNotNull('external_calculation_statement_id')->count();
-        $this->info("Linked Journal Entries: {$totalJournalEntries}");
 
         $this->info('Verification Completed.');
     }
