@@ -44,7 +44,7 @@ class PettyCashTransactionForm
                             ->label('العهدة')
                             ->options(function() use ($isFarmManager, $isPettyCashManager, $ownerRecord) {
                                 if ($isFarmManager) {
-                                    return $ownerRecord->pettyCashes()->pluck('name', 'id')->toArray();
+                                    return $ownerRecord->pettyCashes()->pluck('name', 'petty_cashes.id')->toArray();
                                 }
                                 return Cache::remember('petty_cashes_list', now()->addDay(), fn() => PettyCash::pluck('name', 'id')->toArray());
                             })
