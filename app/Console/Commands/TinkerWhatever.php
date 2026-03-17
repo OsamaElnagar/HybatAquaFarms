@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ExternalCalculationEntry;
-use App\Models\JournalEntry;
 use Illuminate\Console\Command;
 
 class TinkerWhatever extends Command
@@ -15,8 +13,6 @@ class TinkerWhatever extends Command
     public function handle()
     {
         $this->info('Starting whatever ...');
-
-
 
         $this->info('Verification Completed.');
     }

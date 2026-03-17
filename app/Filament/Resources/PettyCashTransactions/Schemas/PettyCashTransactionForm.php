@@ -42,11 +42,12 @@ class PettyCashTransactionForm
                     ->schema([
                         Select::make('petty_cash_id')
                             ->label('العهدة')
-                            ->options(function() use ($isFarmManager, $isPettyCashManager, $ownerRecord) {
+                            ->options(function () use ($isFarmManager, $ownerRecord) {
                                 if ($isFarmManager) {
                                     return $ownerRecord->pettyCashes()->pluck('name', 'petty_cashes.id')->toArray();
                                 }
-                                return Cache::remember('petty_cashes_list', now()->addDay(), fn() => PettyCash::pluck('name', 'id')->toArray());
+
+                                return Cache::remember('petty_cashes_list', now()->addDay(), fn () => PettyCash::pluck('name', 'id')->toArray());
                             })
                             ->default(function () use ($isPettyCashManager, $isFarmManager, $ownerRecord) {
                                 if ($isPettyCashManager) {
@@ -63,8 +64,8 @@ class PettyCashTransactionForm
                             ->live()
                             ->disabled($isPettyCashManager)
                             ->dehydrated()
-                            ->afterStateHydrated(fn(Set $set, Get $get, $state) => self::updateDependentFields($set, $get, $state))
-                            ->afterStateUpdated(fn(Set $set, Get $get, $state) => self::updateDependentFields($set, $get, $state))
+                            ->afterStateHydrated(fn (Set $set, Get $get, $state) => self::updateDependentFields($set, $get, $state))
+                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => self::updateDependentFields($set, $get, $state))
                             ->searchable()
                             ->preload(),
                         TextEntry::make('current_balance')
@@ -75,7 +76,7 @@ class PettyCashTransactionForm
                             ->label('المزرعة')
                             ->options(function (Get $get) {
                                 $pettyCashId = $get('petty_cash_id');
-                                if (!$pettyCashId) {
+                                if (! $pettyCashId) {
                                     return [];
                                 }
 
@@ -100,9 +101,9 @@ class PettyCashTransactionForm
                             ->dehydrated()
                             ->searchable()
                             ->preload()
-                            ->afterStateHydrated(fn($state, Set $set) => self::selectMainBatchForFarm($set, (int) $state))
-                            ->afterStateUpdated(fn($state, Set $set) => self::selectMainBatchForFarm($set, (int) $state))
-                            ->visible(fn(Get $get) => filled($get('petty_cash_id')) || $isFarmManager)
+                            ->afterStateHydrated(fn ($state, Set $set) => self::selectMainBatchForFarm($set, (int) $state))
+                            ->afterStateUpdated(fn ($state, Set $set) => self::selectMainBatchForFarm($set, (int) $state))
+                            ->visible(fn (Get $get) => filled($get('petty_cash_id')) || $isFarmManager)
                             ->helperText('المزرعة التي تخصها المعاملة.'),
 
                         Select::make('batch_id')
@@ -119,7 +120,7 @@ class PettyCashTransactionForm
                             })
                             ->searchable()
                             ->preload()
-                            ->visible(fn(Get $get) => filled($get('farm_id')) && $get('direction') === PettyTransacionType::OUT)
+                            ->visible(fn (Get $get) => filled($get('farm_id')) && $get('direction') === PettyTransacionType::OUT)
                             ->helperText('اختر دفعة الزريعة المفتوحة (اختياري).'),
 
                         Select::make('direction')
@@ -131,9 +132,9 @@ class PettyCashTransactionForm
 
                         Select::make('expense_category_id')
                             ->label('نوع المصروف')
-                            ->relationship('expenseCategory', 'name', fn($query) => $query->where('is_active', true))
-                            ->visible(fn($get) => $get('direction') === PettyTransacionType::OUT)
-                            ->required(fn($get) => $get('direction') === PettyTransacionType::OUT)
+                            ->relationship('expenseCategory', 'name', fn ($query) => $query->where('is_active', true))
+                            ->visible(fn ($get) => $get('direction') === PettyTransacionType::OUT)
+                            ->required(fn ($get) => $get('direction') === PettyTransacionType::OUT)
                             ->searchable()
                             ->preload()
                             ->live(),
@@ -147,7 +148,7 @@ class PettyCashTransactionForm
                                     return false;
                                 }
                                 $categoryId = $get('expense_category_id');
-                                if (!$categoryId) {
+                                if (! $categoryId) {
                                     return false;
                                 }
                                 $category = ExpenseCategory::find($categoryId);
@@ -160,7 +161,7 @@ class PettyCashTransactionForm
                             ->native(false)
                             ->required()
                             ->default(function () {
-                                return Cache::get('user_' . auth('web')->id() . '_last_petty_cash_date') ?? now();
+                                return Cache::get('user_'.auth('web')->id().'_last_petty_cash_date') ?? now();
                             }),
                         Section::make('المبلغ والوصف')
                             ->schema([
@@ -185,7 +186,7 @@ class PettyCashTransactionForm
 
     private static function updateDependentFields(Set $set, Get $get, ?string $pettyCashId): void
     {
-        if (!$pettyCashId) {
+        if (! $pettyCashId) {
             $set('current_balance', null);
 
             return;
@@ -199,14 +200,14 @@ class PettyCashTransactionForm
             $currentFarmId = $get('farm_id');
 
             // If current farm is not in the list of farms for this petty cash, clear it
-            if ($currentFarmId && !in_array($currentFarmId, $availableFarmIds)) {
+            if ($currentFarmId && ! in_array($currentFarmId, $availableFarmIds)) {
                 $set('farm_id', null);
                 $set('batch_id', null);
                 $currentFarmId = null;
             }
 
             // Auto-select farm if it's not set and there's only one farm
-            if (!$currentFarmId && count($availableFarmIds) === 1) {
+            if (! $currentFarmId && count($availableFarmIds) === 1) {
                 $farmId = $availableFarmIds[0];
                 $set('farm_id', $farmId);
                 self::selectMainBatchForFarm($set, $farmId);
@@ -216,7 +217,7 @@ class PettyCashTransactionForm
 
     private static function selectMainBatchForFarm(Set $set, ?int $farmId): void
     {
-        if (!$farmId) {
+        if (! $farmId) {
             $set('batch_id', null);
 
             return;

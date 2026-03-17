@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Farms\RelationManagers;
 
 use App\Enums\PettyTransacionType;
+use App\Filament\Resources\PettyCashes\Actions\BulkTransactionsAction;
 use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionForm;
 use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
@@ -111,6 +112,7 @@ class PettyCashTransactionsRelationManager extends RelationManager
                     }),
             ])
             ->headerActions([
+                BulkTransactionsAction::make(),
                 CreateAction::make()
                     ->label('إضافة معاملة')
                     ->mutateDataUsing(function (array $data): array {
