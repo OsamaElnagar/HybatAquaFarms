@@ -75,7 +75,7 @@ class FarmUnitResource extends Resource
     {
         return [
             RelationManagers\BatchesRelationManager::class,
-            RelationManagers\DailyFeedIssuesRelationManager::class,
+            // RelationManagers\DailyFeedIssuesRelationManager::class,
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
+use App\Filament\Resources\DailyFeedIssues\Actions\BulkFeedIssuesAction;
 use App\Filament\Resources\DailyFeedIssues\Schemas\DailyFeedIssueForm;
 use App\Filament\Resources\DailyFeedIssues\Tables\DailyFeedIssuesTable;
 use Filament\Actions\CreateAction;
@@ -38,6 +39,7 @@ class DailyFeedIssuesRelationManager extends RelationManager
     {
         return DailyFeedIssuesTable::configure($table)
             ->headerActions([
+                BulkFeedIssuesAction::make(),
                 CreateAction::make()->label('سجًل مصروف علف جديد'),
             ]);
     }

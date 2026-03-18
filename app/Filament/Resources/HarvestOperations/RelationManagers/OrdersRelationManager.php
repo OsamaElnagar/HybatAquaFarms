@@ -128,6 +128,7 @@ class OrdersRelationManager extends RelationManager
                     // DissociateBulkAction::make(),
                     // DeleteBulkAction::make()->label('حذف إيصالات'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date', 'desc');
     }
 }
