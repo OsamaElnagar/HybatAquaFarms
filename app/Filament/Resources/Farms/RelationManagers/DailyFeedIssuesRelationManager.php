@@ -16,6 +16,10 @@ class DailyFeedIssuesRelationManager extends RelationManager
 
     protected static ?string $title = 'صرف الأعلاف اليومي';
 
+    protected static ?string $modelLabel = 'صرف علف';
+
+    protected static ?string $pluralModelLabel = 'صرف الأعلاف';
+
     public function form(Schema $schema): Schema
     {
         return DailyFeedIssueForm::configure($schema);
@@ -26,7 +30,7 @@ class DailyFeedIssuesRelationManager extends RelationManager
         return DailyFeedIssuesTable::configure($table)
             ->headerActions([
                 BulkFeedIssuesAction::make(),
-                CreateAction::make()->label('إضافة صرف علف'),
+                CreateAction::make(),
             ]);
     }
 }

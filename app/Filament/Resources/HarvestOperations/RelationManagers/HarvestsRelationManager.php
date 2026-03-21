@@ -19,6 +19,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
@@ -282,7 +283,17 @@ class HarvestsRelationManager extends RelationManager
                                         ->label('وزن البوكسه')
                                         ->default(25)
                                         ->numeric()
-                                        ->required(),
+                                        ->required()
+                                        ->visible(fn (Get $get) => ($get('price_type') ?? 'weight') === 'weight'),
+                                    Select::make('price_type')
+                                        ->label('نوع التسعير')
+                                        ->options([
+                                            'weight' => 'بالوزن',
+                                            'unit' => 'بالعدد (البوكسه)',
+                                        ])
+                                        ->default('weight')
+                                        ->required()
+                                        ->live(),
                                 ])
                                 ->columns(3)
                                 ->defaultItems(1)

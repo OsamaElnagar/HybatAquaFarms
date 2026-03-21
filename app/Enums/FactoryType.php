@@ -19,7 +19,7 @@ enum FactoryType: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::FEEDS => 'مصنع اعلاف',
-            self::SEEDS => 'مفرخ زريعة',
+            self::SEEDS => 'مفرخ',
             self::SUPPLIER => 'مورد',
         };
     }

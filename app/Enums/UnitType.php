@@ -13,13 +13,19 @@ enum UnitType: string implements HasColor, HasIcon, HasLabel
     case Pond = 'pond';
     case Tank = 'tank';
     case Cage = 'cage';
+    case House = 'house';
+    case Pen = 'pen';
+    case CageBattery = 'battery';
 
     public function getLabel(): string|Htmlable|null
     {
         return match ($this) {
             self::Pond => 'حوض',
-            self::Tank => 'خزان',
+            self::Tank => 'حضان/خزان',
             self::Cage => 'قفص',
+            self::House => 'عنبر',
+            self::Pen => 'حوش/حظيرة',
+            self::CageBattery => 'بطارية',
         };
     }
 
@@ -29,6 +35,9 @@ enum UnitType: string implements HasColor, HasIcon, HasLabel
             self::Pond => 'success',
             self::Tank => 'primary',
             self::Cage => 'warning',
+            self::House => 'danger',
+            self::Pen => 'info',
+            self::CageBattery => 'warning',
         };
     }
 
@@ -38,6 +47,9 @@ enum UnitType: string implements HasColor, HasIcon, HasLabel
             self::Pond => 'heroicon-o-cube-transparent',
             self::Tank => 'heroicon-o-cube',
             self::Cage => 'heroicon-o-squares-2x2',
+            self::House => 'heroicon-o-home',
+            self::Pen => 'heroicon-o-rectangle-stack',
+            self::CageBattery => 'heroicon-o-queue-list',
         };
     }
 }

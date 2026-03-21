@@ -19,7 +19,8 @@ class SpeciesFactory extends Factory
     {
         return [
             'name' => fake()->unique()->word(),
-            'notes' => fake()->sentence(),
+            'type' => 'fish',
+            'description' => fake()->optional()->sentence(),
         ];
     }
 }

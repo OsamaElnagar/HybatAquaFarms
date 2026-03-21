@@ -8,13 +8,15 @@ use App\Filament\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\RelationManagers\DailyFeedIssuesRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\FishRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\HarvestOperationsRelationManager;
+use App\Filament\Resources\Batches\RelationManagers\MortalityRecordsRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\MovementsRelationManager;
-use App\Filament\Resources\Batches\RelationManagers\PaymentsRelationManager;
+use App\Filament\Resources\Batches\RelationManagers\ProductionRecordsRelationManager;
 use App\Filament\Resources\Batches\Schemas\BatchForm;
 use App\Filament\Resources\Batches\Tables\BatchesTable;
 use App\Models\Batch;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -34,22 +36,22 @@ class BatchResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'الزريعة';
+        return 'الزريعة و الدورات';
     }
 
     public static function getNavigationLabel(): string
     {
-        return 'الزريعة';
+        return 'دورات الزريعة';
     }
 
     public static function getModelLabel(): string
     {
-        return 'دفعة زريعة';
+        return 'دورة زريعة';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'دفعات الزريعة';
+        return 'دورات الزريعة';
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -93,9 +95,12 @@ class BatchResource extends Resource
         return [
             FishRelationManager::class,
             DailyFeedIssuesRelationManager::class,
-            // PaymentsRelationManager::class,
             MovementsRelationManager::class,
             HarvestOperationsRelationManager::class,
+            RelationGroup::make('الدواجن', [
+                ProductionRecordsRelationManager::class,
+                MortalityRecordsRelationManager::class,
+            ]),
         ];
     }
 

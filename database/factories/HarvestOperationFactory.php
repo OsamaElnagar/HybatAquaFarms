@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\HarvestOperationStatus;
-use App\Models\Batch;
 use App\Models\Farm;
 use App\Models\HarvestOperation;
 use App\Models\User;
@@ -25,7 +24,7 @@ class HarvestOperationFactory extends Factory
     {
         return [
             'operation_number' => 'OP-'.fake()->unique()->randomNumber(5, true),
-            'batch_id' => Batch::factory(),
+            'batch_id' => BatchFactory::new(),
             'farm_id' => Farm::factory(),
             'start_date' => fake()->date(),
             'end_date' => fake()->optional()->date(),

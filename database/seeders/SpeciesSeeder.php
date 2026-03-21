@@ -10,55 +10,78 @@ class SpeciesSeeder extends Seeder
 {
     public function run(): void
     {
-        // Fish species
-        Species::create([
-            'name' => 'بلطي نيلي',
-            'type' => SpeciesType::Fish,
-            'description' => 'البلطي النيلي - النوع الأكثر شيوعاً في الاستزراع السمكي',
-            'is_active' => true,
-        ]);
+        $species = [
+            // Fish species
+            [
+                'name' => 'بلطي نيلي',
+                'type' => SpeciesType::Fish,
+                'description' => 'البلطي النيلي - النوع الأكثر شيوعاً في الاستزراع السمكي',
+            ],
+            [
+                'name' => 'بوري',
+                'type' => SpeciesType::Fish,
+                'description' => 'سمك البوري',
+            ],
+            [
+                'name' => 'توبار',
+                'type' => SpeciesType::Fish,
+                'description' => 'سمك التوبار',
+            ],
+            [
+                'name' => 'جمبري',
+                'type' => SpeciesType::Fish,
+                'description' => 'الجمبري',
+            ],
+            [
+                'name' => 'قراميط',
+                'type' => SpeciesType::Fish,
+                'description' => 'سمك القراميط',
+            ],
 
-        Species::create([
-            'name' => 'بوري',
-            'type' => SpeciesType::Fish,
-            'description' => 'سمك البوري',
-            'is_active' => true,
-        ]);
+            // Animals
+            [
+                'name' => 'جاموس',
+                'type' => SpeciesType::Animal,
+                'description' => 'الجاموس',
+            ],
+            [
+                'name' => 'أغنام',
+                'type' => SpeciesType::Animal,
+                'description' => 'الأغنام',
+            ],
 
-        Species::create([
-            'name' => 'توبار',
-            'type' => SpeciesType::Fish,
-            'description' => 'سمك التوبار',
-            'is_active' => true,
-        ]);
+            // Poultry
+            [
+                'name' => 'دجاج (تسمين)',
+                'type' => SpeciesType::Poultry,
+                'description' => 'دجاج التسمين (لاحم)',
+            ],
+            [
+                'name' => 'دجاج (بياض)',
+                'type' => SpeciesType::Poultry,
+                'description' => 'دجاج بياض (إنتاج بيض)',
+            ],
+            [
+                'name' => 'ديك رومي',
+                'type' => SpeciesType::Poultry,
+                'description' => 'ديك رومي',
+            ],
+            [
+                'name' => 'بط',
+                'type' => SpeciesType::Poultry,
+                'description' => 'البط',
+            ],
+        ];
 
-        Species::create([
-            'name' => 'جمبري',
-            'type' => SpeciesType::Fish,
-            'description' => 'الجمبري',
-            'is_active' => true,
-        ]);
-
-        Species::create([
-            'name' => 'قراميط',
-            'type' => SpeciesType::Fish,
-            'description' => 'سمك القراميط',
-            'is_active' => true,
-        ]);
-
-        // Animals
-        Species::create([
-            'name' => 'جاموس',
-            'type' => SpeciesType::Animal,
-            'description' => 'الجاموس',
-            'is_active' => true,
-        ]);
-
-        Species::create([
-            'name' => 'أغنام',
-            'type' => SpeciesType::Animal,
-            'description' => 'الأغنام',
-            'is_active' => true,
-        ]);
+        foreach ($species as $item) {
+            Species::updateOrCreate(
+                ['name' => $item['name']],
+                [
+                    'type' => $item['type'],
+                    'description' => $item['description'],
+                    'is_active' => true,
+                ]
+            );
+        }
     }
 }

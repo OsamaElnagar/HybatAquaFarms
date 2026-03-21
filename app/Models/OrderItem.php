@@ -43,11 +43,12 @@ class OrderItem extends Model
                 $item->total_weight = $item->quantity * $item->weight_per_box;
             }
 
-            // Default calculation: per kg if total_weight exists, else per unit?
-            // Let's assume per kg if weight exists, otherwise per box.
-            // But simple logic for now: unit_price is usually per KG in this domain (AquaFarms).
             if ($item->unit_price) {
-                $item->subtotal = ($item->total_weight ?? 0) * $item->unit_price;
+                if (($item->price_type ?? 'weight') === 'unit') {
+                    $item->subtotal = ($item->quantity ?? 0) * $item->unit_price;
+                } else {
+                    $item->subtotal = ($item->total_weight ?? 0) * $item->unit_price;
+                }
             }
         });
 

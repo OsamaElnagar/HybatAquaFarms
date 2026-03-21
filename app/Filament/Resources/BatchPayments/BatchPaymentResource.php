@@ -31,7 +31,7 @@ class BatchPaymentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'الزريعة';
+        return 'الزريعة و الدورات';
     }
 
     public static function getNavigationLabel(): string
@@ -41,7 +41,7 @@ class BatchPaymentResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'دفعة زريعة';
+        return 'مدفوع زريعة';
     }
 
     public static function getPluralModelLabel(): string

@@ -142,6 +142,16 @@ class Batch extends Model
         return $this->hasMany(PettyCashTransaction::class);
     }
 
+    public function productionRecords(): HasMany
+    {
+        return $this->hasMany(ProductionRecord::class);
+    }
+
+    public function mortalityRecords(): HasMany
+    {
+        return $this->hasMany(MortalityRecord::class);
+    }
+
     protected ?float $cachedTotalFeedCost = null;
 
     protected ?float $cachedAllocatedExpenses = null;

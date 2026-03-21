@@ -10,12 +10,14 @@ enum SpeciesType: string implements HasColor, HasIcon, HasLabel
 {
     case Fish = 'fish';
     case Animal = 'animal';
+    case Poultry = 'poultry';
 
     public function getLabel(): ?string
     {
         return match ($this) {
             self::Fish => 'أسماك',
             self::Animal => 'حيوانات',
+            self::Poultry => 'دواجن',
         };
     }
 
@@ -24,6 +26,7 @@ enum SpeciesType: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Fish => 'info',
             self::Animal => 'warning',
+            self::Poultry => 'success',
         };
     }
 
@@ -32,6 +35,7 @@ enum SpeciesType: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Fish => 'heroicon-o-sparkles',
             self::Animal => 'heroicon-o-heart',
+            self::Poultry => 'heroicon-o-bug-ant', // Placeholder icon for birds
         };
     }
 }

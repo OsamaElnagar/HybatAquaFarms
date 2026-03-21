@@ -66,7 +66,7 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
-                    ->label('الزريعة')
+                    ->label('الزريعة و الدورات')
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
@@ -97,6 +97,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('التقارير')
                     ->collapsible()
                     ->collapsed(),
+
                 NavigationGroup::make()
                     ->label('اعدادات النظام')
                     ->collapsible()

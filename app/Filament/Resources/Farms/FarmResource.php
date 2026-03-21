@@ -94,14 +94,14 @@ class FarmResource extends Resource
             RelationManagers\PettyCashTransactionsRelationManager::class,
             RelationManagers\FarmExpensesRelationManager::class,
             RelationManagers\DailyFeedIssuesRelationManager::class,
-            RelationManagers\FeedStocksRelationManager::class,
-            RelationManagers\FeedWarehousesRelationManager::class,
-            RelationManagers\ExternalCalculationsRelationManager::class,
             RelationManagers\UnitsRelationManager::class,
             RelationManagers\BatchesRelationManager::class,
             RelationManagers\EmployeesRelationManager::class,
             RelationManagers\HarvestOperationsRelationManager::class,
             RelationManagers\SalesOrdersRelationManager::class,
+            RelationManagers\ExternalCalculationsRelationManager::class,
+            RelationManagers\FeedStocksRelationManager::class,
+            RelationManagers\FeedWarehousesRelationManager::class,
         ];
     }
 

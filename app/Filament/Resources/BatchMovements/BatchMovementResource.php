@@ -25,7 +25,7 @@ class BatchMovementResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'الزريعة';
+        return 'الزريعة و الدورات';
     }
 
     public static function getNavigationLabel(): string
