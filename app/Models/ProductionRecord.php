@@ -44,7 +44,7 @@ class ProductionRecord extends Model
         return $this->belongsTo(Farm::class);
     }
 
-    public function unit(): BelongsTo
+    public function farmUnit(): BelongsTo
     {
         return $this->belongsTo(FarmUnit::class, 'unit_id');
     }

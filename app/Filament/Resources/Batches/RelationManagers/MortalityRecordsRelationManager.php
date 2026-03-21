@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Batches\RelationManagers;
 
 use App\Models\FarmUnit;
+use App\Models\MortalityRecord;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
@@ -77,16 +79,9 @@ class MortalityRecordsRelationManager extends RelationManager
 
                         Hidden::make('recorded_by')
                             ->default(fn () => auth()->id()),
-                    ])->columns(3),
+                    ])->columns(3)
+                    ->columnSpanFull(),
             ]);
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['batch_id'] = $this->getOwnerRecord()->getKey();
-        $data['farm_id'] = $this->getOwnerRecord()->farm_id;
-
-        return $data;
     }
 
     public function table(Table $table): Table
@@ -99,29 +94,36 @@ class MortalityRecordsRelationManager extends RelationManager
                     ->sortable(),
 
                 TextColumn::make('unit.name')
-                    ->label('الوحدة')
+                    ->label('الوحدة (عنبر/حظيرة)')
                     ->placeholder('غير محدد'),
 
                 TextColumn::make('quantity')
                     ->label('العدد')
                     ->numeric()
                     ->color('danger')
-                    ->summarize(Sum::make()),
-
-                TextColumn::make('reason')
-                    ->label('السبب')
-                    ->searchable(),
+                    ->description(fn (MortalityRecord $record): ?string => $record->reason)
+                    ->summarize(Sum::make())
+                    ->searchable(query: fn ($query, $search) => $query->where('reason', 'like', "%{$search}%")),
 
                 TextColumn::make('recordedBy.name')
                     ->label('سجل بواسطة')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
-                CreateAction::make()->label('سجل نافقة جديدة'),
+                CreateAction::make()
+                    ->using(function (array $data) {
+                        $ownerRecord = $this->getOwnerRecord();
+                        $data['batch_id'] = $ownerRecord->getKey();
+                        $data['farm_id'] = $ownerRecord->farm_id ?? $ownerRecord->farm?->id;
+                        $data['recorded_by'] = auth()->id();
+
+                        return $this->getRelationship()->create($data);
+                    }),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->filters([
                 //

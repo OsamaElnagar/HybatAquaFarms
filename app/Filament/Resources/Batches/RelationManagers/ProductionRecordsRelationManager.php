@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Batches\RelationManagers;
 
 use App\Models\FarmUnit;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
@@ -66,8 +67,8 @@ class ProductionRecordsRelationManager extends RelationManager
                             ->numeric()
                             ->minValue(0),
 
-                        Select::make('unit')
-                            ->label('الوحدة المستخدمة')
+                        Select::make('egg_unit')
+                            ->label('نوع الوحدة')
                             ->options([
                                 'egg' => 'بيضة',
                                 'tray' => 'طبق',
@@ -97,14 +98,6 @@ class ProductionRecordsRelationManager extends RelationManager
             ]);
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['batch_id'] = $this->getOwnerRecord()->getKey();
-        $data['farm_id'] = $this->getOwnerRecord()->farm_id;
-
-        return $data;
-    }
-
     public function table(Table $table): Table
     {
         return $table
@@ -114,8 +107,8 @@ class ProductionRecordsRelationManager extends RelationManager
                     ->date()
                     ->sortable(),
 
-                TextColumn::make('unit.name')
-                    ->label('الوحدة')
+                TextColumn::make('farmUnit.name')
+                    ->label('الوحدة (عنبر/حظيرة)')
                     ->placeholder('غير محدد'),
 
                 TextColumn::make('quantity')
@@ -150,11 +143,20 @@ class ProductionRecordsRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
-                CreateAction::make()->label('سجل إنتاج بيض'),
+                CreateAction::make()
+                    ->using(function (array $data) {
+                        $ownerRecord = $this->getOwnerRecord();
+                        $data['batch_id'] = $ownerRecord->getKey();
+                        $data['farm_id'] = $ownerRecord->farm_id ?? $ownerRecord->farm?->id;
+                        $data['recorded_by'] = auth()->id();
+
+                        return $this->getRelationship()->create($data);
+                    }),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->filters([
                 //

@@ -46,6 +46,9 @@ class AppServiceProvider extends ServiceProvider
             return $table
                 ->striped()
                 // ->deferLoading()
+                ->defaultDateDisplayFormat('Y-m-d')
+                ->defaultSort('date', 'desc')
+                ->defaultCurrency('EGP')
                 ->defaultPaginationPageOption(25);
         });
 
