@@ -127,7 +127,6 @@ class StatementOfAccount extends Page implements HasTable
 
         $entries = $journalLines->map(fn ($line) => [
             'date' => $line->je_date ? Carbon::parse($line->je_date)->format('Y-m-d') : '-',
-            'entry_number' => $line->entry_number ?? '-',
             'description' => $line->description ?: $line->je_description ?? '-',
             'debit' => (float) $line->debit,
             'credit' => (float) $line->credit,

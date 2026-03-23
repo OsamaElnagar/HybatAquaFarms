@@ -15,65 +15,71 @@
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.4;
-            color: #333;
+            color: #2c3e50;
         }
 
         .header {
             text-align: center;
             margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #1a5f7a;
+            background: linear-gradient(to bottom, #e8f4f8, #fff);
+            padding: 15px;
         }
 
         .header h1 {
-            font-size: 18px;
+            font-size: 22px;
             margin-bottom: 3px;
+            color: #1a5f7a;
         }
 
         .header h2 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: normal;
+            color: #2980b9;
         }
 
         .info-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .info-table th,
         .info-table td {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
+            padding: 6px 10px;
+            border: 1px solid #3498db;
         }
 
         .info-table th {
-            background-color: #f5f5f5;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
             font-weight: bold;
             width: 140px;
             text-align: right;
         }
 
         .info-table td {
-            background-color: #fff;
+            background-color: #f8fbff;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 10px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: bold;
         }
 
         .status-open {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #27ae60;
+            color: white !important;
         }
 
         .status-closed {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #e74c3c;
+            color: white !important;
         }
 
         .amount {
@@ -82,33 +88,50 @@
         }
 
         .amount-debit {
-            color: #dc3545;
+            color: #e74c3c;
+            font-weight: 600;
         }
 
         .amount-credit {
-            color: #28a745;
+            color: #27ae60;
+            font-weight: 600;
         }
 
         .amount-bold {
             font-weight: bold;
+            color: #1a5f7a;
         }
 
         .entries-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .entries-table th,
         .entries-table td {
-            border: 1px solid #ccc;
-            padding: 5px 8px;
+            border: 1px solid #3498db;
+            padding: 6px 8px;
             text-align: right;
         }
 
         .entries-table th {
-            background-color: #f5f5f5;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
             font-weight: bold;
+        }
+
+        .entries-table tr:nth-child(even) {
+            background-color: #f0f8ff;
+        }
+
+        .entries-table tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        .entries-table tr:hover {
+            background-color: #e8f4f8;
         }
 
         .entries-table .text-center {
@@ -126,41 +149,50 @@
 
         .summary-table {
             width: 280px;
-            margin-right: auto;
+            margin-left: auto;
+            margin-right: 0;
             border-collapse: collapse;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
         .summary-table th,
         .summary-table td {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
+            padding: 8px 12px;
+            border: 1px solid #1a5f7a;
         }
 
         .summary-table th {
-            background-color: #f5f5f5;
+            background: linear-gradient(to bottom, #1a5f7a, #0e4157);
+            color: white;
             font-weight: bold;
             text-align: right;
+        }
+
+        .summary-table td {
+            background-color: #f8fbff;
         }
 
         .footer {
             margin-top: 25px;
             text-align: center;
             font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 8px;
+            color: #7f8c8d;
+            border-top: 2px solid #3498db;
+            padding-top: 10px;
         }
 
         .notes {
             margin-top: 10px;
-            padding: 8px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
             font-size: 10px;
         }
 
         .notes-title {
             font-weight: bold;
+            color: #856404;
             margin-bottom: 3px;
         }
 
@@ -181,10 +213,10 @@
     <table class="info-table">
         <tr>
             <th>الاسم:</th>
-            <td>{{ $entityName }}</td>
+            <td><strong>{{ $entityName }}</strong></td>
             <th>الحالة:</th>
             <td>
-                @if(($statement['status'] ?? 'open') === 'open')
+                @if(in_array($statement['status'] ?? 'open', ['open', 'Open', 'OPEN']))
                     <span class="status-badge status-open">مفتوح</span>
                 @else
                     <span class="status-badge status-closed">مغلق / مسوَّى</span>
@@ -201,7 +233,7 @@
             <th>الرصيد الافتتاحي:</th>
             <td class="amount amount-bold">{{ number_format($statement['opening_balance'] ?? 0) }} EGP</td>
             <th>الرصيد الختامي:</th>
-            <td class="amount amount-bold">{{ number_format($statement['closing_balance'] ?? 0) }} EGP</td>
+            <td class="amount amount-bold" style="font-size: 12px;">{{ number_format($statement['closing_balance'] ?? 0) }} EGP</td>
         </tr>
     </table>
 
@@ -216,12 +248,11 @@
         <thead>
             <tr>
                 <th style="width: 45px;">#</th>
-                <th style="width: 80px;">التاريخ</th>
-                <th style="width: 75px;">رقم القيد</th>
+                <th style="width: 85px;">التاريخ</th>
                 <th>البيان</th>
-                <th style="width: 90px;" class="text-left">مدين (EGP)</th>
-                <th style="width: 90px;" class="text-left">دائن (EGP)</th>
-                <th style="width: 90px;" class="text-left">الرصيد (EGP)</th>
+                <th style="width: 95px;" class="text-left">مدين (EGP)</th>
+                <th style="width: 95px;" class="text-left">دائن (EGP)</th>
+                <th style="width: 95px;" class="text-left">الرصيد (EGP)</th>
             </tr>
         </thead>
         <tbody>
@@ -238,7 +269,6 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td class="text-center">{{ $entry['date'] }}</td>
-                    <td class="text-center">{{ $entry['entry_number'] }}</td>
                     <td>{{ $entry['description'] }}</td>
                     <td class="text-left amount amount-debit">{{ $debit > 0 ? number_format($debit) : '-' }}</td>
                     <td class="text-left amount amount-credit">{{ $credit > 0 ? number_format($credit) : '-' }}</td>
@@ -246,7 +276,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="text-center">لا توجد حركات</td>
+                    <td colspan="6" class="text-center">لا توجد حركات</td>
                 </tr>
             @endforelse
         </tbody>
