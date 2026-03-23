@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\DailyFeedIssues\Tables;
 
 use App\Filament\Exports\DailyFeedIssueExporter;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportBulkAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
@@ -147,23 +147,7 @@ class DailyFeedIssuesTable
                     ->relationship('recordedBy', 'name')
                     ->searchable()
                     ->preload(),
-                Filter::make('date_range')
-                    ->label('التاريخ')
-                    ->schema([
-                        DatePicker::make('from')
-                            ->label('من')
-                            ->displayFormat('Y-m-d')
-                            ->native(false),
-                        DatePicker::make('to')
-                            ->label('إلى')
-                            ->displayFormat('Y-m-d')
-                            ->native(false),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when($data['from'] ?? null, fn (Builder $q, $from) => $q->whereDate('date', '>=', $from))
-                            ->when($data['to'] ?? null, fn (Builder $q, $to) => $q->whereDate('date', '<=', $to));
-                    }),
+                DateRangeFilter::make('date'),
             ])
             ->recordActions([
                 EditAction::make()->label('تعديل'),

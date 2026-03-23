@@ -7,10 +7,12 @@ use App\Filament\Resources\Traders\Actions\OpenNewStatementAction;
 use App\Filament\Resources\Traders\Actions\ReceivePaymentAction;
 use App\Filament\Resources\Traders\TraderResource;
 use App\Filament\Resources\Traders\Widgets\TraderStatsWidget;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use App\Models\JournalLine;
 use App\Models\TraderStatement;
+use App\Services\PdfService;
+use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -72,6 +74,14 @@ class StatementOfAccount extends Page implements HasTable
     public function getHeaderActions(): array
     {
         return [
+            Action::make('exportPdf')
+                ->label('تصدير PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('info')
+                ->action(function () {
+                    $this->exportStatementPdf();
+                }),
+
             OpenNewStatementAction::make(),
 
             Action::make('statementsHistory')
@@ -92,6 +102,57 @@ class StatementOfAccount extends Page implements HasTable
             ReceivePaymentAction::make(),
             GiveCashAction::make(),
         ];
+    }
+
+    protected function exportStatementPdf(): void
+    {
+        $statement = $this->activeStatementId
+            ? TraderStatement::with('harvestOperations')->find($this->activeStatementId)
+            : null;
+
+        $journalLines = JournalLine::query()
+            ->where('account_id', $this->record->account_id)
+            ->when(
+                $this->activeStatementId,
+                fn (Builder $q) => $q->whereHas(
+                    'journalEntry',
+                    fn (Builder $inner) => $inner->where('trader_statement_id', $this->activeStatementId)
+                )
+            )
+            ->join('journal_entries', 'journal_lines.journal_entry_id', '=', 'journal_entries.id')
+            ->select('journal_lines.*', 'journal_entries.date as je_date', 'journal_entries.entry_number', 'journal_entries.description as je_description')
+            ->orderBy('je_date')
+            ->orderBy('journal_entries.id')
+            ->get();
+
+        $entries = $journalLines->map(fn ($line) => [
+            'date' => $line->je_date ? Carbon::parse($line->je_date)->format('Y-m-d') : '-',
+            'entry_number' => $line->entry_number ?? '-',
+            'description' => $line->description ?: $line->je_description ?? '-',
+            'debit' => (float) $line->debit,
+            'credit' => (float) $line->credit,
+        ])->toArray();
+
+        $statementData = [
+            'title' => $statement?->title ?? 'كشف حساب - السجل الكامل',
+            'status' => $statement?->status?->value ?? 'open',
+            'opened_at' => $statement?->opened_at?->format('Y-m-d') ?? '-',
+            'closed_at' => $statement?->closed_at?->format('Y-m-d') ?? null,
+            'opening_balance' => (float) ($statement?->opening_balance ?? 0),
+            'closing_balance' => (float) ($statement?->net_balance ?? $this->record->outstanding_balance),
+            'notes' => $statement?->notes,
+        ];
+
+        $pdf = (new PdfService)->generateStatementPdf(
+            'trader',
+            $this->record->name,
+            $statementData,
+            $entries
+        );
+
+        $filename = 'statement-trader-'.$this->record->id.'-'.now()->format('Y-m-d').'.pdf';
+
+        $pdf->stream($filename);
     }
 
     protected function getHeaderWidgets(): array
@@ -151,20 +212,16 @@ class StatementOfAccount extends Page implements HasTable
                     ->query(fn (Builder $query, array $data) => $data['value']
                         ? $query->whereHas('journalEntry', fn ($q) => $q->where('trader_statement_id', $data['value']))
                         : $query),
-                Filter::make('date')
-                    ->form([
-                        DatePicker::make('date_from')->label('من تاريخ'),
-                        DatePicker::make('date_to')->label('إلى تاريخ'),
-                    ])
+                DateRangeFilter::make('date')
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '>=', $date)),
+                                fn (Builder $query, $date): Builder => $query->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '>=', Carbon::parse($date))),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn (Builder $query, $date): Builder => $query->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '<=', $date)),
+                                fn (Builder $query, $date): Builder => $query->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '<=', Carbon::parse($date))),
                             );
                     }),
             ]);

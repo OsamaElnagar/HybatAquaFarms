@@ -152,6 +152,16 @@ class Batch extends Model
         return $this->hasMany(MortalityRecord::class);
     }
 
+    public function eggCollections(): HasMany
+    {
+        return $this->hasMany(EggCollection::class);
+    }
+
+    public function eggSales(): HasMany
+    {
+        return $this->hasMany(EggSale::class);
+    }
+
     protected ?float $cachedTotalFeedCost = null;
 
     protected ?float $cachedAllocatedExpenses = null;
@@ -396,11 +406,26 @@ class Batch extends Model
             return $this->cachedTotalRevenue;
         }
 
-        $this->cachedTotalRevenue = (float) SalesOrder::query()
-            ->whereHas('harvestOperation', function ($q) {
-                $q->where('batch_id', $this->id);
-            })
-            ->sum('net_amount');
+        // For fish: revenue from harvest/sales orders
+        // For poultry: revenue from egg sales (EggSale), not just egg count
+        if ($this->cycle_type === BatchCycleType::Poultry) {
+            $this->cachedTotalRevenue = (float) EggSale::query()
+                ->whereHas('eggCollection', function ($q) {
+                    $q->where('batch_id', $this->id);
+                })
+                ->where(function ($query) {
+                    $query->where('is_cash_sale', true)
+                        ->orWhereNull('trader_id')
+                        ->orWhere('payment_status', 'paid');
+                })
+                ->sum('net_amount');
+        } else {
+            $this->cachedTotalRevenue = (float) SalesOrder::query()
+                ->whereHas('harvestOperation', function ($q) {
+                    $q->where('batch_id', $this->id);
+                })
+                ->sum('net_amount');
+        }
 
         $miscRevenue = collect($this->misc_transactions ?? [])
             ->where('type', 'revenue')
@@ -465,5 +490,39 @@ class Batch extends Model
         }
 
         return now()->diffInDays($this->entry_date);
+    }
+
+    /**
+     * Get total production revenue for poultry cycles.
+     * Calculates revenue from egg production records.
+     */
+    public function getProductionRevenue(): float
+    {
+        if ($this->cycle_type !== BatchCycleType::Poultry) {
+            return 0.0;
+        }
+
+        return (float) $this->productionRecords()
+            ->whereNotNull('quantity')
+            ->sum('quantity');
+    }
+
+    /**
+     * Get total mortality for this batch.
+     */
+    public function getTotalMortality(): int
+    {
+        return (int) $this->mortalityRecords()
+            ->sum('quantity');
+    }
+
+    /**
+     * Calculate final quantity based on initial minus mortality.
+     */
+    public function calculateCurrentQuantity(): int
+    {
+        $totalMortality = $this->getTotalMortality();
+
+        return max(0, (int) $this->initial_quantity - $totalMortality);
     }
 }

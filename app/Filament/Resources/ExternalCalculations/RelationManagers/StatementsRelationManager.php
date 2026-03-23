@@ -3,13 +3,16 @@
 namespace App\Filament\Resources\ExternalCalculations\RelationManagers;
 
 use App\Enums\ExternalCalculationStatementStatus;
+use App\Enums\ExternalCalculationType;
+use App\Models\ExternalCalculationEntry;
+use App\Models\ExternalCalculationStatement;
+use App\Services\PdfService;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -23,16 +26,6 @@ class StatementsRelationManager extends RelationManager
     protected static ?string $modelLabel = 'كشف حساب';
 
     protected static ?string $pluralModelLabel = 'كشوف حسابات';
-
-    // public function form(Schema $schema): Schema
-    // {
-    //     return $schema
-    //         ->components([
-    //             TextInput::make('title')
-    //                 ->required()
-    //                 ->maxLength(255),
-    //         ]);
-    // }
 
     public function table(Table $table): Table
     {
@@ -82,6 +75,12 @@ class StatementsRelationManager extends RelationManager
                 // Usually handled by the main resource
             ])
             ->recordActions([
+                Action::make('exportPdf')
+                    ->label('تصدير PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->action(function (ExternalCalculationStatement $record) {
+                        $this->exportStatementPdf($record);
+                    }),
                 // EditAction::make(),
                 DeleteAction::make(),
             ])
@@ -91,5 +90,44 @@ class StatementsRelationManager extends RelationManager
                 ]),
             ])
             ->defaultSort('opened_at', 'desc');
+    }
+
+    protected function exportStatementPdf(ExternalCalculationStatement $statement): void
+    {
+        $ownerRecord = $this->getOwnerRecord();
+
+        $entries = ExternalCalculationEntry::query()
+            ->where('external_calculation_statement_id', $statement->id)
+            ->orderBy('date')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($entry) => [
+                'date' => $entry->date?->format('Y-m-d') ?? '-',
+                'entry_number' => $entry->reference_number ?? '-',
+                'description' => $entry->description ?? '-',
+                'debit' => $entry->type === ExternalCalculationType::Payment ? (float) $entry->amount : 0,
+                'credit' => $entry->type === ExternalCalculationType::Receipt ? (float) $entry->amount : 0,
+            ])->toArray();
+
+        $statementData = [
+            'title' => $statement->title ?? 'كشف حساب',
+            'status' => $statement->status?->value ?? 'open',
+            'opened_at' => $statement->opened_at?->format('Y-m-d') ?? '-',
+            'closed_at' => $statement->closed_at?->format('Y-m-d') ?? null,
+            'opening_balance' => (float) $statement->opening_balance,
+            'closing_balance' => (float) $statement->net_balance,
+            'notes' => $statement->notes,
+        ];
+
+        $pdf = (new PdfService)->generateStatementPdf(
+            'external_calculation',
+            $ownerRecord->name,
+            $statementData,
+            $entries
+        );
+
+        $filename = 'statement-external-'.$ownerRecord->id.'-'.now()->format('Y-m-d').'.pdf';
+
+        $pdf->stream($filename);
     }
 }

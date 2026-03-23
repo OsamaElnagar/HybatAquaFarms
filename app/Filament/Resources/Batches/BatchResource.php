@@ -6,6 +6,8 @@ use App\Filament\Resources\Batches\Pages\CreateBatch;
 use App\Filament\Resources\Batches\Pages\EditBatch;
 use App\Filament\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\RelationManagers\DailyFeedIssuesRelationManager;
+use App\Filament\Resources\Batches\RelationManagers\EggCollectionsRelationManager;
+use App\Filament\Resources\Batches\RelationManagers\EggSalesRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\FishRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\HarvestOperationsRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\MortalityRecordsRelationManager;
@@ -97,9 +99,11 @@ class BatchResource extends Resource
             DailyFeedIssuesRelationManager::class,
             MovementsRelationManager::class,
             HarvestOperationsRelationManager::class,
-            RelationGroup::make('الدواجن', [
+            EggSalesRelationManager::class,
+            MortalityRecordsRelationManager::class,
+            RelationGroup::make('جمع وانتاج البيض', [
+                EggCollectionsRelationManager::class,
                 ProductionRecordsRelationManager::class,
-                MortalityRecordsRelationManager::class,
             ]),
         ];
     }

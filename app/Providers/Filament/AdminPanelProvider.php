@@ -86,6 +86,10 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsible()
                     ->collapsed(),
                 NavigationGroup::make()
+                    ->label('الدواجن')
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
                     ->label('الموارد البشرية')
                     ->collapsible()
                     ->collapsed(),

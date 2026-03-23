@@ -4,22 +4,19 @@ namespace App\Filament\Resources\PettyCashTransactions\Tables;
 
 use App\Enums\PettyTransacionType;
 use App\Filament\Exports\PettyCashTransactionExporter;
-use Carbon\Carbon;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ReplicateAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Shreejan\ActionableColumn\Tables\Columns\ActionableColumn;
 
@@ -131,28 +128,7 @@ class PettyCashTransactionsTable
                     ->searchable()
                     ->multiple()
                     ->preload(),
-                Filter::make('date')
-                    ->schema([
-                        DatePicker::make('date_from')
-                            ->label('من تاريخ')
-                            ->displayFormat('Y-m-d')
-                            ->native(false),
-                        DatePicker::make('date_to')
-                            ->label('إلى تاريخ')
-                            ->displayFormat('Y-m-d')
-                            ->native(false),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', Carbon::parse($date)),
-                            )
-                            ->when(
-                                $data['date_to'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', Carbon::parse($date)),
-                            );
-                    }),
+                DateRangeFilter::make('date'),
             ])
             ->defaultSort('date', 'desc')
             ->recordActions([

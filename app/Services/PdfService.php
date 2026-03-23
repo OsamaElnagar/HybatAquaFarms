@@ -29,4 +29,22 @@ class PdfService
             'title' => 'التقرير اليومي للمزرعة - '.($data['date'] ?? now()->format('Y-m-d')),
         ]);
     }
+
+    public function generateStatementPdf(
+        string $type,
+        string $entityName,
+        array $statement,
+        array $entries
+    ): LaravelMpdf {
+        return PDF::loadView('pdf.statement', [
+            'type' => $type,
+            'entityName' => $entityName,
+            'statement' => $statement,
+            'entries' => $entries,
+            'generatedAt' => now()->format('Y-m-d h:i A'),
+            'storeName' => config('app.name'),
+        ], [], [
+            'title' => "كشف حساب - {$entityName}",
+        ]);
+    }
 }

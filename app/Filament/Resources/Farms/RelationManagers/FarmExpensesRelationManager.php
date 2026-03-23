@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 
 use App\Enums\AccountType;
 use App\Enums\FarmExpenseType;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use App\Models\Batch;
-use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -22,7 +22,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
@@ -183,22 +182,7 @@ class FarmExpensesRelationManager extends RelationManager
                 SelectFilter::make('expense_category_id')
                     ->label('التصنيف')
                     ->relationship('expenseCategory', 'name'),
-                Filter::make('date')
-                    ->schema([
-                        DatePicker::make('date_from')
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->label('من تاريخ'),
-                        DatePicker::make('date_to')
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->label('إلى تاريخ'),
-                    ])
-                    ->query(function ($query, array $data) {
-                        return $query
-                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', Carbon::parse($date)))
-                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', Carbon::parse($date)));
-                    }),
+                DateRangeFilter::make('date'),
             ])
             ->headerActions([
                 CreateAction::make(),

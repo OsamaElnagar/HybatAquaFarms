@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Batches\Pages;
 
+use App\Enums\BatchCycleType;
 use App\Filament\Resources\Batches\BatchResource;
 use App\Models\SalesOrder;
 use DefStudio\Telegraph\Models\TelegraphChat;
@@ -47,123 +48,172 @@ class CloseBatch extends Page
         return 'إقفال الدورة: '.$this->record->batch_code;
     }
 
+    public function getBreadcrumbs(): array
+    {
+        $batch = $this->record;
+
+        return [
+            BatchResource::getUrl() => 'الدفعات',
+            BatchResource::getUrl('view', ['record' => $batch]) => $batch->batch_code,
+            null => 'إقفال الدورة',
+        ];
+    }
+
     public function form(Schema $schema): Schema
     {
-        $baseFeedCost = (float) $this->record->total_feed_cost;
-        $baseOperatingExpenses = (float) $this->record->allocated_expenses;
-        $baseTotalCost = (float) $this->record->total_cost;
-        $baseTotalRevenue = (float) SalesOrder::query()
-            ->whereHas('harvestOperation', function ($q) {
-                $q->where('batch_id', $this->record->id);
+        $batch = $this->record;
+        $isPoultry = $batch->cycle_type === BatchCycleType::Poultry;
+
+        $baseFeedCost = (float) $batch->total_feed_cost;
+        $baseOperatingExpenses = (float) $batch->allocated_expenses;
+        $baseTotalCost = (float) $batch->total_cost;
+
+        // For fish: revenue from harvest/sales, for poultry: revenue from production records
+        $harvestRevenue = (float) SalesOrder::query()
+            ->whereHas('harvestOperation', function ($q) use ($batch) {
+                $q->where('batch_id', $batch->id);
             })->sum('net_amount');
 
-        return $schema
-            ->components([
-                Section::make('الملخص المالي للدورة')
-                    ->columns(4)
+        $productionRevenue = $isPoultry ? (float) $batch->productionRecords()->sum('quantity') : 0;
+        $baseTotalRevenue = $isPoultry ? $productionRevenue : $harvestRevenue;
+
+        $components = [
+            Section::make('الملخص المالي للدورة')
+                ->columns(4)
+                ->schema([
+                    Placeholder::make('total_cost')
+                        ->label('تكلفة الزريعة/الطيور')
+                        ->content(Number::currency($baseTotalCost, 'EGP', precision: 0)),
+                    Placeholder::make('total_feed_cost')
+                        ->label('تكلفة الأعلاف')
+                        ->content(Number::currency($baseFeedCost, 'EGP', precision: 0)),
+                    Placeholder::make('allocated_expenses')
+                        ->label('المصروفات التشغيلية')
+                        ->content(Number::currency($baseOperatingExpenses, 'EGP', precision: 0)),
+
+                    Placeholder::make('total_cycle_expenses')
+                        ->label('إجمالي التكاليف')
+                        ->content(function (Get $get) use ($baseTotalCost, $baseFeedCost, $baseOperatingExpenses) {
+                            $transactions = $get('misc_transactions') ?? [];
+                            $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
+                            $total = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
+
+                            return Number::currency($total, 'EGP', precision: 0);
+                        }),
+
+                    Placeholder::make('total_revenue')
+                        ->label('إجمالي الإيرادات')
+                        ->content(function (Get $get) use ($baseTotalRevenue) {
+                            $transactions = $get('misc_transactions') ?? [];
+                            $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
+                            $total = $baseTotalRevenue + $miscRev;
+
+                            return Number::currency($total, 'EGP', precision: 0);
+                        }),
+
+                    Placeholder::make('net_profit')
+                        ->label('صافي الربح / الخسارة')
+                        ->content(function (Get $get) use ($baseTotalCost, $baseFeedCost, $baseOperatingExpenses, $baseTotalRevenue) {
+                            $transactions = $get('misc_transactions') ?? [];
+                            $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
+                            $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
+
+                            $totalExp = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
+                            $totalRev = $baseTotalRevenue + $miscRev;
+                            $profit = $totalRev - $totalExp;
+
+                            return Number::currency($profit, 'EGP', precision: 0);
+                        }),
+
+                    Placeholder::make('profit_margin')
+                        ->label('هامش الربح')
+                        ->content(function (Get $get) use ($baseTotalCost, $baseFeedCost, $baseOperatingExpenses, $baseTotalRevenue) {
+                            $transactions = $get('misc_transactions') ?? [];
+                            $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
+                            $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
+
+                            $totalExp = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
+                            $totalRev = $baseTotalRevenue + $miscRev;
+
+                            if ($totalRev <= 0) {
+                                return '0%';
+                            }
+
+                            $margin = (($totalRev - $totalExp) / $totalRev) * 100;
+
+                            return number_format($margin, 2).'%';
+                        }),
+                ]),
+        ];
+
+        // Add poultry-specific section if it's a poultry cycle
+        if ($isPoultry) {
+            $totalProduction = (int) $batch->productionRecords()->sum('quantity');
+            $totalMortality = (int) $batch->mortalityRecords()->sum('quantity');
+            $remainingBirds = $batch->calculateCurrentQuantity();
+
+            $components[] = Section::make('ملخص الدواجن')
+                ->columns(4)
+                ->schema([
+                    Placeholder::make('initial_quantity')
+                        ->label('عدد الطيور الأولي')
+                        ->content($batch->initial_quantity),
+
+                    Placeholder::make('total_production')
+                        ->label('إجمالي الإنتاج (بيض)')
+                        ->content($totalProduction.' بيضة'),
+
+                    Placeholder::make('total_mortality')
+                        ->label('إجمالي النافق')
+                        ->content($totalMortality.' طائر'),
+
+                    Placeholder::make('remaining_birds')
+                        ->label('الطيور المتبقية')
+                        ->content($remainingBirds.' طائر'),
+                ]);
+        }
+
+        // Add closing section
+        $components[] = Section::make('معلومات الإقفال والتسويات')
+            ->columns(1)
+            ->schema([
+                Repeater::make('misc_transactions')
+                    ->label('التسويات المالية الإضافية (إيرادات ومصروفات أخرى)')
                     ->schema([
-                        Placeholder::make('total_cost')
-                            ->label('تكلفة الزريعة')
-                            ->content(Number::currency($baseTotalCost, 'EGP', precision: 0)),
-                        Placeholder::make('total_feed_cost')
-                            ->label('تكلفة الأعلاف')
-                            ->content(Number::currency($baseFeedCost, 'EGP', precision: 0)),
-                        Placeholder::make('allocated_expenses')
-                            ->label('المصروفات التشغيلية الأساسية')
-                            ->content(Number::currency($baseOperatingExpenses, 'EGP', precision: 0)),
-
-                        Placeholder::make('total_cycle_expenses')
-                            ->label('إجمالي التكاليف')
-                            ->content(function (Get $get) use ($baseTotalCost, $baseFeedCost, $baseOperatingExpenses) {
-                                $transactions = $get('misc_transactions') ?? [];
-                                $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
-                                $total = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
-
-                                return Number::currency($total, 'EGP', precision: 0);
-                            }),
-
-                        Placeholder::make('total_revenue')
-                            ->label('إجمالي الإيرادات')
-                            ->content(function (Get $get) use ($baseTotalRevenue) {
-                                $transactions = $get('misc_transactions') ?? [];
-                                $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
-                                $total = $baseTotalRevenue + $miscRev;
-
-                                return Number::currency($total, 'EGP', precision: 0);
-                            }),
-
-                        Placeholder::make('net_profit')
-                            ->label('صافي الربح / الخسارة')
-                            ->content(function (Get $get) use ($baseTotalCost, $baseFeedCost, $baseOperatingExpenses, $baseTotalRevenue) {
-                                $transactions = $get('misc_transactions') ?? [];
-                                $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
-                                $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
-
-                                $totalExp = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
-                                $totalRev = $baseTotalRevenue + $miscRev;
-                                $profit = $totalRev - $totalExp;
-
-                                return Number::currency($profit, 'EGP', precision: 0);
-                            }),
-
-                        Placeholder::make('profit_margin')
-                            ->label('هامش الربح')
-                            ->content(function (Get $get) use ($baseTotalCost, $baseFeedCost, $baseOperatingExpenses, $baseTotalRevenue) {
-                                $transactions = $get('misc_transactions') ?? [];
-                                $miscExp = collect($transactions)->where('type', 'expense')->sum('amount');
-                                $miscRev = collect($transactions)->where('type', 'revenue')->sum('amount');
-
-                                $totalExp = $baseTotalCost + $baseFeedCost + $baseOperatingExpenses + $miscExp;
-                                $totalRev = $baseTotalRevenue + $miscRev;
-
-                                if ($totalRev <= 0) {
-                                    return '0%';
-                                }
-
-                                $margin = (($totalRev - $totalExp) / $totalRev) * 100;
-
-                                return number_format($margin, 2).'%';
-                            }),
-                    ]),
-
-                Section::make('معلومات الإقفال والتسويات')
-                    ->columns(1)
-                    ->schema([
-                        Repeater::make('misc_transactions')
-                            ->label('التسويات المالية الإضافية (إيرادات ومصروفات أخرى)')
-                            ->schema([
-                                Select::make('type')
-                                    ->label('النوع')
-                                    ->options([
-                                        'revenue' => 'إيراد',
-                                        'expense' => 'مصروف',
-                                    ])
-                                    ->required()
-                                    ->live(debounce: 500)
-                                    ->native(false),
-                                TextInput::make('description')
-                                    ->label('البيان')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('amount')
-                                    ->label('المبلغ')
-                                    ->numeric()
-                                    ->required()
-                                    ->live(debounce: 500)
-                                    ->suffix('ج.م.'),
+                        Select::make('type')
+                            ->label('النوع')
+                            ->options([
+                                'revenue' => 'إيراد',
+                                'expense' => 'مصروف',
                             ])
-                            ->columns(3)
-                            ->defaultItems(0)
-                            ->addActionLabel('إضافة تسوية مالية')
-                            ->live(debounce: 500),
+                            ->required()
+                            ->live(debounce: 500)
+                            ->native(false),
+                        TextInput::make('description')
+                            ->label('البيان')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('amount')
+                            ->label('المبلغ')
+                            ->numeric()
+                            ->required()
+                            ->live(debounce: 500)
+                            ->suffix('ج.م.'),
+                    ])
+                    ->columns(3)
+                    ->defaultItems(0)
+                    ->addActionLabel('إضافة تسوية مالية')
+                    ->live(debounce: 500),
 
-                        Textarea::make('closure_notes')
-                            ->label('ملاحظات الإقفال')
-                            ->rows(3)
-                            ->nullable()
-                            ->columnSpanFull(),
-                    ]),
-            ])
+                Textarea::make('closure_notes')
+                    ->label('ملاحظات الإقفال')
+                    ->rows(3)
+                    ->nullable()
+                    ->columnSpanFull(),
+            ]);
+
+        return $schema
+            ->components($components)
             ->statePath('data');
     }
 
@@ -171,16 +221,18 @@ class CloseBatch extends Page
     {
         $data = $this->form->getState();
 
-        // Perform the closure logic
         $batch = $this->record;
+        $isPoultry = $batch->cycle_type === BatchCycleType::Poultry;
+
+        // Calculate final current_quantity for poultry
+        $finalCurrentQuantity = $isPoultry ? $batch->calculateCurrentQuantity() : $batch->current_quantity;
 
         $batch->update([
             'is_cycle_closed' => true,
             'closure_date' => now(),
             'misc_transactions' => $data['misc_transactions'] ?? [],
-
-            // Trigger recalculation of attributes based on the new misc values before saving
             'total_feed_cost' => $batch->total_feed_cost,
+            'current_quantity' => $finalCurrentQuantity,
         ]);
 
         $batch->update([
@@ -203,12 +255,24 @@ class CloseBatch extends Page
                 return number_format((float) $value).' EGP';
             };
 
-            $message = "🐟 <b><u>إغلاق دورة إنتاج جديدة</u></b> 🐟\n\n".
+            // Different emoji for poultry vs fish
+            $cycleIcon = $isPoultry ? '🐔' : '🐟';
+            $cycleName = $isPoultry ? 'دواجن' : 'أسماك';
+
+            $message = "{$cycleIcon} <b><u>إغلاق دورة {$cycleName}</u></b> {$cycleIcon}\n\n".
                 "🏷 <b>كود الدورة:</b> <code>{$batch->batch_code}</code>\n".
                 '👤 <b>بواسطة:</b> <code>'.(auth()->user()->name ?? 'System')."</code>\n".
                 "━━━━━━━━━━━━━━━━━━\n".
-                "💰 <b>إجمالي التكاليف الأساسية:</b> {$currency($batch->total_cycle_expenses)}\n".
-                "💵 <b>إجمالي الإيرادات الأساسية:</b> {$currency($batch->total_revenue)}\n";
+                "💰 <b>إجمالي التكاليف:</b> {$currency($batch->total_cycle_expenses)}\n".
+                "💵 <b>إجمالي الإيرادات:</b> {$currency($batch->total_revenue)}\n";
+
+            if ($isPoultry) {
+                $totalProduction = (int) $batch->productionRecords()->sum('quantity');
+                $totalMortality = (int) $batch->mortalityRecords()->sum('quantity');
+                $message .= "🥚 <b>إجمالي الإنتاج:</b> {$totalProduction} بيضة\n".
+                    "💀 <b>إجمالي النافق:</b> {$totalMortality} طائر\n".
+                    "🐔 <b>الطيور المتبقية:</b> {$finalCurrentQuantity} طائر\n";
+            }
 
             if (! empty($batch->misc_transactions)) {
                 $message .= "━━━━━━━━━━━━━━━━━━\n📋 <b>التسويات الإضافية:</b>\n";

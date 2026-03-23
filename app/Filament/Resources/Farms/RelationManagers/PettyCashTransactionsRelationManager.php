@@ -5,18 +5,16 @@ namespace App\Filament\Resources\Farms\RelationManagers;
 use App\Enums\PettyTransacionType;
 use App\Filament\Resources\PettyCashes\Actions\BulkTransactionsAction;
 use App\Filament\Resources\PettyCashTransactions\Schemas\PettyCashTransactionForm;
-use Carbon\Carbon;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
@@ -94,22 +92,7 @@ class PettyCashTransactionsRelationManager extends RelationManager
                 SelectFilter::make('expense_category_id')
                     ->label('نوع المصروف')
                     ->relationship('expenseCategory', 'name'),
-                Filter::make('date')
-                    ->schema([
-                        DatePicker::make('date_from')
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->label('من تاريخ'),
-                        DatePicker::make('date_to')
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->label('إلى تاريخ'),
-                    ])
-                    ->query(function ($query, array $data) {
-                        return $query
-                            ->when($data['date_from'] ?? null, fn ($q, $date) => $q->where('date', '>=', Carbon::parse($date)))
-                            ->when($data['date_to'] ?? null, fn ($q, $date) => $q->where('date', '<=', Carbon::parse($date)));
-                    }),
+                DateRangeFilter::make('date'),
             ])
             ->headerActions([
                 BulkTransactionsAction::make(),
