@@ -4,6 +4,8 @@ namespace App\Filament\Resources\SalesOrders\Tables;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
+use App\Filament\Resources\Farms\RelationManagers\SalesOrdersRelationManager as FSORM;
+use App\Filament\Resources\Traders\RelationManagers\SalesOrdersRelationManager as TSORM;
 use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -21,7 +23,7 @@ class SalesOrdersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
             ->columns([
                 TextColumn::make('order_number')
                     ->label('رقم العملية')
@@ -31,7 +33,8 @@ class SalesOrdersTable
                 TextColumn::make('trader.name')
                     ->label('التاجر')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->hiddenOn(TSORM::class),
                 TextColumn::make('net_amount')
                     ->label('المبلغ الإجمالي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -42,17 +45,18 @@ class SalesOrdersTable
                     ->label('التاريخ')
                     ->date('Y-m-d')
                     ->wrap()
-                    ->description(fn(Model $record): string => $record->orders->map(fn($o) => "{$o->code}")->implode(' '))
+                    ->description(fn (Model $record): string => $record->orders->map(fn ($o) => "{$o->code}")->implode(' '))
                     ->sortable(),
                 TextColumn::make('harvestOperation.operation_number')
                     ->label('عملية الحصاد')
-                    ->description(fn(Model $record): string => $record->harvestOperation?->batch?->batch_code)
+                    ->description(fn (Model $record): string => $record->harvestOperation?->batch?->batch_code)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->hiddenOn(FSORM::class),
                 TextColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->badge()
