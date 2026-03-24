@@ -24,8 +24,13 @@ class SalesOrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'salesOrders';
 
-    protected static ?string $title = 'المبيعات';
+    protected static ?string $title = 'فواتير المبيعات';
 
+    protected static ?string $modelLabel = 'فاتورة بيع';
+
+    protected static ?string $pluralModelLabel = 'فواتير بيع';
+
+    protected static ?string $recordTitleAttribute = 'order_number';
     public function form(Schema $schema): Schema
     {
         return SalesOrderForm::configure($schema);
