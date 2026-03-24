@@ -7,18 +7,14 @@ use App\Models\SalesOrder;
 
 class SalesOrderObserver
 {
-    public function __construct(private PostingService $posting)
-    {
-    }
+    public function __construct(private PostingService $posting) {}
 
     public function created(SalesOrder $salesOrder): void
     {
         $this->postSalesOrder($salesOrder);
     }
 
-    public function updated(SalesOrder $salesOrder): void
-    {
-    }
+    public function updated(SalesOrder $salesOrder): void {}
 
     protected function postSalesOrder(SalesOrder $salesOrder): void
     {

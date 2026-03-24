@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SalesOrders\Tables;
 
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -80,11 +81,11 @@ class SalesOrdersTable
                     ->relationship('trader', 'name'),
                 SelectFilter::make('harvest_operation_id')
                     ->label('عملية الحصاد')
-                    ->relationship('harvestOperation', 'operation_number')
-                ,
+                    ->relationship('harvestOperation', 'operation_number'),
                 SelectFilter::make('farm_id')
                     ->label('المزرعة')
                     ->relationship('farm', 'name'),
+                DateRangeFilter::make('date'),
                 SelectFilter::make('payment_status')
                     ->label('حالة الدفع')
                     ->options(PaymentStatus::class)
