@@ -78,6 +78,9 @@ class SalesOrdersRelationManager extends RelationManager
                     ->options(DeliveryStatus::class)
                     ->native(false),
                 DateRangeFilter::make('date'),
+                SelectFilter::make('farm_id')
+                    ->label('المزرعة')
+                    ->relationship('farm', 'name'),
             ])
             ->headerActions([
                 CreateAction::make()->label('إضافة عملية مبيعات')
