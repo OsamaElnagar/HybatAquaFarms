@@ -59,16 +59,20 @@ class SalesOrdersRelationManager extends RelationManager
                     ->label('حالة الدفع')
                     ->badge()
                     ->sortable(),
-                TextColumn::make('delivery_status')
-                    ->label('حالة التوصيل')
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('delivery_date')
-                    ->label('تاريخ التوصيل')
-                    ->date('Y-m-d')
-                    ->toggleable(),
+                // TextColumn::make('delivery_status')
+                //     ->label('حالة التوصيل')
+                //     ->badge()
+                //     ->sortable(),
+                // TextColumn::make('delivery_date')
+                //     ->label('تاريخ التوصيل')
+                //     ->date('Y-m-d')
+                //     ->toggleable(),
             ])
             ->filters([
+                SelectFilter::make('farm_id')
+                    ->label('المزرعة')
+                    ->relationship('farm', 'name'),
+                DateRangeFilter::make('date'),
                 SelectFilter::make('payment_status')
                     ->label('حالة الدفع')
                     ->options(PaymentStatus::class)
@@ -77,10 +81,6 @@ class SalesOrdersRelationManager extends RelationManager
                     ->label('حالة التوصيل')
                     ->options(DeliveryStatus::class)
                     ->native(false),
-                DateRangeFilter::make('date'),
-                SelectFilter::make('farm_id')
-                    ->label('المزرعة')
-                    ->relationship('farm', 'name'),
             ])
             ->headerActions([
                 CreateAction::make()->label('إضافة عملية مبيعات')
