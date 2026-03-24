@@ -149,7 +149,7 @@ class StatementOfAccount extends Page implements HasTable
             $entries
         );
 
-        $filename = 'statement-trader-'.$this->record->id.'-'.now()->format('Y-m-d').'.pdf';
+        $filename = 'كشف حساب تاجر - '.$this->record->name.' - '.now()->format('Y-m-d').'.pdf';
 
         $pdf->stream($filename);
     }
