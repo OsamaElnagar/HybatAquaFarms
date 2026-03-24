@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Traders\RelationManagers;
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Resources\SalesOrders\Schemas\SalesOrderForm;
+use App\Filament\Resources\SalesOrders\Tables\SalesOrdersTable;
 use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -32,60 +33,10 @@ class SalesOrdersRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return $table
-            ->recordTitleAttribute('order_number')
-            ->columns([
-                TextColumn::make('order_number')
-                    ->label('رقم العملية')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('date')
-                    ->label('التاريخ')
-                    ->date('Y-m-d')
-                    ->sortable(),
-                TextColumn::make('farm.name')
-                    ->label('المزرعة')
-                    ->sortable(),
-                TextColumn::make('net_amount')
-                    ->label('المبلغ الإجمالي')
-                    ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->sortable()
-                    ->summarize([
-                        Sum::make()
-                            ->label('المجموع')
-                            ->money('EGP', locale: 'en', decimalPlaces: 0),
-                    ]),
-                TextColumn::make('payment_status')
-                    ->label('حالة الدفع')
-                    ->badge()
-                    ->sortable(),
-                // TextColumn::make('delivery_status')
-                //     ->label('حالة التوصيل')
-                //     ->badge()
-                //     ->sortable(),
-                // TextColumn::make('delivery_date')
-                //     ->label('تاريخ التوصيل')
-                //     ->date('Y-m-d')
-                //     ->toggleable(),
-            ])
-            ->filters([
-                SelectFilter::make('farm_id')
-                    ->label('المزرعة')
-                    ->relationship('farm', 'name'),
-                DateRangeFilter::make('date'),
-                SelectFilter::make('payment_status')
-                    ->label('حالة الدفع')
-                    ->options(PaymentStatus::class)
-                    ->native(false),
-                SelectFilter::make('delivery_status')
-                    ->label('حالة التوصيل')
-                    ->options(DeliveryStatus::class)
-                    ->native(false),
-            ])
+        return SalesOrdersTable::configure($table)
             ->headerActions([
                 CreateAction::make()->label('إضافة عملية مبيعات')
                     ->mutateDataUsing(function (array $data): array {
-                        $data['trader_id'] = $this->getOwnerRecord()->id;
                         $data['created_by'] = Auth::id();
 
                         return $data;
@@ -99,7 +50,6 @@ class SalesOrdersRelationManager extends RelationManager
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort('date', 'desc');
+            ]);
     }
 }
