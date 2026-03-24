@@ -23,7 +23,7 @@ class SalesOrdersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['harvestOperation.batch', 'orders']))
             ->columns([
                 TextColumn::make('order_number')
                     ->label('رقم العملية')
@@ -45,11 +45,11 @@ class SalesOrdersTable
                     ->label('التاريخ')
                     ->date('Y-m-d')
                     ->wrap()
-                    ->description(fn (Model $record): string => $record->orders->map(fn ($o) => "{$o->code}")->implode(' '))
+                    ->description(fn(Model $record): string => $record->orders->map(fn($o) => "{$o->code}")->implode(' '))
                     ->sortable(),
                 TextColumn::make('harvestOperation.operation_number')
                     ->label('عملية الحصاد')
-                    ->description(fn (Model $record): string => $record->harvestOperation?->batch?->batch_code)
+                    ->description(fn(Model $record): string => $record->harvestOperation?->batch?->batch_code)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('farm.name')
@@ -82,13 +82,15 @@ class SalesOrdersTable
             ->filters([
                 SelectFilter::make('trader_id')
                     ->label('التاجر')
-                    ->relationship('trader', 'name'),
+                    ->relationship('trader', 'name')
+                    ->hiddenOn(TSORM::class),
                 SelectFilter::make('harvest_operation_id')
                     ->label('عملية الحصاد')
                     ->relationship('harvestOperation', 'operation_number'),
                 SelectFilter::make('farm_id')
                     ->label('المزرعة')
-                    ->relationship('farm', 'name'),
+                    ->relationship('farm', 'name')
+                    ->hiddenOn(FSORM::class),
                 DateRangeFilter::make('date'),
                 SelectFilter::make('payment_status')
                     ->label('حالة الدفع')
