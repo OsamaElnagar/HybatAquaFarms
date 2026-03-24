@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Traders\RelationManagers;
 use App\Enums\DeliveryStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Resources\SalesOrders\Schemas\SalesOrderForm;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -76,6 +77,7 @@ class SalesOrdersRelationManager extends RelationManager
                     ->label('حالة التوصيل')
                     ->options(DeliveryStatus::class)
                     ->native(false),
+                DateRangeFilter::make('date'),
             ])
             ->headerActions([
                 CreateAction::make()->label('إضافة عملية مبيعات')
