@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class EggSale extends Model
@@ -13,7 +14,6 @@ class EggSale extends Model
 
     protected $fillable = [
         'sale_number',
-        'egg_collection_id',
         'batch_id',
         'trader_id',
         'is_cash_sale',
@@ -28,6 +28,7 @@ class EggSale extends Model
         'discount_amount',
         'net_amount',
         'payment_status',
+        'egg_collection_ids',
         'notes',
         'created_by',
     ];
@@ -69,15 +70,32 @@ class EggSale extends Model
                 + ($model->transport_cost ?? 0)
                 + ($model->tax_amount ?? 0)
                 - ($model->discount_amount ?? 0);
+        });
 
-            // Auto-set batch_id from egg_collection
-            if (! $model->batch_id && $model->egg_collection_id) {
-                $collection = $model->eggCollection;
-                if ($collection) {
-                    $model->batch_id = $collection->batch_id;
-                }
+        static::saved(function ($model) {
+            if ($model->egg_collection_ids && is_array($model->egg_collection_ids)) {
+                EggCollection::whereIn('id', $model->egg_collection_ids)->update([
+                    'egg_sale_id' => $model->id,
+                ]);
+            }
+
+            // Auto-set batch_id from egg_collections
+            if (! $model->batch_id && $model->eggCollections()->count() > 0) {
+                $firstCollection = $model->eggCollections()->first();
+                $model->update(['batch_id' => $firstCollection->batch_id]);
             }
         });
+
+        static::deleted(function ($model) {
+            EggCollection::where('egg_sale_id', $model->id)->update([
+                'egg_sale_id' => null,
+            ]);
+        });
+    }
+
+    public function setEggCollectionIdsAttribute($value)
+    {
+        $this->attributes['egg_collection_ids'] = $value;
     }
 
     public static function generateSaleNumber(): string
@@ -95,9 +113,9 @@ class EggSale extends Model
         return $candidate;
     }
 
-    public function eggCollection(): BelongsTo
+    public function eggCollections(): HasMany
     {
-        return $this->belongsTo(EggCollection::class);
+        return $this->hasMany(EggCollection::class);
     }
 
     public function batch(): BelongsTo

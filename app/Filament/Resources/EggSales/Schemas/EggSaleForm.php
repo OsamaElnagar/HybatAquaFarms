@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\EggSales\Schemas;
 
 use App\Models\Batch;
+use App\Models\EggCollection;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -32,16 +33,33 @@ class EggSaleForm
                     ->disabled()
                     ->dehydrated(),
 
-                Select::make('egg_collection_id')
+                Select::make('egg_collection_ids')
                     ->label('تجميع البيض')
-                    ->relationship(
-                        'eggCollection',
-                        'collection_number',
-                        modifyQueryUsing: fn ($query) => $isBatchManager ? $query->where('batch_id', $ownerRecord->id) : $query
-                    )
-                    ->required()
+                    ->multiple()
+                    ->options(function () use ($isBatchManager, $ownerRecord) {
+                        $query = EggCollection::query()
+                            ->whereNull('egg_sale_id')
+                            ->whereDoesntHave('eggSale');
+
+                        if ($isBatchManager) {
+                            $query->where('batch_id', $ownerRecord->id);
+                        }
+
+                        return $query->pluck('collection_number', 'id');
+                    })
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        $collectionIds = is_array($state) ? $state : [];
+                        $collections = EggCollection::whereIn('id', $collectionIds)->get();
+
+                        $totalTrays = $collections->sum('total_trays');
+                        $totalEggs = $collections->sum('total_eggs');
+
+                        $set('trays_sold', $totalTrays);
+                        $set('total_eggs', $totalEggs);
+                    }),
 
                 Checkbox::make('is_cash_sale')
                     ->label('بيع نقدي')
@@ -70,6 +88,16 @@ class EggSaleForm
                         $trays = (int) ($state ?? 0);
                         $eggsPerTray = (int) ($get('eggs_per_tray') ?? 30);
                         $set('total_eggs', $trays * $eggsPerTray);
+
+                        $unitPrice = (float) ($get('unit_price') ?? 0);
+                        $subtotal = $trays * $unitPrice;
+                        $set('subtotal', $subtotal);
+
+                        $transportCost = (float) ($get('transport_cost') ?? 0);
+                        $taxAmount = (float) ($get('tax_amount') ?? 0);
+                        $discountAmount = (float) ($get('discount_amount') ?? 0);
+                        $netAmount = $subtotal + $transportCost + $taxAmount - $discountAmount;
+                        $set('net_amount', $netAmount);
                     }),
 
                 TextInput::make('eggs_per_tray')
@@ -98,17 +126,85 @@ class EggSaleForm
                     ->label('سعر الصندوق')
                     ->required()
                     ->numeric()
-                    ->suffix('ج.م.'),
+                    ->suffix('ج.م.')
+                    ->live()
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        $trays = (int) ($get('trays_sold') ?? 0);
+                        $unitPrice = (float) ($state ?? 0);
+                        $subtotal = $trays * $unitPrice;
+                        $set('subtotal', $subtotal);
+
+                        $transportCost = (float) ($get('transport_cost') ?? 0);
+                        $taxAmount = (float) ($get('tax_amount') ?? 0);
+                        $discountAmount = (float) ($get('discount_amount') ?? 0);
+                        $netAmount = $subtotal + $transportCost + $taxAmount - $discountAmount;
+                        $set('net_amount', $netAmount);
+                    }),
+
+                TextInput::make('subtotal')
+                    ->label('المجموع الفرعي')
+                    ->numeric()
+                    ->suffix('ج.م.')
+                    ->disabled()
+                    ->dehydrated(),
 
                 TextInput::make('transport_cost')
                     ->label('تكلفة النقل')
                     ->numeric()
-                    ->suffix('ج.م.'),
+                    ->suffix('ج.م.')
+                    ->live()
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        $subtotal = (float) ($get('subtotal') ?? 0);
+                        $transportCost = (float) ($state ?? 0);
+                        $taxAmount = (float) ($get('tax_amount') ?? 0);
+                        $discountAmount = (float) ($get('discount_amount') ?? 0);
+                        $netAmount = $subtotal + $transportCost + $taxAmount - $discountAmount;
+                        $set('net_amount', $netAmount);
+                    }),
+
+                TextInput::make('tax_amount')
+                    ->label('الضريبة')
+                    ->numeric()
+                    ->suffix('ج.م.')
+                    ->live()
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        $subtotal = (float) ($get('subtotal') ?? 0);
+                        $transportCost = (float) ($get('transport_cost') ?? 0);
+                        $taxAmount = (float) ($state ?? 0);
+                        $discountAmount = (float) ($get('discount_amount') ?? 0);
+                        $netAmount = $subtotal + $transportCost + $taxAmount - $discountAmount;
+                        $set('net_amount', $netAmount);
+                    }),
 
                 TextInput::make('discount_amount')
                     ->label('الخصم')
                     ->numeric()
-                    ->suffix('ج.م.'),
+                    ->suffix('ج.م.')
+                    ->live()
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        $subtotal = (float) ($get('subtotal') ?? 0);
+                        $transportCost = (float) ($get('transport_cost') ?? 0);
+                        $taxAmount = (float) ($get('tax_amount') ?? 0);
+                        $discountAmount = (float) ($state ?? 0);
+                        $netAmount = $subtotal + $transportCost + $taxAmount - $discountAmount;
+                        $set('net_amount', $netAmount);
+                    }),
+
+                TextInput::make('net_amount')
+                    ->label('المبلغ النهائي')
+                    ->numeric()
+                    ->suffix('ج.م.')
+                    ->disabled()
+                    ->dehydrated(),
+
+                Select::make('payment_status')
+                    ->label('حالة الدفع')
+                    ->options([
+                        'pending' => 'معلق',
+                        'partial' => 'جزئي',
+                        'paid' => 'مدفوع',
+                    ])
+                    ->default('pending'),
 
                 Textarea::make('notes')
                     ->label('ملاحظات')

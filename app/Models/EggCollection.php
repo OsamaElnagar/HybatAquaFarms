@@ -6,7 +6,6 @@ use App\Traits\ProtectsClosedBatch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EggCollection extends Model
 {
@@ -20,6 +19,7 @@ class EggCollection extends Model
         'total_trays',
         'total_eggs',
         'quality_grade',
+        'egg_sale_id',
         'notes',
         'created_by',
     ];
@@ -65,8 +65,8 @@ class EggCollection extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function eggSales(): HasMany
+    public function eggSale(): BelongsTo
     {
-        return $this->hasMany(EggSale::class);
+        return $this->belongsTo(EggSale::class);
     }
 }

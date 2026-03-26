@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\FeedMovements\Tables;
 
+use App\Enums\FactoryType;
 use App\Enums\FeedMovementType;
 use App\Filament\Resources\FeedWarehouses\FeedWarehouseResource;
+use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -32,15 +34,15 @@ class FeedMovementsTable
                     ->label('من المستودع')
                     ->searchable()
                     ->sortable()
-                    ->url(fn ($record) => $record->from_warehouse_id ? FeedWarehouseResource::getUrl('edit', ['record' => $record->from_warehouse_id]) : null)
-                    ->color(fn ($record) => $record->from_warehouse_id ? 'primary' : null)
+                    ->url(fn($record) => $record->from_warehouse_id ? FeedWarehouseResource::getUrl('edit', ['record' => $record->from_warehouse_id]) : null)
+                    ->color(fn($record) => $record->from_warehouse_id ? 'primary' : null)
                     ->toggleable(),
                 TextColumn::make('toWarehouse.name')
                     ->label('إلى المستودع')
                     ->searchable()
                     ->sortable()
-                    ->url(fn ($record) => $record->to_warehouse_id ? FeedWarehouseResource::getUrl('edit', ['record' => $record->to_warehouse_id]) : null)
-                    ->color(fn ($record) => $record->to_warehouse_id ? 'primary' : null)
+                    ->url(fn($record) => $record->to_warehouse_id ? FeedWarehouseResource::getUrl('edit', ['record' => $record->to_warehouse_id]) : null)
+                    ->color(fn($record) => $record->to_warehouse_id ? 'primary' : null)
                     ->toggleable(),
                 TextColumn::make('date')
                     ->label('التاريخ')
@@ -49,7 +51,7 @@ class FeedMovementsTable
                 TextColumn::make('quantity')
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0, locale: 'en')
-                    ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
+                    ->suffix(fn($record) => ' ' . ($record->feedItem?->unit_of_measure ?? ''))
                     ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0))
                     ->sortable(),
 
@@ -89,6 +91,13 @@ class FeedMovementsTable
                     ->label('نوع الحركة')
                     ->options(FeedMovementType::class)
                     ->native(false),
+                SelectFilter::make('factory_id')
+                    ->label('المصنع')
+                    ->relationship('factory', 'name', modifyQueryUsing: function ($query) {
+                        return $query->where('type', FactoryType::FEEDS);
+                    })
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('feed_item_id')
                     ->label('صنف العلف')
                     ->relationship('feedItem', 'name')
@@ -104,14 +113,15 @@ class FeedMovementsTable
                     ->relationship('toWarehouse', 'name')
                     ->searchable()
                     ->preload(),
+                DateRangeFilter::make('date'),
             ])
             ->defaultSort('date', 'desc')
             ->recordActions([
                 ViewAction::make()->label('عرض'),
                 EditAction::make()
                     ->label('تعديل')
-                    ->visible(fn ($record) => $record->movement_type !== FeedMovementType::Out)
-                    ->tooltip(fn ($record) => $record->movement_type === FeedMovementType::Out
+                    ->visible(fn($record) => $record->movement_type !== FeedMovementType::Out)
+                    ->tooltip(fn($record) => $record->movement_type === FeedMovementType::Out
                         ? 'لا يمكن تعديل حركات الصرف - يتم إنشاؤها تلقائياً من الصرف اليومي'
                         : null),
             ])

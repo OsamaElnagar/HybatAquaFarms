@@ -24,9 +24,9 @@ return new class extends Migration
             $table->integer('total_eggs')->default(0);
             $table->decimal('unit_price', 10, 2)->default(0);
             $table->decimal('subtotal', 12, 2)->default(0);
-            $table->decimal('transport_cost', 10, 2)->default(0);
-            $table->decimal('tax_amount', 10, 2)->default(0);
-            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->decimal('transport_cost', 10, 2)->default(0)->nullable();
+            $table->decimal('tax_amount', 10, 2)->default(0)->nullable();
+            $table->decimal('discount_amount', 10, 2)->default(0)->nullable();
             $table->decimal('net_amount', 12, 2)->default(0);
             $table->string('payment_status')->default('pending');
             $table->text('notes')->nullable();
