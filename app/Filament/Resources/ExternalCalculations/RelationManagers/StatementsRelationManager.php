@@ -101,7 +101,7 @@ class StatementsRelationManager extends RelationManager
             ->orderBy('date')
             ->orderBy('id')
             ->get()
-            ->map(fn($entry) => [
+            ->map(fn ($entry) => [
                 'date' => $entry->date?->format('Y-m-d') ?? '-',
                 'entry_number' => $entry->reference_number ?? '-',
                 'description' => $entry->description ?? '-',
@@ -126,7 +126,7 @@ class StatementsRelationManager extends RelationManager
             $entries
         );
 
-        $filename = 'كشف حساب لحساب خارجي - ' . $ownerRecord->name . ' - ' . now()->format('Y-m-d') . '.pdf';
+        $filename = 'كشف حساب لحساب خارجي - '.$ownerRecord->name.' - '.now()->format('Y-m-d').'.pdf';
 
         $pdf->stream($filename);
     }

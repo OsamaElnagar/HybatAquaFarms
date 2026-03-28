@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 #[ObservedBy([EmployeeObserver::class])]
 class Employee extends Model
@@ -50,6 +51,18 @@ class Employee extends Model
     public function advances(): HasMany
     {
         return $this->hasMany(EmployeeAdvance::class);
+    }
+
+    public function advanceRepayments(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            AdvanceRepayment::class,
+            EmployeeAdvance::class,
+            'employee_id',
+            'employee_advance_id',
+            'id',
+            'id',
+        );
     }
 
     public function salaryRecords(): HasMany

@@ -24,6 +24,9 @@ class SalaryRecordsRelationManager extends RelationManager
     protected static string $relationship = 'salaryRecords';
 
     protected static ?string $title = 'سجلات المرتبات';
+    protected static ?string $modelLabel = 'سجل مرتب';
+
+    protected static ?string $pluralModelLabel = 'سجلات المرتبات';
 
     public function form(Schema $schema): Schema
     {
@@ -92,8 +95,8 @@ class SalaryRecordsRelationManager extends RelationManager
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn (Builder $query, $date) => $query->where('pay_period_start', '>=', Carbon::parse($date)))
-                            ->when($data['to'], fn (Builder $query, $date) => $query->where('pay_period_end', '<=', Carbon::parse($date)));
+                            ->when($data['from'], fn(Builder $query, $date) => $query->where('pay_period_start', '>=', Carbon::parse($date)))
+                            ->when($data['to'], fn(Builder $query, $date) => $query->where('pay_period_end', '<=', Carbon::parse($date)));
                     }),
                 SelectFilter::make('status')
                     ->label('الحالة')

@@ -69,6 +69,7 @@ class EmployeeResource extends Resource
     {
         return [
             RelationManagers\AdvancesRelationManager::class,
+            RelationManagers\AdvanceRepaymentsRelationManager::class,
             RelationManagers\SalaryRecordsRelationManager::class,
         ];
     }

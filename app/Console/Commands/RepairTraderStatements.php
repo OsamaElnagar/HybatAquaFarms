@@ -2,13 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-
 use App\Domain\Accounting\PostingService;
 use App\Enums\TraderStatementStatus;
 use App\Models\JournalEntry;
 use App\Models\SalesOrder;
 use App\Models\Trader;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class RepairTraderStatements extends Command
@@ -43,8 +42,9 @@ class RepairTraderStatements extends Command
         foreach ($traders as $trader) {
             $this->comment("Processing Trader: {$trader->name}");
 
-            if (!$trader->account_id) {
+            if (! $trader->account_id) {
                 $this->warn("  Skipping {$trader->name}: No GL account assigned.");
+
                 continue;
             }
 
@@ -55,7 +55,7 @@ class RepairTraderStatements extends Command
 
             foreach ($unpostedOrders as $salesOrder) {
                 $this->info("  Posting missing entry for Order {$salesOrder->order_number} (Date: {$salesOrder->date->toDateString()})");
-                
+
                 $farmId = $salesOrder->farm_id ?? $salesOrder->harvestOperation?->farm_id;
 
                 try {
@@ -71,7 +71,7 @@ class RepairTraderStatements extends Command
                         'trader_statement_id' => $trader->activeStatement?->id,
                     ]);
                 } catch (\Exception $e) {
-                    $this->error("  Failed to post for Order {$salesOrder->order_number}: " . $e->getMessage());
+                    $this->error("  Failed to post for Order {$salesOrder->order_number}: ".$e->getMessage());
                 }
             }
 
@@ -88,7 +88,7 @@ class RepairTraderStatements extends Command
                 // Find or create an "Initial Session"
                 $statement = $trader->statements()->where('status', TraderStatementStatus::Open)->first();
 
-                if (!$statement) {
+                if (! $statement) {
                     $statement = $trader->statements()->create([
                         'title' => 'البداية (معالجة تلقائية)',
                         'opened_at' => JournalEntry::whereIn('id', $orphanedEntryIds)->min('date') ?? now()->toDateString(),

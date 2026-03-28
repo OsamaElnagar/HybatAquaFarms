@@ -19,7 +19,21 @@ yarn-error.log
 /.fleet
 /.idea
 /.nova
-/.vscode
 /.zed
 bootstrap/cache/
 laradumps.yaml
+
+# AI agents
+/.agents
+/.claude
+/.cursor
+/.gemini
+/.opencode
+/.junie
+/.vscode
+
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.windsurfrules
+opencode.json

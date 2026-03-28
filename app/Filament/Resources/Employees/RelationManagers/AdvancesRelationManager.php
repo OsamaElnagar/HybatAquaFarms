@@ -22,6 +22,9 @@ class AdvancesRelationManager extends RelationManager
 
     protected static ?string $title = 'سُلف الموظف';
 
+    protected static ?string $modelLabel = 'سلفة';
+
+    protected static ?string $pluralModelLabel = 'السُلف';
     public function form(Schema $schema): Schema
     {
         return EmployeeAdvanceForm::configure($schema);
@@ -52,7 +55,7 @@ class AdvancesRelationManager extends RelationManager
                 TextColumn::make('balance_remaining')
                     ->label('المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($state) => $state > 0 ? 'warning' : 'success')
+                    ->color(fn($state) => $state > 0 ? 'warning' : 'success')
                     ->sortable()
                     ->summarize(
                         Sum::make()
