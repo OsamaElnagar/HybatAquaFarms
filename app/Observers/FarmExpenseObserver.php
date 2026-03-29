@@ -31,6 +31,13 @@ class FarmExpenseObserver
                 $context['credit_account_id'] = $farmExpense->account_id;
             }
 
+            // If this is an employee settlement, link it to their statement
+            if ($farmExpense->advance_repayment_id) {
+                $repayment = \App\Models\AdvanceRepayment::find($farmExpense->advance_repayment_id);
+                $employee = $repayment?->employeeAdvance?->employee;
+                $context['employee_statement_id'] = $employee?->active_statement?->id;
+            }
+
             $journalEntry = $this->posting->post('farm.expense', $context);
 
             $farmExpense->journal_entry_id = $journalEntry->id;

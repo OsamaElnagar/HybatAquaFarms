@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Employees\Tables;
 use App\Models\AdvanceRepayment;
 use App\Models\EmployeeAdvance;
 use App\Models\EmployeeStatement;
+use App\Models\FarmExpense;
 use App\Models\JournalLine;
 use App\Models\SalaryRecord;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -42,6 +43,7 @@ class EmployeeStatementTable
                                 ->orWhereHas('journalEntry', fn ($inner) => $inner->where(function ($sourceQ) use ($livewire) {
                                     $sourceQ->where(fn ($sq) => $sq->where('source_type', EmployeeAdvance::class)->whereIn('source_id', $livewire->record->advances->pluck('id')))
                                         ->orWhere(fn ($sq) => $sq->where('source_type', AdvanceRepayment::class)->whereIn('source_id', $livewire->record->advanceRepayments->pluck('id')))
+                                        ->orWhere(fn ($sq) => $sq->where('source_type', FarmExpense::class)->whereIn('source_id', FarmExpense::whereIn('advance_repayment_id', $livewire->record->advanceRepayments->pluck('id'))->pluck('id')))
                                         ->orWhere(fn ($sq) => $sq->where('source_type', SalaryRecord::class)->where('employee_id', $livewire->record->id));
                                 }))
                         );
