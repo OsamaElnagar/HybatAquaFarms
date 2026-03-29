@@ -2,9 +2,12 @@
 
 namespace App\Filament\Resources\Employees\Pages;
 
+use App\Filament\Resources\EmployeeAdvances\Actions\SettleWithExpensesAction;
 use App\Filament\Resources\Employees\Actions\MarkDaysOffAction;
 use App\Filament\Resources\Employees\EmployeeResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditEmployee extends EditRecord
@@ -13,7 +16,7 @@ class EditEmployee extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل بيانات موظف: '.$this->getRecord()->name;
+        return 'تعديل بيانات موظف: ' . $this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -31,6 +34,14 @@ class EditEmployee extends EditRecord
     {
         return [
             MarkDaysOffAction::make(),
+            SettleWithExpensesAction::make(),
+            Action::make('statement')
+                ->label('كشف الحساب')
+                ->icon('heroicon-o-document-text')
+                ->color('info')
+                ->url(fn() => EmployeeResource::getUrl('statement', ['record' => $this->getRecord()])),
+
+            ViewAction::make(),
             DeleteAction::make(),
         ];
     }
