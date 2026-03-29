@@ -39,11 +39,6 @@ class SettleWithExpensesAction extends Action
             ->icon('heroicon-o-document-duplicate')
             ->color('info')
             ->form([
-                DatePicker::make('payment_date')
-                    ->label('تاريخ التسوية')
-                    ->default(now())
-                    ->required(),
-
                 Select::make('employee_id')
                     ->label('الموظف')
                     ->options(Employee::query()->active()->pluck('name', 'id'))
@@ -56,6 +51,10 @@ class SettleWithExpensesAction extends Action
                 Repeater::make('expenses')
                     ->label('المصاريف')
                     ->schema([
+                        DatePicker::make('date')
+                            ->label('التاريخ')
+                            ->default(now())
+                            ->required(),
                         Select::make('farm_id')
                             ->label('المزرعة')
                             ->options(Farm::pluck('name', 'id'))
@@ -141,42 +140,62 @@ class SettleWithExpensesAction extends Action
                     $totalSettlementAmount = $totalDebt;
                 }
 
-                DB::transaction(function () use ($data, $advances, $totalSettlementAmount, $employee) {
-                    $remainingToSettle = $totalSettlementAmount;
-                    $repayments = [];
-
-                    /** @var EmployeeAdvance $advance */
-                    foreach ($advances as $advance) {
-                        if ($remainingToSettle <= 0) {
-                            break;
-                        }
-
-                        $amountForThisAdvance = min($remainingToSettle, $advance->balance_remaining);
-
-                        $repayment = $advance->repayments()->create([
-                            'payment_date' => $data['payment_date'],
-                            'amount_paid' => $amountForThisAdvance,
-                            'payment_method' => PaymentMethod::SETTLEMENT,
-                            'balance_remaining' => $advance->balance_remaining - $amountForThisAdvance,
-                            'notes' => $data['notes'] ?? 'تسوية سلفة بمصاريف عمل (توزيع تلقائي)',
-                        ]);
-
-                        $repayments[] = $repayment;
-                        $remainingToSettle -= $amountForThisAdvance;
-                    }
-
-                    // 2. Create individual Farm Expenses linked to the first repayment (as an audit trail)
-                    $primaryRepayment = $repayments[0] ?? null;
+                DB::transaction(function () use ($data, $employee, $totalDebt) {
+                    $remainingDebt = $totalDebt;
 
                     foreach ($data['expenses'] as $expenseData) {
+                        $expenseAmount = (float) $expenseData['amount'];
+
+                        // If already settled up to total debt, stop processing amounts but continue to record expenses if necessary
+                        // Actually, the check above already limits $totalSettlementAmount.
+                        // However, we want to perform FIFO for *each* expense.
+
+                        $amountLeftToSettleFromThisExpense = $expenseAmount;
+
+                        // Re-fetch advances to get updated balances for FIFO
+                        $activeAdvances = EmployeeAdvance::where('employee_id', $employee->id)
+                            ->where('status', AdvanceStatus::Active)
+                            ->where('approval_status', AdvanceApprovalStatus::APPROVED)
+                            ->where('balance_remaining', '>', 0)
+                            ->orderBy('request_date', 'asc')
+                            ->get();
+
+                        $createdRepayments = [];
+
+                        /** @var EmployeeAdvance $advance */
+                        foreach ($activeAdvances as $advance) {
+                            if ($amountLeftToSettleFromThisExpense <= 0) {
+                                break;
+                            }
+
+                            $toPay = min($amountLeftToSettleFromThisExpense, $advance->balance_remaining);
+
+                            if ($toPay > 0) {
+                                $repayment = $advance->repayments()->create([
+                                    'payment_date' => $expenseData['date'],
+                                    'amount_paid' => $toPay,
+                                    'payment_method' => PaymentMethod::SETTLEMENT,
+                                    'balance_remaining' => $advance->balance_remaining - $toPay,
+                                    'notes' => $expenseData['description'] ?? $data['notes'] ?? 'تسوية سداد من مصاريف عمل',
+                                ]);
+
+                                $createdRepayments[] = $repayment;
+                                $amountLeftToSettleFromThisExpense -= $toPay;
+                            }
+                        }
+
+                        // Create the Farm Expense record
+                        // We link it to the first repayment created by *this* expense if any
+                        $primaryRepayment = $createdRepayments[0] ?? null;
+
                         FarmExpense::create([
                             'farm_id' => $expenseData['farm_id'],
                             'batch_id' => $expenseData['batch_id'] ?? null,
                             'expense_category_id' => $expenseData['expense_category_id'],
                             'account_id' => $expenseData['account_id'],
                             'type' => $expenseData['type'],
-                            'amount' => $expenseData['amount'],
-                            'date' => $data['payment_date'],
+                            'amount' => $expenseAmount,
+                            'date' => $expenseData['date'],
                             'description' => $expenseData['description'] ?? $data['notes'] ?? 'تسوية سلفة لموظف: '.$employee->name,
                             'advance_repayment_id' => $primaryRepayment?->id,
                             'created_by' => Auth::id(),
@@ -187,7 +206,7 @@ class SettleWithExpensesAction extends Action
 
                 Notification::make()
                     ->title('تمت التسوية بنجاح')
-                    ->body("تم تسوية مبلغ {$totalSettlementAmount} EGP من سلف الموظف.")
+                    ->body('تمت معالجة المصاريف وتسوية المديونية بنجاح.')
                     ->success()
                     ->send();
             })
