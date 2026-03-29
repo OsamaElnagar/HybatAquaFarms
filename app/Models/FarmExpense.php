@@ -29,6 +29,7 @@ class FarmExpense extends Model
         'description',
         'created_by',
         'journal_entry_id',
+        'advance_repayment_id',
     ];
 
     protected function casts(): array
@@ -73,5 +74,10 @@ class FarmExpense extends Model
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class, 'journal_entry_id');
+    }
+
+    public function advanceRepayment(): BelongsTo
+    {
+        return $this->belongsTo(AdvanceRepayment::class);
     }
 }

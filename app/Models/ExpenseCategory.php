@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Observers\ExpenseCategoryObserver;
 use Database\Factories\ExpenseCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -32,5 +34,11 @@ class ExpenseCategory extends Model
     public function pettyCashTransactions(): HasMany
     {
         return $this->hasMany(PettyCashTransaction::class);
+    }
+
+    #[Scope]
+    public function active(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 }

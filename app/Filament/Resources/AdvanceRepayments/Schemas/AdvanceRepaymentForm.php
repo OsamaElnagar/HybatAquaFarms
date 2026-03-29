@@ -56,10 +56,11 @@ class AdvanceRepaymentForm
                             ->numeric()
                             ->suffix(' EGP ')
                             ->minValue(0.01)
+                            ->maxValue(fn (Get $get) => EmployeeAdvance::find($get('employee_advance_id'))?->balance_remaining)
                             ->step(0.01)
                             ->live(true)
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateRemaining($set, $get))
-                            ->helperText('قيمة القسط المدفوع حالياً'),
+                            ->helperText('قيمة القسط المدفوع حالياً (لا يمكن أن يتجاوز المتبقي)'),
                         Select::make('payment_method')
                             ->label('طريقة السداد')
                             ->options(PaymentMethod::class)

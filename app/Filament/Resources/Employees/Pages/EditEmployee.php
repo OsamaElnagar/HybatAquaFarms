@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employees\Pages;
 
+use App\Filament\Resources\Employees\Actions\MarkDaysOffAction;
 use App\Filament\Resources\Employees\EmployeeResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -29,6 +30,7 @@ class EditEmployee extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            MarkDaysOffAction::make(),
             DeleteAction::make(),
         ];
     }

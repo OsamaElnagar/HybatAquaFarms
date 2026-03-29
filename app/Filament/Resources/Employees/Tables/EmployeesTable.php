@@ -3,11 +3,15 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatus;
+use App\Filament\Resources\EmployeeAdvances\Actions\SettleWithExpensesAction;
+use App\Filament\Resources\Employees\Actions\MarkDaysOffAction;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -32,7 +36,7 @@ class EmployeesTable
                 TextColumn::make('phone')
                     ->label('الهاتف')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('farm.name')
                     ->label('المزرعة')
                     ->searchable()
@@ -51,19 +55,20 @@ class EmployeesTable
                     ->label('السلف')
                     ->badge()
                     ->color('primary')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('outstanding_advances')
                     ->label('سلف مستحقة')
-                    ->state(fn ($record) => number_format($record->total_outstanding_advances))
+                    ->state(fn($record) => number_format($record->total_outstanding_advances))
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn ($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
+                    ->color(fn($record) => $record->total_outstanding_advances > 0 ? 'warning' : 'success')
                     ->toggleable(),
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
                     ->searchable()
-                    ->sortable(),
-                // ->toggleable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('termination_date')
                     ->label('تاريخ إنهاء الخدمة')
                     ->date('Y-m-d')
@@ -91,32 +96,40 @@ class EmployeesTable
                     ->label('تاريخ إنهاء الخدمة'),
             ])
             ->recordActions([
-                Action::make('call')
-                    ->label('اتصال')
-                    ->icon('heroicon-m-phone')
-                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
-                    ->hidden(fn ($record) => blank($record->phone)),
-                Action::make('whatsapp')
-                    ->label('واتساب')
-                    ->icon('heroicon-m-chat-bubble-left-right')
-                    ->color('success')
-                    ->url(function ($record) {
-                        if (blank($record->phone)) {
-                            return null;
-                        }
+                ActionGroup::make([
+                    Action::make('call')
+                        ->label('اتصال')
+                        ->icon('heroicon-m-phone')
+                        ->url(fn($record) => $record->phone ? 'tel:' . $record->phone : null)
+                        ->hidden(fn($record) => blank($record->phone)),
+                    Action::make('whatsapp')
+                        ->label('واتساب')
+                        ->icon('heroicon-m-chat-bubble-left-right')
+                        ->color('success')
+                        ->url(function ($record) {
+                            if (blank($record->phone)) {
+                                return null;
+                            }
 
-                        $phone = preg_replace('/\D+/', '', $record->phone);
+                            $phone = preg_replace('/\D+/', '', $record->phone);
 
-                        if (! str_starts_with($phone, '2')) {
-                            $phone = '2'.$phone;
-                        }
+                            if (!str_starts_with($phone, '2')) {
+                                $phone = '2' . $phone;
+                            }
 
-                        return 'https://wa.me/'.$phone;
-                    })
-                    ->openUrlInNewTab()
-                    ->hidden(fn ($record) => blank($record->phone)),
-                ViewAction::make()->label('عرض'),
-                EditAction::make()->label('تعديل'),
+                            return 'https://wa.me/' . $phone;
+                        })
+                        ->openUrlInNewTab()
+                        ->hidden(fn($record) => blank($record->phone)),
+                    ViewAction::make()->label('عرض'),
+                    EditAction::make()->label('تعديل'),
+                    MarkDaysOffAction::make(),
+                    SettleWithExpensesAction::make(),
+                ])->label('الإجراءات')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->color('primary')
+                    ->button(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

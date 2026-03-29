@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SalaryRecords\Schemas;
 use App\Enums\PaymentMethod;
 use App\Enums\SalaryStatus;
 use App\Models\Employee;
+use App\Models\EmployeeDayOff;
 use App\Models\SalaryRecord;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
@@ -153,6 +154,13 @@ class SalaryRecordForm
                             ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
                             ->helperText('أيام يتم خصمها من الحساب (غياب/إجازة غير مدفوعة)')
                             ->columnSpan(1),
+                        Textarea::make('days_off_details')
+                            ->label('تفاصيل أيام الغياب')
+                            ->rows(2)
+                            ->maxLength(500)
+                            ->placeholder('مثال: الخميس 5/3 - إجازة مرضية، الجمعة 6/3 - غياب')
+                            ->helperText('وصف اختياري لأيام الغياب أو الإجازات')
+                            ->columnSpan(1),
                         TextInput::make('per_day_rate')
                             ->label('قيمة اليوم')
                             ->suffix(' EGP ')
@@ -296,10 +304,33 @@ class SalaryRecordForm
             return;
         }
 
-        $set('em_basic_salary', number_format((float) $employee->basic_salary, 2).' EGP');
+        $set('em_basic_salary', $employee->basic_salary);
 
         $start = $get('pay_period_start');
         $end = $get('pay_period_end');
+
+        // Auto-fetch days off from the database if dates are set
+        if ($start && $end) {
+            $daysOff = EmployeeDayOff::query()
+                ->where('employee_id', $employeeId)
+                ->whereBetween('date', [$start, $end])
+                ->get();
+
+            if ($daysOff->isNotEmpty()) {
+                $count = $daysOff->count();
+                $details = $daysOff->map(fn ($d) => $d->date->format('m/d').($d->reason ? " ({$d->reason})" : ''))->implode('، ');
+
+                $set('unpaid_days', $count);
+                $set('days_off_details', $details);
+            } else {
+                // Only clear if they were previously auto-filled or we want a fresh start
+                // Actually, let's just leave them as is if no records found to allow manual overrides
+                // OR clear them if we want strict syncing. Let's sync.
+                $set('unpaid_days', 0);
+                $set('days_off_details', null);
+            }
+        }
+
         $unpaid = (int) ($get('unpaid_days') ?? 0);
 
         if (! $start || ! $end) {

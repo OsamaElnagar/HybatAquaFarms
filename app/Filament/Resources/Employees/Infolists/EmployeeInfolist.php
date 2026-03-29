@@ -132,5 +132,6 @@ class EmployeeInfolist
                     ->collapsible()
                     ->collapsed(fn ($record) => empty($record->address) && empty($record->notes)),
             ]);
+
     }
 }

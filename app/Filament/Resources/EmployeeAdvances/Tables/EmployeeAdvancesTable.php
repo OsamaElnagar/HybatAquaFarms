@@ -4,6 +4,8 @@ namespace App\Filament\Resources\EmployeeAdvances\Tables;
 
 use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
+use App\Filament\Resources\EmployeeAdvances\Actions\SettleWithExpensesAction;
+use App\Models\EmployeeAdvance;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -138,6 +140,8 @@ class EmployeeAdvancesTable
             ])
             ->defaultSort('request_date', 'desc')
             ->recordActions([
+                SettleWithExpensesAction::make()
+                    ->visible(fn (EmployeeAdvance $record) => $record->balance_remaining > 0),
                 EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([

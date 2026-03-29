@@ -24,6 +24,7 @@ class PostingService
                 'trader_statement_id' => $context['trader_statement_id'] ?? null,
                 'factory_statement_id' => $context['factory_statement_id'] ?? null,
                 'external_calculation_statement_id' => $context['external_calculation_statement_id'] ?? null,
+                'employee_statement_id' => $context['employee_statement_id'] ?? null,
                 'posted_by' => $context['user_id'] ?? null,
                 'posted_at' => now(),
             ]);

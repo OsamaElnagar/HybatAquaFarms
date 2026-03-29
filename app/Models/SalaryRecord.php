@@ -22,6 +22,8 @@ class SalaryRecord extends Model
         'employee_id',
         'pay_period_start',
         'pay_period_end',
+        'unpaid_days',
+        'days_off_details',
         'basic_salary',
         'bonuses',
         'deductions',
@@ -45,6 +47,7 @@ class SalaryRecord extends Model
             'deductions' => 'decimal:2',
             'advances_deducted' => 'decimal:2',
             'net_salary' => 'decimal:2',
+            'unpaid_days' => 'integer',
             'payment_method' => PaymentMethod::class,
             'status' => SalaryStatus::class,
         ];

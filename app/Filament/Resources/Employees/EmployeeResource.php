@@ -71,6 +71,7 @@ class EmployeeResource extends Resource
             RelationManagers\AdvancesRelationManager::class,
             RelationManagers\AdvanceRepaymentsRelationManager::class,
             RelationManagers\SalaryRecordsRelationManager::class,
+            RelationManagers\DaysOffRelationManager::class,
         ];
     }
 
@@ -79,6 +80,8 @@ class EmployeeResource extends Resource
         return [
             'index' => ListEmployees::route('/'),
             'create' => CreateEmployee::route('/create'),
+            'statement' => Pages\StatementOfAccount::route('/{record}/statement'),
+            'statements' => Pages\ListStatements::route('/{record}/statements'),
             'view' => Pages\ViewEmployee::route('/{record}'),
             'edit' => EditEmployee::route('/{record}/edit'),
         ];

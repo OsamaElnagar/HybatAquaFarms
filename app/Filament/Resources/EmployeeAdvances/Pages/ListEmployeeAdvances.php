@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EmployeeAdvances\Pages;
 
+use App\Filament\Resources\EmployeeAdvances\Actions\SettleWithExpensesAction;
 use App\Filament\Resources\EmployeeAdvances\EmployeeAdvanceResource;
 use App\Filament\Resources\EmployeeAdvances\Widgets\EmployeeAdvancesStatsWidget;
 use Filament\Actions\CreateAction;
@@ -15,6 +16,7 @@ class ListEmployeeAdvances extends ListRecords
     {
         return [
             CreateAction::make(),
+            SettleWithExpensesAction::make(),
         ];
     }
 

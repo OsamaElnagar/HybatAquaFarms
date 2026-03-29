@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Enums\AdvanceStatus;
+use App\Filament\Resources\EmployeeAdvances\Actions\SettleWithExpensesAction;
 use App\Filament\Resources\EmployeeAdvances\Schemas\EmployeeAdvanceForm;
+use App\Models\EmployeeAdvance;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -25,6 +27,7 @@ class AdvancesRelationManager extends RelationManager
     protected static ?string $modelLabel = 'سلفة';
 
     protected static ?string $pluralModelLabel = 'السُلف';
+
     public function form(Schema $schema): Schema
     {
         return EmployeeAdvanceForm::configure($schema);
@@ -84,8 +87,11 @@ class AdvancesRelationManager extends RelationManager
 
                         return $data;
                     }),
+                // SettleWithExpensesAction::make(),
             ])
             ->recordActions([
+                // SettleWithExpensesAction::make()
+                //     ->visible(fn (EmployeeAdvance $record) => $record->balance_remaining > 0),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

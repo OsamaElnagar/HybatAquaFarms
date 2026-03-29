@@ -60,6 +60,7 @@ class SalaryRecordObserver
                 'source_id' => $salaryRecord->id,
                 'description' => "راتب الموظف {$salaryRecord->employee?->name} - {$salaryRecord->pay_period_start?->format('Y-m')}",
                 'farm_id' => $salaryRecord->employee?->farm_id,
+                'employee_statement_id' => $salaryRecord->employee?->active_statement?->id,
             ]);
         } catch (\Throwable $e) {
             Log::warning('Failed to post salary payment accounting entry: '.$e->getMessage(), [

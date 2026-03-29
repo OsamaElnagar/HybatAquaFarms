@@ -23,6 +23,7 @@ class SalaryRecordFactory extends Factory
             'employee_id' => Employee::factory(),
             'pay_period_start' => now()->startOfMonth(),
             'pay_period_end' => now()->endOfMonth(),
+            'unpaid_days' => 0,
             'basic_salary' => $this->faker->randomFloat(2, 3000, 10000),
             'bonuses' => 0,
             'deductions' => 0,

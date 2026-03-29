@@ -12,6 +12,7 @@ enum PaymentMethod: string implements HasColor, HasIcon, HasLabel
     case BANK = 'bank';
     case CHECK = 'check';
     case SALARY_DEDUCTION = 'salary_deduction';
+    case SETTLEMENT = 'settlement';
 
     public function getColor(): string
     {
@@ -20,6 +21,7 @@ enum PaymentMethod: string implements HasColor, HasIcon, HasLabel
             self::BANK => 'info',
             self::CHECK => 'warning',
             self::SALARY_DEDUCTION => 'danger',
+            self::SETTLEMENT => 'info',
         };
     }
 
@@ -30,6 +32,7 @@ enum PaymentMethod: string implements HasColor, HasIcon, HasLabel
             self::BANK => 'heroicon-o-banknotes',
             self::CHECK => 'heroicon-o-document-text',
             self::SALARY_DEDUCTION => 'heroicon-o-user-minus',
+            self::SETTLEMENT => 'heroicon-o-document-duplicate',
         };
     }
 
@@ -40,6 +43,7 @@ enum PaymentMethod: string implements HasColor, HasIcon, HasLabel
             self::BANK => 'تحويل بنكي',
             self::CHECK => 'شيك',
             self::SALARY_DEDUCTION => 'خصم من المرتب',
+            self::SETTLEMENT => 'تسوية بمصاريف',
         };
     }
 }

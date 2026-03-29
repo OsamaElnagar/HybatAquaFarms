@@ -25,6 +25,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class AdvanceRepaymentsRelationManager extends RelationManager
 {
@@ -49,7 +50,7 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                             ->relationship(
                                 name: 'employeeAdvance',
                                 titleAttribute: 'advance_number',
-                                modifyQueryUsing: fn(Builder $query) => $query
+                                modifyQueryUsing: fn (Builder $query) => $query
                                     ->where('employee_id', $employeeId)
                                     ->where('balance_remaining', '>', 0),
                             )
@@ -57,9 +58,9 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                             ->preload()
                             ->required()
                             ->helperText('اختر السلفة التي سيتم سداد جزء منها')
-                            ->getOptionLabelFromRecordUsing(fn(EmployeeAdvance $record) => "{$record->advance_number} (متبقي: " . number_format($record->balance_remaining) . ' EGP)')
+                            ->getOptionLabelFromRecordUsing(fn (EmployeeAdvance $record) => "{$record->advance_number} (متبقي: ".number_format($record->balance_remaining).' EGP)')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, $state) => self::syncRemainingFromAdvance($set, $state)),
+                            ->afterStateUpdated(fn (Set $set, $state) => self::syncRemainingFromAdvance($set, $state)),
                         DatePicker::make('payment_date')
                             ->label('تاريخ السداد')
                             ->required()
@@ -69,8 +70,8 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                             ->helperText('تاريخ دفع هذا القسط'),
                         TextEntry::make('advance_overview')
                             ->label('بيانات السلفة')
-                            ->state(fn(Get $get) => self::advanceSummary($get('employee_advance_id')))
-                            ->hidden(fn(Get $get) => blank($get('employee_advance_id')))
+                            ->state(fn (Get $get) => self::advanceSummary($get('employee_advance_id')))
+                            ->hidden(fn (Get $get) => blank($get('employee_advance_id')))
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -85,7 +86,7 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                             ->minValue(0.01)
                             ->step(0.01)
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateRemaining($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateRemaining($set, $get))
                             ->helperText('قيمة القسط المدفوع حالياً'),
                         Select::make('payment_method')
                             ->label('طريقة السداد')
@@ -98,13 +99,13 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                             ->relationship(
                                 name: 'salaryRecord',
                                 titleAttribute: 'id',
-                                modifyQueryUsing: fn(Builder $query, Get $get) => $query
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
                                     ->where('status', 'paid')
                                     ->where('employee_id', $employeeId),
                             )
-                            ->getOptionLabelFromRecordUsing(fn(SalaryRecord $record) => '#' . $record->id . ' - ' . $record->net_salary . ' EGP')
+                            ->getOptionLabelFromRecordUsing(fn (SalaryRecord $record) => '#'.$record->id.' - '.$record->net_salary.' EGP')
                             ->helperText('اختر سجل المرتب الذي تم خصم السلفة منه (إن وجد)')
-                            ->visible(fn(Get $get) => $get('payment_method') === PaymentMethod::SALARY_DEDUCTION),
+                            ->visible(fn (Get $get) => $get('payment_method') === PaymentMethod::SALARY_DEDUCTION),
                         TextInput::make('balance_remaining')
                             ->label('الرصيد المتبقي بعد السداد')
                             ->numeric()
@@ -134,7 +135,7 @@ class AdvanceRepaymentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['employeeAdvance', 'salaryRecord']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['employeeAdvance', 'salaryRecord']))
             ->columns([
                 TextColumn::make('employeeAdvance.advance_number')
                     ->label('رقم السلفة')
@@ -157,7 +158,7 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                 TextColumn::make('balance_remaining')
                     ->label('الرصيد المتبقي')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn(float $state) => $state > 0 ? 'warning' : 'success')
+                    ->color(fn (float $state) => $state > 0 ? 'warning' : 'success')
                     ->sortable(),
                 // TextColumn::make('employeeAdvance.balance_remaining')
                 //     ->label('الرصيد المتبقي للسلفة')
@@ -170,7 +171,7 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('salaryRecord.id')
                     ->label('رقم السجل المرتب')
-                    ->formatStateUsing(fn($state) => $state ? '#' . $state : 'السجل غير موجود')
+                    ->formatStateUsing(fn ($state) => $state ? '#'.$state : 'السجل غير موجود')
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -198,9 +199,9 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                         DatePicker::make('to')->label('إلى')->displayFormat('Y-m-d')->native(false),
                     ])
                     ->query(
-                        fn(Builder $query, array $data): Builder => $query
-                            ->when($data['from'] ?? null, fn(Builder $q, $date) => $q->whereDate('payment_date', '>=', $date))
-                            ->when($data['to'] ?? null, fn(Builder $q, $date) => $q->whereDate('payment_date', '<=', $date)),
+                        fn (Builder $query, array $data): Builder => $query
+                            ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('payment_date', '>=', $date))
+                            ->when($data['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('payment_date', '<=', $date)),
                     ),
             ])
             ->defaultSort('payment_date', 'desc')
@@ -208,7 +209,80 @@ class AdvanceRepaymentsRelationManager extends RelationManager
                 EditAction::make(),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->form([
+                        DatePicker::make('payment_date')
+                            ->label('تاريخ السداد')
+                            ->required()
+                            ->default(now())
+                            ->displayFormat('Y-m-d')
+                            ->native(false),
+                        TextInput::make('amount_paid')
+                            ->label('المبلغ المدفوع')
+                            ->required()
+                            ->numeric()
+                            ->suffix(' EGP ')
+                            ->minValue(0.01)
+                            ->step(0.01)
+                            ->maxValue(fn () => $this->getOwnerRecord()->advances()->where('balance_remaining', '>', 0)->sum('balance_remaining'))
+                            ->helperText(fn () => 'المتبقي الإجمالي للسلف: '.number_format($this->getOwnerRecord()->advances()->where('balance_remaining', '>', 0)->sum('balance_remaining'), 2)),
+                        Select::make('payment_method')
+                            ->label('طريقة السداد')
+                            ->options(PaymentMethod::class)
+                            ->required()
+                            ->live(true),
+                        Select::make('salary_record_id')
+                            ->label('سجل المرتب المرتبط')
+                            ->relationship(
+                                name: 'salaryRecord',
+                                titleAttribute: 'id',
+                                modifyQueryUsing: fn (Builder $query) => $query
+                                    ->where('status', 'paid')
+                                    ->where('employee_id', $this->getOwnerRecord()->id)
+                            )
+                            ->getOptionLabelFromRecordUsing(fn (SalaryRecord $record) => '#'.$record->id.' - '.$record->net_salary.' EGP')
+                            ->visible(fn (Get $get) => $get('payment_method') === PaymentMethod::SALARY_DEDUCTION->value || $get('payment_method') === PaymentMethod::SALARY_DEDUCTION),
+                        Textarea::make('notes')
+                            ->label('ملاحظات إضافية')
+                            ->rows(3)
+                            ->maxLength(1000)
+                            ->columnSpanFull(),
+                    ])
+                    ->using(function (array $data, string $model): Model {
+                        $employee = $this->getOwnerRecord();
+                        $amountToPay = (float) $data['amount_paid'];
+
+                        $advances = EmployeeAdvance::where('employee_id', $employee->id)
+                            ->where('balance_remaining', '>', 0)
+                            ->orderBy('approved_date', 'asc')
+                            ->orderBy('id', 'asc')
+                            ->get();
+
+                        $lastRepayment = null;
+
+                        foreach ($advances as $advance) {
+                            if ($amountToPay <= 0) {
+                                break;
+                            }
+
+                            $paidForThisAdvance = min((float) $advance->balance_remaining, $amountToPay);
+
+                            $lastRepayment = $model::create([
+                                'employee_advance_id' => $advance->id,
+                                'amount_paid' => $paidForThisAdvance,
+                                'payment_date' => $data['payment_date'],
+                                'payment_method' => $data['payment_method'],
+                                'salary_record_id' => $data['salary_record_id'] ?? null,
+                                'notes' => count($advances) > 1 ? ($data['notes'].' (سداد مجمع)') : $data['notes'],
+                                'balance_remaining' => max(0, $advance->balance_remaining - $paidForThisAdvance),
+                            ]);
+
+                            $amountToPay -= $paidForThisAdvance;
+                        }
+
+                        // Must return something so filament doesn't crash
+                        return $lastRepayment ?? new $model;
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -219,14 +293,14 @@ class AdvanceRepaymentsRelationManager extends RelationManager
 
     protected static function syncRemainingFromAdvance(Set $set, ?int $advanceId): void
     {
-        if (!$advanceId) {
+        if (! $advanceId) {
             $set('balance_remaining', null);
 
             return;
         }
 
         $advance = EmployeeAdvance::find($advanceId);
-        if (!$advance) {
+        if (! $advance) {
             $set('balance_remaining', null);
 
             return;
@@ -240,12 +314,12 @@ class AdvanceRepaymentsRelationManager extends RelationManager
         $advanceId = $get('employee_advance_id');
         $amountPaid = (float) $get('amount_paid');
 
-        if (!$advanceId) {
+        if (! $advanceId) {
             return;
         }
 
         $advance = EmployeeAdvance::find($advanceId);
-        if (!$advance) {
+        if (! $advance) {
             return;
         }
 
@@ -256,12 +330,12 @@ class AdvanceRepaymentsRelationManager extends RelationManager
 
     protected static function advanceSummary(?int $advanceId): ?string
     {
-        if (!$advanceId) {
+        if (! $advanceId) {
             return null;
         }
 
         $advance = EmployeeAdvance::find($advanceId);
-        if (!$advance) {
+        if (! $advance) {
             return null;
         }
 

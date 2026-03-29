@@ -25,6 +25,7 @@ class EmployeeAdvanceObserver
             'source_type' => $advance->getMorphClass(),
             'source_id' => $advance->id,
             'description' => $advance->reason,
+            'employee_statement_id' => $advance->employee?->active_statement?->id,
         ]);
     }
 

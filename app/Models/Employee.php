@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
+use App\Enums\EmployeeStatementStatus;
 use App\Enums\EmployeeStatus;
 use App\Observers\EmployeeObserver;
 use Database\Factories\EmployeeFactory;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\DB;
 
 #[ObservedBy([EmployeeObserver::class])]
 class Employee extends Model
@@ -53,6 +55,13 @@ class Employee extends Model
         return $this->hasMany(EmployeeAdvance::class);
     }
 
+    public function activeAdvances(): HasMany
+    {
+        return $this->hasMany(EmployeeAdvance::class)
+            ->where('status', AdvanceStatus::Active)
+            ->where('approval_status', AdvanceApprovalStatus::APPROVED);
+    }
+
     public function advanceRepayments(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -68,6 +77,52 @@ class Employee extends Model
     public function salaryRecords(): HasMany
     {
         return $this->hasMany(SalaryRecord::class);
+    }
+
+    public function daysOff(): HasMany
+    {
+        return $this->hasMany(EmployeeDayOff::class);
+    }
+
+    public function statements(): HasMany
+    {
+        return $this->hasMany(EmployeeStatement::class);
+    }
+
+    public function activeStatement(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeStatement::class, 'id', 'employee_id')
+            ->where('status', EmployeeStatementStatus::Open)
+            ->latest();
+    }
+
+    public function getActiveStatementAttribute(): ?EmployeeStatement
+    {
+        return $this->statements()->where('status', EmployeeStatementStatus::Open)->latest()->first();
+    }
+
+    public function openNewStatement(?string $title = null, ?string $notes = null): EmployeeStatement
+    {
+        return DB::transaction(function () use ($title, $notes) {
+            $active = $this->active_statement;
+
+            if ($active) {
+                $active->update([
+                    'status' => EmployeeStatementStatus::Closed,
+                    'closed_at' => now(),
+                    'closing_balance' => $active->net_balance,
+                ]);
+            }
+
+            return $this->statements()->create([
+                'title' => $title,
+                'opened_at' => now(),
+                'opening_balance' => $active ? $active->closing_balance : 0,
+                'status' => EmployeeStatementStatus::Open,
+                'notes' => $notes,
+                'created_by' => auth()->id(),
+            ]);
+        });
     }
 
     public function custodialPettyCashes(): HasMany
