@@ -6,9 +6,11 @@ use App\Enums\FactoryType;
 use App\Filament\Resources\Factories\FactoryResource;
 use App\Models\Factory;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -104,35 +106,41 @@ class FactoriesTable
                     ->options(FactoryType::class),
             ])
             ->recordActions([
-                Action::make('call')
-                    ->label('اتصال')
-                    ->icon('heroicon-m-phone')
-                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
-                    ->hidden(fn ($record) => blank($record->phone)),
-                Action::make('whatsapp')
-                    ->label('واتساب')
-                    ->icon('heroicon-m-chat-bubble-left-right')
-                    ->color('success')
-                    ->url(function ($record) {
-                        if (blank($record->phone)) {
-                            return null;
-                        }
+                ActionGroup::make([
+                    Action::make('call')
+                        ->label('اتصال')
+                        ->icon('heroicon-m-phone')
+                        ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
+                        ->hidden(fn ($record) => blank($record->phone)),
+                    Action::make('whatsapp')
+                        ->label('واتساب')
+                        ->icon('heroicon-m-chat-bubble-left-right')
+                        ->color('success')
+                        ->url(function ($record) {
+                            if (blank($record->phone)) {
+                                return null;
+                            }
 
-                        $phone = preg_replace('/\D+/', '', $record->phone);
+                            $phone = preg_replace('/\D+/', '', $record->phone);
 
-                        if (! str_starts_with($phone, '2')) {
-                            $phone = '2'.$phone;
-                        }
+                            if (! str_starts_with($phone, '2')) {
+                                $phone = '2'.$phone;
+                            }
 
-                        return 'https://wa.me/'.$phone;
-                    })
-                    ->openUrlInNewTab()
-                    ->hidden(fn ($record) => blank($record->phone)),
-                Action::make('statement')
-                    ->label('كشف الحساب')
-                    ->icon('heroicon-o-document-text')
-                    ->url(fn ($record) => FactoryResource::getUrl('statement', ['record' => $record])),
-                EditAction::make(),
+                            return 'https://wa.me/'.$phone;
+                        })
+                        ->openUrlInNewTab()
+                        ->hidden(fn ($record) => blank($record->phone)),
+                    Action::make('statement')
+                        ->label('كشف الحساب')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn ($record) => FactoryResource::getUrl('statement', ['record' => $record])),
+                    EditAction::make(),
+                ])->label('الإجراءات')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->size(Size::Small)
+                    ->color('primary')
+                    ->button(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

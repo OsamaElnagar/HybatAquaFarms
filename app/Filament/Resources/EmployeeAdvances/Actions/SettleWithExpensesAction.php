@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\EmployeeAdvances\Actions;
 
+use App\Enums\AccountType;
 use App\Enums\AdvanceApprovalStatus;
 use App\Enums\AdvanceStatus;
 use App\Enums\FarmExpenseType;
 use App\Enums\PaymentMethod;
-use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\Batch;
 use App\Models\Employee;
@@ -50,8 +50,8 @@ class SettleWithExpensesAction extends Action
                     ->searchable()
                     ->required()
                     ->live()
-                    ->hidden(fn($record) => $record instanceof EmployeeAdvance || $record instanceof Employee)
-                    ->default(fn($record) => $record instanceof EmployeeAdvance ? $record->employee_id : ($record instanceof Employee ? $record->id : null)),
+                    ->hidden(fn ($record) => $record instanceof EmployeeAdvance || $record instanceof Employee)
+                    ->default(fn ($record) => $record instanceof EmployeeAdvance ? $record->employee_id : ($record instanceof Employee ? $record->id : null)),
 
                 Repeater::make('expenses')
                     ->label('المصاريف')
@@ -64,7 +64,7 @@ class SettleWithExpensesAction extends Action
                             ->searchable(),
                         Select::make('batch_id')
                             ->label('الدورة')
-                            ->options(fn(callable $get) => Batch::where('farm_id', $get('farm_id'))->pluck('batch_code', 'id'))
+                            ->options(fn (callable $get) => Batch::where('farm_id', $get('farm_id'))->pluck('batch_code', 'id'))
                             ->searchable(),
                         Select::make('type')
                             ->label('النوع')
@@ -95,7 +95,7 @@ class SettleWithExpensesAction extends Action
                     ->columns(2)
                     ->required()
                     ->minItems(1)
-                    ->itemLabel(fn(array $state): ?string => isset($state['amount']) ? "مبلغ: {$state['amount']} EGP" : null),
+                    ->itemLabel(fn (array $state): ?string => isset($state['amount']) ? "مبلغ: {$state['amount']} EGP" : null),
                 Textarea::make('notes')
                     ->label('ملاحظات عامة')
                     ->rows(2),
@@ -104,7 +104,7 @@ class SettleWithExpensesAction extends Action
                 // Determine Employee ID
                 $employeeId = $data['employee_id'] ?? ($record instanceof EmployeeAdvance ? $record->employee_id : ($record instanceof Employee ? $record->id : null));
 
-                if (!$employeeId) {
+                if (! $employeeId) {
                     Notification::make()->title('خطأ')->body('لم يتم تحديد الموظف.')->danger()->send();
 
                     return;
@@ -177,7 +177,7 @@ class SettleWithExpensesAction extends Action
                             'type' => $expenseData['type'],
                             'amount' => $expenseData['amount'],
                             'date' => $data['payment_date'],
-                            'description' => $expenseData['description'] ?? $data['notes'] ?? 'تسوية سلفة لموظف: ' . $employee->name,
+                            'description' => $expenseData['description'] ?? $data['notes'] ?? 'تسوية سلفة لموظف: '.$employee->name,
                             'advance_repayment_id' => $primaryRepayment?->id,
                             'created_by' => Auth::id(),
                             'treasury_account_id' => 34, // سلف الموظفين (Employee Advances Account)

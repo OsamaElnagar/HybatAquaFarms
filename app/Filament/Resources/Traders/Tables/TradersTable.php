@@ -38,7 +38,7 @@ class TradersTable
                 TextColumn::make('outstanding_balance')
                     ->label('صافى الحساب')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->outstanding_balance > 0 ?
+                    ->color(fn ($record) => $record->outstanding_balance > 0 ?
                         'warning' : ($record->outstanding_balance < 0 ? 'danger' : 'default'))
                     ->sortable(),
                 TextColumn::make('sales_orders_count')
@@ -96,12 +96,12 @@ class TradersTable
                         ->label('كشف الحساب')
                         ->icon('heroicon-o-document-text')
                         ->color('info')
-                        ->url(fn(Trader $record): string => TraderResource::getUrl('statement', ['record' => $record])),
+                        ->url(fn (Trader $record): string => TraderResource::getUrl('statement', ['record' => $record])),
                     Action::make('statementsHistory')
                         ->label('سجل الكشوفات')
                         ->icon('heroicon-o-list-bullet')
                         ->color('gray')
-                        ->url(fn(Trader $record): string => TraderResource::getUrl('statements', ['record' => $record])),
+                        ->url(fn (Trader $record): string => TraderResource::getUrl('statements', ['record' => $record])),
                     ViewAction::make()->label('عرض'),
                     EditAction::make()->label('تعديل'),
                 ])->label('الإجراءات')
