@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Employees\Tables;
 use App\Enums\EmployeeStatus;
 use App\Filament\Resources\EmployeeAdvances\Actions\SettleWithExpensesAction;
 use App\Filament\Resources\Employees\Actions\MarkDaysOffAction;
+use App\Filament\Resources\Employees\EmployeeResource;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -12,6 +13,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Enums\Size;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -97,6 +99,14 @@ class EmployeesTable
             ])
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('salary')
+                        ->label('سجل الرواتب')
+                        ->icon(Heroicon::CurrencyDollar)
+                        ->url(fn ($record) => EmployeeResource::getUrl('edit', [$record, 'relation' => 2])),
+                    ViewAction::make()->label('عرض'),
+                    EditAction::make()->label('تعديل'),
+                    MarkDaysOffAction::make(),
+                    SettleWithExpensesAction::make(),
                     Action::make('call')
                         ->label('اتصال')
                         ->icon('heroicon-m-phone')
@@ -121,10 +131,6 @@ class EmployeesTable
                         })
                         ->openUrlInNewTab()
                         ->hidden(fn ($record) => blank($record->phone)),
-                    ViewAction::make()->label('عرض'),
-                    EditAction::make()->label('تعديل'),
-                    MarkDaysOffAction::make(),
-                    SettleWithExpensesAction::make(),
                 ])->label('الإجراءات')
                     ->icon('heroicon-m-ellipsis-vertical')
                     ->size(Size::Small)

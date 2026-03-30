@@ -15,7 +15,7 @@ class EmployeeStatementStats extends BaseWidget
 
     protected function getStats(): array
     {
-        if (!$this->record || !$this->record instanceof Employee) {
+        if (! $this->record || ! $this->record instanceof Employee) {
             return [];
         }
 
@@ -52,7 +52,7 @@ class EmployeeStatementStats extends BaseWidget
             //     ->color('success')
             //     ->icon('heroicon-o-banknotes'),
 
-            Stat::make('الرصيد المتبقي', number_format($outstandingBalance) . ' EGP')
+            Stat::make('الرصيد المتبقي', number_format($outstandingBalance).' EGP')
                 ->description('صافي المديونية القائمة حالياً')
                 ->color($outstandingBalance > 0 ? 'danger' : 'success')
                 ->icon('heroicon-o-clock'),

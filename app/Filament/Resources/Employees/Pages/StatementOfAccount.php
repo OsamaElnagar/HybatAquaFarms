@@ -9,13 +9,13 @@ use App\Filament\Resources\Employees\Actions\OpenNewEmployeeStatementAction;
 use App\Filament\Resources\Employees\Actions\RepayAdvanceAction;
 use App\Filament\Resources\Employees\EmployeeResource;
 use App\Filament\Resources\Employees\Tables\EmployeeStatementTable;
+use App\Filament\Resources\Employees\Widgets\EmployeeStatementStats;
 use App\Models\AdvanceRepayment;
 use App\Models\EmployeeAdvance;
 use App\Models\EmployeeStatement;
 use App\Models\FarmExpense;
 use App\Models\JournalLine;
 use App\Models\SalaryRecord;
-use App\Filament\Resources\Employees\Widgets\EmployeeStatementStats;
 use App\Services\PdfService;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -98,7 +98,7 @@ class StatementOfAccount extends Page implements HasTable
                     ->label('سجل الكشوفات')
                     ->icon('heroicon-o-list-bullet')
                     ->color('gray')
-                    ->url(fn() => EmployeeResource::getUrl('statements', ['record' => $this->record])),
+                    ->url(fn () => EmployeeResource::getUrl('statements', ['record' => $this->record])),
 
                 Action::make('viewAllHistory')
                     ->label($this->activeStatementId ? 'عرض كل التاريخ' : 'عرض الكشف الحالي فقط')
@@ -146,29 +146,29 @@ class StatementOfAccount extends Page implements HasTable
             : null;
 
         $query = JournalLine::query()
-            ->whereHas('account', fn(Builder $query) => $query->whereIn('code', ['1150', '5210']))
+            ->whereHas('account', fn (Builder $query) => $query->whereIn('code', ['1150', '5210']))
             ->where(function (Builder $query) {
                 // Only show 5210 if 1150 is not present in the same entry to avoid duplication in repayments
-                $query->whereHas('account', fn($q) => $q->where('code', '1150'))
+                $query->whereHas('account', fn ($q) => $q->where('code', '1150'))
                     ->orWhere(function ($q) {
-                    $q->whereHas('account', fn($inner) => $inner->where('code', '5210'))
-                        ->whereHas('journalEntry', function ($je) {
-                            $je->whereDoesntHave('lines', function ($lines) {
-                                $lines->whereHas('account', fn($acc) => $acc->where('code', '1150'));
+                        $q->whereHas('account', fn ($inner) => $inner->where('code', '5210'))
+                            ->whereHas('journalEntry', function ($je) {
+                                $je->whereDoesntHave('lines', function ($lines) {
+                                    $lines->whereHas('account', fn ($acc) => $acc->where('code', '1150'));
+                                });
                             });
-                        });
-                });
+                    });
             })
             ->where(function (Builder $q) {
                 $q->when(
                     $this->activeStatementId,
-                    fn(Builder $q) => $q->whereHas('journalEntry', fn($inner) => $inner->where('employee_statement_id', $this->activeStatementId)),
-                    fn(Builder $q) => $q->whereHas('journalEntry', fn($inner) => $inner->whereHas('employeeStatement', fn($s) => $s->where('employee_id', $this->record->id)))
-                        ->orWhereHas('journalEntry', fn($inner) => $inner->where(function ($sourceQ) {
-                            $sourceQ->where(fn($sq) => $sq->where('source_type', EmployeeAdvance::class)->whereIn('source_id', $this->record->advances->pluck('id')))
-                                ->orWhere(fn($sq) => $sq->where('source_type', AdvanceRepayment::class)->whereIn('source_id', $this->record->advanceRepayments->pluck('id')))
-                                ->orWhere(fn($sq) => $sq->where('source_type', FarmExpense::class)->whereIn('source_id', \App\Models\FarmExpense::whereIn('advance_repayment_id', $this->record->advanceRepayments->pluck('id'))->pluck('id')))
-                                ->orWhere(fn($sq) => $sq->where('source_type', SalaryRecord::class)->where('employee_id', $this->record->id));
+                    fn (Builder $q) => $q->whereHas('journalEntry', fn ($inner) => $inner->where('employee_statement_id', $this->activeStatementId)),
+                    fn (Builder $q) => $q->whereHas('journalEntry', fn ($inner) => $inner->whereHas('employeeStatement', fn ($s) => $s->where('employee_id', $this->record->id)))
+                        ->orWhereHas('journalEntry', fn ($inner) => $inner->where(function ($sourceQ) {
+                            $sourceQ->where(fn ($sq) => $sq->where('source_type', EmployeeAdvance::class)->whereIn('source_id', $this->record->advances->pluck('id')))
+                                ->orWhere(fn ($sq) => $sq->where('source_type', AdvanceRepayment::class)->whereIn('source_id', $this->record->advanceRepayments->pluck('id')))
+                                ->orWhere(fn ($sq) => $sq->where('source_type', FarmExpense::class)->whereIn('source_id', FarmExpense::whereIn('advance_repayment_id', $this->record->advanceRepayments->pluck('id'))->pluck('id')))
+                                ->orWhere(fn ($sq) => $sq->where('source_type', SalaryRecord::class)->where('employee_id', $this->record->id));
                         }))
                 );
             })
@@ -177,7 +177,7 @@ class StatementOfAccount extends Page implements HasTable
 
         $journalLines = $query->get();
 
-        $entries = $journalLines->map(fn($line) => [
+        $entries = $journalLines->map(fn ($line) => [
             'date' => $line->je_date ? Carbon::parse($line->je_date)->format('Y-m-d') : '-',
             'description' => $line->description ?: $line->je_description ?? '-',
             'debit' => (float) $line->debit,
@@ -201,7 +201,7 @@ class StatementOfAccount extends Page implements HasTable
             $entries
         );
 
-        $filename = 'كشف حساب موظف - ' . $this->record->name . ' - ' . now()->format('Y-m-d') . '.pdf';
+        $filename = 'كشف حساب موظف - '.$this->record->name.' - '.now()->format('Y-m-d').'.pdf';
 
         $pdf->stream($filename);
     }

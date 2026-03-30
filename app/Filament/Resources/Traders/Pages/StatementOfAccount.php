@@ -95,7 +95,7 @@ class StatementOfAccount extends Page implements HasTable
                     ->label('سجل الكشوفات')
                     ->icon('heroicon-o-list-bullet')
                     ->color('gray')
-                    ->url(fn() => TraderResource::getUrl('statements', ['record' => $this->record])),
+                    ->url(fn () => TraderResource::getUrl('statements', ['record' => $this->record])),
 
                 Action::make('viewAllHistory')
                     ->label($this->activeStatementId ? 'عرض كل التاريخ' : 'عرض الكشف الحالي فقط')
@@ -126,9 +126,9 @@ class StatementOfAccount extends Page implements HasTable
             ->where('account_id', $this->record->account_id)
             ->when(
                 $this->activeStatementId,
-                fn(Builder $q) => $q->whereHas(
+                fn (Builder $q) => $q->whereHas(
                     'journalEntry',
-                    fn(Builder $inner) => $inner->where('trader_statement_id', $this->activeStatementId)
+                    fn (Builder $inner) => $inner->where('trader_statement_id', $this->activeStatementId)
                 )
             )
             ->join('journal_entries', 'journal_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -137,7 +137,7 @@ class StatementOfAccount extends Page implements HasTable
             ->orderBy('journal_entries.id')
             ->get();
 
-        $entries = $journalLines->map(fn($line) => [
+        $entries = $journalLines->map(fn ($line) => [
             'date' => $line->je_date ? Carbon::parse($line->je_date)->format('Y-m-d') : '-',
             'description' => $line->description ?: $line->je_description ?? '-',
             'debit' => (float) $line->debit,
@@ -161,7 +161,7 @@ class StatementOfAccount extends Page implements HasTable
             $entries
         );
 
-        $filename = 'كشف حساب تاجر - ' . $this->record->name . ' - ' . now()->format('Y-m-d') . '.pdf';
+        $filename = 'كشف حساب تاجر - '.$this->record->name.' - '.now()->format('Y-m-d').'.pdf';
 
         $pdf->stream($filename);
     }
@@ -181,9 +181,9 @@ class StatementOfAccount extends Page implements HasTable
                     ->where('account_id', $this->record->account_id)
                     ->when(
                         $this->activeStatementId,
-                        fn(Builder $q) => $q->whereHas(
+                        fn (Builder $q) => $q->whereHas(
                             'journalEntry',
-                            fn(Builder $inner) => $inner->where('trader_statement_id', $this->activeStatementId)
+                            fn (Builder $inner) => $inner->where('trader_statement_id', $this->activeStatementId)
                         )
                     )
                     ->with('journalEntry')
@@ -199,7 +199,7 @@ class StatementOfAccount extends Page implements HasTable
                 TextColumn::make('description')
                     ->label('البيان')
                     ->wrap()
-                    ->getStateUsing(fn(JournalLine $record) => $record->description ?: $record->journalEntry->description),
+                    ->getStateUsing(fn (JournalLine $record) => $record->description ?: $record->journalEntry->description),
                 TextColumn::make('debit')
                     ->label('مدين (عليه)')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
@@ -215,24 +215,24 @@ class StatementOfAccount extends Page implements HasTable
             ->filters([
                 SelectFilter::make('statement')
                     ->label('الكشف / الجلسة')
-                    ->options(fn() => TraderStatement::where('trader_id', $this->record->id)
+                    ->options(fn () => TraderStatement::where('trader_id', $this->record->id)
                         ->orderByDesc('opened_at')
                         ->get()
-                        ->mapWithKeys(fn($s) => [$s->id => ($s->title ? $s->title . ' | ' : '') . $s->opened_at->format('Y-m-d') . ' | ' . $s->status->getLabel()])
+                        ->mapWithKeys(fn ($s) => [$s->id => ($s->title ? $s->title.' | ' : '').$s->opened_at->format('Y-m-d').' | '.$s->status->getLabel()])
                         ->toArray())
-                    ->query(fn(Builder $query, array $data) => $data['value']
-                        ? $query->whereHas('journalEntry', fn($q) => $q->where('trader_statement_id', $data['value']))
+                    ->query(fn (Builder $query, array $data) => $data['value']
+                        ? $query->whereHas('journalEntry', fn ($q) => $q->where('trader_statement_id', $data['value']))
                         : $query),
                 DateRangeFilter::make('date')
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn(Builder $query, $date): Builder => $query->whereHas('journalEntry', fn($q) => $q->whereDate('date', '>=', Carbon::parse($date))),
+                                fn (Builder $query, $date): Builder => $query->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '>=', Carbon::parse($date))),
                             )
                             ->when(
                                 $data['date_to'],
-                                fn(Builder $query, $date): Builder => $query->whereHas('journalEntry', fn($q) => $q->whereDate('date', '<=', Carbon::parse($date))),
+                                fn (Builder $query, $date): Builder => $query->whereHas('journalEntry', fn ($q) => $q->whereDate('date', '<=', Carbon::parse($date))),
                             );
                     }),
             ]);

@@ -16,7 +16,7 @@ class EditEmployee extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل بيانات موظف: ' . $this->getRecord()->name;
+        return 'تعديل بيانات موظف: '.$this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -39,7 +39,7 @@ class EditEmployee extends EditRecord
                 ->label('كشف الحساب')
                 ->icon('heroicon-o-document-text')
                 ->color('info')
-                ->url(fn() => EmployeeResource::getUrl('statement', ['record' => $this->getRecord()])),
+                ->url(fn () => EmployeeResource::getUrl('statement', ['record' => $this->getRecord()])),
 
             ViewAction::make(),
             DeleteAction::make(),
