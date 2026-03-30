@@ -5,10 +5,11 @@ namespace App\Filament\Resources\SalaryRecords\Schemas;
 use App\Enums\PaymentMethod;
 use App\Enums\SalaryStatus;
 use App\Models\Employee;
-use App\Models\EmployeeDayOff;
 use App\Models\SalaryRecord;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -17,7 +18,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Operation;
 
 class SalaryRecordForm
 {
@@ -25,377 +25,168 @@ class SalaryRecordForm
     {
         return $schema
             ->components([
-                Section::make('بيانات الموظف والفترة')
+                Section::make('سجل المرتب')
                     ->schema([
                         Select::make('employee_id')
                             ->label('الموظف')
                             ->relationship('employee', 'name')
-                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->helperText('اختر الموظف الذي يتم إعداد كشف المرتب له')
                             ->live()
                             ->afterStateHydrated(function (Set $set, Get $get, string $operation) {
-                                if (! $get('employee_id')) {
-                                    return;
-                                }
-
-                                if ($operation === 'create') {
-                                    self::updateBasicFromPeriod($set, $get);
-                                } elseif ($operation === 'edit') {
-                                    $emp = Employee::find($get('employee_id'));
-                                    if ($emp) {
-                                        $set('em_basic_salary', number_format((float) $emp->basic_salary).' EGP');
-                                        $perDay = (float) $emp->basic_salary / 26;
-                                        $set('per_day_rate', round($perDay));
-                                    }
+                                if ($operation === 'create' && $get('employee_id')) {
+                                    self::updateDefaultsFromEmployee($set, $get);
                                 }
                             })
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old) {
-                                if ($state !== $old && $state) {
-                                    $employee = Employee::find($state);
-                                    if ($employee) {
-                                        $set('advances_deducted', $employee->total_outstanding_advances);
-                                    }
-                                }
-                                self::updateBasicFromPeriod($set, $get);
+                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                self::updateDefaultsFromEmployee($set, $get);
                             })
                             ->columnSpan(1),
 
-                        TextInput::make('em_basic_salary')
-                            ->label('الراتب الأساسي')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->placeholder('حدد موظف أولاً')
-                            ->columnSpan(1),
-                        DatePicker::make('pay_period_start')
-                            ->label('بداية الفترة')
+                        DatePicker::make('payment_date')
+                            ->label('التاريخ')
                             ->required()
-                            ->default(now()->startOfMonth())
+                            ->default(now())
                             ->displayFormat('Y-m-d')
                             ->native(false)
-                            ->helperText('تاريخ بداية فترة الإستحقاق')
-                            ->live(true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
-                            ->rule(function (Get $get) {
-                                return function (string $attribute, $value, \Closure $fail) use ($get): void {
-                                    $employeeId = (int) $get('employee_id');
-                                    $start = $get('pay_period_start');
-                                    $end = $get('pay_period_end');
-
-                                    if (! $employeeId || ! $start || ! $end) {
-                                        return;
-                                    }
-
-                                    $overlapCount = SalaryRecord::query()
-                                        ->where('employee_id', $employeeId)
-                                        ->where(function ($q) use ($start, $end) {
-                                            $q->whereBetween('pay_period_start', [$start, $end])
-                                                ->orWhereBetween('pay_period_end', [$start, $end])
-                                                ->orWhere(function ($qq) use ($start, $end) {
-                                                    $qq->where('pay_period_start', '<=', $start)
-                                                        ->where('pay_period_end', '>=', $end);
-                                                });
-                                        })
-                                        ->count();
-
-                                    if ($overlapCount > 0) {
-                                        $fail('يوجد سجل مرتب آخر لنفس الموظف يتداخل مع هذه الفترة.');
-                                    }
-                                };
-                            }, Operation::class === Operation::Create)
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state) {
+                                if ($state) {
+                                    $date = Carbon::parse($state);
+                                    $set('pay_period_start', $date->copy()->startOfMonth()->format('Y-m-d'));
+                                    $set('pay_period_end', $date->copy()->endOfMonth()->format('Y-m-d'));
+                                }
+                            })
                             ->columnSpan(1),
-                        DatePicker::make('pay_period_end')
-                            ->label('نهاية الفترة')
-                            ->required()
-                            ->default(now()->endOfMonth())
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->rule('after_or_equal:pay_period_start')
-                            ->helperText('تاريخ نهاية فترة الإستحقاق')
-                            ->live(true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
-                            ->rule(function (Get $get) {
-                                return function (string $attribute, $value, \Closure $fail) use ($get): void {
-                                    $employeeId = (int) $get('employee_id');
-                                    $start = $get('pay_period_start');
-                                    $end = $get('pay_period_end');
 
-                                    if (! $employeeId || ! $start || ! $end) {
-                                        return;
-                                    }
-
-                                    $overlapCount = SalaryRecord::query()
-                                        ->where('employee_id', $employeeId)
-                                        ->where(function ($q) use ($start, $end) {
-                                            $q->whereBetween('pay_period_start', [$start, $end])
-                                                ->orWhereBetween('pay_period_end', [$start, $end])
-                                                ->orWhere(function ($qq) use ($start, $end) {
-                                                    $qq->where('pay_period_start', '<=', $start)
-                                                        ->where('pay_period_end', '>=', $end);
-                                                });
-                                        })
-                                        ->count();
-
-                                    if ($overlapCount > 0) {
-                                        $fail('يوجد سجل مرتب آخر لنفس الموظف يتداخل مع هذه الفترة.');
-                                    }
-                                };
-                            }, Operation::class === Operation::Create)
-                            ->columnSpan(1),
-                        TextInput::make('unpaid_days')
-                            ->label('أيام غير مدفوعة')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(1)
-                            ->live(true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateBasicFromPeriod($set, $get))
-                            ->helperText('أيام يتم خصمها من الحساب (غياب/إجازة غير مدفوعة)')
-                            ->columnSpan(1),
-                        Textarea::make('days_off_details')
-                            ->label('تفاصيل أيام الغياب')
-                            ->rows(2)
-                            ->maxLength(500)
-                            ->placeholder('مثال: الخميس 5/3 - إجازة مرضية، الجمعة 6/3 - غياب')
-                            ->helperText('وصف اختياري لأيام الغياب أو الإجازات')
-                            ->columnSpan(1),
-                        TextInput::make('per_day_rate')
-                            ->label('قيمة اليوم')
-                            ->suffix(' EGP ')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->helperText('يُحسب تلقائياً = المرتب الشهري \ 26')
-                            ->columnSpan(1),
-                        TextInput::make('working_days')
-                            ->label('الأيام المحتسبة')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->helperText('عدد الأيام بين البداية والنهاية مطروحاً منها الأيام غير المدفوعة')
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                Section::make('التفاصيل المالية')
-                    ->schema([
                         TextInput::make('basic_salary')
-                            ->label('الراتب الأساسي')
+                            ->label('قيمة الراتب')
                             ->required()
                             ->numeric()
                             ->suffix(' EGP ')
                             ->minValue(0)
                             ->step(0.01)
                             ->live(true)
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->columnSpan(1),
 
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
-                            ->helperText('الراتب الأساسي قبل الإضافات والخصومات')
-                            ->columnSpan(1),
-                        TextInput::make('bonuses')
-                            ->label('المكافآت')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->suffix(' EGP ')
-                            ->live(true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
-                            ->helperText('أي مكافآت أو حوافز إضافية')
-                            ->columnSpan(1),
-                        TextInput::make('deductions')
-                            ->label('الخصومات')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->suffix(' EGP ')
-                            ->live(true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
-                            ->helperText('الخصومات: غياب، تأخير، جزاءات ...')
-                            ->columnSpan(1),
-                        TextInput::make('advances_deducted')
-                            ->label('السُلف المخصومة')
-                            ->numeric()
-                            ->default(function ($livewire) {
-                                if ($livewire instanceof RelationManager) {
-                                    $owner = $livewire->getOwnerRecord();
-                                    if ($owner instanceof Employee) {
-                                        return $owner->total_outstanding_advances;
+                        Radio::make('settle_advances')
+                            ->label('حالة السُلف')
+                            ->options([
+                                'full' => 'تسديد الراتب كاملاً (بدون خصم)',
+                                'deduct' => 'خصم من السُلف المفتوحة',
+                            ])
+                            ->default('full')
+                            ->dehydrated(false)
+                            ->live()
+                            ->afterStateHydrated(function (Set $set, Get $get) {
+                                if ((float) $get('advances_deducted') > 0) {
+                                    $set('settle_advances', 'deduct');
+                                }
+                            })
+                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                                if ($state === 'full') {
+                                    $set('advances_deducted', 0);
+                                } elseif ($state === 'deduct') {
+                                    $employeeId = $get('employee_id');
+                                    if ($employeeId) {
+                                        $employee = Employee::find($employeeId);
+                                        $openAdvances = $employee ? $employee->total_outstanding_advances : 0;
+                                        $salary = (float) $get('basic_salary');
+                                        $set('advances_deducted', min($openAdvances, $salary));
                                     }
                                 }
-
-                                return 0;
+                                self::updateNetSalary($set, $get);
                             })
+                            ->columnSpanFull(),
+
+                        TextInput::make('advances_deducted')
+                            ->label('مبلغ الخصم أو التسوية من السُلف')
+                            ->numeric()
+                            ->default(0)
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
+                            ->visible(fn(Get $get) => $get('settle_advances') === 'deduct')
                             ->live(true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
-                            ->helperText('مبالغ السُلف التي تم خصمها من مرتب هذا الشهر')
+                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->helperText(function (Get $get) {
+                                $employeeId = $get('employee_id');
+                                if (!$employeeId)
+                                    return null;
+                                $employee = Employee::find($employeeId);
+                                $total = $employee ? $employee->total_outstanding_advances : 0;
+                                return "إجمالي السُلف المتبقية على الموظف حالياً: " . number_format($total, 2) . " EGP";
+                            })
                             ->columnSpan(1),
+
                         TextInput::make('net_salary')
-                            ->label('صافي المرتب')
+                            ->label('الصافي (المبلغ المستحق للموظف)')
                             ->numeric()
-                            ->minValue(0)
-                            ->step(0.01)
                             ->suffix(' EGP ')
                             ->disabled()
                             ->dehydrated()
-                            ->live(true)
-                            ->helperText('يتم احتسابه تلقائياً: الأساسي + المكافآت - الخصومات - السُلف')
-                            ->afterStateHydrated(fn ($state, Set $set, Get $get) => self::updateNetSalary($set, $get))
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull()
-                    ->collapsible(),
-                Section::make('الدفع والمتابعة')
-                    ->schema([
-                        DatePicker::make('payment_date')
-                            ->label('تاريخ الدفع')
-                            ->displayFormat('Y-m-d')
-                            ->native(false)
-                            ->default(now())
-                            ->helperText('التاريخ المتوقع/الفعل للدفع')
-                            ->columnSpan(1),
-                        Select::make('payment_method')
-                            ->options(PaymentMethod::class)
-                            ->label('طريقة الدفع')
-                            ->searchable()
-                            ->helperText('كيف تم دفع المرتب؟')
-                            ->columnSpan(1),
-                        TextInput::make('payment_reference')
-                            ->label('رقم المرجع')
-                            ->maxLength(100)
-                            ->placeholder('رقم العملية البنكية أو المرجع الداخلي')
-                            ->helperText('يسهل تتبع عملية الدفع')
-                            ->columnSpan(1),
-                        Select::make('status')
-                            ->label('حالة الدفع')
-                            ->options(SalaryStatus::class)
-                            ->native(false)
                             ->required()
-                            ->default(SalaryStatus::PAID)
-                            ->helperText('الحالة الحالية لسجل المرتب')
+                            ->helperText('النقدية الفعلية التي سيتم صرفها بعد تسوية السُلف')
                             ->columnSpan(1),
+
                         Textarea::make('notes')
                             ->label('ملاحظات إضافية')
-                            ->rows(3)
+                            ->rows(2)
                             ->maxLength(1000)
-                            ->columnSpanFull()
-                            ->helperText('أي تفاصيل إضافية أو مرفقات متعلقة بالكشف'),
+                            ->columnSpanFull(),
+
+                        // Hidden core fields required by database
+                        Hidden::make('pay_period_start')
+                            ->default(now()->startOfMonth()->format('Y-m-d')),
+                        Hidden::make('pay_period_end')
+                            ->default(now()->endOfMonth()->format('Y-m-d')),
+                        Hidden::make('bonuses')->default(0),
+                        Hidden::make('deductions')->default(0),
+                        Hidden::make('unpaid_days')->default(0),
+                        Hidden::make('status')->default(SalaryStatus::PAID),
+                        Hidden::make('payment_method')->default(PaymentMethod::CASH),
                     ])
                     ->columns(2)
-                    ->columnSpanFull()
-                    ->collapsible(),
+                    ->columnSpanFull(),
             ]);
     }
 
-    protected static function updateBasicFromPeriod(Set $set, Get $get): void
+    protected static function updateDefaultsFromEmployee(Set $set, Get $get): void
     {
-        $employeeId = (int) $get('employee_id');
-
-        if (! $employeeId) {
+        $employeeId = $get('employee_id');
+        if (!$employeeId) {
+            $set('basic_salary', 0);
             return;
         }
 
         $employee = Employee::find($employeeId);
-        if (! $employee) {
-            return;
-        }
+        if ($employee) {
+            // Keep user input if modifying, but for create or first select, default to basic_salary
+            $set('basic_salary', (float) $employee->basic_salary ?: 0);
 
-        $set('em_basic_salary', $employee->basic_salary);
-
-        $start = $get('pay_period_start');
-        $end = $get('pay_period_end');
-
-        // Auto-fetch days off from the database if dates are set
-        if ($start && $end) {
-            $daysOff = EmployeeDayOff::query()
-                ->where('employee_id', $employeeId)
-                ->whereBetween('date', [$start, $end])
-                ->get();
-
-            if ($daysOff->isNotEmpty()) {
-                $count = $daysOff->count();
-                $details = $daysOff->map(fn ($d) => $d->date->format('m/d').($d->reason ? " ({$d->reason})" : ''))->implode('، ');
-
-                $set('unpaid_days', $count);
-                $set('days_off_details', $details);
+            if ($get('settle_advances') === 'deduct') {
+                $openAdvances = $employee->total_outstanding_advances ?? 0;
+                $salary = (float) $employee->basic_salary;
+                $set('advances_deducted', min($openAdvances, $salary));
             } else {
-                // Only clear if they were previously auto-filled or we want a fresh start
-                // Actually, let's just leave them as is if no records found to allow manual overrides
-                // OR clear them if we want strict syncing. Let's sync.
-                $set('unpaid_days', 0);
-                $set('days_off_details', null);
+                $set('advances_deducted', 0);
             }
         }
-
-        $unpaid = (int) ($get('unpaid_days') ?? 0);
-
-        if (! $start || ! $end) {
-            // If employee is selected but dates are incomplete, default basic to fixed monthly salary
-            $perDay = (float) $employee->basic_salary / 26;
-            $set('per_day_rate', round($perDay));
-            $set('working_days', null);
-            $set('basic_salary', (float) $employee->basic_salary);
-
-            self::updateNetSalary($set, $get);
-
-            return;
-        }
-
-        $set('em_basic_salary', $employee->basic_salary);
-        // 26-day month per business rule (4 days off)
-        $perDay = (float) $employee->basic_salary / 26;
-
-        $startDate = Carbon::parse($start)->startOfDay();
-        $endDate = Carbon::parse($end)->startOfDay();
-
-        // Ensure chronological order
-        if ($endDate->lt($startDate)) {
-            $set('per_day_rate', round($perDay));
-            $set('working_days', 0);
-            $set('basic_salary', 0);
-            self::updateNetSalary($set, $get);
-
-            return;
-        }
-
-        // Calculate actual calendar days worked
-        $totalWorking = $startDate->diffInDays($endDate) + 1;
-
-        // Subtract unpaid days and clamp
-        $totalWorking = max($totalWorking - $unpaid, 0);
-
-        // Round working days to 2 decimals for display
-        $workingForDisplay = round($totalWorking);
-        $basic = max(round($perDay * $totalWorking), 0);
-
-        $set('per_day_rate', round($perDay));
-        $set('working_days', $workingForDisplay);
-        $set('basic_salary', $basic);
-
         self::updateNetSalary($set, $get);
     }
 
     protected static function updateNetSalary(Set $set, Get $get): void
     {
         $basic = (float) $get('basic_salary');
-        $bonuses = (float) $get('bonuses');
-        $deductions = (float) $get('deductions');
         $advances = (float) $get('advances_deducted');
 
-        $netBeforeAdvances = $basic + $bonuses - $deductions;
+        $netBeforeCap = $basic - $advances;
 
-        // Cap advances to the available net salary so we don't go negative
-        if ($advances > $netBeforeAdvances && $netBeforeAdvances > 0) {
-            $advances = $netBeforeAdvances;
-            $set('advances_deducted', $advances);
-        }
-
-        $net = $netBeforeAdvances - $advances;
-
-        $set('net_salary', max(round($net), 0));
+        // Ensure we don't deduct more than the basic salary for the net calculation (optional business logic)
+        // If advances_deducted > basic, net would be negative
+        $set('net_salary', max(round($netBeforeCap, 2), 0));
     }
 }
