@@ -7,6 +7,7 @@ use App\Filament\Exports\PettyCashTransactionExporter;
 use App\Filament\Tables\Filters\DateRangeFilter;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportBulkAction;
@@ -42,32 +43,11 @@ class PettyCashTransactionsTable
                     ->label('النوع')
                     ->badge()
                     ->sortable(),
-                ActionableColumn::make('expenseCategory.name')
+                TextColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable()
-                    ->actionIcon(Heroicon::PencilSquare)
-                    ->actionIconColor('primary')
-                    ->clickableColumn()
-                    ->tapAction(
-                        Action::make('changeCategory')
-                            ->label('Change Category')
-                            ->schema([
-                                Select::make('expense_category_id')
-                                    ->label('Expense Category')
-                                    ->relationship('expenseCategory', 'name')
-                                    ->searchable()
-                                    ->preload()
-                                    ->required(),
-                            ])
-                            ->fillForm(fn ($record) => [
-                                'expense_category_id' => $record->expense_category_id,
-                            ])
-                            ->action(function ($record, array $data) {
-                                $record->update($data);
-                            })
-                    ),
+                    ->description(fn($record) => $record->expenseCategory->code === 'WORKER_SALARY' ? "{$record->employee->name}" : null)
+                    ->toggleable(),
 
                 TextColumn::make('amount')
                     ->label('المبلغ')
@@ -76,17 +56,17 @@ class PettyCashTransactionsTable
                     ->summarize([
                         Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn ($query) => $query->sum('amount'))
+                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
@@ -101,7 +81,7 @@ class PettyCashTransactionsTable
                 TextColumn::make('recordedBy.name')
                     ->label('سجل بواسطة')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime('Y-m-d H:i')
@@ -133,6 +113,8 @@ class PettyCashTransactionsTable
             ->defaultSort('date', 'desc')
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
+
                 // ReplicateAction::make()->label('استنساخ ')->requiresConfirmation(false),
 
             ])
