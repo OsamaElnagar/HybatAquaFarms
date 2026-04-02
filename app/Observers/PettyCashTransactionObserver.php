@@ -21,6 +21,14 @@ class PettyCashTransactionObserver
         // Cache the last used values for this user
         Cache::put('user_' . auth('web')->id() . '_last_petty_cash_date', $pettyCashTransaction->date);
     }
+
+
+    public function updated(PettyCashTransaction $pettyCashTransaction): void
+    {
+        $this->createEmployeeAdvance($pettyCashTransaction);
+    }
+
+
     public function createEmployeeAdvance(PettyCashTransaction $pettyCashTransaction): void
     {
         $pettyCashTransaction->load(['expenseCategory', 'employee']);
