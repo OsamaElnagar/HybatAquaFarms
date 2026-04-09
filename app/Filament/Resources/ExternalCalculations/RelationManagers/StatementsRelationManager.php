@@ -16,6 +16,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StatementsRelationManager extends RelationManager
 {
@@ -79,7 +80,7 @@ class StatementsRelationManager extends RelationManager
                     ->label('تصدير PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function (ExternalCalculationStatement $record) {
-                        $this->exportStatementPdf($record);
+                        return $this->exportStatementPdf($record);
                     }),
                 // EditAction::make(),
                 DeleteAction::make(),
@@ -92,7 +93,7 @@ class StatementsRelationManager extends RelationManager
             ->defaultSort('opened_at', 'desc');
     }
 
-    protected function exportStatementPdf(ExternalCalculationStatement $statement): void
+    protected function exportStatementPdf(ExternalCalculationStatement $statement): StreamedResponse
     {
         $ownerRecord = $this->getOwnerRecord();
 
@@ -128,6 +129,8 @@ class StatementsRelationManager extends RelationManager
 
         $filename = 'كشف حساب لحساب خارجي - '.$ownerRecord->name.' - '.now()->format('Y-m-d').'.pdf';
 
-        $pdf->stream($filename);
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, $filename);
     }
 }

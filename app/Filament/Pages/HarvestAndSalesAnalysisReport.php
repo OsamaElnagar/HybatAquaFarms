@@ -170,7 +170,7 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms, HasTable
                     ->label('PDF تصدير')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Table $table) {
-                        return app(PdfService::class)->generateReportPdf(
+                        $pdf = app(PdfService::class)->generateReportPdf(
                             'تقرير المبيعات',
                             ['التاريخ', 'رقم الطلب', 'التاجر', 'المزرعة', 'صافي المبلغ'],
                             $table->getQuery()->get()->map(fn ($record) => [
@@ -180,7 +180,11 @@ class HarvestAndSalesAnalysisReport extends Page implements HasForms, HasTable
                                 $record->harvestOperation?->batch?->farm?->name ?? '-',
                                 number_format($record->net_amount),
                             ])->toArray()
-                        )->stream('sales-report.pdf');
+                        );
+
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->output();
+                        }, 'sales-report.pdf');
                     }),
             ]);
     }

@@ -27,6 +27,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StatementOfAccount extends Page implements HasTable
 {
@@ -86,7 +87,7 @@ class StatementOfAccount extends Page implements HasTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('info')
                     ->action(function () {
-                        $this->exportStatementPdf();
+                        return $this->exportStatementPdf();
                     }),
 
                 OpenNewStatementAction::make(),
@@ -116,7 +117,7 @@ class StatementOfAccount extends Page implements HasTable
         ];
     }
 
-    protected function exportStatementPdf(): void
+    protected function exportStatementPdf(): StreamedResponse
     {
         $statement = $this->activeStatementId
             ? TraderStatement::with('harvestOperations')->find($this->activeStatementId)
@@ -163,7 +164,9 @@ class StatementOfAccount extends Page implements HasTable
 
         $filename = 'كشف حساب تاجر - '.$this->record->name.' - '.now()->format('Y-m-d').'.pdf';
 
-        $pdf->stream($filename);
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, $filename);
     }
 
     protected function getHeaderWidgets(): array

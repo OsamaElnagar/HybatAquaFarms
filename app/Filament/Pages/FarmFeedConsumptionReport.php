@@ -139,7 +139,7 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
                     ->label('PDF تصدير')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Table $table) {
-                        return app(PdfService::class)->generateReportPdf(
+                        $pdf = app(PdfService::class)->generateReportPdf(
                             'تقرير استهلاك الأعلاف',
                             ['التاريخ', 'المزرعة', 'الدورة', 'نوع العلف', 'الكمية (كجم)'],
                             $table->getQuery()->get()->map(fn ($record) => [
@@ -149,7 +149,11 @@ class FarmFeedConsumptionReport extends Page implements HasForms, HasTable
                                 $record->feedItem?->name ?? '-',
                                 number_format($record->quantity),
                             ])->toArray()
-                        )->stream('feed-consumption-report.pdf');
+                        );
+
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->output();
+                        }, 'feed-consumption-report.pdf');
                     }),
             ]);
     }

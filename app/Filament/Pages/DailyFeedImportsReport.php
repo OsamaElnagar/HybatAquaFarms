@@ -170,7 +170,7 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
                     ->label('PDF تصدير')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Table $table) {
-                        return app(PdfService::class)->generateReportPdf(
+                        $pdf = app(PdfService::class)->generateReportPdf(
                             'تقرير واردات الأعلاف',
                             ['التاريخ', 'المصنع', 'الصنف', 'المخزن', 'الكمية (كجم)'],
                             $table->getQuery()->get()->map(fn ($record) => [
@@ -180,7 +180,11 @@ class DailyFeedImportsReport extends Page implements HasForms, HasTable
                                 $record->toWarehouse?->name ?? '-',
                                 number_format($record->quantity),
                             ])->toArray()
-                        )->stream('feed-imports-report.pdf');
+                        );
+
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->output();
+                        }, 'feed-imports-report.pdf');
                     }),
             ]);
     }
