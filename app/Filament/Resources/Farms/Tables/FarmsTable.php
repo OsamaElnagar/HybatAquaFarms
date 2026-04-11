@@ -4,10 +4,10 @@ namespace App\Filament\Resources\Farms\Tables;
 
 use App\Enums\FarmStatus;
 use App\Filament\Exports\FarmExporter;
+use App\Filament\Resources\Farms\Actions\FarmStatsAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -102,6 +102,7 @@ class FarmsTable
             ])
             ->recordActions([
                 ViewAction::make()->label('عرض'),
+                FarmStatsAction::make(),
                 EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([

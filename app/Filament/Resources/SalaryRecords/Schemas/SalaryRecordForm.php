@@ -5,7 +5,6 @@ namespace App\Filament\Resources\SalaryRecords\Schemas;
 use App\Enums\PaymentMethod;
 use App\Enums\SalaryStatus;
 use App\Models\Employee;
-use App\Models\SalaryRecord;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -30,7 +29,7 @@ class SalaryRecordForm
                         Select::make('employee_id')
                             ->label('الموظف')
                             ->relationship('employee', 'name')
-                            ->default(fn($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
+                            ->default(fn ($livewire) => $livewire instanceof RelationManager ? $livewire->getOwnerRecord()->getKey() : null)
                             ->searchable()
                             ->preload()
                             ->required()
@@ -69,7 +68,7 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(0.01)
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->columnSpan(1),
 
                         Radio::make('settle_advances')
@@ -109,16 +108,18 @@ class SalaryRecordForm
                             ->minValue(0)
                             ->step(0.01)
                             ->suffix(' EGP ')
-                            ->visible(fn(Get $get) => $get('settle_advances') === 'deduct')
+                            ->visible(fn (Get $get) => $get('settle_advances') === 'deduct')
                             ->live(true)
-                            ->afterStateUpdated(fn(Set $set, Get $get) => self::updateNetSalary($set, $get))
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNetSalary($set, $get))
                             ->helperText(function (Get $get) {
                                 $employeeId = $get('employee_id');
-                                if (!$employeeId)
+                                if (! $employeeId) {
                                     return null;
+                                }
                                 $employee = Employee::find($employeeId);
                                 $total = $employee ? $employee->total_outstanding_advances : 0;
-                                return "إجمالي السُلف المتبقية على الموظف حالياً: " . number_format($total, 2) . " EGP";
+
+                                return 'إجمالي السُلف المتبقية على الموظف حالياً: '.number_format($total, 2).' EGP';
                             })
                             ->columnSpan(1),
 
@@ -157,8 +158,9 @@ class SalaryRecordForm
     protected static function updateDefaultsFromEmployee(Set $set, Get $get): void
     {
         $employeeId = $get('employee_id');
-        if (!$employeeId) {
+        if (! $employeeId) {
             $set('basic_salary', 0);
+
             return;
         }
 

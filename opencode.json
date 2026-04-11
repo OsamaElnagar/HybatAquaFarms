@@ -10,5 +10,6 @@
                 "boost:mcp"
             ]
         }
-    }
+    },
+    "plugin": ["@warp-dot-dev/opencode-warp"]
 }

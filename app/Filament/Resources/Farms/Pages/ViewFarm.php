@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Farms\Pages;
 
+use App\Filament\Resources\Farms\Actions\FarmStatsAction;
 use App\Filament\Resources\Farms\FarmResource;
 use App\Filament\Resources\Farms\Infolists\FarmInfolist;
 use App\Filament\Resources\Farms\Widgets\FeedConsumptionWidget;
@@ -31,6 +32,7 @@ class ViewFarm extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            FarmStatsAction::make(),
             EditAction::make(),
         ];
     }

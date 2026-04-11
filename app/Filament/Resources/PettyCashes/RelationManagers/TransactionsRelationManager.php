@@ -56,27 +56,27 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
-                    ->description(fn($record) => $record->expenseCategory->code === 'WORKER_SALARY' ? "{$record->employee->name}" : null)
+                    ->description(fn ($record) => $record->expenseCategory->code === 'WORKER_SALARY' ? "{$record->employee->name}" : null)
                     ->toggleable(),
                 TextColumn::make('amount')
                     ->label('المبلغ')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
-                    ->color(fn($record) => $record->direction === PettyTransacionType::OUT ? 'danger' : 'success')
+                    ->color(fn ($record) => $record->direction === PettyTransacionType::OUT ? 'danger' : 'success')
                     ->sortable()
                     ->summarize([
                         Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')

@@ -43,8 +43,26 @@ class PdfService
             'entries' => $entries,
             'generatedAt' => now()->format('Y-m-d h:i A'),
             'storeName' => config('app.name'),
+        ]);
+    }
+
+    public function generateFarmStatsPdf(
+        string $farmName,
+        array $stats,
+        array $filters
+    ): LaravelMpdf {
+        return PDF::loadView('pdf.farm-stats', [
+            'farmName' => $farmName,
+            'stats' => $stats,
+            'filters' => $filters,
+            'generatedAt' => now()->format('Y-m-d h:i A'),
+            'storeName' => config('app.name'),
         ], [], [
-            'title' => "كشف حساب - {$entityName}",
+            'title' => "تقرير إحصائيات المزرعة - {$farmName}",
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 10,
+            'margin_right' => 10,
         ]);
     }
 }

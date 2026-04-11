@@ -7,6 +7,7 @@ use App\Enums\FeedMovementType;
 use App\Filament\Resources\FeedWarehouses\FeedWarehouseResource;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -49,8 +50,8 @@ class FeedMovementForm
                             ->relationship('driver', 'name')
                             ->searchable()
                             ->preload()
-                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
-                            ->helperText('السائق الذي قام بتسليم العلف للحركات الواردة')
+                            ->visible(fn (Get $get) => in_array($get('movement_type'), [FeedMovementType::In, FeedMovementType::Sale]))
+                            ->helperText('السائق الذي قام بتسليم/نقل العلف')
                             ->columnSpan(1),
                         Select::make('feed_item_id')
                             ->label('صنف العلف')
@@ -87,6 +88,30 @@ class FeedMovementForm
                             ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::In)
                             ->helperText('تكلفة الشحنة الواردة بالكامل')
                             ->columnSpan(1),
+                        TextInput::make('buyer_name')
+                            ->label('اسم المشتري')
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::Sale)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::Sale)
+                            ->helperText('اسم المشتري أو العميل')
+                            ->columnSpan(1),
+                        TextInput::make('sale_price')
+                            ->label('سعر البيع')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->suffix('EGP')
+                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::Sale)
+                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::Sale)
+                            ->helperText('سعر البيع الإجمالي للشحنة')
+                            ->columnSpan(1),
+                        Textarea::make('description')
+                            ->label('الوصف')
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->helperText('أي ملاحظات إضافية حول الحركة')
+                            ->columnSpanFull(),
+                        Hidden::make('recorded_by')
+                            ->default(fn () => Auth::id()),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -105,9 +130,9 @@ class FeedMovementForm
                                     ->visible(fn ($state) => filled($state))
                                     ->tooltip('عرض المستودع')
                             )
-                            ->visible(fn (Get $get) => $get('movement_type') === FeedMovementType::Transfer)
-                            ->required(fn (Get $get) => $get('movement_type') === FeedMovementType::Transfer)
-                            ->helperText('مطلوب للحركات النقل (Transfer)')
+                            ->visible(fn (Get $get) => in_array($get('movement_type'), [FeedMovementType::Transfer, FeedMovementType::Sale]))
+                            ->required(fn (Get $get) => in_array($get('movement_type'), [FeedMovementType::Transfer, FeedMovementType::Sale]))
+                            ->helperText('مطلوب للحركات النقل (Transfer) والمبيعات (Sale)')
                             ->columnSpan(1),
                         Select::make('to_warehouse_id')
                             ->label('إلى المستودع')
@@ -121,31 +146,10 @@ class FeedMovementForm
                                     ->visible(fn ($state) => filled($state))
                                     ->tooltip('عرض المستودع')
                             )
-                            ->required(fn (Get $get) => $get('movement_type') !== FeedMovementType::Out)
+                            ->hidden(fn (Get $get) => in_array($get('movement_type'), [FeedMovementType::Sale]))
+                            ->required(fn (Get $get) => in_array($get('movement_type'), [FeedMovementType::In, FeedMovementType::Transfer]))
                             ->helperText('مطلوب للحركات الواردة (In) والنقل (Transfer)')
                             ->columnSpan(1),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull()
-                    ->collapsible(),
-
-                Section::make('معلومات إضافية')
-                    ->schema([
-
-                        Select::make('recorded_by')
-                            ->label('سجل بواسطة')
-                            ->relationship('recordedBy', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->default(fn () => Auth::id())
-                            ->helperText('المستخدم الذي قام بتسجيل الحركة')
-                            ->columnSpan(1),
-                        Textarea::make('description')
-                            ->label('الوصف')
-                            ->rows(3)
-                            ->maxLength(500)
-                            ->helperText('أي ملاحظات إضافية حول الحركة')
-                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull()

@@ -25,6 +25,7 @@ class FeedMovementsTable
                     ->label('نوع الحركة')
                     ->badge()
                     ->searchable()
+                    ->description(fn ($record) => $record->movement_type === FeedMovementType::Sale ? $record->buyer_name : null)
                     ->sortable(),
                 TextColumn::make('feedItem.name')
                     ->label('صنف العلف')
@@ -40,6 +41,7 @@ class FeedMovementsTable
                 TextColumn::make('toWarehouse.name')
                     ->label('إلى المستودع')
                     ->searchable()
+                    ->placeholder(fn ($record) => $record->movement_type === FeedMovementType::Sale ? 'بيع ل '.$record->buyer_name : null)
                     ->sortable()
                     ->url(fn ($record) => $record->to_warehouse_id ? FeedWarehouseResource::getUrl('edit', ['record' => $record->to_warehouse_id]) : null)
                     ->color(fn ($record) => $record->to_warehouse_id ? 'primary' : null)
@@ -52,22 +54,29 @@ class FeedMovementsTable
                     ->label('الكمية')
                     ->numeric(decimalPlaces: 0, locale: 'en')
                     ->suffix(fn ($record) => ' '.($record->feedItem?->unit_of_measure ?? ''))
-                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0))
+                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0)->label('مجموع الكمية'))
                     ->sortable(),
 
                 TextColumn::make('total_cost')
                     ->label('التكلفة')
                     ->numeric(decimalPlaces: 0, locale: 'en')
-                    ->suffix('EGP')
-                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0))
+                    ->suffix(' EGP')
+                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0)->label('اجمالى التكلفة')->suffix('  EGP'))
                     ->sortable(),
-                TextColumn::make('factory.name')
-                    ->label('المصنع')
+                // ->visible(fn($record) => $record->movement_type === FeedMovementType::In),
+                TextColumn::make('buyer_name')
+                    ->label('المشتري')
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('sale_price')
+                    ->label('سعر الشحنة')
+                    ->numeric(decimalPlaces: 0, locale: 'en')
+                    ->suffix(' EGP')
+                    ->summarize(Sum::make()->numeric(locale: 'en', decimalPlaces: 0)->label('اجمالى البيع')->suffix(' EGP'))
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('recordedBy.name')
-                    ->label('سجل بواسطة')
+                TextColumn::make('factory.name')
+                    ->label('المصنع')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -75,6 +84,11 @@ class FeedMovementsTable
                     ->label('الوصف')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('recordedBy.name')
+                    ->label('سجل بواسطة')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()

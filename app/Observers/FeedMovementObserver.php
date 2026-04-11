@@ -56,7 +56,36 @@ class FeedMovementObserver
             FeedMovementType::In => $this->handleInMovement($movement),
             FeedMovementType::Out => $this->handleOutMovement($movement),
             FeedMovementType::Transfer => $this->handleTransferMovement($movement),
+            FeedMovementType::Sale => $this->handleSaleMovement($movement),
         };
+    }
+
+    protected function handleSaleMovement(FeedMovement $movement): void
+    {
+        if (! $movement->from_warehouse_id) {
+            return;
+        }
+
+        $stock = FeedStock::where('feed_warehouse_id', $movement->from_warehouse_id)
+            ->where('feed_item_id', $movement->feed_item_id)
+            ->first();
+
+        if (! $stock || (float) $stock->quantity_in_stock < (float) $movement->quantity) {
+            throw new \Exception('Insufficient stock for feed sale');
+        }
+
+        $quantity = (float) $movement->quantity;
+        $averageCost = (float) $stock->average_cost;
+
+        $currentQuantity = (float) $stock->quantity_in_stock;
+        $currentValue = (float) $stock->total_value;
+        $newQuantity = $currentQuantity - $quantity;
+        $newValue = $currentValue - ($quantity * $averageCost);
+
+        $stock->update([
+            'quantity_in_stock' => max(0, $newQuantity),
+            'total_value' => max(0, $newValue),
+        ]);
     }
 
     protected function handleInMovement(FeedMovement $movement): void
@@ -213,6 +242,7 @@ class FeedMovementObserver
             FeedMovementType::In => FeedMovementType::Out,
             FeedMovementType::Out => FeedMovementType::In,
             FeedMovementType::Transfer => FeedMovementType::Transfer,
+            FeedMovementType::Sale => FeedMovementType::In,
         };
         $reversalMovement->feed_item_id = $movement->feed_item_id;
         // Swap warehouses to reverse the movement

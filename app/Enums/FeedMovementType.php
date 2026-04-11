@@ -11,6 +11,7 @@ enum FeedMovementType: string implements HasColor, HasIcon, HasLabel
     case In = 'in';
     case Out = 'out';
     case Transfer = 'transfer';
+    case Sale = 'sale';
 
     public function getLabel(): ?string
     {
@@ -18,6 +19,7 @@ enum FeedMovementType: string implements HasColor, HasIcon, HasLabel
             self::In => 'وارد',
             self::Out => 'صادر',
             self::Transfer => 'نقل',
+            self::Sale => 'بيع',
         };
     }
 
@@ -27,6 +29,7 @@ enum FeedMovementType: string implements HasColor, HasIcon, HasLabel
             self::In => 'success',
             self::Out => 'warning',
             self::Transfer => 'primary',
+            self::Sale => 'info',
         };
     }
 
@@ -36,6 +39,7 @@ enum FeedMovementType: string implements HasColor, HasIcon, HasLabel
             self::In => 'heroicon-o-arrow-down-circle',
             self::Out => 'heroicon-o-arrow-up-circle',
             self::Transfer => 'heroicon-o-arrow-path',
+            self::Sale => 'heroicon-o-currency-dollar',
         };
     }
 }

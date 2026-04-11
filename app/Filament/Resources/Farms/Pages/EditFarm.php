@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Farms\Pages;
 
+use App\Filament\Resources\Farms\Actions\FarmStatsAction;
 use App\Filament\Resources\Farms\FarmResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -29,6 +30,7 @@ class EditFarm extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            FarmStatsAction::make(),
             DeleteAction::make(),
         ];
     }

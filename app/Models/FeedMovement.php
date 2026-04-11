@@ -26,6 +26,8 @@ class FeedMovement extends Model
         'total_cost',
         'factory_id',
         'driver_id',
+        'buyer_name',
+        'sale_price',
         'description',
         'recorded_by',
     ];
@@ -36,6 +38,7 @@ class FeedMovement extends Model
             'date' => 'date',
             'quantity' => 'decimal:3',
             'total_cost' => 'decimal:2',
+            'sale_price' => 'decimal:2',
             'movement_type' => FeedMovementType::class,
         ];
     }

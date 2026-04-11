@@ -5,21 +5,17 @@ namespace App\Filament\Resources\PettyCashTransactions\Tables;
 use App\Enums\PettyTransacionType;
 use App\Filament\Exports\PettyCashTransactionExporter;
 use App\Filament\Tables\Filters\DateRangeFilter;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ReplicateAction;
-use Filament\Forms\Components\Select;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
-use Shreejan\ActionableColumn\Tables\Columns\ActionableColumn;
 
 class PettyCashTransactionsTable
 {
@@ -46,7 +42,7 @@ class PettyCashTransactionsTable
                 TextColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
-                    ->description(fn($record) => $record->expenseCategory->code === 'WORKER_SALARY' ? "{$record->employee->name}" : null)
+                    ->description(fn ($record) => $record->expenseCategory->code === 'WORKER_SALARY' ? "{$record->employee->name}" : null)
                     ->toggleable(),
 
                 TextColumn::make('amount')
@@ -56,17 +52,17 @@ class PettyCashTransactionsTable
                     ->summarize([
                         Summarizer::make()
                             ->label('المقبوضات (قبض)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::IN))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::IN))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('المدفوعات (صرف)')
-                            ->query(fn($query) => $query->where('direction', PettyTransacionType::OUT))
-                            ->using(fn($query) => $query->sum('amount'))
+                            ->query(fn ($query) => $query->where('direction', PettyTransacionType::OUT))
+                            ->using(fn ($query) => $query->sum('amount'))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                         Summarizer::make()
                             ->label('صافي الرصيد')
-                            ->using(fn($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
+                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN direction = 'in' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('description')
