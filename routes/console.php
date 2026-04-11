@@ -41,3 +41,5 @@ Schedule::command('backup:run')->dailyAt('19:21')
         ->success()
         ->icon('heroicon-o-check-circle')
         ->sendToDatabase(User::all()));
+
+Schedule::command('reports:cleanup')->dailyAt('03:00');
