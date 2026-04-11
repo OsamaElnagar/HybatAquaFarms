@@ -24,11 +24,11 @@ test('feed purchase is posted to the factory-specific account', function () {
         'code' => 'TEST-FAC-01',
         'name' => 'Specific Factory Account',
     ]);
-    
+
     $factory = Factory::factory()->create([
         'account_id' => $account->id,
     ]);
-    
+
     $warehouse = FeedWarehouse::factory()->create();
     $feedItem = FeedItem::factory()->create();
 
@@ -58,7 +58,7 @@ test('factory payment is posted to the factory-specific account', function () {
         'code' => 'TEST-FAC-02',
         'name' => 'Specific Factory Account 2',
     ]);
-    
+
     $factory = Factory::factory()->create([
         'account_id' => $account->id,
     ]);
@@ -73,14 +73,14 @@ test('factory payment is posted to the factory-specific account', function () {
     // 3. Assert: Check if a journal line was created with the factory's account
     $lines = JournalLine::all();
     if ($lines->isEmpty()) {
-         // dump('No journal lines created at all');
+        // dump('No journal lines created at all');
     }
 
     $line = JournalLine::where('account_id', $account->id)
         ->where('debit', 2000)
         ->first();
 
-    if (!$line) {
+    if (! $line) {
         // dump('Journal lines found:', JournalLine::with('journalEntry')->get()->map(fn($l) => ['acc' => $l->account_id, 'deb' => $l->debit, 'src' => $l->journalEntry->source_type])->toArray());
     }
 

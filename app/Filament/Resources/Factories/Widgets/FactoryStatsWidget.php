@@ -33,25 +33,25 @@ class FactoryStatsWidget extends BaseWidget
         $outstandingPayable = $factory->outstanding_balance;
 
         return [
-            Stat::make('إجمالي المشتريات', number_format($totalPurchases).' EGP')
+            Stat::make('إجمالي مشترياتنا', number_format($totalPurchases).' EGP')
                 ->description('إجمالي كل المشتريات المسجلة من المصنع')
                 ->color('primary')
                 ->icon('heroicon-o-shopping-cart'),
 
-            Stat::make($outstandingPayable >= 0 ? 'المستحقات (للمصنع)' : 'رصيد دائن (لنا)', number_format(abs($outstandingPayable)).' EGP')
-                ->description($outstandingPayable >= 0 ? 'متبقى للمصنع علينا' : 'دفعنا أكبر من المشتريات')
-                ->color($outstandingPayable >= 0 ? 'danger' : 'success')
-                ->icon('heroicon-o-clock'),
-
-            Stat::make('إجمالي المدفوعات', number_format($totalPayments).' EGP')
+            Stat::make('إجمالي المدفوعات للمصنع', number_format($totalPayments).' EGP')
                 ->description('إجمالي المبالغ المصروفة للمصنع')
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make('الحالة', $outstandingPayable > 0 ? 'دائن' : ($outstandingPayable < 0 ? 'مدين (له رصيد)' : 'متوازن'))
-                ->description($outstandingPayable > 0 ? 'المصنع يطالبنا بسداد المبلغ' : ($outstandingPayable < 0 ? 'المصنع استلم أكثر من الفواتير' : 'لا توجد مديونية'))
-                ->color($outstandingPayable > 0 ? 'danger' : ($outstandingPayable < 0 ? 'success' : 'success'))
-                ->icon($outstandingPayable > 0 ? 'heroicon-o-arrow-trending-down' : 'heroicon-o-check-circle'),
+            Stat::make($outstandingPayable >= 0 ? 'رصيد دائن (لنا)' : 'المستحقات (للمصنع)', number_format(abs($outstandingPayable)).' EGP')
+                ->description($outstandingPayable >= 0 ? 'دفعنا أكبر من المشتريات' : 'متبقى للمصنع علينا')
+                ->color($outstandingPayable >= 0 ? 'danger' : 'success')
+                ->icon('heroicon-o-clock'),
+
+            // Stat::make('الحالة', $outstandingPayable > 0 ? 'دائن' : ($outstandingPayable < 0 ? 'مدين (له رصيد)' : 'متوازن'))
+            //     ->description($outstandingPayable > 0 ? 'المصنع يطالبنا بسداد المبلغ' : ($outstandingPayable < 0 ? 'المصنع استلم أكثر من الفواتير' : 'لا توجد مديونية'))
+            //     ->color($outstandingPayable > 0 ? 'danger' : ($outstandingPayable < 0 ? 'success' : 'success'))
+            //     ->icon($outstandingPayable > 0 ? 'heroicon-o-arrow-trending-down' : 'heroicon-o-check-circle'),
         ];
     }
 }

@@ -51,6 +51,7 @@ class FixFactoryJournalAccounts extends Command
                 if (! $factoryAccountId) {
                     $this->warn("Factory {$movement->factory->name} has no account_id. Skipping entry #{$entry->id}");
                     $errors++;
+
                     continue;
                 }
 
@@ -83,6 +84,7 @@ class FixFactoryJournalAccounts extends Command
                 if (! $factoryAccountId) {
                     $this->warn("Factory {$payment->factory->name} has no account_id. Skipping payment entry #{$entry->id}");
                     $errors++;
+
                     continue;
                 }
 
