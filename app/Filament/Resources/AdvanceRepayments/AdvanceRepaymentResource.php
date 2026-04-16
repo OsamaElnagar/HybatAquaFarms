@@ -55,7 +55,7 @@ class AdvanceRepaymentResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return 'سداد سلفة - '.$record->payment_date->format('Y-m-d').' - '.$record->employeeAdvance->employee->name;
+        return 'سداد سلفة - '.$record->payment_date?->format('Y-m-d').' - '.($record->employeeAdvance?->employee?->name ?? 'N/A');
     }
 
     public static function getGlobalSearchResultActions(Model $record): array

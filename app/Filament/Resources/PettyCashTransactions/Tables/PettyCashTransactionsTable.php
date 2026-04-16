@@ -42,7 +42,7 @@ class PettyCashTransactionsTable
                 TextColumn::make('expenseCategory.name')
                     ->label('نوع المصروف')
                     ->sortable()
-                    ->description(fn ($record) => $record->expenseCategory->code === 'WORKER_SALARY' ? "{$record->employee->name}" : null)
+                    ->description(fn ($record) => $record->expenseCategory?->code === 'WORKER_SALARY' ? "{$record->employee?->name}" : null)
                     ->toggleable(),
 
                 TextColumn::make('amount')
