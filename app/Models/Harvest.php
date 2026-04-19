@@ -12,6 +12,34 @@ class Harvest extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'harvest_number',
+        'harvest_operation_id',
+        'harvest_date',
+        'shift',
+        'status',
+        'notes',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'harvest_date' => 'date',
+            'status' => HarvestStatus::class,
+        ];
+    }
+
+    /**
+     * Generate unique harvest number
+     */
+    public static function generateHarvestNumber(): string
+    {
+        $lastHarvest = static::latest('id')->first();
+        $number = $lastHarvest ? ((int) substr($lastHarvest->harvest_number, 2)) + 1 : 1;
+
+        return 'H-'.str_pad($number, 5, '0', STR_PAD_LEFT);
+    }
+
     protected static function booted()
     {
         static::creating(function ($model) {
@@ -39,34 +67,6 @@ class Harvest extends Model
                 throw new \Exception('لا يمكن حذف حصاد دورة مقفلة');
             }
         });
-    }
-
-    /**
-     * Generate unique harvest number
-     */
-    public static function generateHarvestNumber(): string
-    {
-        $lastHarvest = static::latest('id')->first();
-        $number = $lastHarvest ? ((int) substr($lastHarvest->harvest_number, 2)) + 1 : 1;
-
-        return 'H-'.str_pad($number, 5, '0', STR_PAD_LEFT);
-    }
-
-    protected $fillable = [
-        'harvest_number',
-        'harvest_operation_id',
-        'harvest_date',
-        'shift',
-        'status',
-        'notes',
-    ];
-
-    protected function casts(): array
-    {
-        return [
-            'harvest_date' => 'date',
-            'status' => HarvestStatus::class,
-        ];
     }
 
     // Relationships

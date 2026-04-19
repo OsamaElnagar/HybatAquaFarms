@@ -43,4 +43,9 @@ class Driver extends Model
     {
         return $this->hasMany(FeedMovement::class);
     }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }

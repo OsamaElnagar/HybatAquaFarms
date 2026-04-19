@@ -18,7 +18,7 @@ class PettyCashTransactionObserver
         $this->syncEmployeeAdvance($pettyCashTransaction);
 
         // Cache the last used values for this user
-        Cache::put('user_' . auth('web')->id() . '_last_petty_cash_date', $pettyCashTransaction->date);
+        Cache::put('user_'.auth('web')->id().'_last_petty_cash_date', $pettyCashTransaction->date);
     }
 
     public function updated(PettyCashTransaction $pettyCashTransaction): void
@@ -28,7 +28,7 @@ class PettyCashTransactionObserver
 
     public function deleted(PettyCashTransaction $pettyCashTransaction): void
     {
-        $reason = 'سلفة من عهدة (تلقائي) - معاملة رقم #' . $pettyCashTransaction->id;
+        $reason = 'سلفة من عهدة (تلقائي) - معاملة رقم #'.$pettyCashTransaction->id;
         EmployeeAdvance::where('reason', $reason)->delete();
     }
 
@@ -36,7 +36,7 @@ class PettyCashTransactionObserver
     {
         $pettyCashTransaction->load(['expenseCategory', 'employee']);
 
-        $reason = 'سلفة من عهدة (تلقائي) - معاملة رقم #' . $pettyCashTransaction->id . ' - ' . $pettyCashTransaction->pettyCash->name;
+        $reason = 'سلفة من عهدة (تلقائي) - معاملة رقم #'.$pettyCashTransaction->id.' - '.$pettyCashTransaction->pettyCash->name;
         $shouldHaveAdvance = $pettyCashTransaction->expenseCategory?->code === 'WORKER_SALARY' && $pettyCashTransaction->employee_id;
 
         if ($shouldHaveAdvance) {
@@ -59,7 +59,7 @@ class PettyCashTransactionObserver
             if ($advance->wasRecentlyCreated) {
                 Notification::make()
                     ->title('تم إنشاء سلفة تلقائياً')
-                    ->body("تم تسجيل سلفة للموظف {$pettyCashTransaction->employee->name} بقيمة " . number_format($advance->amount) . ' EGP')
+                    ->body("تم تسجيل سلفة للموظف {$pettyCashTransaction->employee->name} بقيمة ".number_format($advance->amount).' EGP')
                     ->success()
                     ->actions([
                         Action::make('view')

@@ -2,22 +2,13 @@
 
 namespace App\Filament\Resources\HarvestOperations\RelationManagers;
 
-use Filament\Actions\AssociateAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\EditAction;
+use App\Filament\Resources\HarvestOperations\Tables\OrdersTable;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -65,70 +56,6 @@ class OrdersRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return $table
-            ->recordTitleAttribute('code')
-            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('items')->withSum('items', 'quantity')->withSum('items', 'total_weight'))
-            ->columns([
-                TextColumn::make('code')
-                    ->label('الكود')
-                    ->searchable(),
-                TextColumn::make('harvest.harvest_number')
-                    ->label('رقم الحصاد')
-                    ->searchable(),
-                TextColumn::make('trader.name')
-                    ->label('التاجر')
-                    ->searchable(),
-                TextColumn::make('driver.name')
-                    ->label('السائق')
-                    ->searchable(),
-                TextColumn::make('date')
-                    ->label('التاريخ')
-                    ->date('Y-m-d')
-                    ->sortable(),
-                TextColumn::make('items_count')
-                    ->label('عدد الأصناف')
-                    ->numeric(locale: 'en')
-                    ->summarize(Sum::make()->numeric(locale: 'en'))
-                    ->sortable(),
-                TextColumn::make('items_sum_quantity')
-                    ->label('الصناديق (البكس)')
-                    ->numeric(locale: 'en')
-                    ->summarize(Sum::make()->numeric(locale: 'en'))
-                    ->sortable(),
-                TextColumn::make('items_sum_total_weight')
-                    ->label('الوزن (كجم)')
-                    ->numeric(locale: 'en')
-                    ->summarize(Sum::make()->numeric(locale: 'en'))
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label('تاريخ التحديث')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
-            ])
-            ->headerActions([
-                // CreateAction::make()->label('إنشاء إيصال'),
-                // AssociateAction::make(),
-            ])
-            ->recordActions([
-                // EditAction::make()->label('تعديل إيصال'),
-                // DissociateAction::make(),
-                // DeleteAction::make()->label('حذف إيصال'),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    // DissociateBulkAction::make(),
-                    // DeleteBulkAction::make()->label('حذف إيصالات'),
-                ]),
-            ])
-            ->defaultSort('date', 'desc');
+        return OrdersTable::configure($table);
     }
 }
