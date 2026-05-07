@@ -113,6 +113,7 @@ class FarmResource extends Resource
             'view' => ViewFarm::route('/{record}'),
             'edit' => EditFarm::route('/{record}/edit'),
             'stats-results' => Pages\FarmStatsResults::route('/{record}/stats'),
+            'details-report' => Pages\FarmDetailsReport::route('/{record}/details-report'),
         ];
     }
 }

@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Domain\Accounting\PostingService;
 use App\Enums\AdvanceStatus;
-use App\Enums\PaymentMethod;
 use App\Models\AdvanceRepayment;
 
 class AdvanceRepaymentObserver
@@ -24,10 +23,6 @@ class AdvanceRepaymentObserver
                 'balance_remaining' => $newBalance,
                 'status' => $newBalance <= 0 ? AdvanceStatus::Completed : AdvanceStatus::Active,
             ]);
-        }
-
-        if ($repayment->payment_method === PaymentMethod::SETTLEMENT) {
-            return;
         }
 
         $this->posting->post('employee.advance.repayment', [

@@ -27,7 +27,7 @@ class BatchesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('batch_code')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['units', 'species']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['units', 'species', 'dailyFeedIssues']))
             ->columns([
                 TextColumn::make('batch_code')
                     ->label('كود الدفعة')
@@ -59,6 +59,14 @@ class BatchesRelationManager extends RelationManager
                     ->label('التكلفة')
                     ->money('EGP', locale: 'en', decimalPlaces: 0)
                     ->toggleable(),
+                TextColumn::make('total_feed_consumed')
+                    ->label('العلف المستهلك (كمية)')
+                    ->numeric(locale: 'en')
+                    ->sortable(),
+                TextColumn::make('total_feed_cost')
+                    ->label('تكلفة العلف')
+                    ->money('EGP', locale: 'en', decimalPlaces: 0)
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')

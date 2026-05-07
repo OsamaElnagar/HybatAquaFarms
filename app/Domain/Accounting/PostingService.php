@@ -31,11 +31,13 @@ class PostingService
 
             $amount = (float) ($context['amount'] ?? 0);
             $farmId = $context['farm_id'] ?? null;
+            $debitFarmId = $context['debit_farm_id'] ?? $farmId;
+            $creditFarmId = $context['credit_farm_id'] ?? $farmId;
 
             JournalLine::create([
                 'journal_entry_id' => $entry->id,
                 'account_id' => $context['debit_account_id'] ?? $rule->debit_account_id,
-                'farm_id' => $farmId,
+                'farm_id' => $debitFarmId,
                 'debit' => $amount,
                 'credit' => 0,
                 'description' => $context['debit_description'] ?? null,
@@ -44,7 +46,7 @@ class PostingService
             JournalLine::create([
                 'journal_entry_id' => $entry->id,
                 'account_id' => $context['credit_account_id'] ?? $rule->credit_account_id,
-                'farm_id' => $farmId,
+                'farm_id' => $creditFarmId,
                 'debit' => 0,
                 'credit' => $amount,
                 'description' => $context['credit_description'] ?? null,

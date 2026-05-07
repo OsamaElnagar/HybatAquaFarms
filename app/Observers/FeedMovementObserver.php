@@ -256,32 +256,21 @@ class FeedMovementObserver
 
     protected function postAccountingEntry(FeedMovement $movement): void
     {
-        $warehouse = $movement->toWarehouse ?? $movement->fromWarehouse;
-        $farmId = $warehouse instanceof FeedWarehouse ? $warehouse->farm_id : null;
-
-        // Calculate cost from stock or feed item
         $quantity = (float) $movement->quantity;
         $totalCost = 0;
 
         if ($movement->movement_type === FeedMovementType::In) {
-            // Use movement's total_cost if available, otherwise fallback to standard_cost
+            $warehouse = $movement->toWarehouse;
+            $farmId = $warehouse instanceof FeedWarehouse ? $warehouse->farm_id : null;
+
             $totalCost = (float) $movement->total_cost;
             if ($totalCost <= 0) {
                 $feedItem = $movement->feedItem;
                 $unitCost = (float) ($feedItem?->standard_cost ?? 0);
                 $totalCost = $quantity * $unitCost;
             }
-        } elseif ($movement->movement_type === FeedMovementType::Out) {
-            // For outgoing movements, use average_cost from stock
-            $stock = FeedStock::where('feed_warehouse_id', $movement->from_warehouse_id)
-                ->where('feed_item_id', $movement->feed_item_id)
-                ->first();
-            $averageCost = $stock ? (float) $stock->average_cost : 0;
-            $totalCost = $quantity * $averageCost;
-        }
 
-        if ($totalCost > 0) {
-            if ($movement->movement_type === FeedMovementType::In) {
+            if ($totalCost > 0) {
                 $this->posting->post('feed.purchase', [
                     'amount' => $totalCost,
                     'farm_id' => $farmId,
@@ -292,7 +281,18 @@ class FeedMovementObserver
                     'credit_account_id' => $movement->factory?->account_id,
                     'description' => $movement->description,
                 ]);
-            } elseif ($movement->movement_type === FeedMovementType::Out) {
+            }
+        } elseif ($movement->movement_type === FeedMovementType::Out) {
+            $warehouse = $movement->fromWarehouse;
+            $farmId = $warehouse instanceof FeedWarehouse ? $warehouse->farm_id : null;
+
+            $stock = FeedStock::where('feed_warehouse_id', $movement->from_warehouse_id)
+                ->where('feed_item_id', $movement->feed_item_id)
+                ->first();
+            $averageCost = $stock ? (float) $stock->average_cost : 0;
+            $totalCost = $quantity * $averageCost;
+
+            if ($totalCost > 0) {
                 $this->posting->post('feed.issue', [
                     'amount' => $totalCost,
                     'farm_id' => $farmId,
@@ -300,6 +300,47 @@ class FeedMovementObserver
                     'source_type' => $movement->getMorphClass(),
                     'source_id' => $movement->id,
                     'description' => $movement->description,
+                ]);
+            }
+        } elseif ($movement->movement_type === FeedMovementType::Transfer) {
+            if (! $movement->from_warehouse_id || ! $movement->to_warehouse_id) {
+                return;
+            }
+
+            $fromFarmId = $movement->fromWarehouse?->farm_id;
+            $toFarmId = $movement->toWarehouse?->farm_id;
+
+            // Same farm, internal transfer — no journal entry needed
+            if (! $fromFarmId || ! $toFarmId || $fromFarmId === $toFarmId) {
+                return;
+            }
+
+            $stock = FeedStock::where('feed_warehouse_id', $movement->from_warehouse_id)
+                ->where('feed_item_id', $movement->feed_item_id)
+                ->first();
+
+            if (! $stock) {
+                return;
+            }
+
+            $averageCost = (float) $stock->average_cost;
+            $totalCost = $quantity * $averageCost;
+
+            if ($totalCost > 0) {
+                $fromName = $movement->fromWarehouse->name ?? 'مستودع';
+                $toName = $movement->toWarehouse->name ?? 'مستودع';
+
+                $this->posting->post('feed.transfer', [
+                    'amount' => $totalCost,
+                    'farm_id' => $toFarmId,
+                    'debit_farm_id' => $toFarmId,
+                    'credit_farm_id' => $fromFarmId,
+                    'date' => $movement->date?->toDateString(),
+                    'source_type' => $movement->getMorphClass(),
+                    'source_id' => $movement->id,
+                    'debit_description' => "نقل وارد: {$fromName} → {$toName}",
+                    'credit_description' => "نقل صادر: {$fromName} → {$toName}",
+                    'description' => "نقل علف: {$fromName} → {$toName}",
                 ]);
             }
         }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Farms\Pages;
 
 use App\Filament\Resources\Farms\Actions\FarmStatsAction;
 use App\Filament\Resources\Farms\FarmResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -13,7 +14,7 @@ class EditFarm extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل مزرعة: '.$this->getRecord()->name;
+        return 'تعديل مزرعة: ' . $this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -30,7 +31,12 @@ class EditFarm extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            FarmStatsAction::make(),
+            Action::make('detailsReport')
+                ->label('تقرير التفاصيل')
+                ->icon('heroicon-o-document-chart-bar')
+                ->color('info')
+                ->url(fn() => FarmResource::getUrl('details-report', ['record' => $this->getRecord()])),
+            // FarmStatsAction::make(),
             DeleteAction::make(),
         ];
     }

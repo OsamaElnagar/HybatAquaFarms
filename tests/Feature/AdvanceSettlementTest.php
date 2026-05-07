@@ -13,6 +13,7 @@ use App\Models\EmployeeAdvance;
 use App\Models\ExpenseCategory;
 use App\Models\Farm;
 use App\Models\FarmExpense;
+use App\Models\JournalEntry;
 use App\Models\PostingRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -30,38 +31,61 @@ class AdvanceSettlementTest extends TestCase
 
     protected $advance;
 
+    protected $advanceAccount;
+
+    protected $treasuryAccount;
+
+    protected $salaryAccount;
+
+    protected $expenseAccount;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Ensure accounts exist
-        Account::updateOrCreate(
-            ['id' => 34],
-            ['code' => '1150', 'name' => 'سلف الموظفين', 'type' => 'asset']
-        );
+        // Create accounts
+        $this->advanceAccount = Account::create([
+            'code' => '1150', 'name' => 'سلف الموظفين', 'type' => 'asset',
+        ]);
 
-        $expenseAccount = Account::create(['code' => '5220', 'name' => 'صيانة وإصلاحات', 'type' => 'expense']);
+        $this->treasuryAccount = Account::create([
+            'code' => '1110', 'name' => 'Cash', 'type' => 'asset',
+        ]);
 
-        // Create Necessary Posting Rules
-        PostingRule::updateOrCreate(
-            ['event_key' => 'farm.expense'],
-            ['description' => 'مصروفات مزرعة', 'is_active' => true]
-        );
+        $this->salaryAccount = Account::create([
+            'code' => '5210', 'name' => 'Salary Expense', 'type' => 'expense',
+        ]);
 
-        PostingRule::updateOrCreate(
-            ['event_key' => 'employee.advance'],
-            ['description' => 'صرف سلفة', 'is_active' => true]
-        );
+        $this->expenseAccount = Account::create([
+            'code' => '5220', 'name' => 'صيانة وإصلاحات', 'type' => 'expense',
+        ]);
 
-        PostingRule::updateOrCreate(
-            ['event_key' => 'employee.advance.repayment'],
-            ['description' => 'سداد سلفة', 'is_active' => true]
-        );
+        // Create Posting Rules
+        PostingRule::create([
+            'event_key' => 'farm.expense',
+            'description' => 'مصروفات مزرعة',
+            'is_active' => true,
+        ]);
+
+        PostingRule::create([
+            'event_key' => 'employee.advance',
+            'description' => 'صرف سلفة',
+            'debit_account_id' => $this->advanceAccount->id,
+            'credit_account_id' => $this->treasuryAccount->id,
+            'is_active' => true,
+        ]);
+
+        PostingRule::create([
+            'event_key' => 'employee.advance.repayment',
+            'description' => 'سداد سلفة',
+            'debit_account_id' => $this->salaryAccount->id,
+            'credit_account_id' => $this->advanceAccount->id,
+            'is_active' => true,
+        ]);
 
         // Create an Expense Category
         $this->category = ExpenseCategory::create([
             'name' => 'إصلاحات',
-            'account_id' => $expenseAccount->id,
             'is_active' => true,
         ]);
 
@@ -116,8 +140,8 @@ class AdvanceSettlementTest extends TestCase
                     'type' => FarmExpenseType::Expense,
                     'description' => $expenseData['description'],
                     'advance_repayment_id' => $repayment->id,
-                    'treasury_account_id' => 34,
-                    'account_id' => $this->category->account_id,
+                    'treasury_account_id' => $this->advanceAccount->id,
+                    'account_id' => $this->expenseAccount->id,
                 ]);
             }
         });
@@ -137,9 +161,22 @@ class AdvanceSettlementTest extends TestCase
             $this->assertNotNull($exp->journal_entry_id);
             $lines = $exp->journalEntry->lines;
 
-            // Debit: Expense, Credit: Advance Account (34)
-            $this->assertEquals((float) $exp->amount, (float) $lines->where('account_id', $this->category->account_id)->first()->debit);
-            $this->assertEquals((float) $exp->amount, (float) $lines->where('account_id', 34)->first()->credit);
+            // Debit: Expense, Credit: Advance Account
+            $this->assertEquals((float) $exp->amount, (float) $lines->where('account_id', $this->expenseAccount->id)->first()->debit);
+            $this->assertEquals((float) $exp->amount, (float) $lines->where('account_id', $this->advanceAccount->id)->first()->credit);
         }
+
+        // Verify settlement repayment now posts a journal entry crediting 1150 (the advance)
+        $this->assertNotNull($repayment->employeeAdvance);
+        $repaymentJournalEntry = JournalEntry::where('source_type', 'App\\Models\\AdvanceRepayment')
+            ->where('source_id', $repayment->id)
+            ->first();
+        $this->assertNotNull($repaymentJournalEntry, 'Settlement repayment should create a journal entry');
+        $this->assertEquals((float) $totalAmount, (float) $repaymentJournalEntry->lines->sum('debit'));
+        $this->assertEquals((float) $totalAmount, (float) $repaymentJournalEntry->lines->sum('credit'));
+        $this->assertTrue(
+            $repaymentJournalEntry->lines->contains(fn ($line) => (int) $line->account_id === $this->advanceAccount->id && (float) $line->credit > 0),
+            'Settlement repayment journal entry should credit the advance account (1150)'
+        );
     }
 }

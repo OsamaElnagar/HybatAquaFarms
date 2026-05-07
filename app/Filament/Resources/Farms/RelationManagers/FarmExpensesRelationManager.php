@@ -25,17 +25,16 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class FarmExpensesRelationManager extends RelationManager
 {
     protected static string $relationship = 'farmExpenses';
 
-    protected static ?string $title = 'مصروفات المزرعة';
+    protected static ?string $title = 'معاملات متنوعه';
 
-    protected static ?string $modelLabel = 'مصروف';
+    protected static ?string $modelLabel = 'معاملة';
 
-    protected static ?string $pluralModelLabel = 'مصروفات';
+    protected static ?string $pluralModelLabel = 'معاملات';
 
     public function form(Schema $schema): Schema
     {
@@ -164,10 +163,6 @@ class FarmExpensesRelationManager extends RelationManager
                             ->label('إجمالي الإيرادات')
                             ->query(fn ($query) => $query->where('type', FarmExpenseType::Revenue))
                             ->using(fn ($query) => $query->sum('amount'))
-                            ->money('EGP', locale: 'en', decimalPlaces: 0),
-                        Summarizer::make()
-                            ->label('الصافي')
-                            ->using(fn ($query) => $query->sum(DB::raw("CASE WHEN type = 'revenue' THEN amount ELSE -amount END")))
                             ->money('EGP', locale: 'en', decimalPlaces: 0),
                     ]),
                 TextColumn::make('reference_number')

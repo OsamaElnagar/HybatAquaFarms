@@ -8,6 +8,7 @@ use App\Filament\Resources\Employees\Pages\StatementOfAccount;
 use App\Models\Account;
 use App\Models\Employee;
 use App\Models\EmployeeAdvance;
+use App\Models\JournalEntry;
 use App\Models\PostingRule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -174,4 +175,71 @@ it('cannot repay more than the remaining balance', function () {
         ->assertHasActionErrors(['amount']); // Should fail validation
 
     expect((float) $advance->refresh()->balance_remaining)->toBe(500.0);
+});
+
+it('settlement with expenses posts journal entry visible in statement', function () {
+    $employee = $this->employee;
+
+    // Ensure posting rules exist for repayment
+    $treasuryAccount = Account::where('code', '1120')->first() ?: Account::factory()->create(['code' => '1120', 'is_treasury' => true]);
+    $advanceAccount = Account::where('code', '1150')->first();
+    $salaryAccount = Account::factory()->create(['code' => '5210', 'name' => 'Salary Expense']);
+
+    PostingRule::updateOrCreate(
+        ['event_key' => 'employee.advance.repayment'],
+        [
+            'description' => 'Employee Repayment',
+            'debit_account_id' => $salaryAccount->id,
+            'credit_account_id' => $advanceAccount->id,
+            'is_active' => true,
+        ]
+    );
+
+    // Open a statement
+    $employee->openNewStatement('Test Settlement');
+
+    // Create an advance
+    $advance = EmployeeAdvance::create([
+        'advance_number' => 'ADV-SETTLE',
+        'employee_id' => $employee->id,
+        'request_date' => now(),
+        'amount' => 1000,
+        'approval_status' => AdvanceApprovalStatus::APPROVED,
+        'status' => AdvanceStatus::Active,
+        'balance_remaining' => 1000,
+        'disbursement_date' => now(),
+    ]);
+
+    // Simulate settlement repayment (as created by SettleWithExpensesAction)
+    $repayment = $advance->repayments()->create([
+        'payment_date' => now(),
+        'amount_paid' => 600,
+        'payment_method' => PaymentMethod::SETTLEMENT,
+        'balance_remaining' => 400,
+        'notes' => 'تسوية بمصاريف مزرعة',
+    ]);
+
+    // The AdvanceRepaymentObserver should have posted a journal entry
+    $journalEntry = JournalEntry::where('source_type', $repayment->getMorphClass())
+        ->where('source_id', $repayment->id)
+        ->first();
+
+    expect($journalEntry)->not->toBeNull('Settlement repayment should create a journal entry');
+    expect($journalEntry->employee_statement_id)->not->toBeNull('Journal entry should be linked to active statement');
+    expect((float) $journalEntry->lines->where('account_id', $advanceAccount->id)->first()->credit)->toBe(600.0);
+
+    // Verify table shows the settlement as a credit (1150 line only; 5210 excluded by dedup)
+    $visibleLines = $journalEntry->lines->filter(function ($line) {
+        // Only 1150 lines should show; 5210 is excluded when 1150 exists in same entry
+        if ($line->account->code === '1150') {
+            return true;
+        }
+
+        return false;
+    });
+
+    Livewire::test(StatementOfAccount::class, ['record' => $employee->id])
+        ->assertCanSeeTableRecords($visibleLines);
+
+    expect((float) $advance->refresh()->balance_remaining)->toBe(400.0);
 });

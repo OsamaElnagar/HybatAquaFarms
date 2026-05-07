@@ -9,6 +9,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 
 class FeedStocksTable
@@ -16,6 +17,11 @@ class FeedStocksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultGroup(Group::make('feed_warehouse_id')->label('المستودع'))
+            ->groups([
+                Group::make('feed_item_id')->label('صنف العلف'),
+                Group::make('feed_warehouse_id')->label('المستودع'),
+            ])
             ->columns([
                 TextColumn::make('warehouse.name')
                     ->label('المستودع')
@@ -65,6 +71,6 @@ class FeedStocksTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])->striped(false);
     }
 }

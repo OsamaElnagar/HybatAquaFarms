@@ -22,6 +22,7 @@ class PostingRuleSeeder extends Seeder
 
             ['event_key' => 'feed.purchase', 'debit' => '1130', 'credit' => '2110', 'description' => 'شراء أعلاف من مصنع'],
             ['event_key' => 'feed.issue', 'debit' => '5100', 'credit' => '1130', 'description' => 'صرف أعلاف للأحواض'],
+            ['event_key' => 'feed.transfer', 'debit' => '1130', 'credit' => '1130', 'description' => 'نقل أعلاف بين المزارع'],
 
             ['event_key' => 'seed.purchase', 'debit' => '1200', 'credit' => '2110', 'description' => 'شراء زريعة من مفرخة'],
 

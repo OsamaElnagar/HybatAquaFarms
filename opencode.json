@@ -9,7 +9,29 @@
                 "artisan",
                 "boost:mcp"
             ]
+        },
+        "herd": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "php",
+                "C:/Users/osama/.config/herd/bin/herd-mcp.phar"
+            ],
+            "environment": {
+                "SITE_PATH": "F:\\HybatAquaFarms\\HybatAquaFarms"
+            }
+        },
+        "chrome-devtools": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "npx",
+                "-y",
+                "chrome-devtools-mcp@latest"
+            ]
         }
     },
-    "plugin": ["@warp-dot-dev/opencode-warp"]
+    "plugin": [
+        "@warp-dot-dev/opencode-warp"
+    ]
 }

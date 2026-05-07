@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Farms\Tables;
 use App\Enums\FarmStatus;
 use App\Filament\Exports\FarmExporter;
 use App\Filament\Resources\Farms\Actions\FarmStatsAction;
+use App\Filament\Resources\Farms\FarmResource;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -101,8 +103,13 @@ class FarmsTable
                 //     ->icon('heroicon-o-arrow-down-tray'),
             ])
             ->recordActions([
+                Action::make('detailsReport')
+                    ->label('تقرير التفاصيل')
+                    ->icon('heroicon-o-document-chart-bar')
+                    ->color('info')
+                    ->url(fn($record) => FarmResource::getUrl('details-report', ['record' => $record])),
                 ViewAction::make()->label('عرض'),
-                FarmStatsAction::make(),
+                // FarmStatsAction::make(),
                 EditAction::make()->label('تعديل'),
             ])
             ->toolbarActions([
