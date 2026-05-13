@@ -107,7 +107,7 @@ class FarmsTable
                     ->label('تقرير التفاصيل')
                     ->icon('heroicon-o-document-chart-bar')
                     ->color('info')
-                    ->url(fn($record) => FarmResource::getUrl('details-report', ['record' => $record])),
+                    ->url(fn ($record) => FarmResource::getUrl('details-report', ['record' => $record])),
                 ViewAction::make()->label('عرض'),
                 // FarmStatsAction::make(),
                 EditAction::make()->label('تعديل'),

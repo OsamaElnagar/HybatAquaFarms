@@ -14,7 +14,7 @@ class EditFarm extends EditRecord
 
     public function getTitle(): string
     {
-        return 'تعديل مزرعة: ' . $this->getRecord()->name;
+        return 'تعديل مزرعة: '.$this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -35,7 +35,7 @@ class EditFarm extends EditRecord
                 ->label('تقرير التفاصيل')
                 ->icon('heroicon-o-document-chart-bar')
                 ->color('info')
-                ->url(fn() => FarmResource::getUrl('details-report', ['record' => $this->getRecord()])),
+                ->url(fn () => FarmResource::getUrl('details-report', ['record' => $this->getRecord()])),
             // FarmStatsAction::make(),
             DeleteAction::make(),
         ];

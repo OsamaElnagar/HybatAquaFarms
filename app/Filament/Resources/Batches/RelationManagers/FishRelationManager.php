@@ -8,6 +8,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -60,6 +61,12 @@ class FishRelationManager extends RelationManager
                             })
                             ->searchable()
                             ->preload()
+                            ->columnSpan(1),
+
+                        DatePicker::make('date')
+                            ->label('التاريخ')
+                            // ->required()
+                            ->default(now())
                             ->columnSpan(1),
                     ]),
 
@@ -116,6 +123,10 @@ class FishRelationManager extends RelationManager
                 TextColumn::make('species.name')
                     ->label('النوع')
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('date')
+                    ->label('التاريخ')
+                    ->date()
                     ->sortable(),
                 TextColumn::make('factory.name')
                     ->label('المورد')

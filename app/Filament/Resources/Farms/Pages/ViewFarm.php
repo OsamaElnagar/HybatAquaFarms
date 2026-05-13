@@ -17,7 +17,7 @@ class ViewFarm extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'عرض مزرعة: ' . $this->getRecord()->name;
+        return 'عرض مزرعة: '.$this->getRecord()->name;
     }
 
     public function getBreadcrumbs(): array
@@ -37,7 +37,7 @@ class ViewFarm extends ViewRecord
                 ->label('تقرير التفاصيل')
                 ->icon('heroicon-o-document-chart-bar')
                 ->color('info')
-                ->url(fn() => FarmResource::getUrl('details-report', ['record' => $this->getRecord()])),
+                ->url(fn () => FarmResource::getUrl('details-report', ['record' => $this->getRecord()])),
             // FarmStatsAction::make(),
             EditAction::make(),
         ];

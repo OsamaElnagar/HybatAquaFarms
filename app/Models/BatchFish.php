@@ -19,6 +19,7 @@ class BatchFish extends Model
         'quantity',
         'unit_cost',
         'total_cost',
+        'date',
         'notes',
     ];
 
@@ -27,6 +28,7 @@ class BatchFish extends Model
         return [
             'unit_cost' => 'decimal:2',
             'total_cost' => 'decimal:2',
+            'date' => 'date',
         ];
     }
 
