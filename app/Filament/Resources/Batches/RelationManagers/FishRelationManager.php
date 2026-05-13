@@ -136,9 +136,9 @@ class FishRelationManager extends RelationManager
                     ->date()
                     ->sortable(),
                 TextColumn::make('driver.name')
-                    ->label('التاريخ')
-                    ->date()
-                    ->sortable(),
+                    ->label('السائق')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('factory.name')
                     ->label('المورد')
                     ->searchable()
