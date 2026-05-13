@@ -16,6 +16,7 @@ class BatchFish extends Model
         'batch_id',
         'species_id',
         'factory_id',
+        'driver_id',
         'quantity',
         'unit_cost',
         'total_cost',
@@ -40,6 +41,11 @@ class BatchFish extends Model
     public function species(): BelongsTo
     {
         return $this->belongsTo(Species::class);
+    }
+
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(Driver::class);
     }
 
     public function factory(): BelongsTo
