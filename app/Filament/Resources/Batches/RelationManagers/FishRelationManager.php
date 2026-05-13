@@ -63,6 +63,13 @@ class FishRelationManager extends RelationManager
                             ->preload()
                             ->columnSpan(1),
 
+                        Select::make('driver_id')
+                            ->label('السائق')
+                            ->relationship('driver', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->columnSpan(1),
+
                         DatePicker::make('date')
                             ->label('التاريخ')
                             // ->required()
@@ -125,6 +132,10 @@ class FishRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('date')
+                    ->label('التاريخ')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('driver.name')
                     ->label('التاريخ')
                     ->date()
                     ->sortable(),
